@@ -377,13 +377,40 @@ cdef class _TAG_Compound(_TAG_Value):
         yield from self.value
 
     def __contains__(self, key):
-        return any(tag.name == key for tag in self.value)
+        return key in self.value
 
     def __len__(self):
         return self.value.__len__()
 
 class TAG_Compound(_TAG_Compound, MutableMapping):
     pass
+
+class NBTFile(MutableMapping):
+
+    def __init__(self, tag, str name=""):
+        self.value = tag
+        self.name = name
+
+    def to_snbt(self) -> str:
+        return self.value.to_snbt()
+
+    def __getitem__(self, key):
+        return self.value[key]
+
+    def __setitem__(self, key, tag):
+        self.value[key] = tag
+
+    def __delitem__(self, key):
+        del self.value[key]
+
+    def __iter__(self):
+        yield from self.value
+
+    def __contains__(self, key):
+        return key in self.value
+
+    def __len__(self):
+        return self.value.__len__()
 
 
 def load(filename="", buffer=None):
@@ -416,9 +443,10 @@ def load(filename="", buffer=None):
 
     name = load_name(context)
     tag = load_compound_tag(context)
-    tag._name = name
 
-    return tag
+    file = NBTFile(tag, name)
+
+    return file
 
 cdef TAG_Byte load_byte(buffer_context context):
     cdef TAG_Byte tag = TAG_Byte(read_data(context, 1)[0])
@@ -523,5 +551,45 @@ cdef _TAG_List load_list(buffer_context context):
         PyList_Append(val, load_tag(list_type, context))
 
     return tag
+
+cdef void cwrite(object obj, char* buf, size_t length):
+    pass
+
+cdef save_tag_id(char tag_id, object buffer):
+    cwrite(buffer, &tag_id, 1)
+
+cdef void save_tag_name(str name, object buffer):
+    save_string(name.encode("utf-8"), buffer)
+
+cdef void save_string(bytes value, object buffer):
+    cdef short length = <short> len(value)
+    cdef char* s = value
+    to_little_endian(&length, 2)
+    cwrite(buffer, <char*> &length, 2)
+    cwrite(buffer, s, len(value))
+
+cdef void save_array(object value, object buffer, char size):
+    value = value.tostring()
+    cdef char* s = value
+    cdef int length = <int> len(value) // size
+    to_little_endian(&length, 4)
+    cwrite(buffer, <char*> &length, 4)
+    cwrite(buffer, s, len(value))
+
+cdef void save_byte(char value, object buffer):
+    cwrite(buffer, <char*> &value, 1)
+
+cdef void save_short(short value, object buffer):
+    to_little_endian(&value, 2)
+    cwrite(buffer, <char*> &value, 2)
+
+cdef void save_int(int value, object buffer):
+    to_little_endian(&value, 4)
+    cwrite(buffer, <char*> &value, 4)
+
+
+
+
+
 
 

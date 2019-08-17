@@ -237,6 +237,9 @@ cdef class TAG_String(_TAG_Value):
     def __init__(self, unicode value = ""):
         self.value = value
 
+    def __len__(self):
+        return len(self.value)
+
     cpdef str to_snbt(self):
         return f"\"{self.value}\"" # TODO: Needs more work to account for double quotes in the actual value
 
@@ -252,6 +255,9 @@ cdef class TAG_Byte_Array(_TAG_Value):
             value = numpy.zeros((0,), self.data_type)
 
         self.value = value
+
+    def __len__(self):
+        return len(self.value)
 
     cpdef str to_snbt(self):
         return f"[B;{','.join(self.value)}]"
@@ -269,6 +275,9 @@ cdef class TAG_Int_Array(_TAG_Value):
 
         self.value = value
 
+    def __len__(self):
+        return len(self.value)
+
     cpdef str to_snbt(self):
         return f"[I;{','.join(self.value)}]"
 
@@ -284,6 +293,9 @@ cdef class TAG_Long_Array(_TAG_Value):
             value = numpy.zeros((0,), self.data_type)
 
         self.value = value
+
+    def __len__(self):
+        return len(self.value)
 
     cpdef str to_snbt(self):
         return f"[L;{','.join(self.value)}]"
@@ -587,9 +599,14 @@ cdef void save_int(int value, object buffer):
     to_little_endian(&value, 4)
     cwrite(buffer, <char*> &value, 4)
 
+cdef void save_long(long long value, object buffer):
+    to_little_endian(&value, 8)
+    cwrite(buffer, <char*> &value, 8)
 
+cdef void save_float(float value, object buffer):
+    to_little_endian(&value, 4)
+    cwrite(buffer, <char*> &value, 4)
 
-
-
-
-
+cdef void save_double(double value, object buffer):
+    to_little_endian(&value, 8)
+    cwrite(buffer, <char*> &value, 8)

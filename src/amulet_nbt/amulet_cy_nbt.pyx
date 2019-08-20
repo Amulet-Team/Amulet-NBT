@@ -152,20 +152,23 @@ cdef class _TAG_Value:
     cpdef str to_snbt(self):
         raise NotImplementedError()
 
+    cdef void save_value(self, buffer):
+        raise NotImplementedError()
+
 cdef class TAG_Byte(_TAG_Value):
     cdef public char value
 
     def __cinit__(self):
         self.tag_id = _ID_BYTE
 
-    cdef void save_value(self, buffer):
-        pass
-
     def __init__(self, char value = 0):
         self.value = value
 
     cpdef str to_snbt(self):
         return f"{self.value}b"
+
+    cdef void save_value(self, buffer):
+        save_byte(self.value, buffer)
 
 
 cdef class TAG_Short(_TAG_Value):
@@ -180,6 +183,9 @@ cdef class TAG_Short(_TAG_Value):
     cpdef str to_snbt(self):
         return f"{self.value}s"
 
+    cdef void save_value(self, buffer):
+        save_short(self.value, buffer)
+
 cdef class TAG_Int(_TAG_Value):
     cdef public int value
 
@@ -191,6 +197,9 @@ cdef class TAG_Int(_TAG_Value):
 
     cpdef str to_snbt(self):
         return f"{self.value}"
+
+    cdef void save_value(self, buffer):
+        save_int(self.value, buffer)
 
 cdef class TAG_Long(_TAG_Value):
     cdef public long long value
@@ -204,6 +213,9 @@ cdef class TAG_Long(_TAG_Value):
     cpdef str to_snbt(self):
         return f"{self.value}l"
 
+    cdef void save_value(self, buffer):
+        save_long(self.value, buffer)
+
 cdef class TAG_Float(_TAG_Value):
     cdef public float value
 
@@ -216,6 +228,9 @@ cdef class TAG_Float(_TAG_Value):
     cpdef str to_snbt(self):
         return f"{self.value}f"
 
+    cdef void save_value(self, buffer):
+        save_float(self.value, buffer)
+
 cdef class TAG_Double(_TAG_Value):
     cdef public double value
 
@@ -227,6 +242,9 @@ cdef class TAG_Double(_TAG_Value):
 
     cpdef str to_snbt(self):
         return f"{self.value}d"
+
+    cdef void save_value(self, buffer):
+        save_double(self.value, buffer)
 
 cdef class TAG_String(_TAG_Value):
     cdef unicode value
@@ -242,6 +260,9 @@ cdef class TAG_String(_TAG_Value):
 
     cpdef str to_snbt(self):
         return f"\"{self.value}\"" # TODO: Needs more work to account for double quotes in the actual value
+
+    cdef void save_value(self, buffer):
+        save_string(self.value.encode("utf-8"), buffer)
 
 cdef class TAG_Byte_Array(_TAG_Value):
     cdef public object value
@@ -262,6 +283,9 @@ cdef class TAG_Byte_Array(_TAG_Value):
     cpdef str to_snbt(self):
         return f"[B;{','.join(self.value)}]"
 
+    cdef void save_value(self, buffer):
+        save_array(self.value, buffer, 1)
+
 cdef class TAG_Int_Array(_TAG_Value):
     cdef public object value
     data_type = numpy.dtype(">u4")
@@ -281,6 +305,9 @@ cdef class TAG_Int_Array(_TAG_Value):
     cpdef str to_snbt(self):
         return f"[I;{','.join(self.value)}]"
 
+    cdef void save_value(self, buffer):
+        save_array(self.value, buffer, 4)
+
 cdef class TAG_Long_Array(_TAG_Value):
     cdef public object value
     data_type = numpy.dtype(">q")
@@ -299,6 +326,9 @@ cdef class TAG_Long_Array(_TAG_Value):
 
     cpdef str to_snbt(self):
         return f"[L;{','.join(self.value)}]"
+
+    cdef void save_value(self, buffer):
+        save_array(self.value, buffer, 8)
 
 cdef class _TAG_List(_TAG_Value):
     cdef public list value
@@ -355,6 +385,20 @@ cdef class _TAG_List(_TAG_Value):
     def __delitem__(self, key):
         del self.value[key]
 
+    cdef void save_value(self, buffer):
+        cdef char list_type = self.list_data_type
+        cdef _TAG_Value tag = TAG_CLASSES[list_type]
+
+        save_tag_id(list_type, buffer)
+        save_int(<int>len(self.value), buffer)
+
+        cdef _TAG_Value subtag
+        for subtag in self.value:
+            if subtag.tag_id != list_type:
+                raise ValueError("Asked to save TAG_List with different types! Found %s and %s" % (subtag.tagID,
+                                                                                                   list_type))
+            tag.__class__.save_value(subtag, buffer)
+
 
 class TAG_List(_TAG_List, MutableSequence):
     pass
@@ -375,6 +419,16 @@ cdef class _TAG_Compound(_TAG_Value):
         for k, v in self.value.items():
             tags.append(f"{k}={v.to_snbt()}")
         return f"{{{','.join(tags)}}}"
+
+    cdef void save(self, buffer):
+        cdef str key
+        cdef _TAG_Value stag
+
+        for key, stag in self.value.items():
+            save_tag_id(stag.tag_id, buffer)
+            save_tag_name(key, buffer)
+            stag.save(buffer)
+        save_tag_id(_ID_END, buffer)
 
     def __getitem__(self, key):
         return self.value[key]

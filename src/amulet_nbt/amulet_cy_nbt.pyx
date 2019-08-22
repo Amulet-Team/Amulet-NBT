@@ -2,6 +2,7 @@ import gzip
 import zlib
 from collections.abc import MutableMapping, MutableSequence
 from io import BytesIO
+from typing import Optional
 
 import numpy
 from cpython cimport PyUnicode_DecodeUTF8, PyList_Append
@@ -387,7 +388,6 @@ cdef class _TAG_List(_TAG_Value):
 
     cdef void save_value(self, buffer):
         cdef char list_type = self.list_data_type
-        cdef _TAG_Value tag = TAG_CLASSES[list_type]
 
         save_tag_id(list_type, buffer)
         save_int(<int>len(self.value), buffer)
@@ -395,9 +395,9 @@ cdef class _TAG_List(_TAG_Value):
         cdef _TAG_Value subtag
         for subtag in self.value:
             if subtag.tag_id != list_type:
-                raise ValueError("Asked to save TAG_List with different types! Found %s and %s" % (subtag.tagID,
+                raise ValueError("Asked to save TAG_List with different types! Found %s and %s" % (subtag.tag_id,
                                                                                                    list_type))
-            tag.__class__.save_value(subtag, buffer)
+            save_tag_value(subtag, buffer)
 
 
 class TAG_List(_TAG_List, MutableSequence):
@@ -420,15 +420,21 @@ cdef class _TAG_Compound(_TAG_Value):
             tags.append(f"{k}={v.to_snbt()}")
         return f"{{{','.join(tags)}}}"
 
-    cdef void save(self, buffer):
+    cdef void save_value(self, buffer):
         cdef str key
         cdef _TAG_Value stag
 
         for key, stag in self.value.items():
             save_tag_id(stag.tag_id, buffer)
             save_tag_name(key, buffer)
-            stag.save(buffer)
+            print(f"=== {key} ===")
+            stag.save_value(buffer)
         save_tag_id(_ID_END, buffer)
+
+    def save(self, buffer, name=""):
+        save_tag_id(self.tag_id, buffer)
+        save_tag_name(name, buffer)
+        save_tag_value(self, buffer)
 
     def __getitem__(self, key):
         return self.value[key]
@@ -459,6 +465,28 @@ class NBTFile(MutableMapping):
 
     def to_snbt(self) -> str:
         return self.value.to_snbt()
+
+    def save_to(self, filename_or_buffer=None, compressed=True) -> Optional[BytesIO]:
+        buffer = BytesIO()
+        self.value.save(buffer, self.name)
+        data = buffer.getvalue()
+
+        if compressed:
+            gzip_buffer = BytesIO()
+            gz = gzip.GzipFile(fileobj=gzip_buffer, mode='wb')
+            gz.write(data)
+            gz.close()
+            data = gzip_buffer.getvalue()
+
+        if not filename_or_buffer:
+            return data
+
+        if isinstance(filename_or_buffer, str):
+            fp = open(filename_or_buffer, 'wb')
+            fp.write(data)
+            fp.close()
+        else:
+            filename_or_buffer.write(data)
 
     def __getitem__(self, key):
         return self.value[key]
@@ -619,7 +647,7 @@ cdef _TAG_List load_list(buffer_context context):
     return tag
 
 cdef void cwrite(object obj, char* buf, size_t length):
-    pass
+    obj.write(buf[:length])
 
 cdef save_tag_id(char tag_id, object buffer):
     cwrite(buffer, &tag_id, 1)
@@ -664,3 +692,41 @@ cdef void save_float(float value, object buffer):
 cdef void save_double(double value, object buffer):
     to_little_endian(&value, 8)
     cwrite(buffer, <char*> &value, 8)
+
+cdef void save_tag_value(_TAG_Value tag, object buf):
+    cdef char tagID = tag.tag_id
+    if tagID == _ID_BYTE:
+        (<TAG_Byte> tag).save_value(buf)
+
+    if tagID == _ID_SHORT:
+        (<TAG_Short> tag).save_value(buf)
+
+    if tagID == _ID_INT:
+        (<TAG_Int> tag).save_value(buf)
+
+    if tagID == _ID_LONG:
+        (<TAG_Long> tag).save_value(buf)
+
+    if tagID == _ID_FLOAT:
+        (<TAG_Float> tag).save_value(buf)
+
+    if tagID == _ID_DOUBLE:
+        (<TAG_Double> tag).save_value(buf)
+
+    if tagID == _ID_BYTE_ARRAY:
+        (<TAG_Byte_Array> tag).save_value(buf)
+
+    if tagID == _ID_STRING:
+        (<TAG_String> tag).save_value(buf)
+
+    if tagID == _ID_LIST:
+        (<_TAG_List> tag).save_value(buf)
+
+    if tagID == _ID_COMPOUND:
+        (<_TAG_Compound> tag).save_value(buf)
+
+    if tagID == _ID_INT_ARRAY:
+        (<TAG_Int_Array> tag).save_value(buf)
+
+    if tagID == _ID_LONG_ARRAY:
+        (<TAG_Long_Array> tag).save_value(buf)

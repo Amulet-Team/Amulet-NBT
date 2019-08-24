@@ -2,7 +2,7 @@ import gzip
 import zlib
 from collections.abc import MutableMapping, MutableSequence
 from io import BytesIO
-from typing import Optional
+from typing import Optional, Union
 
 import numpy
 from cpython cimport PyUnicode_DecodeUTF8, PyList_Append
@@ -171,6 +171,9 @@ cdef class TAG_Byte(_TAG_Value):
     cdef void save_value(self, buffer):
         save_byte(self.value, buffer)
 
+    def __eq__(self, other) -> bool:
+        return isinstance(other, self.__class__) and self.value == other.value
+
 
 cdef class TAG_Short(_TAG_Value):
     cdef public short value
@@ -187,6 +190,9 @@ cdef class TAG_Short(_TAG_Value):
     cdef void save_value(self, buffer):
         save_short(self.value, buffer)
 
+    def __eq__(self, other) -> bool:
+        return isinstance(other, self.__class__) and self.value == other.value
+
 cdef class TAG_Int(_TAG_Value):
     cdef public int value
 
@@ -201,6 +207,9 @@ cdef class TAG_Int(_TAG_Value):
 
     cdef void save_value(self, buffer):
         save_int(self.value, buffer)
+
+    def __eq__(self, other) -> bool:
+        return isinstance(other, self.__class__) and self.value == other.value
 
 cdef class TAG_Long(_TAG_Value):
     cdef public long long value
@@ -217,6 +226,9 @@ cdef class TAG_Long(_TAG_Value):
     cdef void save_value(self, buffer):
         save_long(self.value, buffer)
 
+    def __eq__(self, other) -> bool:
+        return isinstance(other, self.__class__) and self.value == other.value
+
 cdef class TAG_Float(_TAG_Value):
     cdef public float value
 
@@ -231,6 +243,9 @@ cdef class TAG_Float(_TAG_Value):
 
     cdef void save_value(self, buffer):
         save_float(self.value, buffer)
+
+    def __eq__(self, other) -> bool:
+        return isinstance(other, self.__class__) and self.value == other.value
 
 cdef class TAG_Double(_TAG_Value):
     cdef public double value
@@ -247,8 +262,11 @@ cdef class TAG_Double(_TAG_Value):
     cdef void save_value(self, buffer):
         save_double(self.value, buffer)
 
+    def __eq__(self, other) -> bool:
+        return isinstance(other, self.__class__) and self.value == other.value
+
 cdef class TAG_String(_TAG_Value):
-    cdef unicode value
+    cdef public unicode value
 
     def __cinit__(self):
         self.tag_id = _ID_STRING
@@ -256,7 +274,7 @@ cdef class TAG_String(_TAG_Value):
     def __init__(self, unicode value = ""):
         self.value = value
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.value)
 
     cpdef str to_snbt(self):
@@ -264,6 +282,9 @@ cdef class TAG_String(_TAG_Value):
 
     cdef void save_value(self, buffer):
         save_string(self.value.encode("utf-8"), buffer)
+
+    def __eq__(self, other) -> bool:
+        return isinstance(other, self.__class__) and self.value == other.value
 
 cdef class TAG_Byte_Array(_TAG_Value):
     cdef public object value
@@ -278,7 +299,7 @@ cdef class TAG_Byte_Array(_TAG_Value):
 
         self.value = value
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.value)
 
     cpdef str to_snbt(self):
@@ -286,6 +307,9 @@ cdef class TAG_Byte_Array(_TAG_Value):
 
     cdef void save_value(self, buffer):
         save_array(self.value, buffer, 1)
+
+    def __eq__(self, other) -> bool:
+        return isinstance(other, self.__class__) and self.value == other.value
 
 cdef class TAG_Int_Array(_TAG_Value):
     cdef public object value
@@ -300,7 +324,7 @@ cdef class TAG_Int_Array(_TAG_Value):
 
         self.value = value
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.value)
 
     cpdef str to_snbt(self):
@@ -308,6 +332,9 @@ cdef class TAG_Int_Array(_TAG_Value):
 
     cdef void save_value(self, buffer):
         save_array(self.value, buffer, 4)
+
+    def __eq__(self, other) -> bool:
+        return isinstance(other, self.__class__) and self.value == other.value
 
 cdef class TAG_Long_Array(_TAG_Value):
     cdef public object value
@@ -322,7 +349,7 @@ cdef class TAG_Long_Array(_TAG_Value):
 
         self.value = value
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.value)
 
     cpdef str to_snbt(self):
@@ -330,6 +357,9 @@ cdef class TAG_Long_Array(_TAG_Value):
 
     cdef void save_value(self, buffer):
         save_array(self.value, buffer, 8)
+
+    def __eq__(self, other) -> bool:
+        return isinstance(other, self.__class__) and self.value == other.value
 
 cdef class _TAG_List(_TAG_Value):
     cdef public list value
@@ -358,10 +388,10 @@ cdef class _TAG_List(_TAG_Value):
         if value.tagID != self.list_data_type:
             raise TypeError("Invalid type %s for TAG_List(%s)" % (value.__class__, TAG_CLASSES[self.list_data_type]))
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: int) -> _TAG_Value:
         return self.value[index]
 
-    def __setitem__(self, index, value):
+    def __setitem__(self, index: Union[int, slice], value: _TAG_Value):
         if isinstance(index, slice):
             for tag in value:
                 self.check_tag(tag)
@@ -372,18 +402,18 @@ cdef class _TAG_List(_TAG_Value):
     def __iter__(self):
         return iter(self.value)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.value)
 
-    def insert(self, index, tag):
+    def insert(self, index: int, tag: _TAG_Value):
         if len(self.value) == 0:
-            self.list_data_type = tag.tagID
+            self.list_data_type = tag.tag_id
         else:
             self.check_tag(tag)
 
         self.value.insert(index, tag)
 
-    def __delitem__(self, key):
+    def __delitem__(self, key: int):
         del self.value[key]
 
     cdef void save_value(self, buffer):
@@ -399,6 +429,8 @@ cdef class _TAG_List(_TAG_Value):
                                                                                                    list_type))
             save_tag_value(subtag, buffer)
 
+    def __eq__(self, other) -> bool:
+        return isinstance(other, self.__class__) and self.value == other.value
 
 class TAG_List(_TAG_List, MutableSequence):
     pass
@@ -427,7 +459,6 @@ cdef class _TAG_Compound(_TAG_Value):
         for key, stag in self.value.items():
             save_tag_id(stag.tag_id, buffer)
             save_tag_name(key, buffer)
-            print(f"=== {key} ===")
             stag.save_value(buffer)
         save_tag_id(_ID_END, buffer)
 
@@ -436,23 +467,26 @@ cdef class _TAG_Compound(_TAG_Value):
         save_tag_name(name, buffer)
         save_tag_value(self, buffer)
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str) -> _TAG_Value:
         return self.value[key]
 
-    def __setitem__(self, key, tag):
+    def __setitem__(self, key: str, tag: _TAG_Value):
         self.value[key] = tag
 
-    def __delitem__(self, key):
+    def __delitem__(self, key: str):
         del self.value[key]
 
     def __iter__(self):
         yield from self.value
 
-    def __contains__(self, key):
+    def __contains__(self, key: str) -> bool:
         return key in self.value
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self.value.__len__()
+
+    def __eq__(self, other) -> bool:
+        return self.value.__eq__(other.value)
 
 class TAG_Compound(_TAG_Compound, MutableMapping):
     pass
@@ -488,26 +522,29 @@ class NBTFile(MutableMapping):
         else:
             filename_or_buffer.write(data)
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str) -> _TAG_Value:
         return self.value[key]
 
-    def __setitem__(self, key, tag):
+    def __setitem__(self, key: str, tag: _TAG_Value):
         self.value[key] = tag
 
-    def __delitem__(self, key):
+    def __delitem__(self, key: str):
         del self.value[key]
 
     def __iter__(self):
         yield from self.value
 
-    def __contains__(self, key):
+    def __contains__(self, key: str) -> bool:
         return key in self.value
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self.value.__len__()
 
+    def __eq__(self, other):
+        return self.value.__eq__(other.value)
 
-def load(filename="", buffer=None):
+
+def load(filename="", buffer=None) -> NBTFile:
     if filename:
         buffer = open(filename, "rb")
     data_in = buffer
@@ -646,7 +683,7 @@ cdef _TAG_List load_list(buffer_context context):
 
     return tag
 
-cdef void cwrite(object obj, char* buf, size_t length):
+cdef inline void cwrite(object obj, char* buf, size_t length):
     obj.write(buf[:length])
 
 cdef save_tag_id(char tag_id, object buffer):

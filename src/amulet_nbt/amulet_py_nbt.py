@@ -1,10 +1,16 @@
 from __future__ import annotations
 
+import gzip
 import traceback
+from collections.abc import MutableMapping, MutableSequence
 from dataclasses import dataclass, field
+from io import BytesIO
 from struct import Struct
-from typing import Any, ClassVar, get_type_hints
+from typing import Any, ClassVar, get_type_hints, Dict, List, Type
 
+import numpy as np
+
+TAG_END = 0
 TAG_BYTE = 1
 TAG_SHORT = 2
 TAG_INT = 3
@@ -20,8 +26,26 @@ TAG_LONG_ARRAY = 12
 
 NBT_WRAPPER = "python"
 
+_string_len_fmt = Struct(">H")
+
+class NBTFormatError(Exception):
+    pass
+
 class _BufferContext:
-    __slots__ = ("offset", "buffer", "size")
+    __slots__ = ("buffer", "offset", "size")
+
+    def __init__(self, offset: int, buffer, size: int):
+        self.offset = offset
+        self.buffer = buffer
+        self.size = size
+
+def load_string(context: _BufferContext) -> str:
+    data = context.buffer[context.offset:]
+    (str_len, ) = _string_len_fmt.unpack_from(data)
+    
+    value = data[2:str_len + 2].decode("utf-8")
+    context.offset += str_len + 2
+    return value
 
 @dataclass
 class _TAG_Value:
@@ -78,10 +102,184 @@ class TAG_Float(_TAG_Value):
     tag_id = TAG_FLOAT
     _tag_format = Struct(">f")
 
+@dataclass
+class TAG_Double(_TAG_Value):
+    value: float = 0
+    tag_id = TAG_DOUBLE
+    _tag_format = Struct(">d")
 
+@dataclass
+class TAG_Byte_Array(_TAG_Value):
+    _dtype = np.dtype('uint8')
+    value: np.ndarray = np.zeros(0, _dtype)
+    tag_id = TAG_BYTE_ARRAY
+
+@dataclass
+class TAG_Int_Array(_TAG_Value):
+    _dtype = np.dtype('>u4')
+    value: np.ndarray = np.zeros(0, _dtype)
+    tag_id = TAG_INT_ARRAY
+
+@dataclass
+class TAG_Long_Array(_TAG_Value):
+    _dtype = np.dtype('>q')
+    value: np.ndarray = np.zeros(0, _dtype)
+    tag_id = TAG_LONG_ARRAY
+
+@dataclass
+class TAG_String(_TAG_Value):
+    tag_id = TAG_STRING
+    value: str = ""
+
+    @classmethod
+    def load_from(cls, context: _BufferContext) -> _TAG_Value:
+        return cls(load_string(context))
+
+@dataclass
+class TAG_List(_TAG_Value, MutableSequence):
+    tag_id = TAG_LIST
+    value: List[_TAG_Value] = field(default_factory=list)
+
+    def __getitem__(self, index: int) -> _TAG_Value:
+        return self.value.__getitem__(index)
+
+    def __setitem__(self, index: int, value: _TAG_Value):
+        self.value.__setitem__(index, value)
+
+    def __delitem__(self, index: int):
+        self.value.__delitem__(index)
+
+    def __contains__(self, item: _TAG_Value) -> bool:
+        return self.value.__contains__(item)
+
+    def __len__(self) -> int:
+        return self.value.__len__()
+
+    def __iter__(self):
+        return self.value.__iter__()
+
+    def insert(self, index: int, value: _TAG_Value):
+        self.value.insert(index, value)
+
+    @classmethod
+    def load_from(cls, context: _BufferContext) -> _TAG_Value:
+        tag = cls()
+        tag.list_data_type= list_data_type = context.buffer[context.offset]
+        context.offset += 1
+
+        (list_len, ) = TAG_Int._tag_format.unpack_from(context.buffer, context.offset)
+        context.offset += TAG_Int._tag_format.size
+
+        for i in range(list_len):
+            child_tag = TAG_CLASSES[list_data_type].load_from(context)
+            tag.append(child_tag)
+
+        return tag
+
+@dataclass
+class TAG_Compound(_TAG_Value, MutableMapping):
+    tag_id = TAG_COMPOUND
+    value: Dict[str, _TAG_Value] = field(default_factory=dict)
+
+    @classmethod
+    def load_from(cls, context: _BufferContext) -> TAG_Compound:
+        tag = cls()
+
+        while context.offset < context.size:
+            tag_id = context.buffer[context.offset]
+            context.offset += 1
+
+            if tag_id == TAG_END:
+                break
+
+            tag_name = load_string(context)
+            child_tag = TAG_CLASSES[tag_id].load_from(context)
+
+            tag[tag_name] = child_tag
+
+        return tag
+
+    def __getitem__(self, key: str) -> _TAG_Value:
+        return self.value.__getitem__(key)
+
+    def __setitem__(self, key: str, value: _TAG_Value):
+        self.value.__setitem__(key, value)
+
+    def __delitem__(self, key: str):
+        self.value.__delitem__(key)
+
+    def __contains__(self, item: str) -> bool:
+        return self.value.__contains__(item)
+
+    def __len__(self) -> int:
+        return self.value.__len__()
+
+    def __iter__(self):
+        return self.value.__iter__()
+
+@dataclass
+class NBTFile(MutableMapping):
+    value: TAG_Compound
+    name: str = ""
+
+    def __getitem__(self, key: str) -> _TAG_Value:
+        return self.value[key]
+
+    def __setitem__(self, key: str, tag: _TAG_Value):
+        self.value[key] = tag
+
+    def __delitem__(self, key: str):
+        del self.value[key]
+
+    def __iter__(self):
+        yield from self.value
+
+    def __contains__(self, key: str) -> bool:
+        return key in self.value
+
+    def __len__(self) -> int:
+        return self.value.__len__()
+
+def safe_gunzip(data):
+    try:
+        data = gzip.GzipFile(fileobj=BytesIO(data)).read()
+    except IOError as e:
+        pass
+    return data
+
+def load(filename="", buffer=None) -> NBTFile:
+    if filename:
+        buffer = open(filename, "rb")
+    data_in = buffer
+
+    if hasattr(buffer, "read"):
+        data_in = buffer.read()
+
+    if hasattr(buffer, "close"):
+        buffer.close()
+    else:
+        print("[Warning]: Input buffer didn't have close() function. Memory leak may occur!")
+
+    data_in = safe_gunzip(data_in)
+
+    tag_type = data_in[0]
+    if tag_type != TAG_COMPOUND:
+        magic_num = data_in[:4]
+        raise NBTFormatError()
+
+    context: _BufferContext = _BufferContext(offset=1, buffer=data_in, size=len(data_in))
+
+    tag_name = load_string(context)
+    tag: TAG_Compound = TAG_Compound.load_from(context)
+
+    return NBTFile(tag, tag_name)
+
+TAG_CLASSES: Dict[int, Type[_TAG_Value]] = {
+    t().tag_id: t for t in _TAG_Value.__subclasses__()
+}
 
 try:
-    from .amulet_py_nbt import *
+    from .amulet_cy_nbt import *
     print("Using Amulet NBT library")
 except ImportError as e:
     traceback.print_exc()

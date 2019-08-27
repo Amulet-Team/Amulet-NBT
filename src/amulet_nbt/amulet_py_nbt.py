@@ -5,7 +5,7 @@ import traceback
 from collections.abc import MutableMapping, MutableSequence
 from dataclasses import dataclass, field
 from io import BytesIO
-from struct import Struct
+from struct import Struct, pack
 from typing import Any, ClassVar, get_type_hints, Dict, List, Type
 
 import numpy as np
@@ -47,12 +47,16 @@ def load_string(context: _BufferContext) -> str:
     context.offset += str_len + 2
     return value
 
+def write_string(buffer, _str):
+    encoded_str = _str.encode('utf-8')
+    buffer.write(pack(f">h{len(encoded_str)}s", len(encoded_str), encoded_str))
+
 @dataclass
 class _TAG_Value:
     value: Any
     tag_id: ClassVar[int]
     _data_type: ClassVar[Any]
-    _tag_format: Struct = field(init=False, repr=False)
+    tag_format: Struct = field(init=False, repr=False)
 
     def __new__(cls, *args, **kwargs):
         cls._data_type = get_type_hints(cls)["value"]
@@ -65,48 +69,63 @@ class _TAG_Value:
     @classmethod
     def load_from(cls, context: _BufferContext) -> _TAG_Value:
         data = context.buffer[context.offset:]
-        tag = cls(cls._tag_format.unpack_from(data))
-        context.offset += cls._tag_format.size
+        tag = cls(cls.tag_format.unpack_from(data)[0])
+        context.offset += cls.tag_format.size
         return tag
 
     def format(self, value):
         return self._data_type(value)
 
+    def write_tag_id(self, buffer):
+        buffer.write(bytes(chr(self.tag_id), 'utf-8'))
+
+    def save(self, buffer, name=None):
+        print(f"{name}: {self.tag_id}")
+        #buffer.write(chr(self.tag_id))
+        self.write_tag_id(buffer)
+        if name:
+            write_string(buffer, name)
+
+        self.write_value(buffer)
+
+    def write_value(self, buffer):
+        buffer.write(self.tag_format.pack(self.value))
+
 @dataclass
 class TAG_Byte(_TAG_Value):
     value: int = 0
     tag_id = TAG_BYTE
-    _tag_format = Struct(">b")
+    tag_format = Struct(">b")
 
 @dataclass
 class TAG_Short(_TAG_Value):
     value: int = 0
     tag_id = TAG_SHORT
-    _tag_format = Struct(">h")
+    tag_format = Struct(">h")
 
 @dataclass
 class TAG_Int(_TAG_Value):
     value: int = 0
     tag_id = TAG_INT
-    _tag_format = Struct(">i")
+    tag_format = Struct(">i")
 
 @dataclass
 class TAG_Long(_TAG_Value):
     value: int = 0
     tag_id = TAG_LONG
-    _tag_format = Struct(">q")
+    tag_format = Struct(">q")
 
 @dataclass
 class TAG_Float(_TAG_Value):
     value: float = 0
     tag_id = TAG_FLOAT
-    _tag_format = Struct(">f")
+    tag_format = Struct(">f")
 
 @dataclass
 class TAG_Double(_TAG_Value):
     value: float = 0
     tag_id = TAG_DOUBLE
-    _tag_format = Struct(">d")
+    tag_format = Struct(">d")
 
 @dataclass
 class TAG_Byte_Array(_TAG_Value):
@@ -135,9 +154,13 @@ class TAG_String(_TAG_Value):
     def load_from(cls, context: _BufferContext) -> _TAG_Value:
         return cls(load_string(context))
 
+    def write_value(self, buffer):
+        write_string(buffer, self.value)
+
 @dataclass
 class TAG_List(_TAG_Value, MutableSequence):
     tag_id = TAG_LIST
+    list_data_type: int = TAG_END
     value: List[_TAG_Value] = field(default_factory=list)
 
     def __getitem__(self, index: int) -> _TAG_Value:
@@ -167,14 +190,21 @@ class TAG_List(_TAG_Value, MutableSequence):
         tag.list_data_type= list_data_type = context.buffer[context.offset]
         context.offset += 1
 
-        (list_len, ) = TAG_Int._tag_format.unpack_from(context.buffer, context.offset)
-        context.offset += TAG_Int._tag_format.size
+        (list_len, ) = TAG_Int.tag_format.unpack_from(context.buffer, context.offset)
+        context.offset += TAG_Int.tag_format.size
 
         for i in range(list_len):
             child_tag = TAG_CLASSES[list_data_type].load_from(context)
             tag.append(child_tag)
 
         return tag
+
+    def write_value(self, buffer):
+        buffer.write(bytes(self.list_data_type))
+        buffer.write(TAG_Int.tag_format.pack(len(self.value)))
+
+        for item in self.value:
+            item.write_value(buffer)
 
 @dataclass
 class TAG_Compound(_TAG_Value, MutableMapping):
@@ -198,6 +228,19 @@ class TAG_Compound(_TAG_Value, MutableMapping):
             tag[tag_name] = child_tag
 
         return tag
+
+    def write_value(self, buffer):
+        for key, value in self.value.items():
+            value.save(buffer, key)
+            value.write_value(buffer)
+
+        buffer.write(bytes(TAG_END))
+
+    #def save(self, buffer, name=None):
+    #    self.write_tag_id(buffer)
+    #
+    #    if name:
+    #        write_string(buffer, name)
 
     def __getitem__(self, key: str) -> _TAG_Value:
         return self.value.__getitem__(key)
@@ -240,6 +283,29 @@ class NBTFile(MutableMapping):
     def __len__(self) -> int:
         return self.value.__len__()
 
+    def save_to(self, filename_or_buffer=None, compressed=True) -> Optional[BytesIO]:
+        buffer = BytesIO()
+        self.value.save(buffer, self.name)
+
+        data = buffer.getvalue()
+
+        if compressed:
+            gzip_buffer = BytesIO()
+            gz = gzip.GzipFile(fileobj=gzip_buffer, mode='wb')
+            gz.write(data)
+            gz.close()
+            data = gzip_buffer.getvalue()
+
+        if not filename_or_buffer:
+            return data
+
+        if isinstance(filename_or_buffer, str):
+            fp = open(filename_or_buffer, 'wb')
+            fp.write(data)
+            fp.close()
+        else:
+            filename_or_buffer.write(data)
+
 def safe_gunzip(data):
     try:
         data = gzip.GzipFile(fileobj=BytesIO(data)).read()
@@ -277,12 +343,5 @@ def load(filename="", buffer=None) -> NBTFile:
 TAG_CLASSES: Dict[int, Type[_TAG_Value]] = {
     t().tag_id: t for t in _TAG_Value.__subclasses__()
 }
-
-try:
-    from .amulet_cy_nbt import *
-    print("Using Amulet NBT library")
-except ImportError as e:
-    traceback.print_exc()
-    print("Using python NBT library")
 
 print(NBT_WRAPPER)

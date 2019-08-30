@@ -80,10 +80,10 @@ class _TAG_Value:
         buffer.write(bytes(chr(self.tag_id), 'utf-8'))
 
     def save(self, buffer, name=None):
-        print(f"{name}: {self.tag_id}")
+        # print(f"{name}: {self.tag_id}")
         #buffer.write(chr(self.tag_id))
         self.write_tag_id(buffer)
-        if name:
+        if name is not None:
             write_string(buffer, name)
 
         self.write_value(buffer)
@@ -200,7 +200,7 @@ class TAG_List(_TAG_Value, MutableSequence):
         return tag
 
     def write_value(self, buffer):
-        buffer.write(bytes(self.list_data_type))
+        buffer.write(bytes(chr(self.list_data_type), 'utf-8'))
         buffer.write(TAG_Int.tag_format.pack(len(self.value)))
 
         for item in self.value:

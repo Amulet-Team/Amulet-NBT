@@ -232,15 +232,8 @@ class TAG_Compound(_TAG_Value, MutableMapping):
     def write_value(self, buffer):
         for key, value in self.value.items():
             value.save(buffer, key)
-            value.write_value(buffer)
 
-        buffer.write(bytes(TAG_END))
-
-    #def save(self, buffer, name=None):
-    #    self.write_tag_id(buffer)
-    #
-    #    if name:
-    #        write_string(buffer, name)
+        buffer.write(bytes(chr(TAG_END), 'utf-8'))
 
     def __getitem__(self, key: str) -> _TAG_Value:
         return self.value.__getitem__(key)

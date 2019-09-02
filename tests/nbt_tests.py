@@ -36,7 +36,7 @@ class AbstractNBTTest:
 
             self.assertEqual(self.level_root_tag, saved_level_dat)
 
-@unittest.skipIf((not TEST_CYTHON_LIB), "Cythonized library not available")
+@unittest.skipUnless(TEST_CYTHON_LIB, "Cythonized library not available")
 class CythonNBTTest(AbstractNBTTest.NBTTests):
 
     def setUp(self):
@@ -46,6 +46,40 @@ class PythonNBTTest(AbstractNBTTest.NBTTests):
 
     def setUp(self):
         self._setUp(pynbt)
+
+@unittest.skipUnless(TEST_CYTHON_LIB, "Cythonized library not available")
+class CrossCompatabilityTest(unittest.TestCase):
+    cython_to_python_path = os.path.join(TESTS_DIR, f'test_cython_to_python.dat')
+    python_to_cython_path = os.path.join(TESTS_DIR, f'test_python_to_cython.dat')
+
+    def setUp(self):
+        self.cy_level_root_tag = cynbt.load(os.path.join(TESTS_DIR, "worlds", "1.13 World", "level.dat"))
+        self.py_level_root_tag = pynbt.load(os.path.join(TESTS_DIR, "worlds", "1.13 World", "level.dat"))
+
+    def tearDown(self):
+
+        if os.path.exists(self.cython_to_python_path):
+            os.remove(self.cython_to_python_path)
+
+        if os.path.exists(self.python_to_cython_path):
+            os.remove(self.python_to_cython_path)
+
+    def test_cross_saving_and_loading(self):
+
+
+        self.cy_level_root_tag.save_to(self.cython_to_python_path)
+
+        cy_to_py_root_tag = pynbt.load(self.cython_to_python_path)
+
+        self.assertEqual(self.py_level_root_tag, cy_to_py_root_tag)
+
+
+        self.py_level_root_tag.save_to(self.python_to_cython_path)
+
+        py_to_cy_root_tag = cynbt.load(self.python_to_cython_path)
+
+        self.assertEqual(self.cy_level_root_tag, py_to_cy_root_tag)
+
 
 
 

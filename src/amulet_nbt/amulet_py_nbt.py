@@ -56,7 +56,7 @@ class _TAG_Value:
     value: Any
     tag_id: ClassVar[int]
     _data_type: ClassVar[Any]
-    tag_format: Struct = field(init=False, repr=False)
+    tag_format: Struct = field(init=False, repr=False, compare=False)
 
     def __new__(cls, *args, **kwargs):
         cls._data_type = get_type_hints(cls)["value"]

@@ -294,7 +294,7 @@ cdef class TAG_Byte_Array(_TAG_Value):
         self.tag_id = _ID_BYTE_ARRAY
 
     def __init__(self, object value = None):
-        if not value:
+        if value is None:
             value = numpy.zeros((0,), self.data_type)
 
         self.value = value
@@ -319,7 +319,7 @@ cdef class TAG_Int_Array(_TAG_Value):
         self.tag_id = _ID_INT_ARRAY
 
     def __init__(self, object value = None):
-        if not value:
+        if value is None:
             value = numpy.zeros((0,), self.data_type)
 
         self.value = value
@@ -344,7 +344,7 @@ cdef class TAG_Long_Array(_TAG_Value):
         self.tag_id = _ID_LONG_ARRAY
 
     def __init__(self, object value = None):
-        if not value:
+        if value is None:
             value = numpy.zeros((0,), self.data_type)
 
         self.value = value
@@ -649,7 +649,7 @@ cdef TAG_Byte_Array load_byte_array(buffer_context context):
 
     byte_length = length
     cdef char* arr = read_data(context, byte_length)
-    return TAG_Byte_Array(numpy.fromstring(arr[:byte_length], dtype=TAG_Byte_Array.data_type, count=length))
+    return TAG_Byte_Array(numpy.frombuffer(arr[:byte_length], dtype=TAG_Byte_Array.data_type, count=length))
 
 cdef TAG_Int_Array load_int_array(buffer_context context):
     cdef int* pointer = <int*> read_data(context, 4)
@@ -658,7 +658,7 @@ cdef TAG_Int_Array load_int_array(buffer_context context):
 
     byte_length = length * 4
     cdef char* arr = read_data(context, byte_length)
-    return TAG_Int_Array(numpy.fromstring(arr[:byte_length], dtype=TAG_Int_Array.data_type, count=length))
+    return TAG_Int_Array(numpy.frombuffer(arr[:byte_length], dtype=TAG_Int_Array.data_type, count=length))
 
 cdef TAG_Long_Array load_long_array(buffer_context context):
     cdef int* pointer = <int*> read_data(context, 4)
@@ -667,7 +667,7 @@ cdef TAG_Long_Array load_long_array(buffer_context context):
 
     byte_length = length * 8
     cdef char* arr = read_data(context, byte_length)
-    return TAG_Long_Array(numpy.fromstring(arr[:byte_length], dtype=TAG_Int_Array.data_type, count=length))
+    return TAG_Long_Array(numpy.frombuffer(arr[:byte_length], dtype=TAG_Int_Array.data_type, count=length))
 
 cdef _TAG_List load_list(buffer_context context):
     cdef char list_type = read_data(context, 1)[0]

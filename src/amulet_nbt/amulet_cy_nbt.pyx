@@ -286,8 +286,13 @@ cdef class TAG_String(_TAG_Value):
     def __eq__(self, other) -> bool:
         return isinstance(other, self.__class__) and self.value == other.value
 
-cdef class TAG_Byte_Array(_TAG_Value):
+cdef class _TAG_Array(_TAG_Value):
     cdef public object value
+
+    def __eq__(self, other: _TAG_Array) -> bool:
+        return isinstance(other, self.__class__) and self.tag_id == other.tag_id and numpy.array_equal(self.value, other.value)
+
+cdef class TAG_Byte_Array(_TAG_Array):
     data_type = numpy.dtype("u1")
 
     def __cinit__(self):
@@ -308,11 +313,7 @@ cdef class TAG_Byte_Array(_TAG_Value):
     cdef void save_value(self, buffer):
         save_array(self.value, buffer, 1)
 
-    def __eq__(self, other) -> bool:
-        return isinstance(other, self.__class__) and self.value == other.value
-
 cdef class TAG_Int_Array(_TAG_Value):
-    cdef public object value
     data_type = numpy.dtype(">u4")
 
     def __cinit__(self):
@@ -333,11 +334,7 @@ cdef class TAG_Int_Array(_TAG_Value):
     cdef void save_value(self, buffer):
         save_array(self.value, buffer, 4)
 
-    def __eq__(self, other) -> bool:
-        return isinstance(other, self.__class__) and self.value == other.value
-
 cdef class TAG_Long_Array(_TAG_Value):
-    cdef public object value
     data_type = numpy.dtype(">q")
 
     def __cinit__(self):
@@ -357,9 +354,6 @@ cdef class TAG_Long_Array(_TAG_Value):
 
     cdef void save_value(self, buffer):
         save_array(self.value, buffer, 8)
-
-    def __eq__(self, other) -> bool:
-        return isinstance(other, self.__class__) and self.value == other.value
 
 cdef class _TAG_List(_TAG_Value):
     cdef public list value

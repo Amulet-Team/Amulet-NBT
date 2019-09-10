@@ -137,41 +137,52 @@ class TAG_Double(_TAG_Value):
     tag_format = Struct(">d")
 
 
-@dataclass
+@dataclass(eq=False)
 class _TAG_Array(_TAG_Value):
-    _dtype: ClassVar[Any]
+    data_type: ClassVar[Any]
     value: np.ndarray = np.zeros(0)
+
+    def __eq__(self, other: _TAG_Array):
+        return (
+            self.data_type == other.data_type
+            and self.tag_id == other.tag_id
+            and np.array_equal(self.value, other.value)
+        )
 
     @classmethod
     def load_from(cls, context: _BufferContext) -> _TAG_Value:
         data = context.buffer[context.offset :]
         (string_len,) = TAG_Int.tag_format.unpack_from(data)
         value = np.frombuffer(
-            data[4 : string_len * cls._dtype.itemsize + 4], cls._dtype
+            data[4 : string_len * cls.data_type.itemsize + 4], cls.data_type
         )
-        context.offset += string_len * cls._dtype.itemsize + 4
+        context.offset += string_len * cls.data_type.itemsize + 4
 
         return cls(value)
 
+    def write_value(self, buffer):
+        value = self.value.tostring()
+        buffer.write(pack(f">I{len(value)}s", self.value.size, value))
 
-@dataclass
+
+@dataclass(eq=False)
 class TAG_Byte_Array(_TAG_Array):
-    _dtype = np.dtype("uint8")
-    value: np.ndarray = np.zeros(0, _dtype)
+    data_type = np.dtype("uint8")
+    value: np.ndarray = np.zeros(0, data_type)
     tag_id = TAG_BYTE_ARRAY
 
 
-@dataclass
+@dataclass(eq=False)
 class TAG_Int_Array(_TAG_Array):
-    _dtype = np.dtype(">u4")
-    value: np.ndarray = np.zeros(0, _dtype)
+    data_type = np.dtype(">u4")
+    value: np.ndarray = np.zeros(0, data_type)
     tag_id = TAG_INT_ARRAY
 
 
-@dataclass
+@dataclass(eq=False)
 class TAG_Long_Array(_TAG_Array):
-    _dtype = np.dtype(">q")
-    value: np.ndarray = np.zeros(0, _dtype)
+    data_type = np.dtype(">q")
+    value: np.ndarray = np.zeros(0, data_type)
     tag_id = TAG_LONG_ARRAY
 
 

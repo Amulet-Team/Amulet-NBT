@@ -145,7 +145,7 @@ cpdef bytes safe_gunzip(bytes data):
 
 
 cdef class _TAG_Value:
-    cdef char tag_id
+    cdef public char tag_id
 
     def copy(self):
         return self.__class__(self.value)

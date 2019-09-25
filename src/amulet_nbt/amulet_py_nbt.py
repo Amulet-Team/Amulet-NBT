@@ -6,7 +6,8 @@ from collections.abc import MutableMapping, MutableSequence
 from dataclasses import dataclass, field
 from io import BytesIO
 from struct import Struct, pack
-from typing import Any, ClassVar, get_type_hints, Dict, List, Type
+from typing import Any, ClassVar, get_type_hints, Dict, List, Type, Tuple, Optional
+import re
 
 import numpy as np
 
@@ -30,6 +31,9 @@ _string_len_fmt = Struct(">H")
 
 
 class NBTFormatError(Exception):
+    pass
+
+class SNBTParseError(Exception):
     pass
 
 
@@ -337,7 +341,9 @@ class TAG_Compound(_TAG_Value, MutableMapping):
         return self.value.__iter__()
 
     def to_snbt(self):
-        return f"{{{', '.join(f'{name}: {elem.to_snbt()}' for name, elem in self.value.items())}}}"
+        # TODO: make this faster
+        data = ((f'"{name}"' if not name.isalnum() else name, elem.to_snbt()) for name, elem in self.value.items())
+        return f"{{{', '.join(f'{name}: {elem}' for name, elem in data)}}}"
 
 
 @dataclass
@@ -429,6 +435,101 @@ def load(filename="", buffer=None) -> NBTFile:
 
     return NBTFile(tag, tag_name)
 
+
+# this is going to be rather slow but should exist as a starting point for functionality
+
+whitespace = re.compile('[ \t\r\n]*')
+int_numeric = re.compile('-?[0-9]+[bBsSlL]?')
+float_numeric = re.compile('-?[0-9]+\.?[0-9]*[fFdD]?')
+alnumplus = re.compile('[-.a-zA-Z,0-9]*')
+
+def from_snbt(snbt: str):
+    def strip_whitespace(index) -> int:
+        match = whitespace.match(snbt, index)
+        if match is None:
+            return index
+        else:
+            return match.end()
+
+    def capture_string(index) -> Tuple[str, bool, int]:
+        if snbt[index] == '"':
+            strict_str = True
+            index += 1
+            end_index = index
+            while snbt[end_index] != '"' and snbt[end_index - 1] != '\\':
+                end_index += 1
+            val = snbt[index:end_index]
+            index = end_index + 1
+        else:
+            strict_str = False
+            match = alnumplus.match(snbt, index)
+            val = match.group()
+            index = match.end()
+
+        return val, strict_str, index
+
+    def parse_snbt_recursive(index=0) -> Tuple[_TAG_Value, int]:
+        index = strip_whitespace(index)
+        if snbt[index] == '{':
+            data_: Dict[str, _TAG_Value] = {}
+            index += 1
+            index = strip_whitespace(index)
+            while snbt[index] != '}':
+                # read the key
+                key, _, index = capture_string(index)
+
+                # get around the colon
+                index = strip_whitespace(index)
+                if snbt[index] != ':':
+                    raise SNBTParseError
+                index += 1
+                index = strip_whitespace(index)
+
+                # load the data and save it to the dictionary
+                nested_data, index = parse_snbt_recursive(index)
+                data_[key] = nested_data
+
+                index = strip_whitespace(index)
+            data = TAG_Compound(data_)
+
+        elif snbt[index] == '[':
+            # TODO
+            raise NotImplemented
+
+        else:
+            val, strict_str, index = capture_string(index)
+            if strict_str:
+                data = TAG_String(val)
+            else:
+                float_match = float_numeric.match(val)
+                if float_match is not None and float_match.end() == len(val):
+                    # we have a float type
+                    if val[-1] in {'f', 'F'}:
+                        data = TAG_Float(float(val[:-1]))
+                    elif val[-1] in {'d', 'D'}:
+                        data = TAG_Double(float(val[:-1]))
+                    else:
+                        data = TAG_Double(float(val))
+                else:
+                    int_match = int_numeric.match(val)
+                    if int_match is not None and int_match.end() == len(val):
+                        # we have an int type
+                        if val[-1] in {'b', 'B'}:
+                            data = TAG_Byte(int(val[:-1]))
+                        elif val[-1] in {'s', 'S'}:
+                            data = TAG_Short(int(val[:-1]))
+                        elif val[-1] in {'l', 'L'}:
+                            data = TAG_Long(int(val[:-1]))
+                        else:
+                            data = TAG_Int(int(val))
+                    else:
+                        # we just have a string type
+                        data = TAG_String(val)
+
+        return data, index
+
+    parse_snbt_recursive()
+    
 
 TAG_CLASSES: Dict[int, Type[_TAG_Value]] = {
     t().tag_id: t

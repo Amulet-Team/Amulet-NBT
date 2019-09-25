@@ -460,6 +460,9 @@ cdef class _TAG_Compound(_TAG_Value):
         for k, v in self.value.items():
             tags.append(f"{k}: {v.to_snbt()}")
         return f"{{{', '.join(tags)}}}"
+        # TODO: key should be in quotes if spaces in name
+        # data = ((f'"{name}"' if not name.isalnum() else name, elem.to_snbt()) for name, elem in self.value.items())
+        # return f"{{{', '.join(f'{name}: {elem}' for name, elem in data)}}}"
 
     cdef void save_value(self, buffer):
         cdef str key

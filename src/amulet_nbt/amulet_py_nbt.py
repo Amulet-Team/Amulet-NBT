@@ -94,12 +94,18 @@ class _TAG_Value:
     def write_value(self, buffer):
         buffer.write(self.tag_format.pack(self.value))
 
+    def to_snbt(self):
+        raise NotImplemented
+
 
 @dataclass
 class TAG_Byte(_TAG_Value):
     value: int = 0
     tag_id = TAG_BYTE
     tag_format = Struct(">b")
+
+    def to_snbt(self):
+        return f"{self.value}b"
 
 
 @dataclass
@@ -108,12 +114,18 @@ class TAG_Short(_TAG_Value):
     tag_id = TAG_SHORT
     tag_format = Struct(">h")
 
+    def to_snbt(self):
+        return f"{self.value}s"
+
 
 @dataclass
 class TAG_Int(_TAG_Value):
     value: int = 0
     tag_id = TAG_INT
     tag_format = Struct(">i")
+
+    def to_snbt(self):
+        return f"{self.value}"
 
 
 @dataclass
@@ -122,6 +134,9 @@ class TAG_Long(_TAG_Value):
     tag_id = TAG_LONG
     tag_format = Struct(">q")
 
+    def to_snbt(self):
+        return f"{self.value}l"
+
 
 @dataclass
 class TAG_Float(_TAG_Value):
@@ -129,12 +144,18 @@ class TAG_Float(_TAG_Value):
     tag_id = TAG_FLOAT
     tag_format = Struct(">f")
 
+    def to_snbt(self):
+        return f"{self.value}f"
+
 
 @dataclass
 class TAG_Double(_TAG_Value):
     value: float = 0
     tag_id = TAG_DOUBLE
     tag_format = Struct(">d")
+
+    def to_snbt(self):
+        return f"{self.value}d"
 
 
 @dataclass(eq=False)
@@ -171,6 +192,9 @@ class TAG_Byte_Array(_TAG_Array):
     value: np.ndarray = np.zeros(0, data_type)
     tag_id = TAG_BYTE_ARRAY
 
+    def to_snbt(self):
+        return f"[B;{','.join(str(val) for val in self.value)}]"
+
 
 @dataclass(eq=False)
 class TAG_Int_Array(_TAG_Array):
@@ -178,12 +202,22 @@ class TAG_Int_Array(_TAG_Array):
     value: np.ndarray = np.zeros(0, data_type)
     tag_id = TAG_INT_ARRAY
 
+    def to_snbt(self):
+        return f"[I;{','.join(str(val) for val in self.value)}]"
+
 
 @dataclass(eq=False)
 class TAG_Long_Array(_TAG_Array):
     data_type = np.dtype(">q")
     value: np.ndarray = np.zeros(0, data_type)
     tag_id = TAG_LONG_ARRAY
+
+    def to_snbt(self):
+        return f"[L;{','.join(str(val) for val in self.value)}]"
+
+
+def escape(string: str):
+    return string.replace('\\', '\\\\').replace('"', '\\"')
 
 
 @dataclass
@@ -197,6 +231,9 @@ class TAG_String(_TAG_Value):
 
     def write_value(self, buffer):
         write_string(buffer, self.value)
+
+    def to_snbt(self):
+        return f"\"{escape(self.value)}\""
 
 
 @dataclass
@@ -248,6 +285,9 @@ class TAG_List(_TAG_Value, MutableSequence):
         for item in self.value:
             item.write_value(buffer)
 
+    def to_snbt(self):
+        return f"[{','.join(elem.to_snbt() for elem in self.value)}]"
+
 
 @dataclass
 class TAG_Compound(_TAG_Value, MutableMapping):
@@ -296,6 +336,9 @@ class TAG_Compound(_TAG_Value, MutableMapping):
     def __iter__(self):
         return self.value.__iter__()
 
+    def to_snbt(self):
+        return f"{{{','.join(f'{name}: {elem.to_snbt()}' for name, elem in self.value.items())}}}"
+
 
 @dataclass
 class NBTFile(MutableMapping):
@@ -342,6 +385,9 @@ class NBTFile(MutableMapping):
             fp.close()
         else:
             filename_or_buffer.write(data)
+
+    def to_snbt(self):
+        return self.value.to_snbt()
 
 
 def safe_gunzip(data):

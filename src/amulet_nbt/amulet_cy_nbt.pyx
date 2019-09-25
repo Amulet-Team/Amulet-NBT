@@ -265,6 +265,9 @@ cdef class TAG_Double(_TAG_Value):
     def __eq__(self, other) -> bool:
         return isinstance(other, self.__class__) and self.value == other.value
 
+def escape(string: str):
+    return string.replace('\\', '\\\\').replace('"', '\\"')
+
 cdef class TAG_String(_TAG_Value):
     cdef public unicode value
 
@@ -278,7 +281,7 @@ cdef class TAG_String(_TAG_Value):
         return len(self.value)
 
     cpdef str to_snbt(self):
-        return f"\"{self.value}\"" # TODO: Needs more work to account for double quotes in the actual value
+        return f"\"{escape(self.value)}\""
 
     cdef void save_value(self, buffer):
         save_string(self.value.encode("utf-8"), buffer)
@@ -308,7 +311,11 @@ cdef class TAG_Byte_Array(_TAG_Array):
         return len(self.value)
 
     cpdef str to_snbt(self):
-        return f"[B;{','.join(self.value)}]"
+        cdef int elem
+        cdef list tags = []
+        for elem in self.value:
+            tags.append(str(elem))
+        return f"[B;{','.join(tags)}]"
 
     cdef void save_value(self, buffer):
         save_array(self.value, buffer, 1)
@@ -329,7 +336,11 @@ cdef class TAG_Int_Array(_TAG_Value):
         return len(self.value)
 
     cpdef str to_snbt(self):
-        return f"[I;{','.join(self.value)}]"
+        cdef int elem
+        cdef list tags = []
+        for elem in self.value:
+            tags.append(str(elem))
+        return f"[I;{','.join(tags)}]"
 
     cdef void save_value(self, buffer):
         save_array(self.value, buffer, 4)
@@ -350,7 +361,11 @@ cdef class TAG_Long_Array(_TAG_Value):
         return len(self.value)
 
     cpdef str to_snbt(self):
-        return f"[L;{','.join(self.value)}]"
+        cdef int elem
+        cdef list tags = []
+        for elem in self.value:
+            tags.append(str(elem))
+        return f"[L;{','.join(tags)}]"
 
     cdef void save_value(self, buffer):
         save_array(self.value, buffer, 8)
@@ -443,7 +458,7 @@ cdef class _TAG_Compound(_TAG_Value):
         cdef _TAG_Value v
         cdef list tags = []
         for k, v in self.value.items():
-            tags.append(f"{k}={v.to_snbt()}")
+            tags.append(f"{k}: {v.to_snbt()}")
         return f"{{{','.join(tags)}}}"
 
     cdef void save_value(self, buffer):

@@ -501,34 +501,34 @@ def from_snbt(snbt: str):
             if strict_str:
                 data = TAG_String(val)
             else:
-                float_match = float_numeric.match(val)
-                if float_match is not None and float_match.end() == len(val):
-                    # we have a float type
-                    if val[-1] in {'f', 'F'}:
-                        data = TAG_Float(float(val[:-1]))
-                    elif val[-1] in {'d', 'D'}:
-                        data = TAG_Double(float(val[:-1]))
+                int_match = int_numeric.match(val)
+                if int_match is not None and int_match.end() == len(val):
+                    # we have an int type
+                    if val[-1] in {'b', 'B'}:
+                        data = TAG_Byte(int(val[:-1]))
+                    elif val[-1] in {'s', 'S'}:
+                        data = TAG_Short(int(val[:-1]))
+                    elif val[-1] in {'l', 'L'}:
+                        data = TAG_Long(int(val[:-1]))
                     else:
-                        data = TAG_Double(float(val))
+                        data = TAG_Int(int(val))
                 else:
-                    int_match = int_numeric.match(val)
-                    if int_match is not None and int_match.end() == len(val):
-                        # we have an int type
-                        if val[-1] in {'b', 'B'}:
-                            data = TAG_Byte(int(val[:-1]))
-                        elif val[-1] in {'s', 'S'}:
-                            data = TAG_Short(int(val[:-1]))
-                        elif val[-1] in {'l', 'L'}:
-                            data = TAG_Long(int(val[:-1]))
+                    float_match = float_numeric.match(val)
+                    if float_match is not None and float_match.end() == len(val):
+                        # we have a float type
+                        if val[-1] in {'f', 'F'}:
+                            data = TAG_Float(float(val[:-1]))
+                        elif val[-1] in {'d', 'D'}:
+                            data = TAG_Double(float(val[:-1]))
                         else:
-                            data = TAG_Int(int(val))
+                            data = TAG_Double(float(val))
                     else:
                         # we just have a string type
                         data = TAG_String(val)
 
         return data, index
 
-    parse_snbt_recursive()
+    return parse_snbt_recursive()
     
 
 TAG_CLASSES: Dict[int, Type[_TAG_Value]] = {

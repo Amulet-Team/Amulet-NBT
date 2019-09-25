@@ -193,7 +193,7 @@ class TAG_Byte_Array(_TAG_Array):
     tag_id = TAG_BYTE_ARRAY
 
     def to_snbt(self):
-        return f"[B;{','.join(str(val) for val in self.value)}]"
+        return f"[B;{', '.join(str(val) for val in self.value)}]"
 
 
 @dataclass(eq=False)
@@ -203,7 +203,7 @@ class TAG_Int_Array(_TAG_Array):
     tag_id = TAG_INT_ARRAY
 
     def to_snbt(self):
-        return f"[I;{','.join(str(val) for val in self.value)}]"
+        return f"[I;{', '.join(str(val) for val in self.value)}]"
 
 
 @dataclass(eq=False)
@@ -213,7 +213,7 @@ class TAG_Long_Array(_TAG_Array):
     tag_id = TAG_LONG_ARRAY
 
     def to_snbt(self):
-        return f"[L;{','.join(str(val) for val in self.value)}]"
+        return f"[L;{', '.join(str(val) for val in self.value)}]"
 
 
 def escape(string: str):
@@ -286,7 +286,7 @@ class TAG_List(_TAG_Value, MutableSequence):
             item.write_value(buffer)
 
     def to_snbt(self):
-        return f"[{','.join(elem.to_snbt() for elem in self.value)}]"
+        return f"[{', '.join(elem.to_snbt() for elem in self.value)}]"
 
 
 @dataclass
@@ -337,7 +337,7 @@ class TAG_Compound(_TAG_Value, MutableMapping):
         return self.value.__iter__()
 
     def to_snbt(self):
-        return f"{{{','.join(f'{name}: {elem.to_snbt()}' for name, elem in self.value.items())}}}"
+        return f"{{{', '.join(f'{name}: {elem.to_snbt()}' for name, elem in self.value.items())}}}"
 
 
 @dataclass

@@ -315,7 +315,7 @@ cdef class TAG_Byte_Array(_TAG_Array):
         cdef list tags = []
         for elem in self.value:
             tags.append(str(elem))
-        return f"[B;{','.join(tags)}]"
+        return f"[B;{', '.join(tags)}]"
 
     cdef void save_value(self, buffer):
         save_array(self.value, buffer, 1)
@@ -340,7 +340,7 @@ cdef class TAG_Int_Array(_TAG_Value):
         cdef list tags = []
         for elem in self.value:
             tags.append(str(elem))
-        return f"[I;{','.join(tags)}]"
+        return f"[I;{', '.join(tags)}]"
 
     cdef void save_value(self, buffer):
         save_array(self.value, buffer, 4)
@@ -365,7 +365,7 @@ cdef class TAG_Long_Array(_TAG_Value):
         cdef list tags = []
         for elem in self.value:
             tags.append(str(elem))
-        return f"[L;{','.join(tags)}]"
+        return f"[L;{', '.join(tags)}]"
 
     cdef void save_value(self, buffer):
         save_array(self.value, buffer, 8)
@@ -391,7 +391,7 @@ cdef class _TAG_List(_TAG_Value):
         cdef list tags = []
         for elem in self.value:
             tags.append(elem.to_snbt())
-        return f"[{','.join(tags)}]"
+        return f"[{', '.join(tags)}]"
 
     def check_tag(self, value):
         if value.tagID != self.list_data_type:
@@ -459,7 +459,7 @@ cdef class _TAG_Compound(_TAG_Value):
         cdef list tags = []
         for k, v in self.value.items():
             tags.append(f"{k}: {v.to_snbt()}")
-        return f"{{{','.join(tags)}}}"
+        return f"{{{', '.join(tags)}}}"
 
     cdef void save_value(self, buffer):
         cdef str key

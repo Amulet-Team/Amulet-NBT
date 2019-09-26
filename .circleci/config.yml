@@ -42,7 +42,7 @@ jobs:
           name: run tests
           command: |
             . venv/bin/activate
-            python ./tests/nbt_tests.py
+            python ./tests/nbt_tests.py -v
 
 #      - run:
 #          name: run stylecheck

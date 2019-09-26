@@ -447,7 +447,7 @@ colon = re.compile('[ \t\r\n]*:[ \t\r\n]*')
 array_lookup = {'B': TAG_Byte_Array, 'I': TAG_Int_Array, 'L': TAG_Long_Array}
 
 
-def from_snbt(snbt: str) -> int:
+def from_snbt(snbt: str) -> _TAG_Value:
     def strip_whitespace(index) -> int:
         match = whitespace.match(snbt, index)
         if match is None:

@@ -170,6 +170,9 @@ class _TAG_Array(_TAG_Value):
             and np.array_equal(self.value, other.value)
         )
 
+    def __len__(self):
+        return len(self.value)
+
     @classmethod
     def load_from(cls, context: _BufferContext) -> _TAG_Value:
         data = context.buffer[context.offset :]

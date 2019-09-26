@@ -11,6 +11,7 @@ except (ImportError, ModuleNotFoundError) as e:
 
 TESTS_DIR = os.path.dirname(__file__)
 
+
 class AbstractNBTTest:
     class NBTTests(unittest.TestCase):
 
@@ -51,16 +52,19 @@ class AbstractNBTTest:
 
             self.assertEqual(self.big_test, saved_bigtest)
 
+
 @unittest.skipUnless(TEST_CYTHON_LIB, "Cythonized library not available")
 class CythonNBTTest(AbstractNBTTest.NBTTests):
 
     def setUp(self):
         self._setUp(cynbt)
 
+
 class PythonNBTTest(AbstractNBTTest.NBTTests):
 
     def setUp(self):
         self._setUp(pynbt)
+
 
 @unittest.skipUnless(TEST_CYTHON_LIB, "Cythonized library not available")
 class CrossCompatabilityTest(unittest.TestCase):
@@ -81,13 +85,11 @@ class CrossCompatabilityTest(unittest.TestCase):
 
     def test_cross_saving_and_loading(self):
 
-
         self.cy_level_root_tag.save_to(self.cython_to_python_path)
 
         cy_to_py_root_tag = pynbt.load(self.cython_to_python_path)
 
         self.assertEqual(self.py_level_root_tag, cy_to_py_root_tag)
-
 
         self.py_level_root_tag.save_to(self.python_to_cython_path)
 
@@ -95,7 +97,8 @@ class CrossCompatabilityTest(unittest.TestCase):
 
         self.assertEqual(self.cy_level_root_tag, py_to_cy_root_tag)
 
-
+    def test_cross_to_snbt(self):
+        self.assertEqual(self.cy_level_root_tag.to_snbt(), self.py_level_root_tag.to_snbt())
 
 
 if __name__ == '__main__':

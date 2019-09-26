@@ -295,6 +295,9 @@ cdef class _TAG_Array(_TAG_Value):
     def __eq__(self, other: _TAG_Array) -> bool:
         return isinstance(other, self.__class__) and self.tag_id == other.tag_id and numpy.array_equal(self.value, other.value)
 
+    def __len__(self):
+        return len(self.value)
+
 cdef class TAG_Byte_Array(_TAG_Array):
     data_type = numpy.dtype("u1")
 
@@ -306,9 +309,6 @@ cdef class TAG_Byte_Array(_TAG_Array):
             value = numpy.zeros((0,), self.data_type)
 
         self.value = value
-
-    def __len__(self) -> int:
-        return len(self.value)
 
     cpdef str to_snbt(self):
         cdef int elem
@@ -332,9 +332,6 @@ cdef class TAG_Int_Array(_TAG_Value):
 
         self.value = value
 
-    def __len__(self) -> int:
-        return len(self.value)
-
     cpdef str to_snbt(self):
         cdef int elem
         cdef list tags = []
@@ -356,9 +353,6 @@ cdef class TAG_Long_Array(_TAG_Value):
             value = numpy.zeros((0,), self.data_type)
 
         self.value = value
-
-    def __len__(self) -> int:
-        return len(self.value)
 
     cpdef str to_snbt(self):
         cdef int elem

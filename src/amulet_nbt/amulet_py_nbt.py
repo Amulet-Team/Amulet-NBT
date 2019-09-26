@@ -447,7 +447,7 @@ colon = re.compile('[ \t\r\n]*:[ \t\r\n]*')
 array_lookup = {'B': TAG_Byte_Array, 'I': TAG_Int_Array, 'L': TAG_Long_Array}
 
 
-def from_snbt(snbt: str):
+def from_snbt(snbt: str) -> int:
     def strip_whitespace(index) -> int:
         match = whitespace.match(snbt, index)
         if match is None:
@@ -591,7 +591,7 @@ def from_snbt(snbt: str):
         return data, index
 
     try:
-        return parse_snbt_recursive()
+        return parse_snbt_recursive()[0]
     except SNBTParseError as e:
         raise SNBTParseError(e)
     except IndexError:

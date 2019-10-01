@@ -6,7 +6,7 @@ from collections.abc import MutableMapping, MutableSequence
 from dataclasses import dataclass, field
 from io import BytesIO
 from struct import Struct, pack
-from typing import Any, ClassVar, get_type_hints, Dict, List, Type, Tuple, Optional
+from typing import Any, ClassVar, get_type_hints, Dict, List, Type, Tuple, Optional, Union
 import re
 
 import numpy as np
@@ -243,8 +243,8 @@ class TAG_String(_TAG_Value):
 @dataclass
 class TAG_List(_TAG_Value, MutableSequence):
     tag_id = TAG_LIST
-    list_data_type: int = TAG_END
     value: List[_TAG_Value] = field(default_factory=list)
+    list_data_type: int = TAG_END
 
     def __getitem__(self, index: int) -> _TAG_Value:
         return self.value.__getitem__(index)
@@ -369,7 +369,7 @@ class NBTFile(MutableMapping):
     def __len__(self) -> int:
         return self.value.__len__()
 
-    def save_to(self, filename_or_buffer=None, compressed=True) -> Optional[BytesIO]:
+    def save_to(self, filename_or_buffer=None, compressed=True) -> Optional[Union[BytesIO, bytes]]:
         buffer = BytesIO()
         self.value.save(buffer, self.name)
 

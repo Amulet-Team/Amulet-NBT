@@ -29,6 +29,7 @@ NBT_WRAPPER = "python"
 
 _string_len_fmt = Struct(">H")
 
+_NON_QUOTED_KEY = re.compile(r"^[a-zA-Z0-9-]+$")
 
 class NBTFormatError(Exception):
     pass
@@ -74,6 +75,9 @@ class _TAG_Value:
 
     def __init__(self, value):
         self.value = self.format(value)
+
+    def __eq__(self, other):
+        return self.value == other.value and self.tag_id == other.tag_id
 
     @classmethod
     def load_from(cls, context: _BufferContext) -> _TAG_Value:
@@ -139,7 +143,7 @@ class TAG_Long(_TAG_Value):
     tag_format = Struct(">q")
 
     def to_snbt(self):
-        return f"{self.value}l"
+        return f"{self.value}L"
 
 
 @dataclass
@@ -197,7 +201,7 @@ class TAG_Byte_Array(_TAG_Array):
     tag_id = TAG_BYTE_ARRAY
 
     def to_snbt(self):
-        return f"[B;{', '.join(str(val) for val in self.value)}]"
+        return f"[B;{'B, '.join(str(val) for val in self.value)}B]"
 
 
 @dataclass(eq=False)
@@ -342,7 +346,7 @@ class TAG_Compound(_TAG_Value, MutableMapping):
 
     def to_snbt(self):
         # TODO: make this faster
-        data = ((f'"{name}"' if not name.isalnum() else name, elem.to_snbt()) for name, elem in self.value.items())
+        data = ((f'"{name}"' if _NON_QUOTED_KEY.match(name) is None else name, elem.to_snbt()) for name, elem in self.value.items())
         return f"{{{', '.join(f'{name}: {elem}' for name, elem in data)}}}"
 
 

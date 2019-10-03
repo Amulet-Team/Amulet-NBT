@@ -7,6 +7,8 @@ from typing import Optional, Union
 import numpy
 from cpython cimport PyUnicode_DecodeUTF8, PyList_Append
 
+import re
+
 cdef char _ID_END = 0
 cdef char _ID_BYTE = 1
 cdef char _ID_SHORT = 2
@@ -55,6 +57,8 @@ cpdef dict TAG_CLASSES = {
 }
 
 USE_BIG_ENDIAN = 1
+
+_NON_QUOTED_KEY = re.compile(r"^[a-zA-Z0-9-]+$")
 
 # Utility Methods
 class NBTFormatError(ValueError):
@@ -156,6 +160,10 @@ cdef class _TAG_Value:
     cdef void save_value(self, buffer):
         raise NotImplementedError()
 
+    def __repr__(self):
+        return f"{self.__class__.__name__}({self.value})"
+
+
 cdef class TAG_Byte(_TAG_Value):
     cdef public char value
 
@@ -221,7 +229,7 @@ cdef class TAG_Long(_TAG_Value):
         self.value = value
 
     cpdef str to_snbt(self):
-        return f"{self.value}l"
+        return f"{self.value}L"
 
     cdef void save_value(self, buffer):
         save_long(self.value, buffer)
@@ -289,6 +297,9 @@ cdef class TAG_String(_TAG_Value):
     def __eq__(self, other) -> bool:
         return isinstance(other, self.__class__) and self.value == other.value
 
+    def __repr__(self):
+        return f"{self.__class__.__name__}(\"{self.value}\")"
+
 cdef class _TAG_Array(_TAG_Value):
     cdef public object value
 
@@ -315,7 +326,7 @@ cdef class TAG_Byte_Array(_TAG_Array):
         cdef list tags = []
         for elem in self.value:
             tags.append(str(elem))
-        return f"[B;{', '.join(tags)}]"
+        return f"[B;{'B, '.join(tags)}B]"
 
     cdef void save_value(self, buffer):
         save_array(self.value, buffer, 1)
@@ -458,7 +469,10 @@ cdef class _TAG_Compound(_TAG_Value):
         cdef _TAG_Value v
         cdef list tags = []
         for k, v in self.value.items():
-            tags.append(f"{k}: {v.to_snbt()}")
+            if _NON_QUOTED_KEY.match(k) is None:
+                tags.append(f'"{k}": {v.to_snbt()}')
+            else:
+                tags.append(f'{k}: {v.to_snbt()}')
         return f"{{{', '.join(tags)}}}"
         # TODO: key should be in quotes if spaces in name
         # data = ((f'"{name}"' if not name.isalnum() else name, elem.to_snbt()) for name, elem in self.value.items())
@@ -781,9 +795,6 @@ cdef void save_tag_value(_TAG_Value tag, object buf):
         (<TAG_Long_Array> tag).save_value(buf)
 
 
-import re
-from typing import Tuple
-
 class SNBTParseError(Exception):
     pass
 
@@ -795,152 +806,173 @@ comma = re.compile('[ \t\r\n]*,[ \t\r\n]*')
 colon = re.compile('[ \t\r\n]*:[ \t\r\n]*')
 array_lookup = {'B': TAG_Byte_Array, 'I': TAG_Int_Array, 'L': TAG_Long_Array}
 
+cdef int _strip_whitespace(str snbt, int index):
+    cdef object match
+
+    match = whitespace.match(snbt, index)
+    if match is None:
+        return index
+    else:
+        return match.end()
+
+cdef int _strip_comma(str snbt, int index, str end_chr):
+    cdef object match
+
+    match = comma.match(snbt, index)
+    if match is None:
+        index = _strip_whitespace(snbt, index)
+        if snbt[index] != end_chr:
+            raise SNBTParseError(f'Expected a comma or {end_chr} at {index} but got ->{snbt[index:index + 10]} instead')
+    else:
+        index = match.end()
+    return index
+
+cdef int _strip_colon(str snbt, int index):
+    cdef object match
+
+    match = colon.match(snbt, index)
+    if match is None:
+        raise SNBTParseError(f'Expected : at {index} but got ->{snbt[index:index + 10]} instead')
+    else:
+        return match.end()
+
+cdef tuple _capture_string(str snbt, int index):
+    cdef str val
+    cdef bint strict_str
+    cdef int end_index
+    cdef object match
+
+    if snbt[index] == '"':
+        strict_str = True
+        index += 1
+        end_index = index
+        while snbt[end_index] != '"' and snbt[end_index - 1] != '\\':
+            end_index += 1
+        val = snbt[index:end_index]
+        index = end_index + 1
+    else:
+        strict_str = False
+        match = alnumplus.match(snbt, index)
+        val = match.group()
+        index = match.end()
+
+    return val, strict_str, index
+
+cdef tuple _parse_snbt_recursive(str snbt, int index=0):
+    cdef dict data_
+    cdef list array
+    cdef str array_type_chr
+    cdef object array_type, first_data_type, int_match, float_match
+    cdef _TAG_Value nested_data, data
+    cdef str val
+    cdef bint strict_str
+
+    index = _strip_whitespace(snbt, index)
+    if snbt[index] == '{':
+        data_ = {}
+        index += 1
+        index = _strip_whitespace(snbt, index)
+        while snbt[index] != '}':
+            # read the key
+            key, _, index = _capture_string(snbt, index)
+
+            # get around the colon
+            index = _strip_colon(snbt, index)
+
+            # load the data and save it to the dictionary
+            nested_data, index = _parse_snbt_recursive(snbt, index)
+            data_[key] = nested_data
+
+            index = _strip_comma(snbt, index, '}')
+        data = TAG_Compound(data_)
+        # skip the }
+        index += 1
+
+    elif snbt[index] == '[':
+        index += 1
+        index = _strip_whitespace(snbt, index)
+        if snbt[index:index + 2] in {'B;', 'I;', 'L;'}:
+            # array
+            array = []
+            array_type_chr = snbt[index]
+            array_type = array_lookup[array_type_chr]
+            index += 2
+            index = _strip_whitespace(snbt, index)
+
+            while snbt[index] != ']':
+                match = int_numeric.match(snbt, index)
+                if match is None:
+                    raise SNBTParseError(
+                        f'Expected an integer value or ] at {index} but got ->{snbt[index:index + 10]} instead')
+                else:
+                    val = match.group()
+                    if val[-1].isalpha():
+                        if val[-1] == array_type_chr:
+                            val = val[:-1]
+                        else:
+                            raise SNBTParseError(
+                                f'Expected the datatype marker "{array_type_chr}" at {index} but got ->{snbt[index:index + 10]} instead')
+                    array.append(int(val))
+                    index = match.end()
+
+                index = _strip_comma(snbt, index, ']')
+            data = array_type(array)
+        else:
+            # list
+            array = []
+            first_data_type = None
+            while snbt[index] != ']':
+                nested_data, index_ = _parse_snbt_recursive(snbt, index)
+                if first_data_type is None:
+                    first_data_type = nested_data.__class__
+                if not isinstance(nested_data, first_data_type):
+                    raise SNBTParseError(
+                        f'Expected type {first_data_type.__name__} but got {nested_data.__class__.__name__} at {index}')
+                else:
+                    index = index_
+                array.append(nested_data)
+                index = _strip_comma(snbt, index, ']')
+
+            data = TAG_List(array)
+
+        # skip the ]
+        index += 1
+
+    else:
+        val, strict_str, index = _capture_string(snbt, index)
+        if strict_str:
+            data = TAG_String(val)
+        else:
+            int_match = int_numeric.match(val)
+            if int_match is not None and int_match.end() == len(val):
+                # we have an int type
+                if val[-1] in {'b', 'B'}:
+                    data = TAG_Byte(int(val[:-1]))
+                elif val[-1] in {'s', 'S'}:
+                    data = TAG_Short(int(val[:-1]))
+                elif val[-1] in {'l', 'L'}:
+                    data = TAG_Long(int(val[:-1]))
+                else:
+                    data = TAG_Int(int(val))
+            else:
+                float_match = float_numeric.match(val)
+                if float_match is not None and float_match.end() == len(val):
+                    # we have a float type
+                    if val[-1] in {'f', 'F'}:
+                        data = TAG_Float(float(val[:-1]))
+                    elif val[-1] in {'d', 'D'}:
+                        data = TAG_Double(float(val[:-1]))
+                    else:
+                        data = TAG_Double(float(val))
+                else:
+                    # we just have a string type
+                    data = TAG_String(val)
+
+    return data, index
 
 def from_snbt(snbt: str) -> _TAG_Value:
-    def strip_whitespace(index) -> int:
-        match = whitespace.match(snbt, index)
-        if match is None:
-            return index
-        else:
-            return match.end()
-
-    def strip_comma(index, end_chr) -> int:
-        match = comma.match(snbt, index)
-        if match is None:
-            index = strip_whitespace(index)
-            if snbt[index] != end_chr:
-                raise SNBTParseError(f'Expected a comma or {end_chr} at {index} but got ->{snbt[index:index + 10]} instead')
-        else:
-            index = match.end()
-        return index
-
-    def strip_colon(index) -> int:
-        match = colon.match(snbt, index)
-        if match is None:
-            raise SNBTParseError(f'Expected : at {index} but got ->{snbt[index:index + 10]} instead')
-        else:
-            return match.end()
-
-    def capture_string(index) -> Tuple[str, bool, int]:
-        if snbt[index] == '"':
-            strict_str = True
-            index += 1
-            end_index = index
-            while snbt[end_index] != '"' and snbt[end_index - 1] != '\\':
-                end_index += 1
-            val = snbt[index:end_index]
-            index = end_index + 1
-        else:
-            strict_str = False
-            match = alnumplus.match(snbt, index)
-            val = match.group()
-            index = match.end()
-
-        return val, strict_str, index
-
-    def parse_snbt_recursive(index=0) -> Tuple[_TAG_Value, int]:
-        index = strip_whitespace(index)
-        if snbt[index] == '{':
-            data_ = {}
-            index += 1
-            index = strip_whitespace(index)
-            while snbt[index] != '}':
-                # read the key
-                key, _, index = capture_string(index)
-
-                # get around the colon
-                index = strip_colon(index)
-
-                # load the data and save it to the dictionary
-                nested_data, index = parse_snbt_recursive(index)
-                data_[key] = nested_data
-
-                index = strip_comma(index, '}')
-            data = TAG_Compound(data_)
-            # skip the }
-            index += 1
-
-        elif snbt[index] == '[':
-            index += 1
-            index = strip_whitespace(index)
-            if snbt[index:index+2] in {'B;', 'I;', 'L;'}:
-                # array
-                array = []
-                array_type_chr = snbt[index]
-                array_type = array_lookup[array_type_chr]
-                index += 2
-                index = strip_whitespace(index)
-
-                while snbt[index] != ']':
-                    match = int_numeric.match(snbt, index)
-                    if match is None:
-                        raise SNBTParseError(f'Expected an integer value or ] at {index} but got ->{snbt[index:index+10]} instead')
-                    else:
-                        val = match.group()
-                        if val[-1].isalpha():
-                            if val[-1] == array_type_chr:
-                                val = val[:-1]
-                            else:
-                                raise SNBTParseError(f'Expected the datatype marker "{array_type_chr}" at {index} but got ->{snbt[index:index + 10]} instead')
-                        array.append(int(val))
-                        index = match.end()
-
-                    index = strip_comma(index, ']')
-                data = array_type(array)
-            else:
-                # list
-                array = []
-                first_data_type = None
-                while snbt[index] != ']':
-                    nested_data, index_ = parse_snbt_recursive(index)
-                    if first_data_type is None:
-                        first_data_type = nested_data.__class__
-                    if not isinstance(nested_data, first_data_type):
-                        raise SNBTParseError(f'Expected type {first_data_type.__name__} but got {nested_data.__class__.__name__} at {index}')
-                    else:
-                        index = index_
-                    array.append(nested_data)
-                    index = strip_comma(index, ']')
-
-                data = TAG_List(array)
-
-            # skip the ]
-            index += 1
-
-        else:
-            val, strict_str, index = capture_string(index)
-            if strict_str:
-                data = TAG_String(val)
-            else:
-                int_match = int_numeric.match(val)
-                if int_match is not None and int_match.end() == len(val):
-                    # we have an int type
-                    if val[-1] in {'b', 'B'}:
-                        data = TAG_Byte(int(val[:-1]))
-                    elif val[-1] in {'s', 'S'}:
-                        data = TAG_Short(int(val[:-1]))
-                    elif val[-1] in {'l', 'L'}:
-                        data = TAG_Long(int(val[:-1]))
-                    else:
-                        data = TAG_Int(int(val))
-                else:
-                    float_match = float_numeric.match(val)
-                    if float_match is not None and float_match.end() == len(val):
-                        # we have a float type
-                        if val[-1] in {'f', 'F'}:
-                            data = TAG_Float(float(val[:-1]))
-                        elif val[-1] in {'d', 'D'}:
-                            data = TAG_Double(float(val[:-1]))
-                        else:
-                            data = TAG_Double(float(val))
-                    else:
-                        # we just have a string type
-                        data = TAG_String(val)
-
-        return data, index
-
     try:
-        return parse_snbt_recursive()[0]
+        return _parse_snbt_recursive(snbt)[0]
     except SNBTParseError as e:
         raise SNBTParseError(e)
     except IndexError:

@@ -916,7 +916,7 @@ cdef tuple _parse_snbt_recursive(str snbt, int index=0):
                     index = match.end()
 
                 index = _strip_comma(snbt, index, ']')
-            data = array_type(array)
+            data = array_type(numpy.asarray(array, dtype=array_type.data_type))
         else:
             # list
             array = []
@@ -933,7 +933,7 @@ cdef tuple _parse_snbt_recursive(str snbt, int index=0):
                 array.append(nested_data)
                 index = _strip_comma(snbt, index, ']')
 
-            data = TAG_List(array)
+            data = TAG_List(array, first_data_type().tag_id)
 
         # skip the ]
         index += 1

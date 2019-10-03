@@ -30,9 +30,11 @@ def _recursively_test_nbt(inst, expected: "MutableMapping", actual: "MutableMapp
             for v_l_v, actual_l_v in zip(v, actual_v):
                 inst.assertEqual(v_l_v, actual_l_v)
         elif isinstance(v, inst.nbt.TAG_Float):
-            inst.assertAlmostEqual(v, actual_v)
+            # Special case since Python rounds off floating point error and cython does not
+            inst.assertAlmostEqual(v.value, actual_v.value)
         else:
             inst.assertEqual(v, actual_v)
+
 
 class AbstractNBTTest:
     class NBTTests(unittest.TestCase):
@@ -44,8 +46,8 @@ class AbstractNBTTest:
             self.big_test = self.nbt.load(os.path.join(TESTS_DIR, "bigtest.nbt"))
 
             self.snbt_data = ""
-            with open(os.path.join(TESTS_DIR, "bigtest.snbt")) as fp:
-                self.snbt_data: str = fp.read().strip()
+            with open(os.path.join(TESTS_DIR, "bigtest.snbt"), 'rb') as fp:
+                self.snbt_data: str = fp.read().decode('utf-8').strip()
 
         def tearDown(self):
             test_dat = os.path.join(TESTS_DIR, f'test.{self.nbt.__name__}.dat')
@@ -82,7 +84,6 @@ class AbstractNBTTest:
         def test_load_snbt(self):
             bigtest_snbt = self.nbt.from_snbt(self.snbt_data)
 
-            #self.assertEqual(REMOVE_WHITESPACE.sub("", self.snbt_data), REMOVE_WHITESPACE.sub("", bigtest_snbt.to_snbt()))
             _recursively_test_nbt(self, self.big_test, bigtest_snbt)
             #self.assertEqual(self.big_test.value, bigtest_snbt)
 
@@ -93,10 +94,12 @@ class CythonNBTTest(AbstractNBTTest.NBTTests):
     def setUp(self):
         self._setUp(cynbt)
 
+
 class PythonNBTTest(AbstractNBTTest.NBTTests):
 
     def setUp(self):
         self._setUp(pynbt)
+
 
 @unittest.skipUnless(TEST_CYTHON_LIB, "Cythonized library not available")
 class CrossCompatabilityTest(unittest.TestCase):
@@ -117,21 +120,17 @@ class CrossCompatabilityTest(unittest.TestCase):
 
     def test_cross_saving_and_loading(self):
 
-
         self.cy_level_root_tag.save_to(self.cython_to_python_path)
 
         cy_to_py_root_tag = pynbt.load(self.cython_to_python_path)
 
         self.assertEqual(self.py_level_root_tag, cy_to_py_root_tag)
 
-
         self.py_level_root_tag.save_to(self.python_to_cython_path)
 
         py_to_cy_root_tag = cynbt.load(self.python_to_cython_path)
 
         self.assertEqual(self.cy_level_root_tag, py_to_cy_root_tag)
-
-
 
 
 if __name__ == '__main__':

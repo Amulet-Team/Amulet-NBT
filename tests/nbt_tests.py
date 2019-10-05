@@ -85,7 +85,10 @@ class AbstractNBTTest:
             bigtest_snbt = self.nbt.from_snbt(self.snbt_data)
 
             _recursively_test_nbt(self, self.big_test, bigtest_snbt)
-            #self.assertEqual(self.big_test.value, bigtest_snbt)
+
+            if bigtest_snbt != self.big_test.value:
+                _recursively_test_nbt(self, self.big_test.value, bigtest_snbt)
+            # self.assertEqual(self.big_test.value, bigtest_snbt) # Doesn't work as intended due to floating point error
 
 
 @unittest.skipUnless(TEST_CYTHON_LIB, "Cythonized library not available")

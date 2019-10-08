@@ -3,8 +3,9 @@ matrix:
   include:
     - name: "Python 3.7.1 on Linux"
       python: 3.7.1
+      language: python
       before_install:
-        - alias pip3="python -m pip"
+        - pip install six || python -m pip install six || pip3 install six
     - name: "Python 3.7.4 on macOS"
       os: osx
       osx_image: xcode11

@@ -3,6 +3,8 @@ matrix:
   include:
     - name: "Python 3.7.1 on Linux"
       python: 3.7.1
+      before_install:
+        - alias pip3="python -m pip"
     - name: "Python 3.7.4 on macOS"
       os: osx
       osx_image: xcode11
@@ -22,4 +24,5 @@ install:
   - python3 setup.py bdist_wheel || python setup.py bdist_wheel
 
 script:
+  - python3 setup.py install || python setup.py install
   - python3 tests/nbt_tests.py || python tests/nbt_tests.py

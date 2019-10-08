@@ -26,9 +26,12 @@ extensions = [
     )
 ]
 
+module_version = os.environ.get("AMULET_NBT_VERSION", "0.0.0")
+module_version = module_version if module_version else "0.0.0"
+
 setup(
     name="amulet_nbt",
-    version=os.environ.get("AMULET_NBT_VERSION", "0.0.0"),
+    version=module_version,
     packages=packages,
     package_dir={"": "src"},
     include_dirs=include_dirs,

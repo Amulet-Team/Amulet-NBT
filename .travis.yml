@@ -25,7 +25,7 @@ install:
   - python3 setup.py bdist_wheel || python setup.py bdist_wheel
   - python3 setup.py install || python setup.py install
 
-before_script:
+script:
   - python3 tests/nbt_tests.py || python tests/nbt_tests.py
 
 deploy:

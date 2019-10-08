@@ -28,7 +28,7 @@ extensions = [
 
 setup(
     name="amulet_nbt",
-    version="0.0.0",
+    version=os.environ.get("AMULET_NBT_VERSION", "0.0.0"),
     packages=packages,
     package_dir={"": "src"},
     include_dirs=include_dirs,

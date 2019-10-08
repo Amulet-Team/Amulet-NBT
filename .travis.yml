@@ -11,12 +11,12 @@ matrix:
     - name: "Python 3.7.4 on Windows"
       os: windows
       language: shell
-      before_install:
-        - choco install python
-        - python -m pip install --upgrade pip
       env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
 
-before_install: export AMULET_NBT_VERSION=$TRAVIS_TAG
+before_install:
+  - if [ "$TRAVIS_OS_NAME" = "windows" ] ; then choco install python ; fi
+  - if [ "$TRAVIS_OS_NAME" = "windows" ] ; then python -m pip install --upgrade pip ; fi
+  - export AMULET_NBT_VERSION=$TRAVIS_TAG
 
 install:
   - pip3 install --upgrade pip

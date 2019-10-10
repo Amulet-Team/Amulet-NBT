@@ -35,7 +35,7 @@ deploy:
   prerelease: true
   skip_cleanup: true
   file_glob: true
-  file: dist/*
+  file: dist/*.whl
   draft: true
   on:
     branch: master

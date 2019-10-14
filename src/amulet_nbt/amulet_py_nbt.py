@@ -488,11 +488,12 @@ def from_snbt(snbt: str) -> _TAG_Value:
             return match.end()
 
     def capture_string(index) -> Tuple[str, bool, int]:
-        if snbt[index] == '"':
+        if snbt[index] in ('"', "'"):
+            quote = snbt[index]
             strict_str = True
             index += 1
             end_index = index
-            while snbt[end_index] != '"' and snbt[end_index - 1] != '\\':
+            while snbt[end_index] != quote and snbt[end_index - 1] != '\\':
                 end_index += 1
             val = snbt[index:end_index]
             index = end_index + 1

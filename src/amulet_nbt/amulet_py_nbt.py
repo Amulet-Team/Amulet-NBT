@@ -455,7 +455,7 @@ def load(filename="", buffer=None) -> NBTFile:
 whitespace = re.compile('[ \t\r\n]*')
 int_numeric = re.compile('-?[0-9]+[bBsSlL]?')
 float_numeric = re.compile('-?[0-9]+\.?[0-9]*[fFdD]?')
-alnumplus = re.compile('[-.a-zA-Z0-9]*')
+alnumplus = re.compile('[-.a-zA-Z0-9_]*')
 comma = re.compile('[ \t\r\n]*,[ \t\r\n]*')
 colon = re.compile('[ \t\r\n]*:[ \t\r\n]*')
 array_lookup = {'B': TAG_Byte_Array, 'I': TAG_Int_Array, 'L': TAG_Long_Array}

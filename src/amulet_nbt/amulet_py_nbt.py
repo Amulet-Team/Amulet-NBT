@@ -418,7 +418,7 @@ def safe_gunzip(data):
     return data
 
 
-def load(filename="", buffer=None) -> NBTFile:
+def load(filename="", buffer=None, compressed=True) -> NBTFile:
     if filename:
         buffer = open(filename, "rb")
     data_in = buffer
@@ -433,7 +433,8 @@ def load(filename="", buffer=None) -> NBTFile:
             "[Warning]: Input buffer didn't have close() function. Memory leak may occur!"
         )
 
-    data_in = safe_gunzip(data_in)
+    if compressed:
+        data_in = safe_gunzip(data_in)
 
     tag_type = data_in[0]
     if tag_type != TAG_COMPOUND:

@@ -570,7 +570,7 @@ class NBTFile(MutableMapping):
         return self.value.__eq__(other.value)
 
 
-def load(filename="", buffer=None) -> NBTFile:
+def load(filename="", buffer=None, compressed=True) -> NBTFile:
     if filename:
         buffer = open(filename, "rb")
     data_in = buffer
@@ -583,7 +583,8 @@ def load(filename="", buffer=None) -> NBTFile:
     else:
         print("[Warning]: Input buffer didn't have close() function. Memory leak may occur!")
 
-    data_in = safe_gunzip(data_in)
+    if compressed:
+        data_in = safe_gunzip(data_in)
 
     cdef buffer_context context = buffer_context()
     context.offset = 1
@@ -847,7 +848,7 @@ cdef tuple _capture_string(str snbt, int index):
         strict_str = True
         index += 1
         end_index = index
-        while snbt[end_index] != quote and snbt[end_index - 1] != '\\':
+        while not (snbt[end_index] == quote and not (len(snbt[:end_index]) - len(snbt[:end_index].rstrip('\\')))):
             end_index += 1
         val = snbt[index:end_index]
         index = end_index + 1

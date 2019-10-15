@@ -493,8 +493,13 @@ def from_snbt(snbt: str) -> _TAG_Value:
             strict_str = True
             index += 1
             end_index = index
-            while snbt[end_index] != quote and snbt[end_index - 1] != '\\':
+            while not (  # keep running this until
+                snbt[end_index] == quote  # the last character is a quote of the same type
+                and  # and there is an even number of backslashes before it (including 0)
+                not (len(snbt[:end_index]) - len(snbt[:end_index].rstrip('\\')))
+            ):
                 end_index += 1
+
             val = snbt[index:end_index]
             index = end_index + 1
         else:

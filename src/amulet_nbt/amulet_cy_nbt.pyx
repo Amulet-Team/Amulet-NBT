@@ -801,7 +801,7 @@ class SNBTParseError(Exception):
 whitespace = re.compile('[ \t\r\n]*')
 int_numeric = re.compile('-?[0-9]+[bBsSlL]?')
 float_numeric = re.compile('-?[0-9]+\.?[0-9]*[fFdD]?')
-alnumplus = re.compile('[-.a-zA-Z0-9]*')
+alnumplus = re.compile('[-.a-zA-Z0-9_]*')
 comma = re.compile('[ \t\r\n]*,[ \t\r\n]*')
 colon = re.compile('[ \t\r\n]*:[ \t\r\n]*')
 array_lookup = {'B': TAG_Byte_Array, 'I': TAG_Int_Array, 'L': TAG_Long_Array}
@@ -837,16 +837,17 @@ cdef int _strip_colon(str snbt, int index):
         return match.end()
 
 cdef tuple _capture_string(str snbt, int index):
-    cdef str val
+    cdef str val, quote
     cdef bint strict_str
     cdef int end_index
     cdef object match
 
-    if snbt[index] == '"':
+    if snbt[index] in ('"', "'"):
+        quote = snbt[index]
         strict_str = True
         index += 1
         end_index = index
-        while snbt[end_index] != '"' and snbt[end_index - 1] != '\\':
+        while snbt[end_index] != quote and snbt[end_index - 1] != '\\':
             end_index += 1
         val = snbt[index:end_index]
         index = end_index + 1

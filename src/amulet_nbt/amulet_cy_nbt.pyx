@@ -331,7 +331,7 @@ cdef class TAG_Byte_Array(_TAG_Array):
     cdef void save_value(self, buffer):
         save_array(self.value, buffer, 1)
 
-cdef class TAG_Int_Array(_TAG_Value):
+cdef class TAG_Int_Array(_TAG_Array):
     data_type = numpy.dtype(">u4")
 
     def __cinit__(self):
@@ -356,7 +356,7 @@ cdef class TAG_Int_Array(_TAG_Value):
     cdef void save_value(self, buffer):
         save_array(self.value, buffer, 4)
 
-cdef class TAG_Long_Array(_TAG_Value):
+cdef class TAG_Long_Array(_TAG_Array):
     data_type = numpy.dtype(">q")
 
     def __cinit__(self):
@@ -694,7 +694,7 @@ cdef TAG_Long_Array load_long_array(buffer_context context):
 
     byte_length = length * 8
     cdef char* arr = read_data(context, byte_length)
-    return TAG_Long_Array(numpy.frombuffer(arr[:byte_length], dtype=TAG_Int_Array.data_type, count=length))
+    return TAG_Long_Array(numpy.frombuffer(arr[:byte_length], dtype=TAG_Long_Array.data_type, count=length))
 
 cdef _TAG_List load_list(buffer_context context):
     cdef char list_type = read_data(context, 1)[0]

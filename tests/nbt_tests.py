@@ -1,5 +1,6 @@
 import os
 import unittest
+import re
 
 import amulet_nbt.amulet_py_nbt as pynbt
 
@@ -11,14 +12,41 @@ except (ImportError, ModuleNotFoundError) as e:
 
 TESTS_DIR = os.path.dirname(__file__)
 
+REMOVE_WHITESPACE = re.compile(r'\s+')
+
+
+def _recursively_test_nbt(inst, expected: "MutableMapping", actual: "MutableMapping"):
+    for k, v in expected.items():
+        if k not in actual:
+            inst.fail(f"Actual data did not contain key \"{k}\"")
+
+        actual_v = actual[k]
+        if type(v) != type(actual_v):
+            inst.fail(f"Actual had incorrect type, expected: \"{type(v)}\", got \"{type(actual_v)}\"")
+
+        if isinstance(v, inst.nbt.TAG_Compound):
+            _recursively_test_nbt(inst, v, actual_v)
+        elif isinstance(v, inst.nbt.TAG_List):
+            for v_l_v, actual_l_v in zip(v, actual_v):
+                inst.assertEqual(v_l_v, actual_l_v)
+        elif isinstance(v, inst.nbt.TAG_Float):
+            # Special case since Python rounds off floating point error and cython does not
+            inst.assertAlmostEqual(v.value, actual_v.value)
+        else:
+            inst.assertEqual(v, actual_v)
 
 class AbstractNBTTest:
     class NBTTests(unittest.TestCase):
 
         def _setUp(self, nbt_library):
+            self.maxDiff = None
             self.nbt = nbt_library
             self.level_root_tag = self.nbt.load(os.path.join(TESTS_DIR, "worlds", "1.13 World", "level.dat"))
             self.big_test = self.nbt.load(os.path.join(TESTS_DIR, "bigtest.nbt"))
+
+            self.snbt_data = ""
+            with open(os.path.join(TESTS_DIR, "bigtest.snbt"), 'rb') as fp:
+                self.snbt_data: str = fp.read().decode('utf-8').strip()
 
         def tearDown(self):
             test_dat = os.path.join(TESTS_DIR, f'test.{self.nbt.__name__}.dat')
@@ -52,6 +80,15 @@ class AbstractNBTTest:
 
             self.assertEqual(self.big_test, saved_bigtest)
 
+        def test_load_snbt(self):
+            bigtest_snbt = self.nbt.from_snbt(self.snbt_data)
+
+            _recursively_test_nbt(self, self.big_test, bigtest_snbt)
+
+            if bigtest_snbt != self.big_test.value:
+                _recursively_test_nbt(self, self.big_test.value, bigtest_snbt)
+            # self.assertEqual(self.big_test.value, bigtest_snbt) # Doesn't work as intended due to floating point error
+			
 
 @unittest.skipUnless(TEST_CYTHON_LIB, "Cythonized library not available")
 class CythonNBTTest(AbstractNBTTest.NBTTests):
@@ -99,7 +136,6 @@ class CrossCompatabilityTest(unittest.TestCase):
 
     def test_cross_to_snbt(self):
         self.assertEqual(self.cy_level_root_tag.to_snbt(), self.py_level_root_tag.to_snbt())
-
 
 if __name__ == '__main__':
     unittest.main()

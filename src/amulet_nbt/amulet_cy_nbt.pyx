@@ -2,7 +2,7 @@ import gzip
 import zlib
 from collections.abc import MutableMapping, MutableSequence
 from io import BytesIO
-from typing import Optional, Union
+from typing import Optional, Union, Tuple, List
 
 import numpy
 from cpython cimport PyUnicode_DecodeUTF8, PyList_Append
@@ -564,7 +564,8 @@ class NBTFile(MutableMapping):
         return self.value.__eq__(other.value)
 
 
-def load(filename="", buffer=None, compressed=True) -> NBTFile:
+def load(filename="", buffer=None, compressed=True, count: int = 1, offset: bool = False
+) -> Union[NBTFile, Tuple[Union[NBTFile, List[NBTFile]], int]]:
     if filename:
         buffer = open(filename, "rb")
     data_in = buffer
@@ -581,24 +582,35 @@ def load(filename="", buffer=None, compressed=True) -> NBTFile:
         data_in = safe_gunzip(data_in)
 
     cdef buffer_context context = buffer_context()
-    context.offset = 1
+    context.offset = 0
     context.buffer = data_in
     context.size = len(data_in)
+
+    results = []
 
     if len(data_in) < 1:
         return # Raise error here
 
-    cdef unsigned int * magic_num = <unsigned int *> context.buffer
+    cdef unsigned int * magic_num
 
-    if context.buffer[0] != _ID_COMPOUND:
-        return # Raise another error
+    for i in range(count):
+        tag_type = context.buffer[context.offset]
+        if tag_type != _ID_COMPOUND:
+            return # Raise another error
+        context.offset += 1
 
-    name = load_name(context)
-    tag = load_compound_tag(context)
+        name = load_name(context)
+        tag = load_compound_tag(context)
 
-    file = NBTFile(tag, name)
+        results.append(NBTFile(tag, name))
 
-    return file
+    if count == 1:
+        results = results[0]
+
+    if offset:
+        return results, context.offset
+
+    return results
 
 cdef TAG_Byte load_byte(buffer_context context):
     cdef TAG_Byte tag = TAG_Byte(read_data(context, 1)[0])

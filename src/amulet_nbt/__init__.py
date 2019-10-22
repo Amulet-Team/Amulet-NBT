@@ -11,5 +11,4 @@ except (ImportError, ModuleNotFoundError) as e:
         NBTFile, load, from_snbt
 
     if __debug__:
-        traceback.print_exc()
         print("Using pure python NBT library")

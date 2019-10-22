@@ -6,7 +6,17 @@ from collections.abc import MutableMapping, MutableSequence
 from dataclasses import dataclass, field
 from io import BytesIO
 from struct import Struct, pack
-from typing import Any, ClassVar, get_type_hints, Dict, List, Type, Tuple, Optional, Union
+from typing import (
+    Any,
+    ClassVar,
+    get_type_hints,
+    Dict,
+    List,
+    Type,
+    Tuple,
+    Optional,
+    Union,
+)
 import re
 
 import numpy as np
@@ -50,10 +60,10 @@ class _BufferContext:
 
 
 def load_string(context: _BufferContext) -> str:
-    data = context.buffer[context.offset:]
+    data = context.buffer[context.offset :]
     (str_len,) = _string_len_fmt.unpack_from(data)
 
-    value = data[2: str_len + 2].decode("utf-8")
+    value = data[2 : str_len + 2].decode("utf-8")
     context.offset += str_len + 2
     return value
 
@@ -83,7 +93,7 @@ class _TAG_Value:
 
     @classmethod
     def load_from(cls, context: _BufferContext) -> _TAG_Value:
-        data = context.buffer[context.offset:]
+        data = context.buffer[context.offset :]
         tag = cls(cls.tag_format.unpack_from(data)[0])
         context.offset += cls.tag_format.size
         return tag
@@ -175,9 +185,9 @@ class _TAG_Array(_TAG_Value):
 
     def __eq__(self, other: _TAG_Array):
         return (
-                self.data_type == other.data_type
-                and self.tag_id == other.tag_id
-                and np.array_equal(self.value, other.value)
+            self.data_type == other.data_type
+            and self.tag_id == other.tag_id
+            and np.array_equal(self.value, other.value)
         )
 
     def __len__(self):
@@ -185,10 +195,10 @@ class _TAG_Array(_TAG_Value):
 
     @classmethod
     def load_from(cls, context: _BufferContext) -> _TAG_Value:
-        data = context.buffer[context.offset:]
+        data = context.buffer[context.offset :]
         (string_len,) = TAG_Int.tag_format.unpack_from(data)
         value = np.frombuffer(
-            data[4: string_len * cls.data_type.itemsize + 4], cls.data_type
+            data[4 : string_len * cls.data_type.itemsize + 4], cls.data_type
         )
         context.offset += string_len * cls.data_type.itemsize + 4
 
@@ -230,7 +240,7 @@ class TAG_Long_Array(_TAG_Array):
 
 
 def escape(string: str):
-    return string.replace('\\', '\\\\').replace('"', '\\"')
+    return string.replace("\\", "\\\\").replace('"', '\\"')
 
 
 @dataclass
@@ -246,7 +256,7 @@ class TAG_String(_TAG_Value):
         write_string(buffer, self.value)
 
     def to_snbt(self):
-        return f"\"{escape(self.value)}\""
+        return f'"{escape(self.value)}"'
 
 
 @dataclass
@@ -278,7 +288,9 @@ class TAG_List(_TAG_Value, MutableSequence):
             if len(self.value) == 0:
                 self.list_data_type = value_type
             else:
-                raise NBTFormatError(f'TAG_List contains type {self.list_data_type} but insert was given {value.tag_id}')
+                raise NBTFormatError(
+                    f"TAG_List contains type {self.list_data_type} but insert was given {value.tag_id}"
+                )
 
     def insert(self, index: int, value: _TAG_Value):
         self._modify_type(value.tag_id)
@@ -289,8 +301,11 @@ class TAG_List(_TAG_Value, MutableSequence):
         self.value.append(value)
 
     def __eq__(self, other):
-        return self.list_data_type == other.list_data_type and self.tag_id == other.tag_id and all(
-            map(lambda i1, i2: i1 == i2, self.value, other.value))
+        return (
+            self.list_data_type == other.list_data_type
+            and self.tag_id == other.tag_id
+            and all(map(lambda i1, i2: i1 == i2, self.value, other.value))
+        )
 
     @classmethod
     def load_from(cls, context: _BufferContext) -> _TAG_Value:
@@ -370,8 +385,13 @@ class TAG_Compound(_TAG_Value, MutableMapping):
 
     def to_snbt(self):
         # TODO: make this faster
-        data = ((f'"{name}"' if _NON_QUOTED_KEY.match(name) is None else name, elem.to_snbt()) for name, elem in
-                self.value.items())
+        data = (
+            (
+                f'"{name}"' if _NON_QUOTED_KEY.match(name) is None else name,
+                elem.to_snbt(),
+            )
+            for name, elem in self.value.items()
+        )
         return f"{{{', '.join(f'{name}: {elem}' for name, elem in data)}}}"
 
 
@@ -398,7 +418,9 @@ class NBTFile(MutableMapping):
     def __len__(self) -> int:
         return self.value.__len__()
 
-    def save_to(self, filename_or_buffer=None, compressed=True) -> Optional[Union[BytesIO, bytes]]:
+    def save_to(
+        self, filename_or_buffer=None, compressed=True
+    ) -> Optional[Union[BytesIO, bytes]]:
         buffer = BytesIO()
         self.value.save(buffer, self.name)
 
@@ -433,7 +455,9 @@ def safe_gunzip(data):
     return data
 
 
-def load(filename="", buffer=None, compressed=True) -> NBTFile:
+def load(
+    filename="", buffer=None, compressed=True, count: int = 1, offset: bool = False
+) -> Union[NBTFile, Tuple[Union[NBTFile, List[NBTFile]], int]]:
     if filename:
         buffer = open(filename, "rb")
     data_in = buffer
@@ -451,30 +475,41 @@ def load(filename="", buffer=None, compressed=True) -> NBTFile:
     if compressed:
         data_in = safe_gunzip(data_in)
 
-    tag_type = data_in[0]
-    if tag_type != TAG_COMPOUND:
-        magic_num = data_in[:4]
-        raise NBTFormatError()
-
     context: _BufferContext = _BufferContext(
-        offset=1, buffer=data_in, size=len(data_in)
+        offset=0, buffer=data_in, size=len(data_in)
     )
+    results = []
 
-    tag_name = load_string(context)
-    tag: TAG_Compound = TAG_Compound.load_from(context)
+    for i in range(count):
+        tag_type = context.buffer[context.offset]
+        if tag_type != TAG_COMPOUND:
+            magic_num = data_in[:4]
+            raise NBTFormatError()
+        context.offset += 1
 
-    return NBTFile(tag, tag_name)
+        tag_name = load_string(context)
+        tag: TAG_Compound = TAG_Compound.load_from(context)
+
+        results.append(NBTFile(tag, tag_name))
+
+    if count == 1:
+        results = results[0]
+
+    if offset:
+        return results, context.offset
+
+    return results
 
 
 # this is going to be rather slow but should exist as a starting point for functionality
 
-whitespace = re.compile('[ \t\r\n]*')
-int_numeric = re.compile('-?[0-9]+[bBsSlL]?')
-float_numeric = re.compile('-?[0-9]+\.?[0-9]*[fFdD]?')
-alnumplus = re.compile('[-.a-zA-Z0-9_]*')
-comma = re.compile('[ \t\r\n]*,[ \t\r\n]*')
-colon = re.compile('[ \t\r\n]*:[ \t\r\n]*')
-array_lookup = {'B': TAG_Byte_Array, 'I': TAG_Int_Array, 'L': TAG_Long_Array}
+whitespace = re.compile("[ \t\r\n]*")
+int_numeric = re.compile("-?[0-9]+[bBsSlL]?")
+float_numeric = re.compile("-?[0-9]+\.?[0-9]*[fFdD]?")
+alnumplus = re.compile("[-.a-zA-Z0-9_]*")
+comma = re.compile("[ \t\r\n]*,[ \t\r\n]*")
+colon = re.compile("[ \t\r\n]*:[ \t\r\n]*")
+array_lookup = {"B": TAG_Byte_Array, "I": TAG_Int_Array, "L": TAG_Long_Array}
 
 
 def from_snbt(snbt: str) -> _TAG_Value:
@@ -491,7 +526,8 @@ def from_snbt(snbt: str) -> _TAG_Value:
             index = strip_whitespace(index)
             if snbt[index] != end_chr:
                 raise SNBTParseError(
-                    f'Expected a comma or {end_chr} at {index} but got ->{snbt[index:index + 10]} instead')
+                    f"Expected a comma or {end_chr} at {index} but got ->{snbt[index:index + 10]} instead"
+                )
         else:
             index = match.end()
         return index
@@ -499,7 +535,9 @@ def from_snbt(snbt: str) -> _TAG_Value:
     def strip_colon(index) -> int:
         match = colon.match(snbt, index)
         if match is None:
-            raise SNBTParseError(f'Expected : at {index} but got ->{snbt[index:index + 10]} instead')
+            raise SNBTParseError(
+                f"Expected : at {index} but got ->{snbt[index:index + 10]} instead"
+            )
         else:
             return match.end()
 
@@ -510,9 +548,11 @@ def from_snbt(snbt: str) -> _TAG_Value:
             index += 1
             end_index = index
             while not (  # keep running this until
-                snbt[end_index] == quote  # the last character is a quote of the same type
-                and  # and there is an even number of backslashes before it (including 0)
-                not (len(snbt[:end_index]) - len(snbt[:end_index].rstrip('\\')))
+                snbt[end_index]
+                == quote  # the last character is a quote of the same type
+                and not (  # and there is an even number of backslashes before it (including 0)
+                    len(snbt[:end_index]) - len(snbt[:end_index].rstrip("\\"))
+                )
             ):
                 end_index += 1
 
@@ -528,11 +568,11 @@ def from_snbt(snbt: str) -> _TAG_Value:
 
     def parse_snbt_recursive(index=0) -> Tuple[_TAG_Value, int]:
         index = strip_whitespace(index)
-        if snbt[index] == '{':
+        if snbt[index] == "{":
             data_: Dict[str, _TAG_Value] = {}
             index += 1
             index = strip_whitespace(index)
-            while snbt[index] != '}':
+            while snbt[index] != "}":
                 # read the key
                 key, _, index = capture_string(index)
 
@@ -543,15 +583,15 @@ def from_snbt(snbt: str) -> _TAG_Value:
                 nested_data, index = parse_snbt_recursive(index)
                 data_[key] = nested_data
 
-                index = strip_comma(index, '}')
+                index = strip_comma(index, "}")
             data = TAG_Compound(data_)
             # skip the }
             index += 1
 
-        elif snbt[index] == '[':
+        elif snbt[index] == "[":
             index += 1
             index = strip_whitespace(index)
-            if snbt[index:index + 2] in {'B;', 'I;', 'L;'}:
+            if snbt[index : index + 2] in {"B;", "I;", "L;"}:
                 # array
                 array = []
                 array_type_chr = snbt[index]
@@ -559,11 +599,12 @@ def from_snbt(snbt: str) -> _TAG_Value:
                 index += 2
                 index = strip_whitespace(index)
 
-                while snbt[index] != ']':
+                while snbt[index] != "]":
                     match = int_numeric.match(snbt, index)
                     if match is None:
                         raise SNBTParseError(
-                            f'Expected an integer value or ] at {index} but got ->{snbt[index:index + 10]} instead')
+                            f"Expected an integer value or ] at {index} but got ->{snbt[index:index + 10]} instead"
+                        )
                     else:
                         val = match.group()
                         if val[-1].isalpha():
@@ -571,27 +612,29 @@ def from_snbt(snbt: str) -> _TAG_Value:
                                 val = val[:-1]
                             else:
                                 raise SNBTParseError(
-                                    f'Expected the datatype marker "{array_type_chr}" at {index} but got ->{snbt[index:index + 10]} instead')
+                                    f'Expected the datatype marker "{array_type_chr}" at {index} but got ->{snbt[index:index + 10]} instead'
+                                )
                         array.append(int(val))
                         index = match.end()
 
-                    index = strip_comma(index, ']')
+                    index = strip_comma(index, "]")
                 data = array_type(np.asarray(array, dtype=array_type.data_type))
             else:
                 # list
                 array = []
                 first_data_type = None
-                while snbt[index] != ']':
+                while snbt[index] != "]":
                     nested_data, index_ = parse_snbt_recursive(index)
                     if first_data_type is None:
                         first_data_type = nested_data.__class__
                     if not isinstance(nested_data, first_data_type):
                         raise SNBTParseError(
-                            f'Expected type {first_data_type.__name__} but got {nested_data.__class__.__name__} at {index}')
+                            f"Expected type {first_data_type.__name__} but got {nested_data.__class__.__name__} at {index}"
+                        )
                     else:
                         index = index_
                     array.append(nested_data)
-                    index = strip_comma(index, ']')
+                    index = strip_comma(index, "]")
 
                 data = TAG_List(array, first_data_type.tag_id)
 
@@ -606,11 +649,11 @@ def from_snbt(snbt: str) -> _TAG_Value:
                 int_match = int_numeric.match(val)
                 if int_match is not None and int_match.end() == len(val):
                     # we have an int type
-                    if val[-1] in {'b', 'B'}:
+                    if val[-1] in {"b", "B"}:
                         data = TAG_Byte(int(val[:-1]))
-                    elif val[-1] in {'s', 'S'}:
+                    elif val[-1] in {"s", "S"}:
                         data = TAG_Short(int(val[:-1]))
-                    elif val[-1] in {'l', 'L'}:
+                    elif val[-1] in {"l", "L"}:
                         data = TAG_Long(int(val[:-1]))
                     else:
                         data = TAG_Int(int(val))
@@ -618,9 +661,9 @@ def from_snbt(snbt: str) -> _TAG_Value:
                     float_match = float_numeric.match(val)
                     if float_match is not None and float_match.end() == len(val):
                         # we have a float type
-                        if val[-1] in {'f', 'F'}:
+                        if val[-1] in {"f", "F"}:
                             data = TAG_Float(float(val[:-1]))
-                        elif val[-1] in {'d', 'D'}:
+                        elif val[-1] in {"d", "D"}:
                             data = TAG_Double(float(val[:-1]))
                         else:
                             data = TAG_Double(float(val))
@@ -635,7 +678,9 @@ def from_snbt(snbt: str) -> _TAG_Value:
     except SNBTParseError as e:
         raise SNBTParseError(e)
     except IndexError:
-        raise SNBTParseError('SNBT string is incomplete. Reached the end of the string.')
+        raise SNBTParseError(
+            "SNBT string is incomplete. Reached the end of the string."
+        )
 
 
 TAG_CLASSES: Dict[int, Type[_TAG_Value]] = {

@@ -14,7 +14,7 @@ matrix:
       env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
 
 before_install:
-  - if [ "$TRAVIS_OS_NAME" = "windows" ] ; then choco install python ; fi
+  - if [ "$TRAVIS_OS_NAME" = "windows" ] ; then choco install python --version 3.7.5; fi
   - if [ "$TRAVIS_OS_NAME" = "windows" ] ; then python -m pip install --upgrade pip ; fi
   - export AMULET_NBT_VERSION=$TRAVIS_TAG
 

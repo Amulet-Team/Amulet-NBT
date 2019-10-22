@@ -273,8 +273,20 @@ class TAG_List(_TAG_Value, MutableSequence):
     def __iter__(self):
         return self.value.__iter__()
 
+    def _modify_type(self, value_type):
+        if value_type != self.list_data_type:
+            if len(self.value) == 0:
+                self.list_data_type = value_type
+            else:
+                raise NBTFormatError(f'TAG_List contains type {self.list_data_type} but insert was given {value.tag_id}')
+
     def insert(self, index: int, value: _TAG_Value):
+        self._modify_type(value.tag_id)
         self.value.insert(index, value)
+
+    def append(self, value: _TAG_Value) -> None:
+        self._modify_type(value.tag_id)
+        self.value.append(value)
 
     def __eq__(self, other):
         return self.list_data_type == other.list_data_type and self.tag_id == other.tag_id and all(

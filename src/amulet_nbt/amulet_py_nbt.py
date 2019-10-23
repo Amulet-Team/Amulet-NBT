@@ -636,7 +636,10 @@ def from_snbt(snbt: str) -> _TAG_Value:
                     array.append(nested_data)
                     index = strip_comma(index, "]")
 
-                data = TAG_List(array, first_data_type.tag_id)
+                if first_data_type is None:
+                    data = TAG_List()
+                else:
+                    data = TAG_List(array, first_data_type.tag_id)
 
             # skip the ]
             index += 1

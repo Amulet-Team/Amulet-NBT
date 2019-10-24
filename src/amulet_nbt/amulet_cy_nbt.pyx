@@ -575,7 +575,7 @@ def load(filename="", buffer=None, compressed=True, count: int = None, offset: b
 
     if hasattr(buffer, "close"):
         buffer.close()
-    else:
+    elif hasattr(buffer, "open"):
         print("[Warning]: Input buffer didn't have close() function. Memory leak may occur!")
 
     if compressed:

@@ -467,7 +467,7 @@ def load(
 
     if hasattr(buffer, "close"):
         buffer.close()
-    else:
+    elif hasattr(buffer, "open"):
         print(
             "[Warning]: Input buffer didn't have close() function. Memory leak may occur!"
         )

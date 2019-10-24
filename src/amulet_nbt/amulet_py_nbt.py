@@ -456,7 +456,7 @@ def safe_gunzip(data):
 
 
 def load(
-    filename="", buffer=None, compressed=True, count: int = 1, offset: bool = False
+    filename="", buffer=None, compressed=True, count: int = None, offset: bool = False
 ) -> Union[NBTFile, Tuple[Union[NBTFile, List[NBTFile]], int]]:
     if filename:
         buffer = open(filename, "rb")
@@ -480,7 +480,7 @@ def load(
     )
     results = []
 
-    for i in range(count):
+    for i in range(count or 1):
         tag_type = context.buffer[context.offset]
         if tag_type != TAG_COMPOUND:
             magic_num = data_in[:4]
@@ -492,7 +492,7 @@ def load(
 
         results.append(NBTFile(tag, tag_name))
 
-    if count == 1:
+    if count is None:
         results = results[0]
 
     if offset:

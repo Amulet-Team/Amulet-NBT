@@ -399,7 +399,7 @@ cdef class _TAG_List(_TAG_Value):
         return f"[{', '.join(tags)}]"
 
     def check_tag(self, value):
-        if value.tagID != self.list_data_type:
+        if value.tag_id != self.list_data_type:
             raise TypeError("Invalid type %s for TAG_List(%s)" % (value.__class__, TAG_CLASSES[self.list_data_type]))
 
     def __getitem__(self, index: int) -> _TAG_Value:
@@ -564,7 +564,7 @@ class NBTFile(MutableMapping):
         return self.value.__eq__(other.value)
 
 
-def load(filename="", buffer=None, compressed=True, count: int = 1, offset: bool = False
+def load(filename="", buffer=None, compressed=True, count: int = None, offset: bool = False
 ) -> Union[NBTFile, Tuple[Union[NBTFile, List[NBTFile]], int]]:
     if filename:
         buffer = open(filename, "rb")
@@ -593,7 +593,7 @@ def load(filename="", buffer=None, compressed=True, count: int = 1, offset: bool
 
     cdef unsigned int * magic_num
 
-    for i in range(count):
+    for i in range(count or 1):
         tag_type = context.buffer[context.offset]
         if tag_type != _ID_COMPOUND:
             return # Raise another error
@@ -604,7 +604,7 @@ def load(filename="", buffer=None, compressed=True, count: int = 1, offset: bool
 
         results.append(NBTFile(tag, name))
 
-    if count == 1:
+    if count is None:
         results = results[0]
 
     if offset:

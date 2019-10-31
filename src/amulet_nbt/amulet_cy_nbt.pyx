@@ -163,6 +163,9 @@ cdef class _TAG_Value:
     def __repr__(self):
         return f"{self.__class__.__name__}({self.value})"
 
+    def __reduce__(self):
+        return unpickle_nbt, (self.tag_id, self.value)
+
 
 cdef class TAG_Byte(_TAG_Value):
     cdef public char value
@@ -801,6 +804,8 @@ cdef void save_tag_value(_TAG_Value tag, object buf):
     if tagID == _ID_LONG_ARRAY:
         (<TAG_Long_Array> tag).save_value(buf)
 
+def unpickle_nbt(tag_id, tag_value):
+    return TAG_CLASSES[tag_id](tag_value)
 
 class SNBTParseError(Exception):
     pass

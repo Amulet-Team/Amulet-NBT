@@ -92,7 +92,7 @@ class _TAG_Value:
         return self.value == other.value and self.tag_id == other.tag_id
 
     @classmethod
-    def load_from(cls, context: _BufferContext) -> _TAG_Value:
+    def load_from(cls, context: _BufferContext, little_endian: bool) -> _TAG_Value:
         data = context.buffer[context.offset :]
         tag = cls(cls.tag_format.unpack_from(data)[0])
         context.offset += cls.tag_format.size
@@ -180,7 +180,9 @@ class TAG_Double(_TAG_Value):
 
 @dataclass(eq=False)
 class _TAG_Array(_TAG_Value):
-    data_type: ClassVar[Any]
+    big_endian_data_type: ClassVar[Any]
+    little_endian_data_type: ClassVar[Any]
+    data_type: np.dtype = None
     value: np.ndarray = np.zeros(0)
 
     def __eq__(self, other: _TAG_Array):
@@ -193,27 +195,45 @@ class _TAG_Array(_TAG_Value):
     def __len__(self):
         return len(self.value)
 
+    def is_little_endian(self):
+        '''
+        Note: for `TAG_Byte_Array` objects, this will always evaluate to True
+        :return: True if the array is little endian, False if it is big endian
+        '''
+        return self.data_type == self.little_endian_data_type
+
     @classmethod
-    def load_from(cls, context: _BufferContext) -> _TAG_Value:
+    def load_from(cls, context: _BufferContext, little_endian: bool) -> _TAG_Value:
+        data_type = cls.little_endian_data_type if little_endian else cls.big_endian_data_type
         data = context.buffer[context.offset :]
         (string_len,) = TAG_Int.tag_format.unpack_from(data)
         value = np.frombuffer(
-            data[4 : string_len * cls.data_type.itemsize + 4], cls.data_type
+            data[4 : string_len * data_type.itemsize + 4], data_type
         )
-        context.offset += string_len * cls.data_type.itemsize + 4
+        context.offset += string_len * data_type.itemsize + 4
 
-        return cls(value)
+        return cls(value=value, data_type=data_type)
 
     def write_value(self, buffer):
+        if self.value.dtype != self.data_type:
+            print(f'[Warning] Mismatch array dtype. Expected: {self.data_type.str}, got: {self.value.dtype.str}')
+            self.value = self.value.astype(self.data_type)
         value = self.value.tostring()
         buffer.write(pack(f">I{len(value)}s", self.value.size, value))
 
 
 @dataclass(eq=False)
 class TAG_Byte_Array(_TAG_Array):
-    data_type = np.dtype("uint8")
-    value: np.ndarray = np.zeros(0, data_type)
+    big_endian_data_type = little_endian_data_type = np.dtype("uint8")
     tag_id = TAG_BYTE_ARRAY
+
+    def __init__(self, value: np.array = None, data_type: np.dtype = big_endian_data_type):
+        super(TAG_Byte_Array, self).__init__(value, data_type)
+        if self.value is None:
+            self.value = np.zeros(0, self.data_type)
+        if self.value.dtype != self.data_type:
+            self.value = self.value.astype(self.data_type)
+
 
     def to_snbt(self):
         return f"[B;{'B, '.join(str(val) for val in self.value)}B]"
@@ -221,9 +241,16 @@ class TAG_Byte_Array(_TAG_Array):
 
 @dataclass(eq=False)
 class TAG_Int_Array(_TAG_Array):
-    data_type = np.dtype(">u4")
-    value: np.ndarray = np.zeros(0, data_type)
+    big_endian_data_type = np.dtype(">u4")
+    little_endian_data_type = np.dtype("<u4")
     tag_id = TAG_INT_ARRAY
+
+    def __init__(self, value: np.array = None, data_type: np.dtype = big_endian_data_type):
+        super(TAG_Int_Array, self).__init__(value, data_type)
+        if self.value is None:
+            self.value = np.zeros(0, self.data_type)
+        if self.value.dtype != self.data_type:
+            self.value = self.value.astype(self.data_type)
 
     def to_snbt(self):
         return f"[I;{', '.join(str(val) for val in self.value)}]"
@@ -231,9 +258,16 @@ class TAG_Int_Array(_TAG_Array):
 
 @dataclass(eq=False)
 class TAG_Long_Array(_TAG_Array):
-    data_type = np.dtype(">q")
-    value: np.ndarray = np.zeros(0, data_type)
+    big_endian_data_type = np.dtype(">q")
+    little_endian_data_type = np.dtype("<q")
     tag_id = TAG_LONG_ARRAY
+
+    def __init__(self, value: np.array = None, data_type: np.dtype = big_endian_data_type):
+        super(TAG_Long_Array, self).__init__(value, data_type)
+        if self.value is None:
+            self.value = np.zeros(0, self.data_type)
+        if self.value.dtype != self.data_type:
+            self.value = self.value.astype(self.data_type)
 
     def to_snbt(self):
         return f"[L;{', '.join(str(val) for val in self.value)}]"
@@ -249,7 +283,7 @@ class TAG_String(_TAG_Value):
     value: str = ""
 
     @classmethod
-    def load_from(cls, context: _BufferContext) -> _TAG_Value:
+    def load_from(cls, context: _BufferContext, little_endian: bool) -> _TAG_Value:
         return cls(load_string(context))
 
     def write_value(self, buffer):
@@ -308,7 +342,7 @@ class TAG_List(_TAG_Value, MutableSequence):
         )
 
     @classmethod
-    def load_from(cls, context: _BufferContext) -> _TAG_Value:
+    def load_from(cls, context: _BufferContext, little_endian: bool) -> _TAG_Value:
         tag = cls()
         tag.list_data_type = list_data_type = context.buffer[context.offset]
         context.offset += 1
@@ -317,7 +351,7 @@ class TAG_List(_TAG_Value, MutableSequence):
         context.offset += TAG_Int.tag_format.size
 
         for i in range(list_len):
-            child_tag = TAG_CLASSES[list_data_type].load_from(context)
+            child_tag = TAG_CLASSES[list_data_type].load_from(context, little_endian)
             tag.append(child_tag)
 
         return tag
@@ -339,7 +373,7 @@ class TAG_Compound(_TAG_Value, MutableMapping):
     value: Dict[str, _TAG_Value] = field(default_factory=dict)
 
     @classmethod
-    def load_from(cls, context: _BufferContext) -> TAG_Compound:
+    def load_from(cls, context: _BufferContext, little_endian: bool) -> TAG_Compound:
         tag = cls()
 
         while context.offset < context.size:
@@ -350,7 +384,7 @@ class TAG_Compound(_TAG_Value, MutableMapping):
                 break
 
             tag_name = load_string(context)
-            child_tag = TAG_CLASSES[tag_id].load_from(context)
+            child_tag = TAG_CLASSES[tag_id].load_from(context, little_endian)
 
             tag[tag_name] = child_tag
 
@@ -456,7 +490,7 @@ def safe_gunzip(data):
 
 
 def load(
-    filename="", buffer=None, compressed=True, count: int = None, offset: bool = False
+    filename="", buffer=None, compressed=True, count: int = None, offset: bool = False, little_endian: bool = False
 ) -> Union[NBTFile, Tuple[Union[NBTFile, List[NBTFile]], int]]:
     if filename:
         buffer = open(filename, "rb")
@@ -488,7 +522,7 @@ def load(
         context.offset += 1
 
         tag_name = load_string(context)
-        tag: TAG_Compound = TAG_Compound.load_from(context)
+        tag: TAG_Compound = TAG_Compound.load_from(context, little_endian)
 
         results.append(NBTFile(tag, tag_name))
 

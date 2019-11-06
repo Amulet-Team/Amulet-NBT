@@ -56,8 +56,6 @@ cpdef dict TAG_CLASSES = {
     ID_LONG_ARRAY: TAG_Long_Array
 }
 
-USE_BIG_ENDIAN = 1
-
 _NON_QUOTED_KEY = re.compile(r"^[a-zA-Z0-9-]+$")
 
 # Utility Methods
@@ -79,9 +77,9 @@ cdef char * read_data(buffer_context context, size_t tag_size) except NULL:
     context.offset += tag_size
     return value
 
-cdef void to_little_endian(void * data_buffer, int num_bytes):
+cdef void to_little_endian(void * data_buffer, int num_bytes, bint little_endian = False):
 
-    if not USE_BIG_ENDIAN:
+    if little_endian:
         return
 
     cdef unsigned char * buf = <unsigned char *> data_buffer
@@ -98,12 +96,12 @@ cdef str load_name(buffer_context context):
 
     return PyUnicode_DecodeUTF8(b, length, "strict")
 
-cdef tuple load_named(buffer_context context, char tagID):
+cdef tuple load_named(buffer_context context, char tagID, bint little_endian):
     cdef str name = load_name(context)
-    cdef _TAG_Value tag = load_tag(tagID, context)
+    cdef _TAG_Value tag = load_tag(tagID, context, little_endian)
     return name, tag
 
-cdef _TAG_Value load_tag(char tagID, buffer_context context):
+cdef _TAG_Value load_tag(char tagID, buffer_context context, bint little_endian):
     if tagID == _ID_BYTE:
         return load_byte(context)
 
@@ -129,10 +127,10 @@ cdef _TAG_Value load_tag(char tagID, buffer_context context):
         return TAG_String(load_string(context))
 
     if tagID == _ID_LIST:
-        return load_list(context)
+        return load_list(context, little_endian)
 
     if tagID == _ID_COMPOUND:
-        return load_compound_tag(context)
+        return load_compound_tag(context, little_endian)
 
     if tagID == _ID_INT_ARRAY:
         return load_int_array(context)
@@ -312,8 +310,15 @@ cdef class _TAG_Array(_TAG_Value):
     def __len__(self):
         return len(self.value)
 
+    def is_little_endian(self):
+        '''
+        Note: for `TAG_Byte_Array` objects, this will always evaluate to True
+        :return: True if the array is little endian, False if it is big endian
+        '''
+        return self.data_type == self.little_endian_data_type
+
 cdef class TAG_Byte_Array(_TAG_Array):
-    data_type = numpy.dtype("u1")
+    big_endian_data_type = little_endian_data_type = data_type = numpy.dtype("u1")
 
     def __cinit__(self):
         self.tag_id = _ID_BYTE_ARRAY
@@ -332,15 +337,20 @@ cdef class TAG_Byte_Array(_TAG_Array):
         return f"[B;{'B, '.join(tags)}B]"
 
     cdef void save_value(self, buffer):
+        if self.value.dtype != self.data_type:
+            print(f'[Warning] Mismatch array dtype. Expected: {self.data_type.str}, got: {self.value.dtype.str}')
+            self.value = self.value.astype(self.data_type)
         save_array(self.value, buffer, 1)
 
 cdef class TAG_Int_Array(_TAG_Array):
-    data_type = numpy.dtype(">u4")
+    big_endian_data_type = numpy.dtype(">u4")
+    little_endian_data_type = numpy.dtype("<u4")
 
     def __cinit__(self):
         self.tag_id = _ID_INT_ARRAY
 
-    def __init__(self, object value = None):
+    def __init__(self, object value = None, bint little_endian = False):
+        self.data_type = self.little_endian_data_type if little_endian else self.big_endian_data_type
         if value is None:
             value = numpy.zeros((0,), self.data_type)
 
@@ -354,15 +364,21 @@ cdef class TAG_Int_Array(_TAG_Array):
         return f"[I;{', '.join(tags)}]"
 
     cdef void save_value(self, buffer):
+        if self.value.dtype != self.data_type:
+            print(f'[Warning] Mismatch array dtype. Expected: {self.data_type.str}, got: {self.value.dtype.str}')
+            self.value = self.value.astype(self.data_type)
         save_array(self.value, buffer, 4)
 
 cdef class TAG_Long_Array(_TAG_Array):
-    data_type = numpy.dtype(">q")
+    big_endian_data_type = numpy.dtype(">q")
+    little_endian_data_type = numpy.dtype("<q")
 
     def __cinit__(self):
         self.tag_id = _ID_LONG_ARRAY
 
-    def __init__(self, object value = None):
+    def __init__(self, object value = None, bint little_endian = False):
+        self.data_type = self.little_endian_data_type if little_endian else self.big_endian_data_type
+
         if value is None:
             value = numpy.zeros((0,), self.data_type)
 
@@ -376,6 +392,9 @@ cdef class TAG_Long_Array(_TAG_Array):
         return f"[L;{', '.join(tags)}]"
 
     cdef void save_value(self, buffer):
+        if self.value.dtype != self.data_type:
+            print(f'[Warning] Mismatch array dtype. Expected: {self.data_type.str}, got: {self.value.dtype.str}')
+            self.value = self.value.astype(self.data_type)
         save_array(self.value, buffer, 8)
 
 cdef class _TAG_List(_TAG_Value):
@@ -567,7 +586,7 @@ class NBTFile(MutableMapping):
         return self.value.__eq__(other.value)
 
 
-def load(filename="", buffer=None, compressed=True, count: int = None, offset: bool = False
+def load(filename="", buffer=None, compressed=True, count: int = None, offset: bool = False, little_endian: bool = False
 ) -> Union[NBTFile, Tuple[Union[NBTFile, List[NBTFile]], int]]:
     if filename:
         buffer = open(filename, "rb")
@@ -599,11 +618,11 @@ def load(filename="", buffer=None, compressed=True, count: int = None, offset: b
     for i in range(count or 1):
         tag_type = context.buffer[context.offset]
         if tag_type != _ID_COMPOUND:
-            return # Raise another error
+            raise NBTFormatError # Raise another error
         context.offset += 1
 
         name = load_name(context)
-        tag = load_compound_tag(context)
+        tag = load_compound_tag(context, little_endian)
 
         results.append(NBTFile(tag, name))
 
@@ -654,7 +673,7 @@ cdef TAG_Double load_double(buffer_context context):
     to_little_endian(&tag.value, 8)
     return tag
 
-cdef _TAG_Compound load_compound_tag(buffer_context context):
+cdef _TAG_Compound load_compound_tag(buffer_context context, bint little_endian):
     cdef char tagID
     #cdef str name
     cdef _TAG_Compound root_tag = TAG_Compound()
@@ -666,7 +685,7 @@ cdef _TAG_Compound load_compound_tag(buffer_context context):
         if tagID == _ID_END:
             break
         else:
-            tup = load_named(context, tagID)
+            tup = load_named(context, tagID, little_endian)
             root_tag[tup[0]] = tup[1]
     return root_tag
 
@@ -705,7 +724,7 @@ cdef TAG_Long_Array load_long_array(buffer_context context):
     cdef char* arr = read_data(context, byte_length)
     return TAG_Long_Array(numpy.frombuffer(arr[:byte_length], dtype=TAG_Long_Array.data_type, count=length))
 
-cdef _TAG_List load_list(buffer_context context):
+cdef _TAG_List load_list(buffer_context context, bint little_endian):
     cdef char list_type = read_data(context, 1)[0]
     cdef int* pointer = <int*> read_data(context, 4)
     cdef int length = pointer[0]
@@ -715,7 +734,7 @@ cdef _TAG_List load_list(buffer_context context):
     cdef list val = tag.value
     cdef int i
     for i in range(length):
-        PyList_Append(val, load_tag(list_type, context))
+        PyList_Append(val, load_tag(list_type, context, little_endian))
 
     return tag
 

@@ -37,7 +37,8 @@ TAG_LONG_ARRAY = 12
 
 NBT_WRAPPER = "python"
 
-_string_len_fmt = Struct(">H")
+_string_len_fmt_be = Struct(">H")
+_string_len_fmt_le = Struct("<H")
 
 _NON_QUOTED_KEY = re.compile(r"^[a-zA-Z0-9-]+$")
 
@@ -59,18 +60,24 @@ class _BufferContext:
         self.size = size
 
 
-def load_string(context: _BufferContext) -> str:
-    data = context.buffer[context.offset :]
-    (str_len,) = _string_len_fmt.unpack_from(data)
+def load_string(context: _BufferContext, little_endian=False) -> str:
+    data = context.buffer[context.offset:]
+    if little_endian:
+        (str_len,) = _string_len_fmt_le.unpack_from(data)
+    else:
+        (str_len,) = _string_len_fmt_be.unpack_from(data)
 
-    value = data[2 : str_len + 2].decode("utf-8")
+    value = data[2: str_len + 2].decode("utf-8")
     context.offset += str_len + 2
     return value
 
 
-def write_string(buffer, _str):
+def write_string(buffer, _str, little_endian=False):
     encoded_str = _str.encode("utf-8")
-    buffer.write(pack(f">h{len(encoded_str)}s", len(encoded_str), encoded_str))
+    if little_endian:
+        buffer.write(pack(f"<H{len(encoded_str)}s", len(encoded_str), encoded_str))
+    else:
+        buffer.write(pack(f">H{len(encoded_str)}s", len(encoded_str), encoded_str))
 
 
 @dataclass(eq=False)
@@ -78,7 +85,8 @@ class _TAG_Value:
     value: Any
     tag_id: ClassVar[int]
     _data_type: ClassVar[Any]
-    tag_format: Struct = field(init=False, repr=False, compare=False)
+    tag_format_be: Struct = field(init=False, repr=False, compare=False)
+    tag_format_le: Struct = field(init=False, repr=False, compare=False)
 
     def __new__(cls, *args, **kwargs):
         cls._data_type = get_type_hints(cls)["value"]
@@ -93,9 +101,13 @@ class _TAG_Value:
 
     @classmethod
     def load_from(cls, context: _BufferContext, little_endian: bool) -> _TAG_Value:
-        data = context.buffer[context.offset :]
-        tag = cls(cls.tag_format.unpack_from(data)[0])
-        context.offset += cls.tag_format.size
+        data = context.buffer[context.offset:]
+        if little_endian:
+            tag = cls(cls.tag_format_le.unpack_from(data)[0])
+            context.offset += cls.tag_format_le.size
+        else:
+            tag = cls(cls.tag_format_be.unpack_from(data)[0])
+            context.offset += cls.tag_format_be.size
         return tag
 
     def format(self, value):
@@ -104,15 +116,18 @@ class _TAG_Value:
     def write_tag_id(self, buffer):
         buffer.write(bytes(chr(self.tag_id), "utf-8"))
 
-    def save(self, buffer, name=None):
+    def save(self, buffer, name=None, little_endian=False):
         self.write_tag_id(buffer)
         if name is not None:
-            write_string(buffer, name)
+            write_string(buffer, name, little_endian)
 
-        self.write_value(buffer)
+        self.write_value(buffer, little_endian)
 
-    def write_value(self, buffer):
-        buffer.write(self.tag_format.pack(self.value))
+    def write_value(self, buffer, little_endian=False):
+        if little_endian:
+            buffer.write(self.tag_format_le.pack(self.value))
+        else:
+            buffer.write(self.tag_format_be.pack(self.value))
 
     def to_snbt(self):
         raise NotImplemented
@@ -122,7 +137,8 @@ class _TAG_Value:
 class TAG_Byte(_TAG_Value):
     value: int = 0
     tag_id = TAG_BYTE
-    tag_format = Struct(">b")
+    tag_format_be = Struct(">b")
+    tag_format_le = Struct("<b")
 
     def to_snbt(self):
         return f"{self.value}b"
@@ -132,7 +148,7 @@ class TAG_Byte(_TAG_Value):
 class TAG_Short(_TAG_Value):
     value: int = 0
     tag_id = TAG_SHORT
-    tag_format = Struct(">h")
+    tag_format_be = Struct(">h")
 
     def to_snbt(self):
         return f"{self.value}s"
@@ -142,7 +158,8 @@ class TAG_Short(_TAG_Value):
 class TAG_Int(_TAG_Value):
     value: int = 0
     tag_id = TAG_INT
-    tag_format = Struct(">i")
+    tag_format_be = Struct(">i")
+    tag_format_le = Struct("<i")
 
     def to_snbt(self):
         return f"{self.value}"
@@ -152,7 +169,8 @@ class TAG_Int(_TAG_Value):
 class TAG_Long(_TAG_Value):
     value: int = 0
     tag_id = TAG_LONG
-    tag_format = Struct(">q")
+    tag_format_be = Struct(">q")
+    tag_format_le = Struct("<q")
 
     def to_snbt(self):
         return f"{self.value}L"
@@ -162,7 +180,8 @@ class TAG_Long(_TAG_Value):
 class TAG_Float(_TAG_Value):
     value: float = 0
     tag_id = TAG_FLOAT
-    tag_format = Struct(">f")
+    tag_format_be = Struct(">f")
+    tag_format_le = Struct("<f")
 
     def to_snbt(self):
         return f"{self.value}f"
@@ -172,7 +191,8 @@ class TAG_Float(_TAG_Value):
 class TAG_Double(_TAG_Value):
     value: float = 0
     tag_id = TAG_DOUBLE
-    tag_format = Struct(">d")
+    tag_format_be = Struct(">d")
+    tag_format_le = Struct("<d")
 
     def to_snbt(self):
         return f"{self.value}d"
@@ -196,25 +216,28 @@ class _TAG_Array(_TAG_Value):
         return len(self.value)
 
     def is_little_endian(self):
-        '''
+        """
         Note: for `TAG_Byte_Array` objects, this will always evaluate to True
         :return: True if the array is little endian, False if it is big endian
-        '''
+        """
         return self.data_type == self.little_endian_data_type
 
     @classmethod
     def load_from(cls, context: _BufferContext, little_endian: bool) -> _TAG_Value:
         data_type = cls.little_endian_data_type if little_endian else cls.big_endian_data_type
         data = context.buffer[context.offset :]
-        (string_len,) = TAG_Int.tag_format.unpack_from(data)
+        if little_endian:
+            (string_len,) = TAG_Int.tag_format_le.unpack_from(data)
+        else:
+            (string_len,) = TAG_Int.tag_format_be.unpack_from(data)
         value = np.frombuffer(
-            data[4 : string_len * data_type.itemsize + 4], data_type
+            data[4: string_len * data_type.itemsize + 4], data_type
         )
         context.offset += string_len * data_type.itemsize + 4
 
         return cls(value=value, data_type=data_type)
 
-    def write_value(self, buffer):
+    def write_value(self, buffer, little_endian=False):
         if self.value.dtype != self.data_type:
             print(f'[Warning] Mismatch array dtype. Expected: {self.data_type.str}, got: {self.value.dtype.str}')
             self.value = self.value.astype(self.data_type)
@@ -233,7 +256,6 @@ class TAG_Byte_Array(_TAG_Array):
             self.value = np.zeros(0, self.data_type)
         if self.value.dtype != self.data_type:
             self.value = self.value.astype(self.data_type)
-
 
     def to_snbt(self):
         return f"[B;{'B, '.join(str(val) for val in self.value)}B]"
@@ -284,10 +306,10 @@ class TAG_String(_TAG_Value):
 
     @classmethod
     def load_from(cls, context: _BufferContext, little_endian: bool) -> _TAG_Value:
-        return cls(load_string(context))
+        return cls(load_string(context, little_endian))
 
-    def write_value(self, buffer):
-        write_string(buffer, self.value)
+    def write_value(self, buffer, little_endian=False):
+        write_string(buffer, self.value, little_endian)
 
     def to_snbt(self):
         return f'"{escape(self.value)}"'
@@ -323,7 +345,7 @@ class TAG_List(_TAG_Value, MutableSequence):
                 self.list_data_type = value_type
             else:
                 raise NBTFormatError(
-                    f"TAG_List contains type {self.list_data_type} but insert was given {value.tag_id}"
+                    f"TAG_List contains type {self.list_data_type} but insert was given {value_type}"
                 )
 
     def insert(self, index: int, value: _TAG_Value):
@@ -347,8 +369,12 @@ class TAG_List(_TAG_Value, MutableSequence):
         tag.list_data_type = list_data_type = context.buffer[context.offset]
         context.offset += 1
 
-        (list_len,) = TAG_Int.tag_format.unpack_from(context.buffer, context.offset)
-        context.offset += TAG_Int.tag_format.size
+        if little_endian:
+            (list_len,) = TAG_Int.tag_format_le.unpack_from(context.buffer, context.offset)
+            context.offset += TAG_Int.tag_format_le.size
+        else:
+            (list_len,) = TAG_Int.tag_format_be.unpack_from(context.buffer, context.offset)
+            context.offset += TAG_Int.tag_format_be.size
 
         for i in range(list_len):
             child_tag = TAG_CLASSES[list_data_type].load_from(context, little_endian)
@@ -356,12 +382,15 @@ class TAG_List(_TAG_Value, MutableSequence):
 
         return tag
 
-    def write_value(self, buffer):
+    def write_value(self, buffer, little_endian=False):
         buffer.write(bytes(chr(self.list_data_type), "utf-8"))
-        buffer.write(TAG_Int.tag_format.pack(len(self.value)))
+        if little_endian:
+            buffer.write(TAG_Int.tag_format_le.pack(len(self.value)))
+        else:
+            buffer.write(TAG_Int.tag_format_be.pack(len(self.value)))
 
         for item in self.value:
-            item.write_value(buffer)
+            item.write_value(buffer, little_endian)
 
     def to_snbt(self):
         return f"[{', '.join(elem.to_snbt() for elem in self.value)}]"
@@ -383,16 +412,16 @@ class TAG_Compound(_TAG_Value, MutableMapping):
             if tag_id == TAG_END:
                 break
 
-            tag_name = load_string(context)
+            tag_name = load_string(context, little_endian)
             child_tag = TAG_CLASSES[tag_id].load_from(context, little_endian)
 
             tag[tag_name] = child_tag
 
         return tag
 
-    def write_value(self, buffer):
+    def write_value(self, buffer, little_endian=False):
         for key, value in self.value.items():
-            value.save(buffer, key)
+            value.save(buffer, key, little_endian)
 
         buffer.write(bytes(chr(TAG_END), "utf-8"))
 
@@ -453,10 +482,10 @@ class NBTFile(MutableMapping):
         return self.value.__len__()
 
     def save_to(
-        self, filename_or_buffer=None, compressed=True
+        self, filename_or_buffer=None, compressed=True, little_endian=False
     ) -> Optional[Union[BytesIO, bytes]]:
         buffer = BytesIO()
-        self.value.save(buffer, self.name)
+        self.value.save(buffer, self.name, little_endian)
 
         data = buffer.getvalue()
 
@@ -521,7 +550,7 @@ def load(
             raise NBTFormatError()
         context.offset += 1
 
-        tag_name = load_string(context)
+        tag_name = load_string(context, little_endian)
         tag: TAG_Compound = TAG_Compound.load_from(context, little_endian)
 
         results.append(NBTFile(tag, tag_name))

@@ -533,7 +533,7 @@ cdef class _TAG_Compound(_TAG_Value):
 class TAG_Compound(_TAG_Compound, MutableMapping):
     pass
 
-class NBTFile(MutableMapping):
+class NBTFile:
 
     def __init__(self, tag, str name=""):
         self.value = tag
@@ -573,8 +573,11 @@ class NBTFile(MutableMapping):
     def __delitem__(self, key: str):
         del self.value[key]
 
-    def __iter__(self):
-        yield from self.value
+    def keys(self):
+        return self.value.keys()
+
+    def values(self):
+        self.value.values()
 
     def __contains__(self, key: str) -> bool:
         return key in self.value

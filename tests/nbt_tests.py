@@ -35,6 +35,7 @@ def _recursively_test_nbt(inst, expected: "MutableMapping", actual: "MutableMapp
         else:
             inst.assertEqual(v, actual_v)
 
+
 class AbstractNBTTest:
     class NBTTests(unittest.TestCase):
 
@@ -44,6 +45,11 @@ class AbstractNBTTest:
             self.level_root_tag = self.nbt.load(os.path.join(TESTS_DIR, "worlds", "1.13 World", "level.dat"))
             self.big_test = self.nbt.load(os.path.join(TESTS_DIR, "bigtest.nbt"))
 
+            le_fp = open(os.path.join(TESTS_DIR, "little_endian_level.dat"), 'rb')
+            le_fp.seek(8)
+            self.little_endian_level_dat = self.nbt.load(buffer=le_fp, little_endian=True)
+            le_fp.close()
+
             self.snbt_data = ""
             with open(os.path.join(TESTS_DIR, "bigtest.snbt"), 'rb') as fp:
                 self.snbt_data: str = fp.read().decode('utf-8').strip()
@@ -51,12 +57,16 @@ class AbstractNBTTest:
         def tearDown(self):
             test_dat = os.path.join(TESTS_DIR, f'test.{self.nbt.__name__}.dat')
             bigtest = os.path.join(TESTS_DIR, f"bigtest.{self.nbt.__name__}.dat")
+            little_endian = os.path.join(TESTS_DIR, f'little_endian.{self.nbt.__name__}.dat')
 
             if os.path.exists(test_dat):
                 os.remove(test_dat)
 
             if os.path.exists(bigtest):
                 os.remove(bigtest)
+
+            if os.path.exists(little_endian):
+                os.remove(little_endian)
 
         def test_load(self):
             self.assertIsInstance(self.level_root_tag, self.nbt.NBTFile)
@@ -83,12 +93,18 @@ class AbstractNBTTest:
         def test_load_snbt(self):
             bigtest_snbt = self.nbt.from_snbt(self.snbt_data)
 
-            _recursively_test_nbt(self, self.big_test, bigtest_snbt)
+            _recursively_test_nbt(self, self.big_test.value, bigtest_snbt)
 
-            if bigtest_snbt != self.big_test.value:
-                _recursively_test_nbt(self, self.big_test.value, bigtest_snbt)
-            # self.assertEqual(self.big_test.value, bigtest_snbt) # Doesn't work as intended due to floating point error
-			
+        def test_save_little_endian(self):
+            self.little_endian_level_dat.save_to(os.path.join(TESTS_DIR, f'little_endian.{self.nbt.__name__}.dat'),
+                                                 little_endian=True)
+
+            le_fp = open(os.path.join(TESTS_DIR, f'little_endian.{self.nbt.__name__}.dat'), 'rb')
+            saved_little_endian = self.nbt.load(buffer=le_fp, little_endian=True)
+            le_fp.close()
+
+            self.assertEqual(self.little_endian_level_dat, saved_little_endian)
+
 
 @unittest.skipUnless(TEST_CYTHON_LIB, "Cythonized library not available")
 class CythonNBTTest(AbstractNBTTest.NBTTests):
@@ -136,6 +152,7 @@ class CrossCompatabilityTest(unittest.TestCase):
 
     def test_cross_to_snbt(self):
         self.assertEqual(self.cy_level_root_tag.to_snbt(), self.py_level_root_tag.to_snbt())
+
 
 if __name__ == '__main__':
     unittest.main()

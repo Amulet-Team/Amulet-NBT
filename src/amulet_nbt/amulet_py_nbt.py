@@ -549,8 +549,7 @@ def load(
     for i in range(count or 1):
         tag_type = context.buffer[context.offset]
         if tag_type != TAG_COMPOUND:
-            magic_num = data_in[:4]
-            raise NBTFormatError()
+            raise NBTFormatError(f"Expecting tag type {TAG_COMPOUND}, got {tag_type} instead")
         context.offset += 1
 
         tag_name = load_string(context, little_endian)

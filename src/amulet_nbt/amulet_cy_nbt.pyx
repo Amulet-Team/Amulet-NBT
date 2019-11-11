@@ -614,14 +614,12 @@ def load(filename="", buffer=None, compressed=True, count: int = None, offset: b
     results = []
 
     if len(data_in) < 1:
-        return # Raise error here
-
-    cdef unsigned int * magic_num
+        raise EOFError("load() was supplied an empty buffer")
 
     for i in range(count or 1):
         tag_type = context.buffer[context.offset]
         if tag_type != _ID_COMPOUND:
-            raise NBTFormatError # Raise another error
+            raise NBTFormatError(f"Expecting tag type {_ID_COMPOUND}, got {tag_type} instead")
         context.offset += 1
 
         name = load_name(context)

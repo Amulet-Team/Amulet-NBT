@@ -149,6 +149,7 @@ class TAG_Short(_TAG_Value):
     value: int = 0
     tag_id = TAG_SHORT
     tag_format_be = Struct(">h")
+    tag_format_le = Struct("<h")
 
     def to_snbt(self):
         return f"{self.value}s"

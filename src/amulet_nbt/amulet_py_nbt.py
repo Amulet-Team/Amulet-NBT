@@ -253,7 +253,7 @@ class TAG_Byte_Array(_TAG_Array):
     big_endian_data_type = little_endian_data_type = np.dtype("int8")
     tag_id = TAG_BYTE_ARRAY
 
-    def __init__(self, value: np.array = None):
+    def __init__(self, value: Union[np.ndarray, list] = None):
         super(TAG_Byte_Array, self).__init__(value)
         if self.value is None:
             self.value = np.zeros(0, self.big_endian_data_type)
@@ -270,7 +270,7 @@ class TAG_Int_Array(_TAG_Array):
     little_endian_data_type = np.dtype("<i4")
     tag_id = TAG_INT_ARRAY
 
-    def __init__(self, value: np.array = None):
+    def __init__(self, value: Union[np.ndarray, list] = None):
         super(TAG_Int_Array, self).__init__(value)
         if self.value is None:
             self.value = np.zeros(0, self.big_endian_data_type)
@@ -287,7 +287,7 @@ class TAG_Long_Array(_TAG_Array):
     little_endian_data_type = np.dtype("<i8")
     tag_id = TAG_LONG_ARRAY
 
-    def __init__(self, value: np.array = None):
+    def __init__(self, value: Union[np.ndarray, list] = None):
         super(TAG_Long_Array, self).__init__(value)
         if self.value is None:
             self.value = np.zeros(0, self.big_endian_data_type)
@@ -322,7 +322,16 @@ class TAG_String(_TAG_Value):
 class TAG_List(_TAG_Value, MutableSequence):
     tag_id = TAG_LIST
     value: List[_TAG_Value] = field(default_factory=list)
-    list_data_type: int = TAG_END
+    list_data_type: int = TAG_BYTE
+
+    def __init__(self, value: list = None):
+        if value is None:
+            self.value = []
+        else:
+            self.value = value
+        if len(self.value) > 0:
+            assert all(self.value[0].tag_id == nested_value.tag_id for nested_value in self.value[1:]), 'All entries in a TAG_List must be of the same type'
+            self.list_data_type = self.value[0].tag_id
 
     def __getitem__(self, index: int) -> _TAG_Value:
         return self.value.__getitem__(index)

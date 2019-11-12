@@ -463,7 +463,7 @@ class TAG_Compound(_TAG_Value, MutableMapping):
 
 @dataclass
 class NBTFile:
-    value: TAG_Compound
+    value: TAG_Compound = TAG_Compound()
     name: str = ""
 
     def __getitem__(self, key: str) -> _TAG_Value:

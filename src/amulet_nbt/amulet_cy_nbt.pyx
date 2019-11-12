@@ -58,38 +58,39 @@ cpdef dict TAG_CLASSES = {
 
 _NON_QUOTED_KEY = re.compile(r"^[a-zA-Z0-9-]+$")
 
+
 # Utility Methods
 class NBTFormatError(ValueError):
     """Indicates the NBT format is invalid."""
     pass
 
+
 cdef class buffer_context:
     cdef size_t offset
-    cdef char * buffer
+    cdef char *buffer
     cdef size_t size
 
-cdef char * read_data(buffer_context context, size_t tag_size) except NULL:
+cdef char *read_data(buffer_context context, size_t tag_size) except NULL:
     if tag_size > context.size - context.offset:
         raise NBTFormatError(
             f"NBT Stream too short. Asked for {tag_size:d}, only had {(context.size - context.offset):d}")
 
-    cdef char* value = context.buffer + context.offset
+    cdef char*value = context.buffer + context.offset
     context.offset += tag_size
     return value
 
-cdef void to_little_endian(void * data_buffer, int num_bytes, bint little_endian = False):
-
+cdef void to_little_endian(void *data_buffer, int num_bytes, bint little_endian = False):
     if little_endian:
         return
 
-    cdef unsigned char * buf = <unsigned char *> data_buffer
+    cdef unsigned char *buf = <unsigned char *> data_buffer
     cdef int i
 
     for i in range((num_bytes + 1) // 2):
         buf[i], buf[num_bytes - i - 1] = buf[num_bytes - i - 1], buf[i]
 
 cdef str load_name(buffer_context context, bint little_endian):
-    cdef unsigned short * pointer = <unsigned short *> read_data(context, 2)
+    cdef unsigned short *pointer = <unsigned short *> read_data(context, 2)
     cdef unsigned short length = pointer[0]
     to_little_endian(&length, 2, little_endian)
     b = read_data(context, length)
@@ -145,7 +146,6 @@ cpdef bytes safe_gunzip(bytes data):
         pass
     return data
 
-
 cdef class _TAG_Value:
     cdef public char tag_id
 
@@ -164,7 +164,6 @@ cdef class _TAG_Value:
     def __reduce__(self):
         return unpickle_nbt, (self.tag_id, self.value)
 
-
 cdef class TAG_Byte(_TAG_Value):
     cdef public char value
 
@@ -182,7 +181,6 @@ cdef class TAG_Byte(_TAG_Value):
 
     def __eq__(self, other) -> bool:
         return isinstance(other, self.__class__) and self.value == other.value
-
 
 cdef class TAG_Short(_TAG_Value):
     cdef public short value
@@ -305,7 +303,8 @@ cdef class _TAG_Array(_TAG_Value):
     cdef public object value
 
     def __eq__(self, other: _TAG_Array) -> bool:
-        return isinstance(other, self.__class__) and self.tag_id == other.tag_id and numpy.array_equal(self.value, other.value)
+        return isinstance(other, self.__class__) and self.tag_id == other.tag_id and numpy.array_equal(self.value,
+                                                                                                       other.value)
 
     def __len__(self):
         return len(self.value)
@@ -456,7 +455,7 @@ cdef class _TAG_List(_TAG_Value):
         cdef char list_type = self.list_data_type
 
         save_tag_id(list_type, buffer)
-        save_int(<int>len(self.value), buffer, little_endian)
+        save_int(<int> len(self.value), buffer, little_endian)
 
         cdef _TAG_Value subtag
         for subtag in self.value:
@@ -468,8 +467,10 @@ cdef class _TAG_List(_TAG_Value):
     def __eq__(self, other) -> bool:
         return isinstance(other, self.__class__) and self.value == other.value
 
+
 class TAG_List(_TAG_List, MutableSequence):
     pass
+
 
 cdef class _TAG_Compound(_TAG_Value):
     cdef public dict value
@@ -530,13 +531,15 @@ cdef class _TAG_Compound(_TAG_Value):
     def __eq__(self, other) -> bool:
         return self.value.__eq__(other.value)
 
+
 class TAG_Compound(_TAG_Compound, MutableMapping):
     pass
 
+
 class NBTFile:
 
-    def __init__(self, tag, str name=""):
-        self.value = tag
+    def __init__(self, tag=None, str name=""):
+        self.value = TAG_Compound() if tag is None else tag
         self.name = name
 
     def to_snbt(self) -> str:
@@ -590,7 +593,7 @@ class NBTFile:
 
 
 def load(filename="", buffer=None, compressed=True, count: int = None, offset: bool = False, little_endian: bool = False
-) -> Union[NBTFile, Tuple[Union[NBTFile, List[NBTFile]], int]]:
+         ) -> Union[NBTFile, Tuple[Union[NBTFile, List[NBTFile]], int]]:
     if filename:
         buffer = open(filename, "rb")
     data_in = buffer
@@ -640,35 +643,35 @@ cdef TAG_Byte load_byte(buffer_context context, bint little_endian):
     return tag
 
 cdef TAG_Short load_short(buffer_context context, bint little_endian):
-    cdef short* pointer = <short*> read_data(context, 2)
+    cdef short*pointer = <short*> read_data(context, 2)
     cdef TAG_Short tag = TAG_Short.__new__(TAG_Short)
     tag.value = pointer[0]
     to_little_endian(&tag.value, 2, little_endian)
     return tag
 
 cdef TAG_Int load_int(buffer_context context, bint little_endian):
-    cdef int* pointer = <int*> read_data(context, 4)
+    cdef int*pointer = <int*> read_data(context, 4)
     cdef TAG_Int tag = TAG_Int.__new__(TAG_Int)
     tag.value = pointer[0]
     to_little_endian(&tag.value, 4, little_endian)
     return tag
 
 cdef TAG_Long load_long(buffer_context context, bint little_endian):
-    cdef long long * pointer = <long long *> read_data(context, 8)
+    cdef long long *pointer = <long long *> read_data(context, 8)
     cdef TAG_Long tag = TAG_Long.__new__(TAG_Long)
     tag.value = pointer[0]
     to_little_endian(&tag.value, 8, little_endian)
     return tag
 
 cdef TAG_Float load_float(buffer_context context, bint little_endian):
-    cdef float* pointer = <float*> read_data(context, 4)
+    cdef float*pointer = <float*> read_data(context, 4)
     cdef TAG_Float tag = TAG_Float.__new__(TAG_Float)
     tag.value = pointer[0]
     to_little_endian(&tag.value, 4, little_endian)
     return tag
 
 cdef TAG_Double load_double(buffer_context context, bint little_endian):
-    cdef double * pointer = <double *> read_data(context, 8)
+    cdef double *pointer = <double *> read_data(context, 8)
     cdef TAG_Double tag = TAG_Double.__new__(TAG_Double)
     tag.value = pointer[0]
     to_little_endian(&tag.value, 8, little_endian)
@@ -691,43 +694,43 @@ cdef _TAG_Compound load_compound_tag(buffer_context context, bint little_endian)
     return root_tag
 
 cdef str load_string(buffer_context context, bint little_endian):
-    cdef unsigned short * pointer = <unsigned short *> read_data(context, 2)
+    cdef unsigned short *pointer = <unsigned short *> read_data(context, 2)
     cdef unsigned short length = pointer[0]
     to_little_endian(&length, 2, little_endian)
     b = read_data(context, length)
     return PyUnicode_DecodeUTF8(b, length, "strict")
 
 cdef TAG_Byte_Array load_byte_array(buffer_context context, bint little_endian):
-    cdef int* pointer = <int *> read_data(context, 4)
+    cdef int*pointer = <int *> read_data(context, 4)
     cdef int length = pointer[0]
 
     to_little_endian(&length, 4, little_endian)
 
     byte_length = length
-    cdef char* arr = read_data(context, byte_length)
+    cdef char*arr = read_data(context, byte_length)
     return TAG_Byte_Array(numpy.frombuffer(arr[:byte_length], dtype=TAG_Byte_Array.data_type, count=length))
 
 cdef TAG_Int_Array load_int_array(buffer_context context, bint little_endian):
-    cdef int* pointer = <int*> read_data(context, 4)
+    cdef int*pointer = <int*> read_data(context, 4)
     cdef int length = pointer[0]
     to_little_endian(&length, 4, little_endian)
 
     byte_length = length * 4
-    cdef char* arr = read_data(context, byte_length)
+    cdef char*arr = read_data(context, byte_length)
     return TAG_Int_Array(numpy.frombuffer(arr[:byte_length], dtype=TAG_Int_Array.data_type, count=length))
 
 cdef TAG_Long_Array load_long_array(buffer_context context, bint little_endian):
-    cdef int* pointer = <int*> read_data(context, 4)
+    cdef int*pointer = <int*> read_data(context, 4)
     cdef int length = pointer[0]
     to_little_endian(&length, 4, little_endian)
 
     byte_length = length * 8
-    cdef char* arr = read_data(context, byte_length)
+    cdef char*arr = read_data(context, byte_length)
     return TAG_Long_Array(numpy.frombuffer(arr[:byte_length], dtype=TAG_Long_Array.data_type, count=length))
 
 cdef _TAG_List load_list(buffer_context context, bint little_endian):
     cdef char list_type = read_data(context, 1)[0]
-    cdef int* pointer = <int*> read_data(context, 4)
+    cdef int*pointer = <int*> read_data(context, 4)
     cdef int length = pointer[0]
     to_little_endian(&length, 4, little_endian)
 
@@ -739,7 +742,7 @@ cdef _TAG_List load_list(buffer_context context, bint little_endian):
 
     return tag
 
-cdef inline void cwrite(object obj, char* buf, size_t length):
+cdef inline void cwrite(object obj, char*buf, size_t length):
     obj.write(buf[:length])
 
 cdef save_tag_id(char tag_id, object buffer):
@@ -750,14 +753,14 @@ cdef void save_tag_name(str name, object buffer, bint little_endian):
 
 cdef void save_string(bytes value, object buffer, bint little_endian):
     cdef short length = <short> len(value)
-    cdef char* s = value
+    cdef char*s = value
     to_little_endian(&length, 2, little_endian)
     cwrite(buffer, <char*> &length, 2)
     cwrite(buffer, s, len(value))
 
 cdef void save_array(object value, object buffer, char size, bint little_endian):
     value = value.tostring()
-    cdef char* s = value
+    cdef char*s = value
     cdef int length = <int> len(value) // size
     to_little_endian(&length, 4, little_endian)
     cwrite(buffer, <char*> &length, 4)
@@ -827,8 +830,10 @@ cdef void save_tag_value(_TAG_Value tag, object buf, bint little_endian):
 def unpickle_nbt(tag_id, tag_value):
     return TAG_CLASSES[tag_id](tag_value)
 
+
 class SNBTParseError(Exception):
     pass
+
 
 whitespace = re.compile('[ \t\r\n]*')
 int_numeric = re.compile('-?[0-9]+[bBsSlL]?')

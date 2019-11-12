@@ -324,11 +324,14 @@ class TAG_List(_TAG_Value, MutableSequence):
     value: List[_TAG_Value] = field(default_factory=list)
     list_data_type: int = TAG_BYTE
 
-    def __init__(self, value: list = None):
+    def __init__(self, value: list = None, list_data_type: int = None):
         if value is None:
             self.value = []
         else:
             self.value = value
+
+        self.list_data_type = TAG_BYTE if list_data_type is None else list_data_type
+
         if len(self.value) > 0:
             assert all(self.value[0].tag_id == nested_value.tag_id for nested_value in self.value[1:]), 'All entries in a TAG_List must be of the same type'
             self.list_data_type = self.value[0].tag_id
@@ -472,7 +475,7 @@ class TAG_Compound(_TAG_Value, MutableMapping):
 
 @dataclass
 class NBTFile:
-    value: TAG_Compound = TAG_Compound()
+    value: TAG_Compound = field(default_factory=TAG_Compound)
     name: str = ""
 
     def __getitem__(self, key: str) -> _TAG_Value:
@@ -695,7 +698,7 @@ def from_snbt(snbt: str) -> _TAG_Value:
                         index = match.end()
 
                     index = strip_comma(index, "]")
-                data = array_type(np.asarray(array, dtype=array_type.data_type))
+                data = array_type(np.asarray(array, dtype=array_type.big_endian_data_type))
             else:
                 # list
                 array = []
@@ -716,7 +719,7 @@ def from_snbt(snbt: str) -> _TAG_Value:
                 if first_data_type is None:
                     data = TAG_List()
                 else:
-                    data = TAG_List(array, first_data_type.tag_id)
+                    data = TAG_List(array, list_data_type=first_data_type.tag_id)
 
             # skip the ]
             index += 1

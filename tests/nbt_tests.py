@@ -58,6 +58,8 @@ class AbstractNBTTest:
             test_dat = os.path.join(TESTS_DIR, f'test.{self.nbt.__name__}.dat')
             bigtest = os.path.join(TESTS_DIR, f"bigtest.{self.nbt.__name__}.dat")
             little_endian = os.path.join(TESTS_DIR, f'little_endian.{self.nbt.__name__}.dat')
+            big_test_little_endian = os.path.join(TESTS_DIR, f'big_test_little_endian.{self.nbt.__name__}.nbt')
+            le_as_be = os.path.join(TESTS_DIR, f'little_endian_as_big_endian.{self.nbt.__name__}.nbt')
 
             if os.path.exists(test_dat):
                 os.remove(test_dat)
@@ -67,6 +69,12 @@ class AbstractNBTTest:
 
             if os.path.exists(little_endian):
                 os.remove(little_endian)
+
+            if os.path.exists(big_test_little_endian):
+                os.remove(big_test_little_endian)
+
+            if os.path.exists(le_as_be):
+                os.remove(le_as_be)
 
         def test_load(self):
             self.assertIsInstance(self.level_root_tag, self.nbt.NBTFile)
@@ -104,6 +112,25 @@ class AbstractNBTTest:
             le_fp.close()
 
             self.assertEqual(self.little_endian_level_dat, saved_little_endian)
+
+        def test_save_as_little_endian(self):
+            btle_filename = os.path.join(TESTS_DIR, f'big_test_little_endian.{self.nbt.__name__}.nbt')
+            self.big_test.save_to(btle_filename,
+                                  little_endian=True)
+
+            big_test_as_le = self.nbt.load(btle_filename, little_endian=True)
+
+            self.assertEqual(self.big_test, big_test_as_le)
+
+            leabe_filename = os.path.join(TESTS_DIR, f'little_endian_as_big_endian.{self.nbt.__name__}.nbt')
+            self.little_endian_level_dat.save_to(leabe_filename)
+
+            le_as_be = self.nbt.load(leabe_filename)
+
+            self.assertEqual(self.little_endian_level_dat, le_as_be)
+
+
+
 
 
 @unittest.skipUnless(TEST_CYTHON_LIB, "Cythonized library not available")

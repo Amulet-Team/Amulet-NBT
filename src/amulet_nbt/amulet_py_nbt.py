@@ -205,6 +205,12 @@ class _TAG_Array(_TAG_Value):
     little_endian_data_type: ClassVar[Any]
     value: np.ndarray = np.zeros(0)
 
+    def __init__(self, input_value: Union[list, np.ndarray]):
+        if isinstance(input_value, list):
+            self.value = np.array(input_value, self.big_endian_data_type)
+        else:
+            self.value = input_value
+
     def __eq__(self, other: _TAG_Array):
         return (
             self.tag_id == other.tag_id and np.array_equal(self.value, other.value)
@@ -226,7 +232,7 @@ class _TAG_Array(_TAG_Value):
         )
         context.offset += string_len * data_type.itemsize + 4
 
-        return cls(value=value)
+        return cls(value)
 
     def write_value(self, buffer, little_endian=False):
         data_type = self.little_endian_data_type if little_endian else self.big_endian_data_type

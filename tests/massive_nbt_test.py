@@ -1,6 +1,8 @@
 import amulet_nbt
 import numpy
 
+test_ = amulet_nbt.NBTFile(value=amulet_nbt.TAG_Compound(), name='hello')
+
 test = amulet_nbt.NBTFile(name='hello')  # fill with an empty compound if not defined
 
 # the nbt objects with no inputs
@@ -56,7 +58,7 @@ test['numpyDtypedTestLongArray'] = amulet_nbt.TAG_Long_Array(numpy.array([i for 
 # test the extremes of the array types
 # byte array tested above
 test['numpyExtremeTestIntArray'] = amulet_nbt.TAG_Int_Array(numpy.array([-2**31, (2**31)-1], dtype=numpy.int))
-test['numpyExtremeTestLongArray'] = amulet_nbt.TAG_Long_Array(numpy.array([-2**63, (2**63)-1], dtype=numpy.int))
+test['numpyExtremeTestLongArray'] = amulet_nbt.TAG_Long_Array(numpy.array([-2**63, (2**63)-1], dtype='q'))
 
 test['minByte'] = amulet_nbt.TAG_Byte(-128)
 test['minShort'] = amulet_nbt.TAG_Short(-2**15)
@@ -66,26 +68,26 @@ test['minLong'] = amulet_nbt.TAG_Long(-2**63)
 test['maxByte'] = amulet_nbt.TAG_Byte(127)
 test['maxShort'] = amulet_nbt.TAG_Short(2**15-1)
 test['maxInt'] = amulet_nbt.TAG_Int(2**31-1)
-test['maxLong'] = amulet_nbt.TAG_Long(2**64-1)
+test['maxLong'] = amulet_nbt.TAG_Long(2**63-1)
 
 
 # these should either overflow when setting or error when saving. Test each and if it errors just comment it out
-test['overflowByte'] = amulet_nbt.TAG_Byte(300)
-test['underflowByte'] = amulet_nbt.TAG_Byte(-300)
-test['overflowShort'] = amulet_nbt.TAG_Short(2**16)
-test['underflowShort'] = amulet_nbt.TAG_Short(-2**16)
-test['overflowInt'] = amulet_nbt.TAG_Int(2**32)
-test['underflowInt'] = amulet_nbt.TAG_Int(-2**32)
-test['overflowLong'] = amulet_nbt.TAG_Long(2**64)
-test['underflowLong'] = amulet_nbt.TAG_Long(-2**64)
+# test['overflowByte'] = amulet_nbt.TAG_Byte(300)
+# test['underflowByte'] = amulet_nbt.TAG_Byte(-300)
+# test['overflowShort'] = amulet_nbt.TAG_Short(2**16)
+# test['underflowShort'] = amulet_nbt.TAG_Short(-2**16)
+# test['overflowInt'] = amulet_nbt.TAG_Int(2**32)
+# test['underflowInt'] = amulet_nbt.TAG_Int(-2**32)
+# test['overflowLong'] = amulet_nbt.TAG_Long(2**64)
+# test['underflowLong'] = amulet_nbt.TAG_Long(-2**64)
 
-test['overflowByteArray'] = amulet_nbt.TAG_Byte_Array([-129, 128])
-test['overflowIntArray'] = amulet_nbt.TAG_Int_Array([-2**31-1, 2**31])
-test['overflowLongArray'] = amulet_nbt.TAG_Long_Array([-2**63-1, 2**63])
+# test['overflowByteArray'] = amulet_nbt.TAG_Byte_Array([-129, 128])
+# test['overflowIntArray'] = amulet_nbt.TAG_Int_Array([-2**31-1, 2**31])
+# test['overflowLongArray'] = amulet_nbt.TAG_Long_Array([-2**63-1, 2**63])
 
-test['overflowNumpyByteArray'] = amulet_nbt.TAG_Byte_Array(numpy.array([-129, 128]))
-test['overflowNumpyIntArray'] = amulet_nbt.TAG_Int_Array(numpy.array([-2**31-1, 2**31]))
-test['overflowNumpyLongArray'] = amulet_nbt.TAG_Long_Array(numpy.array([-2**63-1, 2**63]))
+# test['overflowNumpyByteArray'] = amulet_nbt.TAG_Byte_Array(numpy.array([-129, 128]))
+# test['overflowNumpyIntArray'] = amulet_nbt.TAG_Int_Array(numpy.array([-2**31-1, 2**31]))
+# test['overflowNumpyLongArray'] = amulet_nbt.TAG_Long_Array(numpy.array([-2**63-1, 2**63]))
 
 
 # save then load back up and check the data matches
@@ -101,3 +103,4 @@ test_le = amulet_nbt.load('massive_nbt_test_little_endian.nbt', little_endian=Tr
 assert test_be == test
 assert test_be_compressed == test
 assert test_le == test
+print('Finished massive nbt test without issue')

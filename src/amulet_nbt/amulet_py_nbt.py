@@ -203,60 +203,56 @@ class TAG_Double(_TAG_Value):
 class _TAG_Array(_TAG_Value):
     big_endian_data_type: ClassVar[Any]
     little_endian_data_type: ClassVar[Any]
-    data_type: np.dtype = None
     value: np.ndarray = np.zeros(0)
 
     def __eq__(self, other: _TAG_Array):
         return (
-            self.data_type == other.data_type
-            and self.tag_id == other.tag_id
-            and np.array_equal(self.value, other.value)
+            self.tag_id == other.tag_id and np.array_equal(self.value, other.value)
         )
 
     def __len__(self):
         return len(self.value)
 
-    def is_little_endian(self):
-        """
-        Note: for `TAG_Byte_Array` objects, this will always evaluate to True
-        :return: True if the array is little endian, False if it is big endian
-        """
-        return self.data_type == self.little_endian_data_type
-
     @classmethod
     def load_from(cls, context: _BufferContext, little_endian: bool) -> _TAG_Value:
         data_type = cls.little_endian_data_type if little_endian else cls.big_endian_data_type
-        data = context.buffer[context.offset :]
+        data = context.buffer[context.offset:]
         if little_endian:
             (string_len,) = TAG_Int.tag_format_le.unpack_from(data)
         else:
             (string_len,) = TAG_Int.tag_format_be.unpack_from(data)
         value = np.frombuffer(
-            data[4: string_len * data_type.itemsize + 4], data_type
+            data[4: string_len * data_type.itemsize + 4], dtype=data_type
         )
         context.offset += string_len * data_type.itemsize + 4
 
-        return cls(value=value, data_type=data_type)
+        return cls(value=value)
 
     def write_value(self, buffer, little_endian=False):
-        if self.value.dtype != self.data_type:
-            print(f'[Warning] Mismatch array dtype. Expected: {self.data_type.str}, got: {self.value.dtype.str}')
-            self.value = self.value.astype(self.data_type)
-        value = self.value.tostring()
-        buffer.write(pack(f">I{len(value)}s", self.value.size, value))
+        data_type = self.little_endian_data_type if little_endian else self.big_endian_data_type
+        if self.value.dtype != data_type:
+            if self.value.dtype != self.big_endian_data_type if little_endian else self.little_endian_data_type:
+                print(f'[Warning] Mismatch array dtype. Expected: {data_type.str}, got: {self.value.dtype.str}')
+            self.value = self.value.astype(data_type)
+        if little_endian:
+            value = self.value.tostring()
+            buffer.write(pack(f"<I{len(value)}s", self.value.size, value))
+        else:
+            value = self.value.tostring()
+            buffer.write(pack(f">I{len(value)}s", self.value.size, value))
 
 
 @dataclass(eq=False)
 class TAG_Byte_Array(_TAG_Array):
-    big_endian_data_type = little_endian_data_type = np.dtype("uint8")
+    big_endian_data_type = little_endian_data_type = np.dtype("int8")
     tag_id = TAG_BYTE_ARRAY
 
-    def __init__(self, value: np.array = None, data_type: np.dtype = big_endian_data_type):
-        super(TAG_Byte_Array, self).__init__(value, data_type)
+    def __init__(self, value: np.array = None):
+        super(TAG_Byte_Array, self).__init__(value)
         if self.value is None:
-            self.value = np.zeros(0, self.data_type)
-        if self.value.dtype != self.data_type:
-            self.value = self.value.astype(self.data_type)
+            self.value = np.zeros(0, self.big_endian_data_type)
+        if self.value.dtype != self.big_endian_data_type:
+            self.value = self.value.astype(self.big_endian_data_type)
 
     def to_snbt(self):
         return f"[B;{'B, '.join(str(val) for val in self.value)}B]"
@@ -264,16 +260,16 @@ class TAG_Byte_Array(_TAG_Array):
 
 @dataclass(eq=False)
 class TAG_Int_Array(_TAG_Array):
-    big_endian_data_type = np.dtype(">u4")
-    little_endian_data_type = np.dtype("<u4")
+    big_endian_data_type = np.dtype(">i4")
+    little_endian_data_type = np.dtype("<i4")
     tag_id = TAG_INT_ARRAY
 
-    def __init__(self, value: np.array = None, data_type: np.dtype = big_endian_data_type):
-        super(TAG_Int_Array, self).__init__(value, data_type)
+    def __init__(self, value: np.array = None):
+        super(TAG_Int_Array, self).__init__(value)
         if self.value is None:
-            self.value = np.zeros(0, self.data_type)
-        if self.value.dtype != self.data_type:
-            self.value = self.value.astype(self.data_type)
+            self.value = np.zeros(0, self.big_endian_data_type)
+        if self.value.dtype != self.big_endian_data_type:
+            self.value = self.value.astype(self.big_endian_data_type)
 
     def to_snbt(self):
         return f"[I;{', '.join(str(val) for val in self.value)}]"
@@ -281,16 +277,16 @@ class TAG_Int_Array(_TAG_Array):
 
 @dataclass(eq=False)
 class TAG_Long_Array(_TAG_Array):
-    big_endian_data_type = np.dtype(">q")
-    little_endian_data_type = np.dtype("<q")
+    big_endian_data_type = np.dtype(">i8")
+    little_endian_data_type = np.dtype("<i8")
     tag_id = TAG_LONG_ARRAY
 
-    def __init__(self, value: np.array = None, data_type: np.dtype = big_endian_data_type):
-        super(TAG_Long_Array, self).__init__(value, data_type)
+    def __init__(self, value: np.array = None):
+        super(TAG_Long_Array, self).__init__(value)
         if self.value is None:
-            self.value = np.zeros(0, self.data_type)
-        if self.value.dtype != self.data_type:
-            self.value = self.value.astype(self.data_type)
+            self.value = np.zeros(0, self.big_endian_data_type)
+        if self.value.dtype != self.big_endian_data_type:
+            self.value = self.value.astype(self.big_endian_data_type)
 
     def to_snbt(self):
         return f"[L;{', '.join(str(val) for val in self.value)}]"
@@ -359,8 +355,8 @@ class TAG_List(_TAG_Value, MutableSequence):
 
     def __eq__(self, other):
         return (
-            self.list_data_type == other.list_data_type
-            and self.tag_id == other.tag_id
+            self.tag_id == other.tag_id
+            and self.list_data_type == other.list_data_type
             and all(map(lambda i1, i2: i1 == i2, self.value, other.value))
         )
 

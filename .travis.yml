@@ -27,6 +27,7 @@ install:
 
 script:
   - python3 tests/nbt_tests.py || python tests/nbt_tests.py
+  - python3 tests/massive_nbt_test.py || python tests/massive_nbt_test.py
 
 deploy:
   provider: releases

@@ -147,6 +147,7 @@ cpdef bytes safe_gunzip(bytes data):
     return data
 
 cdef class _TAG_Value:
+    cdef dict __dict__
     cdef public char tag_id
 
     def copy(self):
@@ -317,7 +318,7 @@ cdef class _TAG_Array(_TAG_Value):
         return self.data_type == self.little_endian_data_type
 
 cdef class TAG_Byte_Array(_TAG_Array):
-    big_endian_data_type = little_endian_data_type = data_type = numpy.dtype("u1")
+    big_endian_data_type = little_endian_data_type = data_type = numpy.dtype("int8")
 
     def __cinit__(self):
         self.tag_id = _ID_BYTE_ARRAY
@@ -325,6 +326,9 @@ cdef class TAG_Byte_Array(_TAG_Array):
     def __init__(self, object value = None):
         if value is None:
             value = numpy.zeros((0,), self.data_type)
+
+        if isinstance(value, list):
+            value = numpy.array(value, self.data_type)
 
         self.value = value
 
@@ -336,6 +340,10 @@ cdef class TAG_Byte_Array(_TAG_Array):
         return f"[B;{'B, '.join(tags)}B]"
 
     cdef void save_value(self, buffer, little_endian):
+        #print("Byte_Array", self.data_type)
+        #print(self.value)
+        #print(type(self.value))
+        #print('-' * 16)
         if self.value.dtype != self.data_type:
             print(f'[Warning] Mismatch array dtype. Expected: {self.data_type.str}, got: {self.value.dtype.str}')
             self.value = self.value.astype(self.data_type)
@@ -352,6 +360,9 @@ cdef class TAG_Int_Array(_TAG_Array):
         self.data_type = self.little_endian_data_type if little_endian else self.big_endian_data_type
         if value is None:
             value = numpy.zeros((0,), self.data_type)
+
+        if isinstance(value, list):
+            value = numpy.array(value, self.data_type)
 
         self.value = value
 
@@ -380,6 +391,9 @@ cdef class TAG_Long_Array(_TAG_Array):
 
         if value is None:
             value = numpy.zeros((0,), self.data_type)
+
+        if isinstance(value, list):
+            value = numpy.array(value, self.data_type)
 
         self.value = value
 
@@ -538,8 +552,8 @@ class TAG_Compound(_TAG_Compound, MutableMapping):
 
 class NBTFile:
 
-    def __init__(self, tag=None, str name=""):
-        self.value = TAG_Compound() if tag is None else tag
+    def __init__(self, value=None, str name=""):
+        self.value = TAG_Compound() if value is None else value
         self.name = name
 
     def to_snbt(self) -> str:
@@ -717,7 +731,8 @@ cdef TAG_Int_Array load_int_array(buffer_context context, bint little_endian):
 
     byte_length = length * 4
     cdef char*arr = read_data(context, byte_length)
-    return TAG_Int_Array(numpy.frombuffer(arr[:byte_length], dtype=TAG_Int_Array.data_type, count=length))
+    cdef object data_type = TAG_Int_Array.little_endian_data_type if little_endian else TAG_Int_Array.big_endian_data_type
+    return TAG_Int_Array(numpy.frombuffer(arr[:byte_length], dtype=data_type, count=length))
 
 cdef TAG_Long_Array load_long_array(buffer_context context, bint little_endian):
     cdef int*pointer = <int*> read_data(context, 4)
@@ -726,7 +741,8 @@ cdef TAG_Long_Array load_long_array(buffer_context context, bint little_endian):
 
     byte_length = length * 8
     cdef char*arr = read_data(context, byte_length)
-    return TAG_Long_Array(numpy.frombuffer(arr[:byte_length], dtype=TAG_Long_Array.data_type, count=length))
+    cdef object data_type = TAG_Int_Array.little_endian_data_type if little_endian else TAG_Int_Array.big_endian_data_type
+    return TAG_Long_Array(numpy.frombuffer(arr[:byte_length], dtype=data_type, count=length))
 
 cdef _TAG_List load_list(buffer_context context, bint little_endian):
     cdef char list_type = read_data(context, 1)[0]

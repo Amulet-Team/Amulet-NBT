@@ -569,6 +569,18 @@ class NBTFile:
         else:
             filename_or_buffer.write(data)
 
+    def __eq__(self, other):
+        return isinstance(other, NBTFile) and self.value.__eq__(other.value)
+
+    def __len__(self) -> int:
+        return self.value.__len__()
+
+    def keys(self):
+        return self.value.keys()
+
+    def values(self):
+        self.value.values()
+
     def __getitem__(self, key: str) -> _TAG_Value:
         return self.value[key]
 
@@ -578,20 +590,8 @@ class NBTFile:
     def __delitem__(self, key: str):
         del self.value[key]
 
-    def keys(self):
-        return self.value.keys()
-
-    def values(self):
-        self.value.values()
-
     def __contains__(self, key: str) -> bool:
         return key in self.value
-
-    def __len__(self) -> int:
-        return self.value.__len__()
-
-    def __eq__(self, other):
-        return self.value.__eq__(other.value)
 
 
 def load(filename="", buffer=None, compressed=True, count: int = None, offset: bool = False, little_endian: bool = False

@@ -478,26 +478,8 @@ class NBTFile:
     value: TAG_Compound = field(default_factory=TAG_Compound)
     name: str = ""
 
-    def __getitem__(self, key: str) -> _TAG_Value:
-        return self.value[key]
-
-    def __setitem__(self, key: str, tag: _TAG_Value):
-        self.value[key] = tag
-
-    def __delitem__(self, key: str):
-        del self.value[key]
-
-    def keys(self):
-        return self.value.keys()
-
-    def values(self):
-        self.value.values()
-
-    def __contains__(self, key: str) -> bool:
-        return key in self.value
-
-    def __len__(self) -> int:
-        return self.value.__len__()
+    def to_snbt(self):
+        return self.value.to_snbt()
 
     def save_to(
         self, filename_or_buffer=None, compressed=True, little_endian=False
@@ -524,8 +506,29 @@ class NBTFile:
         else:
             filename_or_buffer.write(data)
 
-    def to_snbt(self):
-        return self.value.to_snbt()
+    def __eq__(self, other):
+        return isinstance(other, NBTFile) and self.value.__eq__(other.value)
+
+    def __len__(self) -> int:
+        return self.value.__len__()
+
+    def keys(self):
+        return self.value.keys()
+
+    def values(self):
+        self.value.values()
+
+    def __getitem__(self, key: str) -> _TAG_Value:
+        return self.value[key]
+
+    def __setitem__(self, key: str, tag: _TAG_Value):
+        self.value[key] = tag
+
+    def __delitem__(self, key: str):
+        del self.value[key]
+
+    def __contains__(self, key: str) -> bool:
+        return key in self.value
 
 
 def safe_gunzip(data):

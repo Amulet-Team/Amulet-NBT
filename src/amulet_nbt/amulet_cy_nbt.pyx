@@ -159,7 +159,7 @@ cdef class _TAG_Value:
         raise NotImplementedError()
 
     def __repr__(self):
-        return f"{self.__class__.__name__}({self.value})"
+        return f"{self.__class__.__name__}(value={self.value})"
 
     def __reduce__(self):
         return unpickle_nbt, (self.tag_id, self.value)
@@ -297,7 +297,7 @@ cdef class TAG_String(_TAG_Value):
         return isinstance(other, self.__class__) and self.value == other.value
 
     def __repr__(self):
-        return f"{self.__class__.__name__}(\"{self.value}\")"
+        return f"TAG_String(value='{self.value}')"
 
 cdef class _TAG_Array(_TAG_Value):
     cdef public object value
@@ -469,6 +469,9 @@ cdef class _TAG_List(_TAG_Value):
     def __eq__(self, other) -> bool:
         return isinstance(other, self.__class__) and self.value == other.value
 
+    def __repr__(self):
+        return f"TAG_List(value={self.value}, list_data_type={self.list_data_type})"
+
 
 class TAG_List(_TAG_List, MutableSequence):
     pass
@@ -539,6 +542,7 @@ class TAG_Compound(_TAG_Compound, MutableMapping):
 
 
 class NBTFile:
+    __annotations__ = {'value': 'TAG_Compound', 'name': 'str'}
 
     def __init__(self, value=None, str name=""):
         self.value = TAG_Compound() if value is None else value
@@ -592,6 +596,9 @@ class NBTFile:
 
     def __contains__(self, key: str) -> bool:
         return key in self.value
+
+    def __repr__(self):
+        return f"NBTFile(value={self.value}, name='{self.name}')"
 
 
 def load(filename="", buffer=None, compressed=True, count: int = None, offset: bool = False, little_endian: bool = False

@@ -180,6 +180,10 @@ class CrossCompatabilityTest(unittest.TestCase):
     def test_cross_to_snbt(self):
         self.assertEqual(self.cy_level_root_tag.to_snbt(), self.py_level_root_tag.to_snbt())
 
+    def test_cross_repr(self):
+        self.maxDiff = None
+        self.assertEqual(repr(self.cy_level_root_tag), repr(self.py_level_root_tag))
+
 
 if __name__ == '__main__':
     unittest.main()

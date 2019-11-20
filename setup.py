@@ -9,9 +9,7 @@ import numpy
 
 include_dirs = [numpy.get_include()]
 
-sys.path.append((os.path.join(os.path.dirname(__file__), "src")))
-
-packages = find_packages("src")
+packages = find_packages(include=["amulet_nbt*",])
 
 requirements_fp = open(os.path.join('.', 'requirements.txt'))
 
@@ -22,7 +20,7 @@ requirements_fp.close()
 extensions = [
     Extension(
         name="amulet_nbt.amulet_cy_nbt",
-        sources=["src/amulet_nbt/amulet_cy_nbt.pyx"]
+        sources=["amulet_nbt/amulet_cy_nbt.pyx"]
     )
 ]
 
@@ -33,7 +31,6 @@ setup(
     name="amulet_nbt",
     version=module_version,
     packages=packages,
-    package_dir={"": "src"},
     include_dirs=include_dirs,
     include_package_data=True,
     install_requires=depends_on,

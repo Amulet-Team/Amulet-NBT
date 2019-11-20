@@ -35,7 +35,7 @@ TAG_COMPOUND = 10
 TAG_INT_ARRAY = 11
 TAG_LONG_ARRAY = 12
 
-NBT_WRAPPER = "python"
+IMPLEMENTATION = "python"
 
 _string_len_fmt_be = Struct(">H")
 _string_len_fmt_le = Struct("<H")
@@ -213,7 +213,7 @@ class _TAG_Array(_TAG_Value):
 
     def __eq__(self, other: _TAG_Array):
         return (
-            self.tag_id == other.tag_id and np.array_equal(self.value, other.value)
+                self.tag_id == other.tag_id and np.array_equal(self.value, other.value)
         )
 
     def __len__(self):
@@ -333,7 +333,8 @@ class TAG_List(_TAG_Value, MutableSequence):
         self.list_data_type = TAG_BYTE if list_data_type is None else list_data_type
 
         if len(self.value) > 0:
-            assert all(self.value[0].tag_id == nested_value.tag_id for nested_value in self.value[1:]), 'All entries in a TAG_List must be of the same type'
+            assert all(self.value[0].tag_id == nested_value.tag_id for nested_value in
+                       self.value[1:]), 'All entries in a TAG_List must be of the same type'
             self.list_data_type = self.value[0].tag_id
 
     def __getitem__(self, index: int) -> _TAG_Value:
@@ -373,9 +374,9 @@ class TAG_List(_TAG_Value, MutableSequence):
 
     def __eq__(self, other):
         return (
-            self.tag_id == other.tag_id
-            and self.list_data_type == other.list_data_type
-            and all(map(lambda i1, i2: i1 == i2, self.value, other.value))
+                self.tag_id == other.tag_id
+                and self.list_data_type == other.list_data_type
+                and all(map(lambda i1, i2: i1 == i2, self.value, other.value))
         )
 
     @classmethod
@@ -482,7 +483,7 @@ class NBTFile:
         return self.value.to_snbt()
 
     def save_to(
-        self, filename_or_buffer=None, compressed=True, little_endian=False
+            self, filename_or_buffer=None, compressed=True, little_endian=False
     ) -> Optional[Union[BytesIO, bytes]]:
         buffer = BytesIO()
         self.value.save(buffer, self.name, little_endian)
@@ -540,7 +541,7 @@ def safe_gunzip(data):
 
 
 def load(
-    filename="", buffer=None, compressed=True, count: int = None, offset: bool = False, little_endian: bool = False
+        filename="", buffer=None, compressed=True, count: int = None, offset: bool = False, little_endian: bool = False
 ) -> Union[NBTFile, Tuple[Union[NBTFile, List[NBTFile]], int]]:
     if filename:
         buffer = open(filename, "rb")
@@ -631,11 +632,11 @@ def from_snbt(snbt: str) -> _TAG_Value:
             index += 1
             end_index = index
             while not (  # keep running this until
-                snbt[end_index]
-                == quote  # the last character is a quote of the same type
-                and not (  # and there is an even number of backslashes before it (including 0)
+                    snbt[end_index]
+                    == quote  # the last character is a quote of the same type
+                    and not (  # and there is an even number of backslashes before it (including 0)
                     len(snbt[:end_index]) - len(snbt[:end_index].rstrip("\\"))
-                )
+            )
             ):
                 end_index += 1
 
@@ -674,7 +675,7 @@ def from_snbt(snbt: str) -> _TAG_Value:
         elif snbt[index] == "[":
             index += 1
             index = strip_whitespace(index)
-            if snbt[index : index + 2] in {"B;", "I;", "L;"}:
+            if snbt[index: index + 2] in {"B;", "I;", "L;"}:
                 # array
                 array = []
                 array_type_chr = snbt[index]

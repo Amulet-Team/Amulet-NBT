@@ -39,7 +39,7 @@ ID_INT_ARRAY = _ID_INT_ARRAY
 ID_LONG_ARRAY = _ID_LONG_ARRAY
 ID_MAX = _ID_MAX
 
-NBT_WRAPPER = "amulet"
+IMPLEMENTATION = "cython"
 
 cpdef dict TAG_CLASSES = {
     ID_BYTE: TAG_Byte,
@@ -574,7 +574,7 @@ class NBTFile:
             filename_or_buffer.write(data)
 
     def __eq__(self, other):
-        return isinstance(other, NBTFile) and self.value.__eq__(other.value)
+        return isinstance(other, NBTFile) and self.value.__eq__(other.value) and self.name == other.name
 
     def __len__(self) -> int:
         return self.value.__len__()
@@ -584,6 +584,9 @@ class NBTFile:
 
     def values(self):
         self.value.values()
+
+    def items(self):
+        return self.value.items()
 
     def __getitem__(self, key: str) -> _TAG_Value:
         return self.value[key]

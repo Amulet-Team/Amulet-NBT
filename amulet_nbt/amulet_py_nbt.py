@@ -531,7 +531,7 @@ class NBTFile:
     def __contains__(self, key: str) -> bool:
         return key in self.value
 
-    def pop(self, k):
+    def pop(self, k) -> _TAG_Value:
         self.value.pop(k)
 
 

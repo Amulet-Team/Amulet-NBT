@@ -603,7 +603,7 @@ class NBTFile:
     def __repr__(self):
         return f"NBTFile(value={self.value}, name='{self.name}')"
     
-    def pop(self, k):
+    def pop(self, k) -> _TAG_Value:
         self.value.pop(k)
 
 

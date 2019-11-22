@@ -532,7 +532,7 @@ class NBTFile:
         return key in self.value
 
     def pop(self, k) -> _TAG_Value:
-        self.value.pop(k)
+        return self.value.pop(k)
 
 
 def safe_gunzip(data):

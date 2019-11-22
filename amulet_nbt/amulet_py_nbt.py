@@ -531,6 +531,9 @@ class NBTFile:
     def __contains__(self, key: str) -> bool:
         return key in self.value
 
+    def pop(self, k):
+        self.value.pop(k)
+
 
 def safe_gunzip(data):
     try:

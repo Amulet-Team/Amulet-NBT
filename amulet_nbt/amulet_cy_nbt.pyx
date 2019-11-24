@@ -305,7 +305,6 @@ cdef class _TAG_Array(_TAG_Value):
     def __eq__(self, other: _TAG_Array) -> bool:
         return isinstance(other, self.__class__) and self.tag_id == other.tag_id and numpy.array_equal(self.value,
                                                                                                        other.value)
-
     def __len__(self):
         return len(self.value)
 
@@ -322,6 +321,9 @@ cdef class TAG_Byte_Array(_TAG_Array):
         if isinstance(value, list):
             value = numpy.array(value, self.big_endian_data_type)
 
+        if value.dtype != self.big_endian_data_type:
+            value = value.astype(self.big_endian_data_type)
+
         self.value = value
 
     cpdef str to_snbt(self):
@@ -334,7 +336,8 @@ cdef class TAG_Byte_Array(_TAG_Array):
     cdef void save_value(self, buffer, little_endian):
         data_type = self.little_endian_data_type if little_endian else self.big_endian_data_type
         if self.value.dtype != data_type:
-            print(f'[Warning] Mismatch array dtype. Expected: {data_type.str}, got: {self.value.dtype.str}')
+            if self.value.dtype != self.big_endian_data_type if little_endian else self.little_endian_data_type:
+                print(f'[Warning] Mismatch array dtype. Expected: {data_type.str}, got: {self.value.dtype.str}')
             self.value = self.value.astype(data_type)
         save_array(self.value, buffer, 1, little_endian)
 
@@ -352,6 +355,9 @@ cdef class TAG_Int_Array(_TAG_Array):
         if isinstance(value, list):
             value = numpy.array(value, self.big_endian_data_type)
 
+        if value.dtype != self.big_endian_data_type:
+            value = value.astype(self.big_endian_data_type)
+
         self.value = value
 
     cpdef str to_snbt(self):
@@ -364,7 +370,8 @@ cdef class TAG_Int_Array(_TAG_Array):
     cdef void save_value(self, buffer, little_endian):
         data_type = self.little_endian_data_type if little_endian else self.big_endian_data_type
         if self.value.dtype != data_type:
-            print(f'[Warning] Mismatch array dtype. Expected: {data_type.str}, got: {self.value.dtype.str}')
+            if self.value.dtype != self.big_endian_data_type if little_endian else self.little_endian_data_type:
+                print(f'[Warning] Mismatch array dtype. Expected: {data_type.str}, got: {self.value.dtype.str}')
             self.value = self.value.astype(data_type)
         save_array(self.value, buffer, 4, little_endian)
 
@@ -382,6 +389,9 @@ cdef class TAG_Long_Array(_TAG_Array):
         if isinstance(value, list):
             value = numpy.array(value, self.big_endian_data_type)
 
+        if value.dtype != self.big_endian_data_type:
+            value = value.astype(self.big_endian_data_type)
+
         self.value = value
 
     cpdef str to_snbt(self):
@@ -394,7 +404,8 @@ cdef class TAG_Long_Array(_TAG_Array):
     cdef void save_value(self, buffer, little_endian):
         data_type = self.little_endian_data_type if little_endian else self.big_endian_data_type
         if self.value.dtype != data_type:
-            print(f'[Warning] Mismatch array dtype. Expected: {data_type.str}, got: {self.value.dtype.str}')
+            if self.value.dtype != self.big_endian_data_type if little_endian else self.little_endian_data_type:
+                print(f'[Warning] Mismatch array dtype. Expected: {data_type.str}, got: {self.value.dtype.str}')
             self.value = self.value.astype(data_type)
         save_array(self.value, buffer, 8, little_endian)
 

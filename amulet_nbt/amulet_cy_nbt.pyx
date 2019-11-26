@@ -275,6 +275,9 @@ cdef class TAG_Double(_TAG_Value):
 def escape(string: str):
     return string.replace('\\', '\\\\').replace('"', '\\"')
 
+def unescape(string: str):
+    return string.replace('\\"', '"').replace("\\\\", "\\")
+
 cdef class TAG_String(_TAG_Value):
     cdef public unicode value
 
@@ -915,7 +918,7 @@ cdef tuple _capture_string(str snbt, int index):
         end_index = index
         while not (snbt[end_index] == quote and not (len(snbt[:end_index]) - len(snbt[:end_index].rstrip('\\')))):
             end_index += 1
-        val = snbt[index:end_index]
+        val = unescape(snbt[index:end_index])
         index = end_index + 1
     else:
         strict_str = False

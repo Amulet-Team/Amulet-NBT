@@ -298,8 +298,13 @@ class TAG_Long_Array(_TAG_Array):
         return f"[L;{', '.join(str(val) for val in self.value)}]"
 
 
+# TODO: these could probably do with being improved
 def escape(string: str):
     return string.replace("\\", "\\\\").replace('"', '\\"')
+
+
+def unescape(string: str):
+    return string.replace('\\"', '"').replace("\\\\", "\\")
 
 
 @dataclass
@@ -643,7 +648,7 @@ def from_snbt(snbt: str) -> _TAG_Value:
             ):
                 end_index += 1
 
-            val = snbt[index:end_index]
+            val = unescape(snbt[index:end_index])
             index = end_index + 1
         else:
             strict_str = False

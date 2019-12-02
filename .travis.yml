@@ -1,4 +1,4 @@
-lanuage: python
+language: python
 matrix:
   include:
     - name: "Python 3.7.1 on Linux"
@@ -41,3 +41,6 @@ deploy:
   on:
     branch: master
     tags: true
+
+notifications:
+  email: false

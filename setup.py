@@ -33,6 +33,7 @@ setup(
     include_dirs=include_dirs,
     include_package_data=True,
     install_requires=depends_on,
+    setup_requires=depends_on,
     ext_modules=cythonize(extensions, language_level=3, annotate=True),
     zip_safe=False
 )

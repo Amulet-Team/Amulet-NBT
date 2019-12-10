@@ -1003,7 +1003,10 @@ cdef tuple _parse_snbt_recursive(str snbt, int index=0):
                 array.append(nested_data)
                 index = _strip_comma(snbt, index, ']')
 
-            data = TAG_List(array, first_data_type().tag_id)
+            if first_data_type is None:
+                data = TAG_List()
+            else:
+                data = TAG_List(array, first_data_type().tag_id)
 
         # skip the ]
         index += 1

@@ -2,7 +2,7 @@ import gzip
 import zlib
 from collections.abc import MutableMapping, MutableSequence
 from io import BytesIO
-from typing import Optional, Union, Tuple, List
+from typing import Optional, Union, Tuple, List, Iterator
 
 import numpy
 from cpython cimport PyUnicode_DecodeUTF8, PyList_Append
@@ -450,7 +450,7 @@ cdef class _TAG_List(_TAG_Value):
             self.check_tag(value)
         self.value[index] = value
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[_TAG_Value]:
         return iter(self.value)
 
     def __len__(self) -> int:
@@ -538,7 +538,7 @@ cdef class _TAG_Compound(_TAG_Value):
     def __delitem__(self, key: str):
         del self.value[key]
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[_TAG_Value]:
         yield from self.value
 
     def __contains__(self, key: str) -> bool:

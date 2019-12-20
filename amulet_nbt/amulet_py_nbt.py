@@ -16,6 +16,7 @@ from typing import (
     Tuple,
     Optional,
     Union,
+    Iterator,
 )
 import re
 
@@ -357,7 +358,7 @@ class TAG_List(_TAG_Value, MutableSequence):
     def __len__(self) -> int:
         return self.value.__len__()
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[_TAG_Value]:
         return self.value.__iter__()
 
     def _modify_type(self, value_type):
@@ -461,7 +462,7 @@ class TAG_Compound(_TAG_Value, MutableMapping):
     def __len__(self) -> int:
         return self.value.__len__()
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[_TAG_Value]:
         return self.value.__iter__()
 
     def __eq__(self, other):

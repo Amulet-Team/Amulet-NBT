@@ -414,7 +414,7 @@ cdef class TAG_Long_Array(_TAG_Array):
 
 cdef class _TAG_List(_TAG_Value):
     cdef public list value
-    cdef char list_data_type
+    cdef public char list_data_type
 
     def __cinit__(self):
         self.tag_id = _ID_LIST

@@ -617,8 +617,8 @@ class NBTFile:
     def __repr__(self):
         return f"NBTFile(value={self.value}, name='{self.name}')"
 
-    def pop(self, k) -> _TAG_Value:
-        return self.value.pop(k)
+    def pop(self, k, default=None) -> _TAG_Value:
+        return self.value.pop(k, default)
 
 
 def load(filename="", buffer=None, compressed=True, count: int = None, offset: bool = False, little_endian: bool = False

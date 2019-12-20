@@ -159,7 +159,7 @@ cdef class _TAG_Value:
         raise NotImplementedError()
 
     def __repr__(self):
-        return f"{self.__class__.__name__}(value={self.value})"
+        return self.to_snbt()
 
     def __reduce__(self):
         return unpickle_nbt, (self.tag_id, self.value)
@@ -298,9 +298,6 @@ cdef class TAG_String(_TAG_Value):
 
     def __eq__(self, other) -> bool:
         return isinstance(other, self.__class__) and self.value == other.value
-
-    def __repr__(self):
-        return f"TAG_String(value='{self.value}')"
 
 cdef class _TAG_Array(_TAG_Value):
     cdef public object value
@@ -483,9 +480,6 @@ cdef class _TAG_List(_TAG_Value):
     def __eq__(self, other) -> bool:
         return isinstance(other, self.__class__) and self.value == other.value
 
-    def __repr__(self):
-        return f"TAG_List(value={self.value}, list_data_type={self.list_data_type})"
-
 
 class TAG_List(_TAG_List, MutableSequence):
     pass
@@ -615,7 +609,7 @@ class NBTFile:
         return key in self.value
 
     def __repr__(self):
-        return f"NBTFile(value={self.value}, name='{self.name}')"
+        return f'NBTFile("{self.name}":{self.to_snbt()})'
 
     def pop(self, k, default=None) -> _TAG_Value:
         return self.value.pop(k, default)

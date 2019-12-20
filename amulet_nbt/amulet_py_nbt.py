@@ -133,6 +133,9 @@ class _TAG_Value:
     def to_snbt(self) -> str:
         raise NotImplemented
 
+    def __repr__(self):
+        return self.to_snbt()
+
 
 @dataclass(eq=False)
 class TAG_Byte(_TAG_Value):
@@ -539,6 +542,9 @@ class NBTFile:
 
     def pop(self, k, default=None) -> _TAG_Value:
         return self.value.pop(k, default)
+
+    def __repr__(self):
+        return f'NBTFile("{self.name}":{self.to_snbt()})'
 
 
 def safe_gunzip(data):

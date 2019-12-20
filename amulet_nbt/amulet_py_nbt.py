@@ -129,7 +129,7 @@ class _TAG_Value:
         else:
             buffer.write(self.tag_format_be.pack(self.value))
 
-    def to_snbt(self):
+    def to_snbt(self) -> str:
         raise NotImplemented
 
 
@@ -140,7 +140,7 @@ class TAG_Byte(_TAG_Value):
     tag_format_be = Struct(">b")
     tag_format_le = Struct("<b")
 
-    def to_snbt(self):
+    def to_snbt(self) -> str:
         return f"{self.value}b"
 
 
@@ -151,7 +151,7 @@ class TAG_Short(_TAG_Value):
     tag_format_be = Struct(">h")
     tag_format_le = Struct("<h")
 
-    def to_snbt(self):
+    def to_snbt(self) -> str:
         return f"{self.value}s"
 
 
@@ -162,7 +162,7 @@ class TAG_Int(_TAG_Value):
     tag_format_be = Struct(">i")
     tag_format_le = Struct("<i")
 
-    def to_snbt(self):
+    def to_snbt(self) -> str:
         return f"{self.value}"
 
 
@@ -173,7 +173,7 @@ class TAG_Long(_TAG_Value):
     tag_format_be = Struct(">q")
     tag_format_le = Struct("<q")
 
-    def to_snbt(self):
+    def to_snbt(self) -> str:
         return f"{self.value}L"
 
 
@@ -184,7 +184,7 @@ class TAG_Float(_TAG_Value):
     tag_format_be = Struct(">f")
     tag_format_le = Struct("<f")
 
-    def to_snbt(self):
+    def to_snbt(self) -> str:
         return f"{self.value}f"
 
 
@@ -195,7 +195,7 @@ class TAG_Double(_TAG_Value):
     tag_format_be = Struct(">d")
     tag_format_le = Struct("<d")
 
-    def to_snbt(self):
+    def to_snbt(self) -> str:
         return f"{self.value}d"
 
 
@@ -260,7 +260,7 @@ class TAG_Byte_Array(_TAG_Array):
         if self.value.dtype != self.big_endian_data_type:
             self.value = self.value.astype(self.big_endian_data_type)
 
-    def to_snbt(self):
+    def to_snbt(self) -> str:
         return f"[B;{'B, '.join(str(val) for val in self.value)}B]"
 
 
@@ -277,7 +277,7 @@ class TAG_Int_Array(_TAG_Array):
         if self.value.dtype != self.big_endian_data_type:
             self.value = self.value.astype(self.big_endian_data_type)
 
-    def to_snbt(self):
+    def to_snbt(self) -> str:
         return f"[I;{', '.join(str(val) for val in self.value)}]"
 
 
@@ -294,7 +294,7 @@ class TAG_Long_Array(_TAG_Array):
         if self.value.dtype != self.big_endian_data_type:
             self.value = self.value.astype(self.big_endian_data_type)
 
-    def to_snbt(self):
+    def to_snbt(self) -> str:
         return f"[L;{', '.join(str(val) for val in self.value)}]"
 
 
@@ -319,7 +319,7 @@ class TAG_String(_TAG_Value):
     def write_value(self, buffer, little_endian=False):
         write_string(buffer, self.value, little_endian)
 
-    def to_snbt(self):
+    def to_snbt(self) -> str:
         return f'"{escape(self.value)}"'
 
 
@@ -413,7 +413,7 @@ class TAG_List(_TAG_Value, MutableSequence):
         for item in self.value:
             item.write_value(buffer, little_endian)
 
-    def to_snbt(self):
+    def to_snbt(self) -> str:
         return f"[{', '.join(elem.to_snbt() for elem in self.value)}]"
 
 
@@ -467,7 +467,7 @@ class TAG_Compound(_TAG_Value, MutableMapping):
     def __eq__(self, other):
         return self.tag_id == other.tag_id and self.value == other.value
 
-    def to_snbt(self):
+    def to_snbt(self) -> str:
         # TODO: make this faster
         data = (
             (
@@ -484,7 +484,7 @@ class NBTFile:
     value: TAG_Compound = field(default_factory=TAG_Compound)
     name: str = ""
 
-    def to_snbt(self):
+    def to_snbt(self) -> str:
         return self.value.to_snbt()
 
     def save_to(

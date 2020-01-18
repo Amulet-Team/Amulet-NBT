@@ -860,6 +860,10 @@ cdef void save_tag_value(_TAG_Value tag, object buf, bint little_endian):
         (<TAG_Long_Array> tag).save_value(buf, little_endian)
 
 def unpickle_nbt(tag_id, tag_value):
+    if tag_id == ID_COMPOUND:
+        return TAG_Compound(tag_value)
+    elif tag_id == ID_LIST:
+        return TAG_List(tag_value)
     return TAG_CLASSES[tag_id](tag_value)
 
 

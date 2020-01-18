@@ -2,7 +2,7 @@ import gzip
 import zlib
 from collections.abc import MutableMapping, MutableSequence
 from io import BytesIO
-from typing import Optional, Union, Tuple, List
+from typing import Optional, Union, Tuple, List, Iterator
 
 import numpy
 from cpython cimport PyUnicode_DecodeUTF8, PyList_Append
@@ -159,7 +159,7 @@ cdef class _TAG_Value:
         raise NotImplementedError()
 
     def __repr__(self):
-        return f"{self.__class__.__name__}(value={self.value})"
+        return self.to_snbt()
 
     def __reduce__(self):
         return unpickle_nbt, (self.tag_id, self.value)
@@ -299,9 +299,6 @@ cdef class TAG_String(_TAG_Value):
     def __eq__(self, other) -> bool:
         return isinstance(other, self.__class__) and self.value == other.value
 
-    def __repr__(self):
-        return f"TAG_String(value='{self.value}')"
-
 cdef class _TAG_Array(_TAG_Value):
     cdef public object value
 
@@ -414,7 +411,7 @@ cdef class TAG_Long_Array(_TAG_Array):
 
 cdef class _TAG_List(_TAG_Value):
     cdef public list value
-    cdef char list_data_type
+    cdef public char list_data_type
 
     def __cinit__(self):
         self.tag_id = _ID_LIST
@@ -450,7 +447,7 @@ cdef class _TAG_List(_TAG_Value):
             self.check_tag(value)
         self.value[index] = value
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[_TAG_Value]:
         return iter(self.value)
 
     def __len__(self) -> int:
@@ -482,9 +479,6 @@ cdef class _TAG_List(_TAG_Value):
 
     def __eq__(self, other) -> bool:
         return isinstance(other, self.__class__) and self.value == other.value
-
-    def __repr__(self):
-        return f"TAG_List(value={self.value}, list_data_type={self.list_data_type})"
 
 
 class TAG_List(_TAG_List, MutableSequence):
@@ -538,7 +532,7 @@ cdef class _TAG_Compound(_TAG_Value):
     def __delitem__(self, key: str):
         del self.value[key]
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[_TAG_Value]:
         yield from self.value
 
     def __contains__(self, key: str) -> bool:
@@ -615,10 +609,10 @@ class NBTFile:
         return key in self.value
 
     def __repr__(self):
-        return f"NBTFile(value={self.value}, name='{self.name}')"
+        return f'NBTFile("{self.name}":{self.to_snbt()})'
 
-    def pop(self, k) -> _TAG_Value:
-        return self.value.pop(k)
+    def pop(self, k, default=None) -> _TAG_Value:
+        return self.value.pop(k, default)
 
 
 def load(filename="", buffer=None, compressed=True, count: int = None, offset: bool = False, little_endian: bool = False

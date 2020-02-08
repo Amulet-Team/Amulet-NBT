@@ -543,6 +543,9 @@ class NBTFile:
     def pop(self, k, default=None) -> _TAG_Value:
         return self.value.pop(k, default)
 
+    def get(self, k, default=None) -> _TAG_Value:
+        return self.value.get(k, default)
+
     def __repr__(self):
         return f'NBTFile("{self.name}":{self.to_snbt()})'
 

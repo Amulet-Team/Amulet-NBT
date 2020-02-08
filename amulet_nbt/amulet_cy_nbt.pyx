@@ -614,6 +614,9 @@ class NBTFile:
     def pop(self, k, default=None) -> _TAG_Value:
         return self.value.pop(k, default)
 
+    def get(self, k, default=None) -> _TAG_Value:
+        return self.value.get(k, default)
+
 
 def load(filename="", buffer=None, compressed=True, count: int = None, offset: bool = False, little_endian: bool = False
          ) -> Union[NBTFile, Tuple[Union[NBTFile, List[NBTFile]], int]]:

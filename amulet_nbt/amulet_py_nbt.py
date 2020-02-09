@@ -551,10 +551,11 @@ class NBTFile:
 
 
 def safe_gunzip(data):
-    try:
-        data = gzip.GzipFile(fileobj=BytesIO(data)).read()
-    except IOError as e:
-        pass
+    if data[:2] == b'\x1f\x8b':  # if the first two bytes are this it should be gzipped
+        try:
+            data = gzip.GzipFile(fileobj=BytesIO(data)).read()
+        except IOError as e:
+            pass
     return data
 
 

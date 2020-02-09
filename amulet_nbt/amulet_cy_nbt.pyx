@@ -140,10 +140,11 @@ cdef _TAG_Value load_tag(char tagID, buffer_context context, bint little_endian)
         return load_long_array(context, little_endian)
 
 cpdef bytes safe_gunzip(bytes data):
-    try:
-        data = gzip.GzipFile(fileobj=BytesIO(data)).read()
-    except (IOError, zlib.error) as e:
-        pass
+    if data[:2] == b'\x1f\x8b':  # if the first two bytes are this it should be gzipped
+        try:
+            data = gzip.GzipFile(fileobj=BytesIO(data)).read()
+        except (IOError, zlib.error) as e:
+            pass
     return data
 
 cdef class _TAG_Value:

@@ -117,7 +117,7 @@ class _TAG_Value:
     def write_tag_id(self, buffer):
         buffer.write(bytes(chr(self.tag_id), "utf-8"))
 
-    def save(self, buffer, name="", little_endian=False):
+    def write_payload(self, buffer, name="", little_endian=False):
         self.write_tag_id(buffer)
         write_string(buffer, name, little_endian)
         self.write_value(buffer, little_endian)
@@ -444,7 +444,7 @@ class TAG_Compound(_TAG_Value, MutableMapping):
 
     def write_value(self, buffer, little_endian=False):
         for key, value in self.value.items():
-            value.save(buffer, key, little_endian)
+            value.write_payload(buffer, key, little_endian)
 
         buffer.write(bytes(chr(TAG_END), "utf-8"))
 
@@ -493,7 +493,7 @@ class NBTFile:
             self, filename_or_buffer=None, compressed=True, little_endian=False
     ) -> Optional[Union[BytesIO, bytes]]:
         buffer = BytesIO()
-        self.value.save(buffer, self.name, little_endian)
+        self.value.write_payload(buffer, self.name, little_endian)
 
         data = buffer.getvalue()
 

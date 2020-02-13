@@ -519,7 +519,7 @@ cdef class _TAG_Compound(_TAG_Value):
             stag.save_value(buffer, little_endian)
         save_tag_id(_ID_END, buffer)
 
-    def save(self, buffer, name="", little_endian=False):
+    def write_payload(self, buffer, name="", little_endian=False):
         save_tag_id(self.tag_id, buffer)
         save_tag_name(name, buffer, little_endian)
         save_tag_value(self, buffer, little_endian)
@@ -562,7 +562,7 @@ class NBTFile:
 
     def save_to(self, filename_or_buffer=None, compressed=True, little_endian=False) -> Optional[BytesIO]:
         buffer = BytesIO()
-        self.value.save(buffer, self.name, little_endian)
+        self.value.write_payload(buffer, self.name, little_endian)
         data = buffer.getvalue()
 
         if compressed:

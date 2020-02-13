@@ -117,11 +117,9 @@ class _TAG_Value:
     def write_tag_id(self, buffer):
         buffer.write(bytes(chr(self.tag_id), "utf-8"))
 
-    def save(self, buffer, name=None, little_endian=False):
+    def save(self, buffer, name="", little_endian=False):
         self.write_tag_id(buffer)
-        if name is not None:
-            write_string(buffer, name, little_endian)
-
+        write_string(buffer, name, little_endian)
         self.write_value(buffer, little_endian)
 
     def write_value(self, buffer, little_endian=False):

@@ -156,7 +156,7 @@ cdef class _TAG_Value:
     cpdef str to_snbt(self):
         raise NotImplementedError()
 
-    cdef void save_value(self, buffer, little_endian):
+    cdef void write_value(self, buffer, little_endian):
         raise NotImplementedError()
 
     def __repr__(self):
@@ -177,7 +177,7 @@ cdef class TAG_Byte(_TAG_Value):
     cpdef str to_snbt(self):
         return f"{self.value}b"
 
-    cdef void save_value(self, buffer, little_endian):
+    cdef void write_value(self, buffer, little_endian):
         save_byte(self.value, buffer)
 
     def __eq__(self, other) -> bool:
@@ -195,7 +195,7 @@ cdef class TAG_Short(_TAG_Value):
     cpdef str to_snbt(self):
         return f"{self.value}s"
 
-    cdef void save_value(self, buffer, little_endian):
+    cdef void write_value(self, buffer, little_endian):
         save_short(self.value, buffer, little_endian)
 
     def __eq__(self, other) -> bool:
@@ -213,7 +213,7 @@ cdef class TAG_Int(_TAG_Value):
     cpdef str to_snbt(self):
         return f"{self.value}"
 
-    cdef void save_value(self, buffer, little_endian):
+    cdef void write_value(self, buffer, little_endian):
         save_int(self.value, buffer, little_endian)
 
     def __eq__(self, other) -> bool:
@@ -231,7 +231,7 @@ cdef class TAG_Long(_TAG_Value):
     cpdef str to_snbt(self):
         return f"{self.value}L"
 
-    cdef void save_value(self, buffer, little_endian):
+    cdef void write_value(self, buffer, little_endian):
         save_long(self.value, buffer, little_endian)
 
     def __eq__(self, other) -> bool:
@@ -249,7 +249,7 @@ cdef class TAG_Float(_TAG_Value):
     cpdef str to_snbt(self):
         return f"{self.value}f"
 
-    cdef void save_value(self, buffer, little_endian):
+    cdef void write_value(self, buffer, little_endian):
         save_float(self.value, buffer, little_endian)
 
     def __eq__(self, other) -> bool:
@@ -267,7 +267,7 @@ cdef class TAG_Double(_TAG_Value):
     cpdef str to_snbt(self):
         return f"{self.value}d"
 
-    cdef void save_value(self, buffer, little_endian):
+    cdef void write_value(self, buffer, little_endian):
         save_double(self.value, buffer, little_endian)
 
     def __eq__(self, other) -> bool:
@@ -294,7 +294,7 @@ cdef class TAG_String(_TAG_Value):
     cpdef str to_snbt(self):
         return f"\"{escape(self.value)}\""
 
-    cdef void save_value(self, buffer, little_endian):
+    cdef void write_value(self, buffer, little_endian):
         save_string(self.value.encode("utf-8"), buffer, little_endian)
 
     def __eq__(self, other) -> bool:
@@ -334,7 +334,7 @@ cdef class TAG_Byte_Array(_TAG_Array):
             tags.append(str(elem))
         return f"[B;{'B, '.join(tags)}B]"
 
-    cdef void save_value(self, buffer, little_endian):
+    cdef void write_value(self, buffer, little_endian):
         data_type = self.little_endian_data_type if little_endian else self.big_endian_data_type
         if self.value.dtype != data_type:
             if self.value.dtype != self.big_endian_data_type if little_endian else self.little_endian_data_type:
@@ -368,7 +368,7 @@ cdef class TAG_Int_Array(_TAG_Array):
             tags.append(str(elem))
         return f"[I;{', '.join(tags)}]"
 
-    cdef void save_value(self, buffer, little_endian):
+    cdef void write_value(self, buffer, little_endian):
         data_type = self.little_endian_data_type if little_endian else self.big_endian_data_type
         if self.value.dtype != data_type:
             if self.value.dtype != self.big_endian_data_type if little_endian else self.little_endian_data_type:
@@ -402,7 +402,7 @@ cdef class TAG_Long_Array(_TAG_Array):
             tags.append(str(elem))
         return f"[L;{', '.join(tags)}]"
 
-    cdef void save_value(self, buffer, little_endian):
+    cdef void write_value(self, buffer, little_endian):
         data_type = self.little_endian_data_type if little_endian else self.big_endian_data_type
         if self.value.dtype != data_type:
             if self.value.dtype != self.big_endian_data_type if little_endian else self.little_endian_data_type:
@@ -465,7 +465,7 @@ cdef class _TAG_List(_TAG_Value):
     def __delitem__(self, key: int):
         del self.value[key]
 
-    cdef void save_value(self, buffer, little_endian):
+    cdef void write_value(self, buffer, little_endian):
         cdef char list_type = self.list_data_type
 
         save_tag_id(list_type, buffer)
@@ -509,14 +509,14 @@ cdef class _TAG_Compound(_TAG_Value):
         # data = ((f'"{name}"' if not name.isalnum() else name, elem.to_snbt()) for name, elem in self.value.items())
         # return f"{{{', '.join(f'{name}: {elem}' for name, elem in data)}}}"
 
-    cdef void save_value(self, buffer, little_endian):
+    cdef void write_value(self, buffer, little_endian):
         cdef str key
         cdef _TAG_Value stag
 
         for key, stag in self.value.items():
             save_tag_id(stag.tag_id, buffer)
             save_tag_name(key, buffer, little_endian)
-            stag.save_value(buffer, little_endian)
+            stag.write_value(buffer, little_endian)
         save_tag_id(_ID_END, buffer)
 
     def write_payload(self, buffer, name="", little_endian=False):
@@ -822,40 +822,40 @@ cdef void save_double(double value, object buffer, bint little_endian):
 cdef void save_tag_value(_TAG_Value tag, object buf, bint little_endian):
     cdef char tagID = tag.tag_id
     if tagID == _ID_BYTE:
-        (<TAG_Byte> tag).save_value(buf, little_endian)
+        (<TAG_Byte> tag).write_value(buf, little_endian)
 
     if tagID == _ID_SHORT:
-        (<TAG_Short> tag).save_value(buf, little_endian)
+        (<TAG_Short> tag).write_value(buf, little_endian)
 
     if tagID == _ID_INT:
-        (<TAG_Int> tag).save_value(buf, little_endian)
+        (<TAG_Int> tag).write_value(buf, little_endian)
 
     if tagID == _ID_LONG:
-        (<TAG_Long> tag).save_value(buf, little_endian)
+        (<TAG_Long> tag).write_value(buf, little_endian)
 
     if tagID == _ID_FLOAT:
-        (<TAG_Float> tag).save_value(buf, little_endian)
+        (<TAG_Float> tag).write_value(buf, little_endian)
 
     if tagID == _ID_DOUBLE:
-        (<TAG_Double> tag).save_value(buf, little_endian)
+        (<TAG_Double> tag).write_value(buf, little_endian)
 
     if tagID == _ID_BYTE_ARRAY:
-        (<TAG_Byte_Array> tag).save_value(buf, little_endian)
+        (<TAG_Byte_Array> tag).write_value(buf, little_endian)
 
     if tagID == _ID_STRING:
-        (<TAG_String> tag).save_value(buf, little_endian)
+        (<TAG_String> tag).write_value(buf, little_endian)
 
     if tagID == _ID_LIST:
-        (<_TAG_List> tag).save_value(buf, little_endian)
+        (<_TAG_List> tag).write_value(buf, little_endian)
 
     if tagID == _ID_COMPOUND:
-        (<_TAG_Compound> tag).save_value(buf, little_endian)
+        (<_TAG_Compound> tag).write_value(buf, little_endian)
 
     if tagID == _ID_INT_ARRAY:
-        (<TAG_Int_Array> tag).save_value(buf, little_endian)
+        (<TAG_Int_Array> tag).write_value(buf, little_endian)
 
     if tagID == _ID_LONG_ARRAY:
-        (<TAG_Long_Array> tag).save_value(buf, little_endian)
+        (<TAG_Long_Array> tag).write_value(buf, little_endian)
 
 def unpickle_nbt(tag_id, tag_value):
     if tag_id == ID_COMPOUND:

@@ -190,7 +190,7 @@ class TAG_Float(_TAG_Value):
     tag_format_le = Struct("<f")
 
     def to_snbt(self) -> str:
-        return f"{self.value}f"
+        return f"{self.value:.20f}".rstrip('0') + "f"
 
 
 @dataclass(eq=False)
@@ -201,7 +201,7 @@ class TAG_Double(_TAG_Value):
     tag_format_le = Struct("<d")
 
     def to_snbt(self) -> str:
-        return f"{self.value}d"
+        return f"{self.value:.20f}".rstrip('0') + "d"
 
 
 @dataclass(eq=False)

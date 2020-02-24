@@ -249,7 +249,7 @@ cdef class TAG_Float(_TAG_Value):
         self.value = value
 
     cpdef str to_snbt(self):
-        return f"{self.value}f"
+        return f"{self.value:.20f}".rstrip('0') + "f"
 
     cdef void write_value(self, buffer, little_endian):
         write_float(self.value, buffer, little_endian)
@@ -267,7 +267,7 @@ cdef class TAG_Double(_TAG_Value):
         self.value = value
 
     cpdef str to_snbt(self):
-        return f"{self.value}d"
+        return f"{self.value:.20f}".rstrip('0') + "d"
 
     cdef void write_value(self, buffer, little_endian):
         write_double(self.value, buffer, little_endian)

@@ -135,6 +135,9 @@ class _TAG_Value:
         return self.to_snbt()
 
 
+BaseValueType = _TAG_Value
+
+
 @dataclass(eq=False)
 class TAG_Byte(_TAG_Value):
     value: int = 0
@@ -248,6 +251,9 @@ class _TAG_Array(_TAG_Value):
         else:
             value = self.value.tostring()
             buffer.write(pack(f">I{len(value)}s", self.value.size, value))
+
+
+BaseArrayType = _TAG_Array
 
 
 @dataclass(eq=False)

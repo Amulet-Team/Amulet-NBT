@@ -165,6 +165,8 @@ cdef class _TAG_Value:
     def __reduce__(self):
         return unpickle_nbt, (self.tag_id, self.value)
 
+BaseValueType = _TAG_Value
+
 cdef class TAG_Byte(_TAG_Value):
     cdef public char value
 
@@ -308,6 +310,8 @@ cdef class _TAG_Array(_TAG_Value):
                                                                                                        other.value)
     def __len__(self):
         return len(self.value)
+
+BaseArrayType = _TAG_Array
 
 cdef class TAG_Byte_Array(_TAG_Array):
     big_endian_data_type = little_endian_data_type = numpy.dtype("int8")

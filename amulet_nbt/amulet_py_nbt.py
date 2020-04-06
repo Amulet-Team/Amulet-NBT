@@ -17,6 +17,8 @@ from typing import (
     Optional,
     Union,
     Iterator,
+    overload,
+    Iterable
 )
 import re
 
@@ -98,7 +100,7 @@ class _TAG_Value:
         self.value = self.format(value)
 
     def __eq__(self, other):
-        return self.value == other.value and self.tag_id == other.tag_id
+        return self.tag_id == other.tag_id and self.value == other.value
 
     @classmethod
     def load_from(cls, context: _BufferContext, little_endian: bool) -> _TAG_Value:
@@ -332,65 +334,66 @@ class TAG_String(_TAG_Value):
 
 
 @dataclass
-class TAG_List(_TAG_Value, MutableSequence):
+class TAG_List(_TAG_Value):
     tag_id = TAG_LIST
     value: List[_TAG_Value] = field(default_factory=list)
     list_data_type: int = TAG_BYTE
 
-    def __init__(self, value: list = None, list_data_type: int = None):
-        if value is None:
-            self.value = []
-        else:
-            self.value = value
+    def __init__(self, value: list = None, list_data_type: int = TAG_BYTE):
+        self.list_data_type = list_data_type
+        self.value = []
+        if value:
+            self._check_tag(value[0])
+            self.value = list(value)
+            map(self._check_tag, value[1:])
 
-        self.list_data_type = TAG_BYTE if list_data_type is None else list_data_type
-
-        if len(self.value) > 0:
-            assert all(self.value[0].tag_id == nested_value.tag_id for nested_value in
-                       self.value[1:]), 'All entries in a TAG_List must be of the same type'
-            self.list_data_type = self.value[0].tag_id
+    def _check_tag(self, value: _TAG_Value):
+        if not isinstance(value, _TAG_Value):
+            raise ValueError(f"Invalid type {value.__class__.__name__} for TAG_List. Must be an NBT object.")
+        if not self.value:
+            self.list_data_type = value.tag_id
+        elif value.tag_id != self.list_data_type:
+            raise TypeError(
+                f"Invalid type {value.__class__.__name__} for TAG_List({TAG_CLASSES[self.list_data_type].__name__})"
+            )
 
     def __getitem__(self, index: int) -> _TAG_Value:
-        return self.value.__getitem__(index)
+        return self.value[index]
 
+    @overload
     def __setitem__(self, index: int, value: _TAG_Value):
-        self.value.__setitem__(index, value)
+        ...
+
+    @overload
+    def __setitem__(self, index: slice, value: Iterable[_TAG_Value]):
+        ...
+
+    def __setitem__(self, index, value):
+        if isinstance(index, slice):
+            map(self._check_tag, value)
+        else:
+            self._check_tag(value)
+        self.value[index] = value
 
     def __delitem__(self, index: int):
-        self.value.__delitem__(index)
-
-    def __contains__(self, item: _TAG_Value) -> bool:
-        return self.value.__contains__(item)
-
-    def __len__(self) -> int:
-        return self.value.__len__()
+        del self.value[index]
 
     def __iter__(self) -> Iterator[_TAG_Value]:
-        return self.value.__iter__()
+        return iter(self.value)
 
-    def _modify_type(self, value_type):
-        if value_type != self.list_data_type:
-            if len(self.value) == 0:
-                self.list_data_type = value_type
-            else:
-                raise NBTFormatError(
-                    f"TAG_List contains type {self.list_data_type} but insert was given {value_type}"
-                )
+    def __contains__(self, item: _TAG_Value) -> bool:
+        return item in self.value
+
+    def __len__(self) -> int:
+        return len(self.value)
 
     def insert(self, index: int, value: _TAG_Value):
-        self._modify_type(value.tag_id)
+        self._check_tag(value)
         self.value.insert(index, value)
 
     def append(self, value: _TAG_Value) -> None:
-        self._modify_type(value.tag_id)
+        self._check_tag(value)
         self.value.append(value)
-
-    def __eq__(self, other):
-        return (
-                self.tag_id == other.tag_id
-                and self.list_data_type == other.list_data_type
-                and all(map(lambda i1, i2: i1 == i2, self.value, other.value))
-        )
 
     @classmethod
     def load_from(cls, context: _BufferContext, little_endian: bool) -> _TAG_Value:

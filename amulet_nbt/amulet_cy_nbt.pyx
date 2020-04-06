@@ -2,7 +2,7 @@ import gzip
 import zlib
 from collections.abc import MutableMapping, MutableSequence
 from io import BytesIO
-from typing import Optional, Union, Tuple, List, Iterator
+from typing import Optional, Union, Tuple, List, Iterator, overload, Iterable
 
 import numpy
 from cpython cimport PyUnicode_DecodeUTF8, PyList_Append
@@ -158,6 +158,9 @@ cdef class _TAG_Value:
 
     cdef void write_value(self, buffer, little_endian):
         raise NotImplementedError()
+
+    def __eq__(self, other):
+        return self.tag_id == other.tag_id and self.value == other.value
 
     def __repr__(self):
         return self.to_snbt()
@@ -422,52 +425,60 @@ cdef class _TAG_List(_TAG_Value):
         self.tag_id = _ID_LIST
 
     def __init__(self, list value = None, char list_data_type = 1):
-        self.value = []
         self.list_data_type = list_data_type
-
+        self.value = []
         if value:
-            self.list_data_type = value[0].tag_id
-            map(self.check_tag, value)
+            self._check_tag(value[0])
             self.value = list(value)
+            map(self._check_tag, value[1:])
 
-    cpdef str to_snbt(self):
-        cdef _TAG_Value elem
-        cdef list tags = []
-        for elem in self.value:
-            tags.append(elem.to_snbt())
-        return f"[{', '.join(tags)}]"
-
-    def check_tag(self, value):
-        if value.tag_id != self.list_data_type:
-            raise TypeError("Invalid type %s for TAG_List(%s)" % (value.__class__, TAG_CLASSES[self.list_data_type]))
+    def _check_tag(self, value: _TAG_Value):
+        if not isinstance(value, _TAG_Value):
+            raise ValueError(f"Invalid type {value.__class__.__name__} TAG_List. Must be an NBT object.")
+        if not self.value:
+            self.list_data_type = value.tag_id
+        elif value.tag_id != self.list_data_type:
+            raise TypeError(
+                f"Invalid type {value.__class__.__name__} for TAG_List({TAG_CLASSES[self.list_data_type].__name__})"
+            )
 
     def __getitem__(self, index: int) -> _TAG_Value:
         return self.value[index]
 
-    def __setitem__(self, index: Union[int, slice], value: _TAG_Value):
+    @overload
+    def __setitem__(self, index: int, value: _TAG_Value):
+        ...
+
+    @overload
+    def __setitem__(self, index: slice, value: Iterable[_TAG_Value]):
+        ...
+
+    def __setitem__(self, index, value):
         if isinstance(index, slice):
-            for tag in value:
-                self.check_tag(tag)
+            map(self._check_tag, value)
         else:
-            self.check_tag(value)
+            self._check_tag(value)
         self.value[index] = value
+
+    def __delitem__(self, index: int):
+        del self.value[index]
 
     def __iter__(self) -> Iterator[_TAG_Value]:
         return iter(self.value)
 
+    def __contains__(self, item: _TAG_Value) -> bool:
+        return item in self.value
+
     def __len__(self) -> int:
         return len(self.value)
 
-    def insert(self, index: int, tag: _TAG_Value):
-        if len(self.value) == 0:
-            self.list_data_type = tag.tag_id
-        else:
-            self.check_tag(tag)
+    def insert(self, index: int, value: _TAG_Value):
+        self._check_tag(value)
+        self.value.insert(index, value)
 
-        self.value.insert(index, tag)
-
-    def __delitem__(self, key: int):
-        del self.value[key]
+    def append(self, value: _TAG_Value) -> None:
+        self._check_tag(value)
+        self.value.append(value)
 
     cdef void write_value(self, buffer, little_endian):
         cdef char list_type = self.list_data_type
@@ -482,8 +493,12 @@ cdef class _TAG_List(_TAG_Value):
                                                                                                    list_type))
             write_tag_value(subtag, buffer, little_endian)
 
-    def __eq__(self, other) -> bool:
-        return isinstance(other, self.__class__) and self.value == other.value
+    cpdef str to_snbt(self):
+        cdef _TAG_Value elem
+        cdef list tags = []
+        for elem in self.value:
+            tags.append(elem.to_snbt())
+        return f"[{', '.join(tags)}]"
 
 
 class TAG_List(_TAG_List, MutableSequence):

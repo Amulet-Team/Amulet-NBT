@@ -434,7 +434,7 @@ cdef class _TAG_List(_TAG_Value):
 
     def _check_tag(self, value: _TAG_Value):
         if not isinstance(value, _TAG_Value):
-            raise ValueError(f"Invalid type {value.__class__.__name__} TAG_List. Must be an NBT object.")
+            raise TypeError(f"Invalid type {value.__class__.__name__} TAG_List. Must be an NBT object.")
         if not self.value:
             self.list_data_type = value.tag_id
         elif value.tag_id != self.list_data_type:
@@ -513,6 +513,18 @@ cdef class _TAG_Compound(_TAG_Value):
 
     def __init__(self, dict value = None):
         self.value = value or {}
+        map(self._check_key, self.value.keys())
+        map(self._check_tag, self.value.values())
+
+    @staticmethod
+    def _check_key(key: str):
+        if not isinstance(key, str):
+            raise TypeError(f"TAG_Compound key must be a string. Got {key.__class__.__name__}")
+
+    @staticmethod
+    def _check_tag(value: _TAG_Value):
+        if not isinstance(value, _TAG_Value):
+            raise TypeError(f"Invalid type {value.__class__.__name__} for TAG_List. Must be an NBT object.")
 
     cpdef str to_snbt(self):
         cdef str k
@@ -546,8 +558,10 @@ cdef class _TAG_Compound(_TAG_Value):
     def __getitem__(self, key: str) -> _TAG_Value:
         return self.value[key]
 
-    def __setitem__(self, key: str, tag: _TAG_Value):
-        self.value[key] = tag
+    def __setitem__(self, key: str, value: _TAG_Value):
+        self._check_key(key)
+        self._check_tag(value)
+        self.value[key] = value
 
     def __delitem__(self, key: str):
         del self.value[key]
@@ -560,9 +574,6 @@ cdef class _TAG_Compound(_TAG_Value):
 
     def __len__(self) -> int:
         return self.value.__len__()
-
-    def __eq__(self, other) -> bool:
-        return self.value.__eq__(other.value)
 
 
 class TAG_Compound(_TAG_Compound, MutableMapping):

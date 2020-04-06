@@ -349,7 +349,7 @@ class TAG_List(_TAG_Value):
 
     def _check_tag(self, value: _TAG_Value):
         if not isinstance(value, _TAG_Value):
-            raise ValueError(f"Invalid type {value.__class__.__name__} for TAG_List. Must be an NBT object.")
+            raise TypeError(f"Invalid type {value.__class__.__name__} for TAG_List. Must be an NBT object.")
         if not self.value:
             self.list_data_type = value.tag_id
         elif value.tag_id != self.list_data_type:
@@ -433,6 +433,21 @@ class TAG_Compound(_TAG_Value, MutableMapping):
     tag_id = TAG_COMPOUND
     value: Dict[str, _TAG_Value] = field(default_factory=dict)
 
+    def __init__(self, value: dict = None):
+        self.value = value or {}
+        map(self._check_key, self.value.keys())
+        map(self._check_tag, self.value.values())
+
+    @staticmethod
+    def _check_key(key: str):
+        if not isinstance(key, str):
+            raise TypeError(f"TAG_Compound key must be a string. Got {key.__class__.__name__}")
+
+    @staticmethod
+    def _check_tag(value: _TAG_Value):
+        if not isinstance(value, _TAG_Value):
+            raise TypeError(f"Invalid type {value.__class__.__name__} for TAG_List. Must be an NBT object.")
+
     @classmethod
     def load_from(cls, context: _BufferContext, little_endian: bool) -> TAG_Compound:
         tag = cls()
@@ -461,22 +476,21 @@ class TAG_Compound(_TAG_Value, MutableMapping):
         return self.value.__getitem__(key)
 
     def __setitem__(self, key: str, value: _TAG_Value):
+        self._check_key(key)
+        self._check_tag(value)
         self.value.__setitem__(key, value)
 
     def __delitem__(self, key: str):
         self.value.__delitem__(key)
+
+    def __iter__(self) -> Iterator[str]:
+        return self.value.__iter__()
 
     def __contains__(self, item: str) -> bool:
         return self.value.__contains__(item)
 
     def __len__(self) -> int:
         return self.value.__len__()
-
-    def __iter__(self) -> Iterator[_TAG_Value]:
-        return self.value.__iter__()
-
-    def __eq__(self, other):
-        return self.tag_id == other.tag_id and self.value == other.value
 
     def to_snbt(self) -> str:
         # TODO: make this faster

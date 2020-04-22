@@ -58,6 +58,21 @@ cpdef dict TAG_CLASSES = {
 
 _NON_QUOTED_KEY = re.compile(r"^[a-zA-Z0-9-]+$")
 
+AnyNBT = Union[
+    'TAG_Byte',
+    'TAG_Short',
+    'TAG_Int',
+    'TAG_Long',
+    'TAG_Float',
+    'TAG_Double',
+    'TAG_Byte_Array',
+    'TAG_String',
+    'TAG_List',
+    'TAG_Compound',
+    'TAG_Int_Array',
+    'TAG_Long_Array'
+]
+
 
 # Utility Methods
 class NBTFormatError(ValueError):
@@ -432,7 +447,7 @@ cdef class _TAG_List(_TAG_Value):
             self.value = list(value)
             map(self._check_tag, value[1:])
 
-    def _check_tag(self, value: _TAG_Value):
+    def _check_tag(self, value: AnyNBT):
         if not isinstance(value, _TAG_Value):
             raise TypeError(f"Invalid type {value.__class__.__name__} TAG_List. Must be an NBT object.")
         if not self.value:
@@ -442,15 +457,15 @@ cdef class _TAG_List(_TAG_Value):
                 f"Invalid type {value.__class__.__name__} for TAG_List({TAG_CLASSES[self.list_data_type].__name__})"
             )
 
-    def __getitem__(self, index: int) -> _TAG_Value:
+    def __getitem__(self, index: int) -> AnyNBT:
         return self.value[index]
 
     @overload
-    def __setitem__(self, index: int, value: _TAG_Value):
+    def __setitem__(self, index: int, value: AnyNBT):
         ...
 
     @overload
-    def __setitem__(self, index: slice, value: Iterable[_TAG_Value]):
+    def __setitem__(self, index: slice, value: Iterable[AnyNBT]):
         ...
 
     def __setitem__(self, index, value):
@@ -463,20 +478,20 @@ cdef class _TAG_List(_TAG_Value):
     def __delitem__(self, index: int):
         del self.value[index]
 
-    def __iter__(self) -> Iterator[_TAG_Value]:
+    def __iter__(self) -> Iterator[AnyNBT]:
         return iter(self.value)
 
-    def __contains__(self, item: _TAG_Value) -> bool:
+    def __contains__(self, item: AnyNBT) -> bool:
         return item in self.value
 
     def __len__(self) -> int:
         return len(self.value)
 
-    def insert(self, index: int, value: _TAG_Value):
+    def insert(self, index: int, value: AnyNBT):
         self._check_tag(value)
         self.value.insert(index, value)
 
-    def append(self, value: _TAG_Value) -> None:
+    def append(self, value: AnyNBT) -> None:
         self._check_tag(value)
         self.value.append(value)
 
@@ -522,7 +537,7 @@ cdef class _TAG_Compound(_TAG_Value):
             raise TypeError(f"TAG_Compound key must be a string. Got {key.__class__.__name__}")
 
     @staticmethod
-    def _check_tag(value: _TAG_Value):
+    def _check_tag(value: AnyNBT):
         if not isinstance(value, _TAG_Value):
             raise TypeError(f"Invalid type {value.__class__.__name__} for TAG_List. Must be an NBT object.")
 
@@ -555,10 +570,10 @@ cdef class _TAG_Compound(_TAG_Value):
         write_tag_name(name, buffer, little_endian)
         write_tag_value(self, buffer, little_endian)
 
-    def __getitem__(self, key: str) -> _TAG_Value:
+    def __getitem__(self, key: str) -> AnyNBT:
         return self.value[key]
 
-    def __setitem__(self, key: str, value: _TAG_Value):
+    def __setitem__(self, key: str, value: AnyNBT):
         self._check_key(key)
         self._check_tag(value)
         self.value[key] = value
@@ -566,7 +581,7 @@ cdef class _TAG_Compound(_TAG_Value):
     def __delitem__(self, key: str):
         del self.value[key]
 
-    def __iter__(self) -> Iterator[_TAG_Value]:
+    def __iter__(self) -> Iterator[AnyNBT]:
         yield from self.value
 
     def __contains__(self, key: str) -> bool:
@@ -627,10 +642,10 @@ class NBTFile:
     def items(self):
         return self.value.items()
 
-    def __getitem__(self, key: str) -> _TAG_Value:
+    def __getitem__(self, key: str) -> AnyNBT:
         return self.value[key]
 
-    def __setitem__(self, key: str, tag: _TAG_Value):
+    def __setitem__(self, key: str, tag: AnyNBT):
         self.value[key] = tag
 
     def __delitem__(self, key: str):
@@ -642,10 +657,10 @@ class NBTFile:
     def __repr__(self):
         return f'NBTFile("{self.name}":{self.to_snbt()})'
 
-    def pop(self, k, default=None) -> _TAG_Value:
+    def pop(self, k, default=None) -> AnyNBT:
         return self.value.pop(k, default)
 
-    def get(self, k, default=None) -> _TAG_Value:
+    def get(self, k, default=None) -> AnyNBT:
         return self.value.get(k, default)
 
 
@@ -1075,7 +1090,7 @@ cdef tuple _parse_snbt_recursive(str snbt, int index=0):
 
     return data, index
 
-def from_snbt(snbt: str) -> _TAG_Value:
+def from_snbt(snbt: str) -> AnyNBT:
     try:
         return _parse_snbt_recursive(snbt)[0]
     except SNBTParseError as e:

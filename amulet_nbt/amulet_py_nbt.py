@@ -45,6 +45,21 @@ _string_len_fmt_le = Struct("<H")
 
 _NON_QUOTED_KEY = re.compile(r"^[a-zA-Z0-9-]+$")
 
+AnyNBT = Union[
+    'TAG_Byte',
+    'TAG_Short',
+    'TAG_Int',
+    'TAG_Long',
+    'TAG_Float',
+    'TAG_Double',
+    'TAG_Byte_Array',
+    'TAG_String',
+    'TAG_List',
+    'TAG_Compound',
+    'TAG_Int_Array',
+    'TAG_Long_Array'
+]
+
 
 class NBTFormatError(Exception):
     pass
@@ -103,7 +118,7 @@ class _TAG_Value:
         return self.tag_id == other.tag_id and self.value == other.value
 
     @classmethod
-    def load_from(cls, context: _BufferContext, little_endian: bool) -> _TAG_Value:
+    def load_from(cls, context: _BufferContext, little_endian: bool) -> AnyNBT:
         data = context.buffer[context.offset:]
         if little_endian:
             tag = cls(cls.tag_format_le.unpack_from(data)[0])
@@ -227,7 +242,7 @@ class _TAG_Array(_TAG_Value):
         return len(self.value)
 
     @classmethod
-    def load_from(cls, context: _BufferContext, little_endian: bool) -> _TAG_Value:
+    def load_from(cls, context: _BufferContext, little_endian: bool) -> _TAG_Array:
         data_type = cls.little_endian_data_type if little_endian else cls.big_endian_data_type
         data = context.buffer[context.offset:]
         if little_endian:
@@ -323,7 +338,7 @@ class TAG_String(_TAG_Value):
     value: str = ""
 
     @classmethod
-    def load_from(cls, context: _BufferContext, little_endian: bool) -> _TAG_Value:
+    def load_from(cls, context: _BufferContext, little_endian: bool) -> TAG_String:
         return cls(load_string(context, little_endian))
 
     def write_value(self, buffer, little_endian=False):
@@ -336,7 +351,7 @@ class TAG_String(_TAG_Value):
 @dataclass
 class TAG_List(_TAG_Value):
     tag_id = TAG_LIST
-    value: List[_TAG_Value] = field(default_factory=list)
+    value: List[AnyNBT] = field(default_factory=list)
     list_data_type: int = TAG_BYTE
 
     def __init__(self, value: list = None, list_data_type: int = TAG_BYTE):
@@ -357,15 +372,15 @@ class TAG_List(_TAG_Value):
                 f"Invalid type {value.__class__.__name__} for TAG_List({TAG_CLASSES[self.list_data_type].__name__})"
             )
 
-    def __getitem__(self, index: int) -> _TAG_Value:
+    def __getitem__(self, index: int) -> AnyNBT:
         return self.value[index]
 
     @overload
-    def __setitem__(self, index: int, value: _TAG_Value):
+    def __setitem__(self, index: int, value: AnyNBT):
         ...
 
     @overload
-    def __setitem__(self, index: slice, value: Iterable[_TAG_Value]):
+    def __setitem__(self, index: slice, value: Iterable[AnyNBT]):
         ...
 
     def __setitem__(self, index, value):
@@ -378,25 +393,25 @@ class TAG_List(_TAG_Value):
     def __delitem__(self, index: int):
         del self.value[index]
 
-    def __iter__(self) -> Iterator[_TAG_Value]:
+    def __iter__(self) -> Iterator[AnyNBT]:
         return iter(self.value)
 
-    def __contains__(self, item: _TAG_Value) -> bool:
+    def __contains__(self, item: AnyNBT) -> bool:
         return item in self.value
 
     def __len__(self) -> int:
         return len(self.value)
 
-    def insert(self, index: int, value: _TAG_Value):
+    def insert(self, index: int, value: AnyNBT):
         self._check_tag(value)
         self.value.insert(index, value)
 
-    def append(self, value: _TAG_Value) -> None:
+    def append(self, value: AnyNBT) -> None:
         self._check_tag(value)
         self.value.append(value)
 
     @classmethod
-    def load_from(cls, context: _BufferContext, little_endian: bool) -> _TAG_Value:
+    def load_from(cls, context: _BufferContext, little_endian: bool) -> TAG_List:
         tag = cls()
         tag.list_data_type = list_data_type = context.buffer[context.offset]
         context.offset += 1
@@ -431,7 +446,7 @@ class TAG_List(_TAG_Value):
 @dataclass
 class TAG_Compound(_TAG_Value, MutableMapping):
     tag_id = TAG_COMPOUND
-    value: Dict[str, _TAG_Value] = field(default_factory=dict)
+    value: Dict[str, AnyNBT] = field(default_factory=dict)
 
     def __init__(self, value: dict = None):
         self.value = value or {}
@@ -472,10 +487,10 @@ class TAG_Compound(_TAG_Value, MutableMapping):
 
         buffer.write(bytes(chr(TAG_END), "utf-8"))
 
-    def __getitem__(self, key: str) -> _TAG_Value:
+    def __getitem__(self, key: str) -> AnyNBT:
         return self.value.__getitem__(key)
 
-    def __setitem__(self, key: str, value: _TAG_Value):
+    def __setitem__(self, key: str, value: AnyNBT):
         self._check_key(key)
         self._check_tag(value)
         self.value.__setitem__(key, value)
@@ -549,10 +564,10 @@ class NBTFile:
     def values(self):
         self.value.values()
 
-    def __getitem__(self, key: str) -> _TAG_Value:
+    def __getitem__(self, key: str) -> AnyNBT:
         return self.value[key]
 
-    def __setitem__(self, key: str, tag: _TAG_Value):
+    def __setitem__(self, key: str, tag: AnyNBT):
         self.value[key] = tag
 
     def __delitem__(self, key: str):
@@ -561,10 +576,10 @@ class NBTFile:
     def __contains__(self, key: str) -> bool:
         return key in self.value
 
-    def pop(self, k, default=None) -> _TAG_Value:
+    def pop(self, k, default=None) -> AnyNBT:
         return self.value.pop(k, default)
 
-    def get(self, k, default=None) -> _TAG_Value:
+    def get(self, k, default=None) -> AnyNBT:
         return self.value.get(k, default)
 
     def __repr__(self):
@@ -636,7 +651,7 @@ colon = re.compile("[ \t\r\n]*:[ \t\r\n]*")
 array_lookup = {"B": TAG_Byte_Array, "I": TAG_Int_Array, "L": TAG_Long_Array}
 
 
-def from_snbt(snbt: str) -> _TAG_Value:
+def from_snbt(snbt: str) -> AnyNBT:
     def strip_whitespace(index) -> int:
         match = whitespace.match(snbt, index)
         if match is None:
@@ -690,10 +705,10 @@ def from_snbt(snbt: str) -> _TAG_Value:
 
         return val, strict_str, index
 
-    def parse_snbt_recursive(index=0) -> Tuple[_TAG_Value, int]:
+    def parse_snbt_recursive(index=0) -> Tuple[AnyNBT, int]:
         index = strip_whitespace(index)
         if snbt[index] == "{":
-            data_: Dict[str, _TAG_Value] = {}
+            data_: Dict[str, AnyNBT] = {}
             index += 1
             index = strip_whitespace(index)
             while snbt[index] != "}":

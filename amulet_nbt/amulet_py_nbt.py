@@ -448,7 +448,7 @@ class TAG_Compound(_TAG_Value, MutableMapping):
     tag_id = TAG_COMPOUND
     value: Dict[str, AnyNBT] = field(default_factory=dict)
 
-    def __init__(self, value: dict = None):
+    def __init__(self, value: Dict[str, AnyNBT] = None):
         self.value = value or {}
         map(self._check_key, self.value.keys())
         map(self._check_tag, self.value.values())

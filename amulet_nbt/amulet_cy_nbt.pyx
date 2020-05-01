@@ -365,8 +365,8 @@ cdef class TAG_Byte_Array(_TAG_Array):
         write_array(self.value, buffer, 1, little_endian)
 
 cdef class TAG_Int_Array(_TAG_Array):
-    big_endian_data_type = numpy.dtype(">u4")
-    little_endian_data_type = numpy.dtype("<u4")
+    big_endian_data_type = numpy.dtype(">i4")
+    little_endian_data_type = numpy.dtype("<i4")
 
     def __cinit__(self):
         self.tag_id = _ID_INT_ARRAY

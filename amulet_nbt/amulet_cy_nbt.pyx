@@ -322,6 +322,22 @@ cdef class TAG_String(_TAG_Value):
 
 cdef class _TAG_Array(_TAG_Value):
     cdef public object value
+    big_endian_data_type = little_endian_data_type = numpy.dtype("int8")
+
+    def __init__(self, object value = None):
+        if value is None:
+            value = numpy.zeros((0,), self.big_endian_data_type)
+        elif isinstance(value, (list, tuple)):
+            value = numpy.array(value, self.big_endian_data_type)
+        elif isinstance(value, (TAG_Byte_Array, TAG_Int_Array, TAG_Long_Array)):
+            value = value.value
+        if isinstance(value, numpy.ndarray):
+            if value.dtype != self.big_endian_data_type:
+                value = value.astype(self.big_endian_data_type)
+        else:
+            raise Exception(f'Unexpected object {value} given to {self.__class__.__name__}')
+
+        self.value = value
 
     def __eq__(self, other: _TAG_Array) -> bool:
         return isinstance(other, self.__class__) and self.tag_id == other.tag_id and numpy.array_equal(self.value,
@@ -336,18 +352,6 @@ cdef class TAG_Byte_Array(_TAG_Array):
 
     def __cinit__(self):
         self.tag_id = _ID_BYTE_ARRAY
-
-    def __init__(self, object value = None):
-        if value is None:
-            value = numpy.zeros((0,), self.big_endian_data_type)
-
-        if isinstance(value, list):
-            value = numpy.array(value, self.big_endian_data_type)
-
-        if value.dtype != self.big_endian_data_type:
-            value = value.astype(self.big_endian_data_type)
-
-        self.value = value
 
     cpdef str to_snbt(self):
         cdef int elem
@@ -371,18 +375,6 @@ cdef class TAG_Int_Array(_TAG_Array):
     def __cinit__(self):
         self.tag_id = _ID_INT_ARRAY
 
-    def __init__(self, object value = None):
-        if value is None:
-            value = numpy.zeros((0,), self.big_endian_data_type)
-
-        if isinstance(value, list):
-            value = numpy.array(value, self.big_endian_data_type)
-
-        if value.dtype != self.big_endian_data_type:
-            value = value.astype(self.big_endian_data_type)
-
-        self.value = value
-
     cpdef str to_snbt(self):
         cdef int elem
         cdef list tags = []
@@ -404,18 +396,6 @@ cdef class TAG_Long_Array(_TAG_Array):
 
     def __cinit__(self):
         self.tag_id = _ID_LONG_ARRAY
-
-    def __init__(self, object value = None):
-        if value is None:
-            value = numpy.zeros((0,), self.big_endian_data_type)
-
-        if isinstance(value, list):
-            value = numpy.array(value, self.big_endian_data_type)
-
-        if value.dtype != self.big_endian_data_type:
-            value = value.astype(self.big_endian_data_type)
-
-        self.value = value
 
     cpdef str to_snbt(self):
         cdef int elem

@@ -227,11 +227,20 @@ class _TAG_Array(_TAG_Value):
     little_endian_data_type: ClassVar[Any]
     value: np.ndarray = np.zeros(0)
 
-    def __init__(self, input_value: Union[list, np.ndarray]):
-        if isinstance(input_value, list):
-            self.value = np.array(input_value, self.big_endian_data_type)
+    def __init__(self, value: Union[np.ndarray, List[int], Tuple[int, ...], TAG_Byte_Array, TAG_Int_Array, TAG_Long_Array] = None):
+        if value is None:
+            value = np.zeros((0,), self.big_endian_data_type)
+        elif isinstance(value, (list, tuple)):
+            value = np.array(value, self.big_endian_data_type)
+        elif isinstance(value, (TAG_Byte_Array, TAG_Int_Array, TAG_Long_Array)):
+            value = value.value
+        if isinstance(value, np.ndarray):
+            if value.dtype != self.big_endian_data_type:
+                value = value.astype(self.big_endian_data_type)
         else:
-            self.value = input_value
+            raise Exception(f'Unexpected object {value} given to {self.__class__.__name__}')
+
+        self.value = value
 
     def __eq__(self, other: _TAG_Array):
         return (
@@ -278,12 +287,8 @@ class TAG_Byte_Array(_TAG_Array):
     big_endian_data_type = little_endian_data_type = np.dtype("int8")
     tag_id = TAG_BYTE_ARRAY
 
-    def __init__(self, value: Union[np.ndarray, list] = None):
-        super(TAG_Byte_Array, self).__init__(value)
-        if self.value is None:
-            self.value = np.zeros(0, self.big_endian_data_type)
-        if self.value.dtype != self.big_endian_data_type:
-            self.value = self.value.astype(self.big_endian_data_type)
+    def __init__(self, value: Union[np.ndarray, List[int], Tuple[int, ...], TAG_Byte_Array, TAG_Int_Array, TAG_Long_Array] = None):
+        super().__init__(value)
 
     def to_snbt(self) -> str:
         return f"[B;{'B, '.join(str(val) for val in self.value)}B]"
@@ -295,12 +300,8 @@ class TAG_Int_Array(_TAG_Array):
     little_endian_data_type = np.dtype("<i4")
     tag_id = TAG_INT_ARRAY
 
-    def __init__(self, value: Union[np.ndarray, list] = None):
-        super(TAG_Int_Array, self).__init__(value)
-        if self.value is None:
-            self.value = np.zeros(0, self.big_endian_data_type)
-        if self.value.dtype != self.big_endian_data_type:
-            self.value = self.value.astype(self.big_endian_data_type)
+    def __init__(self, value: Union[np.ndarray, List[int], Tuple[int, ...], TAG_Byte_Array, TAG_Int_Array, TAG_Long_Array] = None):
+        super().__init__(value)
 
     def to_snbt(self) -> str:
         return f"[I;{', '.join(str(val) for val in self.value)}]"
@@ -312,12 +313,8 @@ class TAG_Long_Array(_TAG_Array):
     little_endian_data_type = np.dtype("<i8")
     tag_id = TAG_LONG_ARRAY
 
-    def __init__(self, value: Union[np.ndarray, list] = None):
-        super(TAG_Long_Array, self).__init__(value)
-        if self.value is None:
-            self.value = np.zeros(0, self.big_endian_data_type)
-        if self.value.dtype != self.big_endian_data_type:
-            self.value = self.value.astype(self.big_endian_data_type)
+    def __init__(self, value: Union[np.ndarray, List[int], Tuple[int, ...], TAG_Byte_Array, TAG_Int_Array, TAG_Long_Array] = None):
+        super().__init__(value)
 
     def to_snbt(self) -> str:
         return f"[L;{', '.join(str(val) for val in self.value)}]"

@@ -414,13 +414,12 @@ cdef class TAG_Long_Array(_TAG_Array):
 
 cdef class _TAG_List(_TAG_Value):
     cdef public list value
-    cdef public char list_data_type
 
     def __cinit__(self):
         self.tag_id = _ID_LIST
 
-    def __init__(self, list value = None, char list_data_type = 1):
-        self.list_data_type = list_data_type
+    def __init__(self, list value = None):
+        self.list_data_type = 1
         self.value = []
         if value:
             self._check_tag(value[0])
@@ -789,7 +788,7 @@ cdef _TAG_List load_list(buffer_context context, bint little_endian):
     cdef int length = pointer[0]
     to_little_endian(&length, 4, little_endian)
 
-    cdef _TAG_List tag = TAG_List(list_data_type=list_type)
+    cdef _TAG_List tag = TAG_List()
     cdef list val = tag.value
     cdef int i
     for i in range(length):

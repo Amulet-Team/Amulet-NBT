@@ -351,8 +351,8 @@ class TAG_List(_TAG_Value):
     value: List[AnyNBT] = field(default_factory=list)
     list_data_type: int = TAG_BYTE
 
-    def __init__(self, value: List[AnyNBT] = None):
-        self.list_data_type = TAG_BYTE
+    def __init__(self, value: List[AnyNBT] = None, list_data_type: int = TAG_BYTE):
+        self.list_data_type = list_data_type
         self.value = []
         if value:
             self._check_tag(value[0])

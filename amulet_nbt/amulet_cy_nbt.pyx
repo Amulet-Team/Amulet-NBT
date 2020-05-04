@@ -2,7 +2,7 @@ import gzip
 import zlib
 from collections.abc import MutableMapping, MutableSequence
 from io import BytesIO
-from typing import Optional, Union, Tuple, List, Iterator, overload, Iterable
+from typing import Optional, Union, Tuple, List, Iterator
 
 import numpy
 from cpython cimport PyUnicode_DecodeUTF8, PyList_Append
@@ -439,14 +439,6 @@ cdef class _TAG_List(_TAG_Value):
 
     def __getitem__(self, index: int) -> AnyNBT:
         return self.value[index]
-
-    @overload
-    def __setitem__(self, index: int, value: AnyNBT):
-        ...
-
-    @overload
-    def __setitem__(self, index: slice, value: Iterable[AnyNBT]):
-        ...
 
     def __setitem__(self, index, value):
         if isinstance(index, slice):

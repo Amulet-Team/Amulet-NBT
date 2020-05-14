@@ -577,25 +577,23 @@ class NBTFile:
     def to_snbt(self) -> str:
         return self.value.to_snbt()
 
-    def save_to(self, filename_or_buffer=None, compressed=True, little_endian=False) -> Optional[BytesIO]:
+    def save_to(self, filename_or_buffer=None, compressed=True, little_endian=False) -> Optional[bytes]:
         buffer = BytesIO()
         self.value.write_payload(buffer, self.name, little_endian)
         data = buffer.getvalue()
 
         if compressed:
             gzip_buffer = BytesIO()
-            gz = gzip.GzipFile(fileobj=gzip_buffer, mode='wb')
-            gz.write(data)
-            gz.close()
+            with gzip.GzipFile(fileobj=gzip_buffer, mode='wb') as gz:
+                gz.write(data)
             data = gzip_buffer.getvalue()
 
         if not filename_or_buffer:
             return data
 
         if isinstance(filename_or_buffer, str):
-            fp = open(filename_or_buffer, 'wb')
-            fp.write(data)
-            fp.close()
+            with open(filename_or_buffer, 'wb') as fp:
+                fp.write(data)
         else:
             filename_or_buffer.write(data)
 

@@ -43,6 +43,7 @@ jobs:
           command: |
             . venv/bin/activate
             python ./tests/nbt_tests.py -v
+            python ./tests/api_tests.py -v
             python ./tests/massive_nbt_test.py
 
 #      - run:

@@ -42,19 +42,19 @@ ID_MAX = _ID_MAX
 
 IMPLEMENTATION = "cython"
 
-cpdef dict TAG_CLASSES = {
-    ID_BYTE: TAG_Byte,
-    ID_SHORT: TAG_Short,
-    ID_INT: TAG_Int,
-    ID_LONG: TAG_Long,
-    ID_FLOAT: TAG_Float,
-    ID_DOUBLE: TAG_Double,
-    ID_BYTE_ARRAY: TAG_Byte_Array,
-    ID_STRING: TAG_String,
-    ID_LIST: _TAG_List,
-    ID_COMPOUND: _TAG_Compound,
-    ID_INT_ARRAY: TAG_Int_Array,
-    ID_LONG_ARRAY: TAG_Long_Array
+cdef dict TAG_CLASSES = {
+    _ID_BYTE: TAG_Byte,
+    _ID_SHORT: TAG_Short,
+    _ID_INT: TAG_Int,
+    _ID_LONG: TAG_Long,
+    _ID_FLOAT: TAG_Float,
+    _ID_DOUBLE: TAG_Double,
+    _ID_BYTE_ARRAY: TAG_Byte_Array,
+    _ID_STRING: TAG_String,
+    _ID_LIST: _TAG_List,
+    _ID_COMPOUND: _TAG_Compound,
+    _ID_INT_ARRAY: TAG_Int_Array,
+    _ID_LONG_ARRAY: TAG_Long_Array
 }
 
 _NON_QUOTED_KEY = re.compile(r"^[a-zA-Z0-9-]+$")
@@ -175,8 +175,15 @@ cdef class _TAG_Value:
     cdef void write_value(self, buffer, little_endian):
         raise NotImplementedError()
 
+    cpdef bint strict_equal(self, other):
+        cdef bint result
+        result = isinstance(other, self.__class__)
+        if result:
+            result = result and self.tag_id == other.tag_id
+        return result and self.__eq__(other)
+
     def __eq__(self, other):
-        return self.tag_id == other.tag_id and self.value == other.value
+        return primitive_conversion(self) == primitive_conversion(other)
 
     def __repr__(self):
         return self.to_snbt()
@@ -191,7 +198,7 @@ cdef inline primitive_conversion(obj):
 
 
 cdef class TAG_Byte(_TAG_Value):
-    cdef public char value
+    cdef readonly char value
 
     def __cinit__(self):
         self.tag_id = _ID_BYTE
@@ -205,8 +212,8 @@ cdef class TAG_Byte(_TAG_Value):
     cdef void write_value(self, buffer, little_endian):
         write_byte(self.value, buffer)
 
-    def __eq__(self, other) -> bool:
-        return isinstance(other, self.__class__) and self.value == other.value
+    #def __eq__(self, other) -> bool:
+    #    return (isinstance(other, self.__class__) and self.value == other.value) or (isinstance(other, (int, float)) and self.value == other)
 
     def __add__(self, other):
         return primitive_conversion(self) + primitive_conversion(other)
@@ -302,7 +309,7 @@ cdef class TAG_Byte(_TAG_Value):
         return self.value
 
 cdef class TAG_Short(_TAG_Value):
-    cdef public short value
+    cdef readonly short value
 
     def __cinit__(self):
         self.tag_id = _ID_SHORT
@@ -316,8 +323,8 @@ cdef class TAG_Short(_TAG_Value):
     cdef void write_value(self, buffer, little_endian):
         write_short(self.value, buffer, little_endian)
 
-    def __eq__(self, other) -> bool:
-        return isinstance(other, self.__class__) and self.value == other.value
+    #def __eq__(self, other) -> bool:
+    #    return (isinstance(other, self.__class__) and self.value == other.value) or (isinstance(other, (int, float)) and self.value == other)
 
     def __add__(self, other):
         return primitive_conversion(self) + primitive_conversion(other)
@@ -413,7 +420,7 @@ cdef class TAG_Short(_TAG_Value):
         return self.value
 
 cdef class TAG_Int(_TAG_Value):
-    cdef public int value
+    cdef readonly int value
 
     def __cinit__(self):
         self.tag_id = _ID_INT
@@ -427,8 +434,8 @@ cdef class TAG_Int(_TAG_Value):
     cdef void write_value(self, buffer, little_endian):
         write_int(self.value, buffer, little_endian)
 
-    def __eq__(self, other) -> bool:
-        return isinstance(other, self.__class__) and self.value == other.value
+    #def __eq__(self, other) -> bool:
+    #    return (isinstance(other, self.__class__) and self.value == other.value) or (isinstance(other, (int, float)) and self.value == other)
 
     def __add__(self, other):
         return primitive_conversion(self) + primitive_conversion(other)
@@ -524,7 +531,7 @@ cdef class TAG_Int(_TAG_Value):
         return self.value
 
 cdef class TAG_Long(_TAG_Value):
-    cdef public long long value
+    cdef readonly long long value
 
     def __cinit__(self):
         self.tag_id = _ID_LONG
@@ -538,8 +545,8 @@ cdef class TAG_Long(_TAG_Value):
     cdef void write_value(self, buffer, little_endian):
         write_long(self.value, buffer, little_endian)
 
-    def __eq__(self, other) -> bool:
-        return isinstance(other, self.__class__) and self.value == other.value
+    #def __eq__(self, other) -> bool:
+    #    return (isinstance(other, self.__class__) and self.value == other.value) or (isinstance(other, (int, float)) and self.value == other)
 
     def __add__(self, other):
         return primitive_conversion(self) + primitive_conversion(other)
@@ -635,7 +642,7 @@ cdef class TAG_Long(_TAG_Value):
         return self.value
 
 cdef class TAG_Float(_TAG_Value):
-    cdef public float value
+    cdef readonly float value
 
     def __cinit__(self):
         self.tag_id = _ID_FLOAT
@@ -649,8 +656,8 @@ cdef class TAG_Float(_TAG_Value):
     cdef void write_value(self, buffer, little_endian):
         write_float(self.value, buffer, little_endian)
 
-    def __eq__(self, other) -> bool:
-        return isinstance(other, self.__class__) and self.value == other.value
+    #def __eq__(self, other) -> bool:
+    #    return (isinstance(other, self.__class__) and self.value == other.value) or (isinstance(other, (int, float)) and self.value == other)
 
     def __add__(self, other):
         return primitive_conversion(self) + primitive_conversion(other)
@@ -755,7 +762,7 @@ cdef class TAG_Float(_TAG_Value):
         return ceil(self.value)
 
 cdef class TAG_Double(_TAG_Value):
-    cdef public double value
+    cdef readonly double value
 
     def __cinit__(self):
         self.tag_id = _ID_DOUBLE
@@ -769,8 +776,8 @@ cdef class TAG_Double(_TAG_Value):
     cdef void write_value(self, buffer, little_endian):
         write_double(self.value, buffer, little_endian)
 
-    def __eq__(self, other) -> bool:
-        return isinstance(other, self.__class__) and self.value == other.value
+    #def __eq__(self, other) -> bool:
+    #    return (isinstance(other, self.__class__) and self.value == other.value) or (isinstance(other, (int, float)) and self.value == other)
 
     def __add__(self, other):
         return primitive_conversion(self) + primitive_conversion(other)
@@ -881,7 +888,7 @@ def unescape(string: str):
     return string.replace('\\"', '"').replace("\\\\", "\\")
 
 cdef class TAG_String(_TAG_Value):
-    cdef public unicode value
+    cdef readonly unicode value
 
     def __cinit__(self):
         self.tag_id = _ID_STRING
@@ -898,8 +905,23 @@ cdef class TAG_String(_TAG_Value):
     cdef void write_value(self, buffer, little_endian):
         write_string(self.value.encode("utf-8"), buffer, little_endian)
 
-    def __eq__(self, other) -> bool:
-        return isinstance(other, self.__class__) and self.value == other.value
+    def __getitem__(self, item):
+        return self.value.__getitem__(item)
+
+    def __add__(self, other):
+        return primitive_conversion(self) + primitive_conversion(other)
+
+    def __radd__(self, other):
+        return primitive_conversion(other) + primitive_conversion(self)
+
+    def __mul__(self, other):
+        return primitive_conversion(self) * primitive_conversion(other)
+
+    def __rmul__(self, other):
+        return primitive_conversion(other) * primitive_conversion(self)
+
+    #def __eq__(self, other) -> bool:
+    #    return isinstance(other, self.__class__) and self.value == other.value
 
 cdef class _TAG_Array(_TAG_Value):
     cdef public object value
@@ -909,6 +931,8 @@ cdef class _TAG_Array(_TAG_Value):
         if value is None:
             value = numpy.zeros((0,), self.big_endian_data_type)
         elif isinstance(value, (list, tuple)):
+            print('1')
+            print(self.big_endian_data_type)
             value = numpy.array(value, self.big_endian_data_type)
         elif isinstance(value, (TAG_Byte_Array, TAG_Int_Array, TAG_Long_Array)):
             value = value.value
@@ -920,11 +944,35 @@ cdef class _TAG_Array(_TAG_Value):
 
         self.value = value
 
-    def __eq__(self, other: _TAG_Array) -> bool:
-        return isinstance(other, self.__class__) and self.tag_id == other.tag_id and numpy.array_equal(self.value,
-                                                                                                       other.value)
+    #def __eq__(self, other: _TAG_Array) -> bool:
+    #    return isinstance(other, self.__class__) and self.tag_id == other.tag_id and numpy.array_equal(self.value,
+
+    def __eq__(self, other):
+        return numpy.array_equal(primitive_conversion(self), primitive_conversion(other))
+
+    def __getitem__(self, item):
+        return self.value.__getitem__(item)
+
+    def __setitem__(self, key, value):
+        self.value.__setitem__(key, value)
+
+    def __getattr__(self, item):
+        return self.value.__getattribute__(item)
+
+    def __dir__(self):
+        return dir(self.value)
+
+    def __array__(self):
+        return self.value
+
     def __len__(self):
         return len(self.value)
+
+    def __add__(self, other):
+        return (primitive_conversion(self) + primitive_conversion(other)).astype(self.big_endian_data_type)
+
+    def __sub__(self, other):
+        return (primitive_conversion(self) - primitive_conversion(other)).astype(self.big_endian_data_type)
 
 BaseArrayType = _TAG_Array
 
@@ -1006,7 +1054,9 @@ cdef class _TAG_List(_TAG_Value):
         if value:
             self._check_tag(value[0])
             self.value = list(value)
-            map(self._check_tag, value[1:])
+            for tag in value[1:]:
+                self._check_tag(tag)
+            #map(self._check_tag, value[1:])
 
     def _check_tag(self, value: AnyNBT):
         if not isinstance(value, _TAG_Value):
@@ -1116,7 +1166,7 @@ cdef class _TAG_Compound(_TAG_Value):
             write_tag_id(stag.tag_id, buffer)
             write_tag_name(key, buffer, little_endian)
             stag.write_value(buffer, little_endian)
-        write_tag_id(_ID_END, buffer)
+        write_tag_id(ID_END, buffer)
 
     def write_payload(self, buffer, name="", little_endian=False):
         write_tag_id(self.tag_id, buffer)
@@ -1245,7 +1295,7 @@ def load(filename="", buffer=None, compressed=True, count: int = None, offset: b
     for i in range(count or 1):
         tag_type = context.buffer[context.offset]
         if tag_type != _ID_COMPOUND:
-            raise NBTFormatError(f"Expecting tag type {_ID_COMPOUND}, got {tag_type} instead")
+            raise NBTFormatError(f"Expecting tag type {ID_COMPOUND}, got {tag_type} instead")
         context.offset += 1
 
         name = load_name(context, little_endian)
@@ -1454,9 +1504,9 @@ cdef void write_tag_value(_TAG_Value tag, object buf, bint little_endian):
         (<TAG_Long_Array> tag).write_value(buf, little_endian)
 
 def unpickle_nbt(tag_id, tag_value):
-    if tag_id == ID_COMPOUND:
+    if tag_id == _ID_COMPOUND:
         return TAG_Compound(tag_value)
-    elif tag_id == ID_LIST:
+    elif tag_id == _ID_LIST:
         return TAG_List(tag_value)
     return TAG_CLASSES[tag_id](tag_value)
 

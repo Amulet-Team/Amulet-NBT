@@ -1020,8 +1020,8 @@ cdef class TAG_Int_Array(_TAG_Array):
         write_array(self.value, buffer, 4, little_endian)
 
 cdef class TAG_Long_Array(_TAG_Array):
-    big_endian_data_type = numpy.dtype(">q")
-    little_endian_data_type = numpy.dtype("<q")
+    big_endian_data_type = numpy.dtype(">i8")
+    little_endian_data_type = numpy.dtype("<i8")
 
     def __cinit__(self):
         self.tag_id = _ID_LONG_ARRAY
@@ -1131,8 +1131,10 @@ cdef class _TAG_Compound(_TAG_Value):
 
     def __init__(self, dict value = None):
         self.value = value or {}
-        map(self._check_key, self.value.keys())
-        map(self._check_tag, self.value.values())
+        for key in self.value.keys():
+            self._check_key(key)
+        for tag in self.value.values():
+            self._check_tag(tag)
 
     @staticmethod
     def _check_key(key: str):

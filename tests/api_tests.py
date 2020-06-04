@@ -525,7 +525,7 @@ class AbstractNBTTest:
             self.assertTrue(numpy.array_equal(self.nbt.TAG_Int_Array([0]) - (2 ** 31), [-(2 ** 31)]))
             self.assertTrue(numpy.array_equal(self.nbt.TAG_Int_Array([0]) - (2 ** 31 + 1), [2 ** 31 - 1]))
             self.assertTrue(numpy.array_equal(self.nbt.TAG_Long_Array([0]) - (2 ** 63), [-(2 ** 63)]))
-            self.assertTrue(numpy.array_equal(self.nbt.TAG_Long_Array([0]) - ((2 ** 63) + 1), [(2 ** 63) - 1]))
+            self.assertTrue(numpy.array_equal(self.nbt.TAG_Long_Array([0]) - (2 ** 63 + 1), [(2 ** 63) - 1]))
 
         def test_list(self):
             self.assertEqual(self.nbt.TAG_List(), [])
@@ -558,7 +558,7 @@ class AbstractNBTTest:
         def test_compound(self):
             self.assertEqual(self.nbt.TAG_Compound(), {})
             for t in self._nbt_types:
-                self.assertEqual(self.nbt.TAG_Compound({t.__class__.__name__: t()}), {t.__class__.__name__: t()})
+                self.assertEqual(self.nbt.TAG_Compound({t.__name__: t()}), {t.__name__: t()})
 
             # keys must be strings
             self.assertRaises(TypeError, lambda: self.nbt.TAG_Compound({0: self.nbt.TAG_Int()}))

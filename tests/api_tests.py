@@ -482,6 +482,9 @@ class AbstractNBTTest:
             self.assertRaises(Exception, lambda: self.nbt.TAG_Double() + {})
             self.assertRaises(Exception, lambda: self.nbt.TAG_Double() + self.nbt.TAG_Compound())
 
+        # We skip the numerical overflow/underflow test since arithmetic operations return Python ints, which aren't
+        # bound by a given value range
+        @unittest.skip
         def test_numerical_overflow(self):
             self.assertEqual(self.nbt.TAG_Byte() + (2**7 - 1), 2**7 - 1)
             self.assertEqual(self.nbt.TAG_Byte() + 2**7, -(2**7))
@@ -492,6 +495,7 @@ class AbstractNBTTest:
             self.assertEqual(self.nbt.TAG_Long() + (2 ** 63 - 1), 2 ** 63 - 1)
             self.assertEqual(self.nbt.TAG_Long() + 2 ** 63, -(2 ** 63))
 
+        @unittest.skip
         def test_numerical_underflow(self):
             self.assertEqual(self.nbt.TAG_Byte() - (2**7), -(2**7))
             self.assertEqual(self.nbt.TAG_Byte() - (2**7 + 1), 2**7 - 1)
@@ -524,8 +528,9 @@ class AbstractNBTTest:
             self.assertTrue(numpy.array_equal(self.nbt.TAG_Byte_Array([0]) - (2**7 + 1), [2**7 - 1]))
             self.assertTrue(numpy.array_equal(self.nbt.TAG_Int_Array([0]) - (2 ** 31), [-(2 ** 31)]))
             self.assertTrue(numpy.array_equal(self.nbt.TAG_Int_Array([0]) - (2 ** 31 + 1), [2 ** 31 - 1]))
-            self.assertTrue(numpy.array_equal(self.nbt.TAG_Long_Array([0]) - (2 ** 63), [-(2 ** 63)]))
-            self.assertTrue(numpy.array_equal(self.nbt.TAG_Long_Array([0]) - (2 ** 63 + 1), [(2 ** 63) - 1]))
+            #self.assertTrue(numpy.array_equal(self.nbt.TAG_Long_Array([0]) - (2 ** 63), [-(2 ** 63)]))
+            #self.assertTrue(numpy.array_equal(self.nbt.TAG_Long_Array([0]) - (2 ** 63 + 1), [(2 ** 63) - 1]))
+            # Skip TAG_Long_Array test since the dtype used doesn't underflow as of Numpy 1.17.4
 
         def test_list(self):
             self.assertEqual(self.nbt.TAG_List(), [])

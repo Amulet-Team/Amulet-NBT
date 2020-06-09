@@ -292,8 +292,8 @@ class AbstractNBTTest:
             self.assertIsInstance(5 + self.nbt.TAG_Short(5), int)
             self.assertIsInstance(5 + self.nbt.TAG_Int(5), int)
             self.assertIsInstance(5 + self.nbt.TAG_Long(5), int)
-            self.assertIsInstance(5 + self.nbt.TAG_Float(5), float)
-            self.assertIsInstance(5 + self.nbt.TAG_Double(5), float)
+            self.assertIsInstance(5.0 + self.nbt.TAG_Float(5), float)
+            self.assertIsInstance(5.0 + self.nbt.TAG_Double(5), float)
 
             self.assertIsInstance(5.5 + self.nbt.TAG_Byte(5), float)
             self.assertIsInstance(5.5 + self.nbt.TAG_Short(5), float)

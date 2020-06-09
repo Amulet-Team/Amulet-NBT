@@ -5,6 +5,7 @@ import itertools
 from collections.abc import MutableMapping, MutableSequence
 from dataclasses import dataclass, field
 from io import BytesIO
+from math import trunc, floor, ceil
 from struct import Struct, pack
 from typing import (
     Any,
@@ -18,7 +19,7 @@ from typing import (
     Union,
     Iterator,
     overload,
-    Iterable
+    Iterable,
 )
 import re
 
@@ -46,18 +47,18 @@ _string_len_fmt_le = Struct("<H")
 _NON_QUOTED_KEY = re.compile(r"^[a-zA-Z0-9-]+$")
 
 AnyNBT = Union[
-    'TAG_Byte',
-    'TAG_Short',
-    'TAG_Int',
-    'TAG_Long',
-    'TAG_Float',
-    'TAG_Double',
-    'TAG_Byte_Array',
-    'TAG_String',
-    'TAG_List',
-    'TAG_Compound',
-    'TAG_Int_Array',
-    'TAG_Long_Array'
+    "TAG_Byte",
+    "TAG_Short",
+    "TAG_Int",
+    "TAG_Long",
+    "TAG_Float",
+    "TAG_Double",
+    "TAG_Byte_Array",
+    "TAG_String",
+    "TAG_List",
+    "TAG_Compound",
+    "TAG_Int_Array",
+    "TAG_Long_Array",
 ]
 
 
@@ -79,13 +80,13 @@ class _BufferContext:
 
 
 def load_string(context: _BufferContext, little_endian=False) -> str:
-    data = context.buffer[context.offset:]
+    data = context.buffer[context.offset :]
     if little_endian:
         (str_len,) = _string_len_fmt_le.unpack_from(data)
     else:
         (str_len,) = _string_len_fmt_be.unpack_from(data)
 
-    value = data[2: str_len + 2].decode("utf-8")
+    value = data[2 : str_len + 2].decode("utf-8")
     context.offset += str_len + 2
     return value
 
@@ -98,8 +99,245 @@ def write_string(buffer, _str, little_endian=False):
         buffer.write(pack(f">H{len(encoded_str)}s", len(encoded_str), encoded_str))
 
 
+def primitive_conversion(obj):
+    return obj.value if isinstance(obj, _TAG_Value) else obj
+
+
+def ensure_float(func):
+    def wrap(*args, **kwargs):
+        if any(map(lambda a: isinstance(a, (float, TAG_Float, TAG_Double)), args)):
+            return float(func(*args, **kwargs))
+        return func(*args, **kwargs)
+
+    return wrap
+
+
+class _Int:
+    def __eq__(self, other):
+        return self.value == primitive_conversion(other)
+
+    @ensure_float
+    def __add__(self, other):
+        return self.value + primitive_conversion(other)
+
+    @ensure_float
+    def __sub__(self, other):
+        return self.value - primitive_conversion(other)
+
+    @ensure_float
+    def __mul__(self, other):
+        return self.value * primitive_conversion(other)
+
+    @ensure_float
+    def __truediv__(self, other):
+        return self.value / primitive_conversion(other)
+
+    def __floordiv__(self, other):
+        return self.value // primitive_conversion(other)
+
+    def __mod__(self, other):
+        return self.value % primitive_conversion(other)
+
+    def __divmod__(self, other):
+        return divmod(self.value, primitive_conversion(other))
+
+    def __pow__(self, power, modulo):
+        return pow(self.value, power, modulo)
+
+    def __lshift__(self, other):
+        return self.value << primitive_conversion(other)
+
+    def __rshift__(self, other):
+        return self.value >> primitive_conversion(other)
+
+    def __and__(self, other):
+        return self.value & primitive_conversion(other)
+
+    def __xor__(self, other):
+        return self.value ^ primitive_conversion(other)
+
+    def __or__(self, other):
+        return self.value | primitive_conversion(other)
+
+    @ensure_float
+    def __radd__(self, other):
+        return primitive_conversion(other) + self.value
+
+    @ensure_float
+    def __rsub__(self, other):
+        return primitive_conversion(other) - self.value
+
+    @ensure_float
+    def __rmul__(self, other):
+        return primitive_conversion(other) * self.value
+
+    @ensure_float
+    def __rtruediv__(self, other):
+        return primitive_conversion(other) / self.value
+
+    def __rfloordiv__(self, other):
+        return primitive_conversion(other) // self.value
+
+    def __rmod__(self, other):
+        primitive_conversion(other) % self.value
+
+    def __rdivmod__(self, other):
+        return divmod(primitive_conversion(other), self.value)
+
+    def __rpow__(self, other, modulo):
+        return pow(primitive_conversion(other), self.value, modulo)
+
+    def __rlshift__(self, other):
+        return primitive_conversion(other) << self.value
+
+    def __rrshift__(self, other):
+        return primitive_conversion(other) >> self.value
+
+    def __rand__(self, other):
+        return primitive_conversion(other) & self.value
+
+    def __rxor__(self, other):
+        return primitive_conversion(other) ^ self.value
+
+    def __ror__(self, other):
+        return primitive_conversion(other) | self.value
+
+    def __neg__(self):
+        return -self.value
+
+    def __pos__(self):
+        return +self.value
+
+    def __abs__(self):
+        return abs(self.value)
+
+    def __invert__(self):
+        return ~self.value
+
+    def __int__(self):
+        return self.value
+
+
+class _Float:
+    def __eq__(self, other):
+        return self.value == primitive_conversion(other)
+
+    def __add__(self, other):
+        return float(self.value + primitive_conversion(other))
+
+    def __sub__(self, other):
+        return float(self.value - primitive_conversion(other))
+
+    def __mul__(self, other):
+        return float(self.value * primitive_conversion(other))
+
+    def __truediv__(self, other):
+        return float(self.value / primitive_conversion(other))
+
+    def __floordiv__(self, other):
+        return self.value // primitive_conversion(other)
+
+    def __mod__(self, other):
+        return self.value % primitive_conversion(other)
+
+    def __divmod__(self, other):
+        return divmod(self.value, primitive_conversion(other))
+
+    def __pow__(self, power, modulo):
+        return pow(self.value, power, modulo)
+
+    def __lshift__(self, other):
+        return self.value << primitive_conversion(other)
+
+    def __rshift__(self, other):
+        return self.value >> primitive_conversion(other)
+
+    def __and__(self, other):
+        return self.value & primitive_conversion(other)
+
+    def __xor__(self, other):
+        return self.value ^ primitive_conversion(other)
+
+    def __or__(self, other):
+        return self.value | primitive_conversion(other)
+
+    def __radd__(self, other):
+        return float(primitive_conversion(other) + self.value)
+
+    def __rsub__(self, other):
+        return float(primitive_conversion(other) - self.value)
+
+    def __rmul__(self, other):
+        return primitive_conversion(other) * self.value
+
+    def __rtruediv__(self, other):
+        return float(primitive_conversion(other) / self.value)
+
+    def __rfloordiv__(self, other):
+        return primitive_conversion(other) // self.value
+
+    def __rmod__(self, other):
+        primitive_conversion(other) % self.value
+
+    def __rdivmod__(self, other):
+        return divmod(primitive_conversion(other), self.value)
+
+    def __rpow__(self, other, modulo):
+        return pow(primitive_conversion(other), self.value, modulo)
+
+    def __rlshift__(self, other):
+        return primitive_conversion(other) << self.value
+
+    def __rrshift__(self, other):
+        return primitive_conversion(other) >> self.value
+
+    def __rand__(self, other):
+        return primitive_conversion(other) & self.value
+
+    def __rxor__(self, other):
+        return primitive_conversion(other) ^ self.value
+
+    def __ror__(self, other):
+        return primitive_conversion(other) | self.value
+
+    def __neg__(self):
+        return -self.value
+
+    def __pos__(self):
+        return +self.value
+
+    def __abs__(self):
+        return abs(self.value)
+
+    def __float__(self):
+        return self.value
+
+    def __round__(self, n=None):
+        return round(self.value, n)
+
+    def __trunc__(self):
+        return trunc(self.value)
+
+    def __floor__(self):
+        return floor(self.value)
+
+    def __ceil__(self):
+        return ceil(self.value)
+
+
+class _Eq:
+    def __eq__(self, other):
+        return self.value == other
+
+    def strict_equals(self, other):
+        result = isinstance(other, self.__class__)
+        if result:
+            result = result and self.tag_id == other.tag_id
+        return result and self.__eq__(other)
+
+
 @dataclass(eq=False)
-class _TAG_Value:
+class _TAG_Value(_Eq):
     value: Any
     tag_id: ClassVar[int]
     _data_type: ClassVar[Any]
@@ -111,15 +349,17 @@ class _TAG_Value:
 
         return super(_TAG_Value, cls).__new__(cls)
 
-    def __init__(self, value):
+    def __init__(self, value=None):
+        if value is None:
+            value = self._data_type()
         self.value = self.format(value)
 
-    def __eq__(self, other):
-        return self.tag_id == other.tag_id and self.value == other.value
+    # def __eq__(self, other):
+    #    return self.tag_id == other.tag_id and self.value == other.value
 
     @classmethod
     def load_from(cls, context: _BufferContext, little_endian: bool) -> AnyNBT:
-        data = context.buffer[context.offset:]
+        data = context.buffer[context.offset :]
         if little_endian:
             tag = cls(cls.tag_format_le.unpack_from(data)[0])
             context.offset += cls.tag_format_le.size
@@ -155,19 +395,20 @@ class _TAG_Value:
 BaseValueType = _TAG_Value
 
 
-@dataclass(eq=False)
-class TAG_Byte(_TAG_Value):
+@dataclass(eq=False, init=False)
+class TAG_Byte(_TAG_Value, _Int):
     value: int = 0
     tag_id = TAG_BYTE
     tag_format_be = Struct(">b")
     tag_format_le = Struct("<b")
+    _data_type = int
 
     def to_snbt(self) -> str:
         return f"{self.value}b"
 
 
-@dataclass(eq=False)
-class TAG_Short(_TAG_Value):
+@dataclass(eq=False, init=False)
+class TAG_Short(_TAG_Value, _Int):
     value: int = 0
     tag_id = TAG_SHORT
     tag_format_be = Struct(">h")
@@ -177,8 +418,8 @@ class TAG_Short(_TAG_Value):
         return f"{self.value}s"
 
 
-@dataclass(eq=False)
-class TAG_Int(_TAG_Value):
+@dataclass(eq=False, init=False)
+class TAG_Int(_TAG_Value, _Int):
     value: int = 0
     tag_id = TAG_INT
     tag_format_be = Struct(">i")
@@ -188,8 +429,8 @@ class TAG_Int(_TAG_Value):
         return f"{self.value}"
 
 
-@dataclass(eq=False)
-class TAG_Long(_TAG_Value):
+@dataclass(eq=False, init=False)
+class TAG_Long(_TAG_Value, _Int):
     value: int = 0
     tag_id = TAG_LONG
     tag_format_be = Struct(">q")
@@ -199,26 +440,26 @@ class TAG_Long(_TAG_Value):
         return f"{self.value}L"
 
 
-@dataclass(eq=False)
-class TAG_Float(_TAG_Value):
+@dataclass(eq=False, init=False)
+class TAG_Float(_TAG_Value, _Float):
     value: float = 0
     tag_id = TAG_FLOAT
     tag_format_be = Struct(">f")
     tag_format_le = Struct("<f")
 
     def to_snbt(self) -> str:
-        return f"{self.value:.20f}".rstrip('0') + "f"
+        return f"{self.value:.20f}".rstrip("0") + "f"
 
 
-@dataclass(eq=False)
-class TAG_Double(_TAG_Value):
+@dataclass(eq=False, init=False)
+class TAG_Double(_TAG_Value, _Float):
     value: float = 0
     tag_id = TAG_DOUBLE
     tag_format_be = Struct(">d")
     tag_format_le = Struct("<d")
 
     def to_snbt(self) -> str:
-        return f"{self.value:.20f}".rstrip('0') + "d"
+        return f"{self.value:.20f}".rstrip("0") + "d"
 
 
 @dataclass(eq=False)
@@ -227,7 +468,17 @@ class _TAG_Array(_TAG_Value):
     little_endian_data_type: ClassVar[Any]
     value: np.ndarray = np.zeros(0)
 
-    def __init__(self, value: Union[np.ndarray, List[int], Tuple[int, ...], TAG_Byte_Array, TAG_Int_Array, TAG_Long_Array] = None):
+    def __init__(
+        self,
+        value: Union[
+            np.ndarray,
+            List[int],
+            Tuple[int, ...],
+            TAG_Byte_Array,
+            TAG_Int_Array,
+            TAG_Long_Array,
+        ] = None,
+    ):
         if value is None:
             value = np.zeros((0,), self.big_endian_data_type)
         elif isinstance(value, (list, tuple)):
@@ -238,38 +489,42 @@ class _TAG_Array(_TAG_Value):
             if value.dtype != self.big_endian_data_type:
                 value = value.astype(self.big_endian_data_type)
         else:
-            raise Exception(f'Unexpected object {value} given to {self.__class__.__name__}')
+            raise Exception(
+                f"Unexpected object {value} given to {self.__class__.__name__}"
+            )
 
         self.value = value
 
-    def __eq__(self, other: _TAG_Array):
-        return (
-                self.tag_id == other.tag_id and np.array_equal(self.value, other.value)
-        )
-
-    def __len__(self):
-        return len(self.value)
-
     @classmethod
     def load_from(cls, context: _BufferContext, little_endian: bool) -> _TAG_Array:
-        data_type = cls.little_endian_data_type if little_endian else cls.big_endian_data_type
-        data = context.buffer[context.offset:]
+        data_type = (
+            cls.little_endian_data_type if little_endian else cls.big_endian_data_type
+        )
+        data = context.buffer[context.offset :]
         if little_endian:
             (string_len,) = TAG_Int.tag_format_le.unpack_from(data)
         else:
             (string_len,) = TAG_Int.tag_format_be.unpack_from(data)
         value = np.frombuffer(
-            data[4: string_len * data_type.itemsize + 4], dtype=data_type
+            data[4 : string_len * data_type.itemsize + 4], dtype=data_type
         )
         context.offset += string_len * data_type.itemsize + 4
 
         return cls(value)
 
     def write_value(self, buffer, little_endian=False):
-        data_type = self.little_endian_data_type if little_endian else self.big_endian_data_type
+        data_type = (
+            self.little_endian_data_type if little_endian else self.big_endian_data_type
+        )
         if self.value.dtype != data_type:
-            if self.value.dtype != self.big_endian_data_type if little_endian else self.little_endian_data_type:
-                print(f'[Warning] Mismatch array dtype. Expected: {data_type.str}, got: {self.value.dtype.str}')
+            if (
+                self.value.dtype != self.big_endian_data_type
+                if little_endian
+                else self.little_endian_data_type
+            ):
+                print(
+                    f"[Warning] Mismatch array dtype. Expected: {data_type.str}, got: {self.value.dtype.str}"
+                )
             self.value = self.value.astype(data_type)
         if little_endian:
             value = self.value.tostring()
@@ -277,6 +532,37 @@ class _TAG_Array(_TAG_Value):
         else:
             value = self.value.tostring()
             buffer.write(pack(f">I{len(value)}s", self.value.size, value))
+
+    def __eq__(self, other):
+        return np.array_equal(primitive_conversion(self), primitive_conversion(other))
+
+    def __getitem__(self, item):
+        return self.value.__getitem__(item)
+
+    def __setitem__(self, key, value):
+        self.value.__setitem__(key, value)
+
+    def __getattr__(self, item):
+        return self.value.__getattribute__(item)
+
+    def __dir__(self):
+        return dir(self.value)
+
+    def __array__(self):
+        return self.value
+
+    def __len__(self):
+        return len(self.value)
+
+    def __add__(self, other):
+        return (primitive_conversion(self) + primitive_conversion(other)).astype(
+            self.big_endian_data_type
+        )
+
+    def __sub__(self, other):
+        return (primitive_conversion(self) - primitive_conversion(other)).astype(
+            self.big_endian_data_type
+        )
 
 
 BaseArrayType = _TAG_Array
@@ -287,7 +573,17 @@ class TAG_Byte_Array(_TAG_Array):
     big_endian_data_type = little_endian_data_type = np.dtype("int8")
     tag_id = TAG_BYTE_ARRAY
 
-    def __init__(self, value: Union[np.ndarray, List[int], Tuple[int, ...], TAG_Byte_Array, TAG_Int_Array, TAG_Long_Array] = None):
+    def __init__(
+        self,
+        value: Union[
+            np.ndarray,
+            List[int],
+            Tuple[int, ...],
+            TAG_Byte_Array,
+            TAG_Int_Array,
+            TAG_Long_Array,
+        ] = None,
+    ):
         super().__init__(value)
 
     def to_snbt(self) -> str:
@@ -300,7 +596,17 @@ class TAG_Int_Array(_TAG_Array):
     little_endian_data_type = np.dtype("<i4")
     tag_id = TAG_INT_ARRAY
 
-    def __init__(self, value: Union[np.ndarray, List[int], Tuple[int, ...], TAG_Byte_Array, TAG_Int_Array, TAG_Long_Array] = None):
+    def __init__(
+        self,
+        value: Union[
+            np.ndarray,
+            List[int],
+            Tuple[int, ...],
+            TAG_Byte_Array,
+            TAG_Int_Array,
+            TAG_Long_Array,
+        ] = None,
+    ):
         super().__init__(value)
 
     def to_snbt(self) -> str:
@@ -313,7 +619,17 @@ class TAG_Long_Array(_TAG_Array):
     little_endian_data_type = np.dtype("<i8")
     tag_id = TAG_LONG_ARRAY
 
-    def __init__(self, value: Union[np.ndarray, List[int], Tuple[int, ...], TAG_Byte_Array, TAG_Int_Array, TAG_Long_Array] = None):
+    def __init__(
+        self,
+        value: Union[
+            np.ndarray,
+            List[int],
+            Tuple[int, ...],
+            TAG_Byte_Array,
+            TAG_Int_Array,
+            TAG_Long_Array,
+        ] = None,
+    ):
         super().__init__(value)
 
     def to_snbt(self) -> str:
@@ -329,7 +645,7 @@ def unescape(string: str):
     return string.replace('\\"', '"').replace("\\\\", "\\")
 
 
-@dataclass
+@dataclass(eq=False)
 class TAG_String(_TAG_Value):
     tag_id = TAG_STRING
     value: str = ""
@@ -344,8 +660,26 @@ class TAG_String(_TAG_Value):
     def to_snbt(self) -> str:
         return f'"{escape(self.value)}"'
 
+    def __len__(self) -> int:
+        return len(self.value)
 
-@dataclass
+    def __getitem__(self, item):
+        return self.value.__getitem__(item)
+
+    def __add__(self, other):
+        return self.value + primitive_conversion(other)
+
+    def __radd__(self, other):
+        return primitive_conversion(other) + self.value
+
+    def __mul__(self, other):
+        return self.value * primitive_conversion(other)
+
+    def __rmul__(self, other):
+        return primitive_conversion(other) * self.value
+
+
+@dataclass(eq=False, init=False)
 class TAG_List(_TAG_Value):
     tag_id = TAG_LIST
     value: List[AnyNBT] = field(default_factory=list)
@@ -357,11 +691,14 @@ class TAG_List(_TAG_Value):
         if value:
             self._check_tag(value[0])
             self.value = list(value)
-            map(self._check_tag, value[1:])
+            for tag in value[1:]:
+                self._check_tag(tag)
 
     def _check_tag(self, value: _TAG_Value):
         if not isinstance(value, _TAG_Value):
-            raise TypeError(f"Invalid type {value.__class__.__name__} for TAG_List. Must be an NBT object.")
+            raise TypeError(
+                f"Invalid type {value.__class__.__name__} for TAG_List. Must be an NBT object."
+            )
         if not self.value:
             self.list_data_type = value.tag_id
         elif value.tag_id != self.list_data_type:
@@ -414,10 +751,14 @@ class TAG_List(_TAG_Value):
         context.offset += 1
 
         if little_endian:
-            (list_len,) = TAG_Int.tag_format_le.unpack_from(context.buffer, context.offset)
+            (list_len,) = TAG_Int.tag_format_le.unpack_from(
+                context.buffer, context.offset
+            )
             context.offset += TAG_Int.tag_format_le.size
         else:
-            (list_len,) = TAG_Int.tag_format_be.unpack_from(context.buffer, context.offset)
+            (list_len,) = TAG_Int.tag_format_be.unpack_from(
+                context.buffer, context.offset
+            )
             context.offset += TAG_Int.tag_format_be.size
 
         for i in range(list_len):
@@ -440,25 +781,31 @@ class TAG_List(_TAG_Value):
         return f"[{', '.join(elem.to_snbt() for elem in self.value)}]"
 
 
-@dataclass
+@dataclass(eq=False, init=False)
 class TAG_Compound(_TAG_Value, MutableMapping):
     tag_id = TAG_COMPOUND
     value: Dict[str, AnyNBT] = field(default_factory=dict)
 
     def __init__(self, value: Dict[str, AnyNBT] = None):
         self.value = value or {}
-        map(self._check_key, self.value.keys())
-        map(self._check_tag, self.value.values())
+        for key in self.value.keys():
+            self._check_key(key)
+        for tag in self.value.values():
+            self._check_tag(tag)
 
     @staticmethod
     def _check_key(key: str):
         if not isinstance(key, str):
-            raise TypeError(f"TAG_Compound key must be a string. Got {key.__class__.__name__}")
+            raise TypeError(
+                f"TAG_Compound key must be a string. Got {key.__class__.__name__}"
+            )
 
     @staticmethod
     def _check_tag(value: _TAG_Value):
         if not isinstance(value, _TAG_Value):
-            raise TypeError(f"Invalid type {value.__class__.__name__} for TAG_List. Must be an NBT object.")
+            raise TypeError(
+                f"Invalid type {value.__class__.__name__} for TAG_List. Must be an NBT object."
+            )
 
     @classmethod
     def load_from(cls, context: _BufferContext, little_endian: bool) -> TAG_Compound:
@@ -525,7 +872,7 @@ class NBTFile:
         return self.value.to_snbt()
 
     def save_to(
-            self, filename_or_buffer=None, compressed=True, little_endian=False
+        self, filename_or_buffer=None, compressed=True, little_endian=False
     ) -> Optional[bytes]:
         buffer = BytesIO()
         self.value.write_payload(buffer, self.name, little_endian)
@@ -582,7 +929,7 @@ class NBTFile:
 
 
 def safe_gunzip(data):
-    if data[:2] == b'\x1f\x8b':  # if the first two bytes are this it should be gzipped
+    if data[:2] == b"\x1f\x8b":  # if the first two bytes are this it should be gzipped
         try:
             data = gzip.GzipFile(fileobj=BytesIO(data)).read()
         except IOError as e:
@@ -591,7 +938,12 @@ def safe_gunzip(data):
 
 
 def load(
-        filename="", buffer=None, compressed=True, count: int = None, offset: bool = False, little_endian: bool = False
+    filename="",
+    buffer=None,
+    compressed=True,
+    count: int = None,
+    offset: bool = False,
+    little_endian: bool = False,
 ) -> Union[NBTFile, Tuple[Union[NBTFile, List[NBTFile]], int]]:
     if filename:
         buffer = open(filename, "rb")
@@ -618,7 +970,9 @@ def load(
     for i in range(count or 1):
         tag_type = context.buffer[context.offset]
         if tag_type != TAG_COMPOUND:
-            raise NBTFormatError(f"Expecting tag type {TAG_COMPOUND}, got {tag_type} instead")
+            raise NBTFormatError(
+                f"Expecting tag type {TAG_COMPOUND}, got {tag_type} instead"
+            )
         context.offset += 1
 
         tag_name = load_string(context, little_endian)
@@ -682,11 +1036,11 @@ def from_snbt(snbt: str) -> AnyNBT:
             index += 1
             end_index = index
             while not (  # keep running this until
-                    snbt[end_index]
-                    == quote  # the last character is a quote of the same type
-                    and not (  # and there is an even number of backslashes before it (including 0)
+                snbt[end_index]
+                == quote  # the last character is a quote of the same type
+                and not (  # and there is an even number of backslashes before it (including 0)
                     len(snbt[:end_index]) - len(snbt[:end_index].rstrip("\\"))
-            )
+                )
             ):
                 end_index += 1
 
@@ -725,7 +1079,7 @@ def from_snbt(snbt: str) -> AnyNBT:
         elif snbt[index] == "[":
             index += 1
             index = strip_whitespace(index)
-            if snbt[index: index + 2] in {"B;", "I;", "L;"}:
+            if snbt[index : index + 2] in {"B;", "I;", "L;"}:
                 # array
                 array = []
                 array_type_chr = snbt[index]
@@ -752,7 +1106,9 @@ def from_snbt(snbt: str) -> AnyNBT:
                         index = match.end()
 
                     index = strip_comma(index, "]")
-                data = array_type(np.asarray(array, dtype=array_type.big_endian_data_type))
+                data = array_type(
+                    np.asarray(array, dtype=array_type.big_endian_data_type)
+                )
             else:
                 # list
                 array = []
@@ -821,7 +1177,7 @@ def from_snbt(snbt: str) -> AnyNBT:
 
 
 TAG_CLASSES: Dict[int, Type[_TAG_Value]] = {
-    t().tag_id: t
+    t(None).tag_id: t
     for t in itertools.chain(_TAG_Value.__subclasses__(), _TAG_Array.__subclasses__())
     if t is not _TAG_Array
 }

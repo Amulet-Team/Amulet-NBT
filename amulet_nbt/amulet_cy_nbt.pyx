@@ -931,8 +931,6 @@ cdef class _TAG_Array(_TAG_Value):
         if value is None:
             value = numpy.zeros((0,), self.big_endian_data_type)
         elif isinstance(value, (list, tuple)):
-            print('1')
-            print(self.big_endian_data_type)
             value = numpy.array(value, self.big_endian_data_type)
         elif isinstance(value, (TAG_Byte_Array, TAG_Int_Array, TAG_Long_Array)):
             value = value.value

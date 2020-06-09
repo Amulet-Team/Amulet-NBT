@@ -179,7 +179,7 @@ class _Int:
         return primitive_conversion(other) // self.value
 
     def __rmod__(self, other):
-        primitive_conversion(other) % self.value
+        return primitive_conversion(other) % self.value
 
     def __rdivmod__(self, other):
         return divmod(primitive_conversion(other), self.value)
@@ -277,7 +277,7 @@ class _Float:
         return primitive_conversion(other) // self.value
 
     def __rmod__(self, other):
-        primitive_conversion(other) % self.value
+        return primitive_conversion(other) % self.value
 
     def __rdivmod__(self, other):
         return divmod(primitive_conversion(other), self.value)
@@ -336,6 +336,7 @@ class _Eq:
         return result and self.__eq__(other)
 
 
+
 @dataclass(eq=False)
 class _TAG_Value(_Eq):
     value: Any
@@ -346,7 +347,6 @@ class _TAG_Value(_Eq):
 
     def __new__(cls, *args, **kwargs):
         cls._data_type = get_type_hints(cls)["value"]
-
         return super(_TAG_Value, cls).__new__(cls)
 
     def __init__(self, value=None):

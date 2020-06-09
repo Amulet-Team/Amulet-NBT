@@ -193,11 +193,216 @@ cdef class _TAG_Value:
 
 BaseValueType = _TAG_Value
 
+cdef class _Int(_TAG_Value):
+    def __eq__(self, other):
+        return primitive_conversion(self) == primitive_conversion(other)
+
+    def __add__(self, other):
+        return primitive_conversion(self) + primitive_conversion(other)
+
+    def __sub__(self, other):
+        return primitive_conversion(self) - primitive_conversion(other)
+
+    def __mul__(self, other):
+        return primitive_conversion(self) * primitive_conversion(other)
+
+    def __truediv__(self, other):
+        return primitive_conversion(self) / primitive_conversion(other)
+
+    def __floordiv__(self, other):
+        return primitive_conversion(self) // primitive_conversion(other)
+
+    def __mod__(self, other):
+        return primitive_conversion(self) % primitive_conversion(other)
+
+    def __divmod__(self, other):
+        return divmod(primitive_conversion(self), primitive_conversion(other))
+
+    def __pow__(self, power, modulo):
+        return pow(primitive_conversion(self), power, modulo)
+
+    def __lshift__(self, other):
+        return primitive_conversion(self) << primitive_conversion(other)
+
+    def __rshift__(self, other):
+        return primitive_conversion(self) >> primitive_conversion(other)
+
+    def __and__(self, other):
+        return primitive_conversion(self) & primitive_conversion(other)
+
+    def __xor__(self, other):
+        return primitive_conversion(self) ^ primitive_conversion(other)
+
+    def __or__(self, other):
+        return primitive_conversion(self) | primitive_conversion(other)
+
+    def __radd__(self, other):
+        return primitive_conversion(other) + primitive_conversion(self)
+
+    def __rsub__(self, other):
+        return primitive_conversion(other) - primitive_conversion(self)
+
+    def __rmul__(self, other):
+        return primitive_conversion(other) * primitive_conversion(self)
+
+    def __rtruediv__(self, other):
+        return primitive_conversion(other) / primitive_conversion(self)
+
+    def __rfloordiv__(self, other):
+        return primitive_conversion(other) // primitive_conversion(self)
+
+    def __rmod__(self, other):
+        return primitive_conversion(other) % primitive_conversion(self)
+
+    def __rdivmod__(self, other):
+        return divmod(primitive_conversion(other), primitive_conversion(self))
+
+    def __rpow__(self, other, modulo):
+        return pow(primitive_conversion(other), primitive_conversion(self), modulo)
+
+    def __rlshift__(self, other):
+        return primitive_conversion(other) << primitive_conversion(self)
+
+    def __rrshift__(self, other):
+        return primitive_conversion(other) >> primitive_conversion(self)
+
+    def __rand__(self, other):
+        return primitive_conversion(other) & primitive_conversion(self)
+
+    def __rxor__(self, other):
+        return primitive_conversion(other) ^ primitive_conversion(self)
+
+    def __ror__(self, other):
+        return primitive_conversion(other) | primitive_conversion(self)
+
+    def __neg__(self):
+        return -self.value
+
+    def __pos__(self):
+        return +self.value
+
+    def __abs__(self):
+        return abs(self.value)
+
+    def __invert__(self):
+        return ~self.value
+
+    def __int__(self):
+        return self.value
+
+
+cdef class _Float(_TAG_Value):
+    def __eq__(self, other):
+        return primitive_conversion(self) == primitive_conversion(other)
+
+    def __add__(self, other):
+        return float(primitive_conversion(self) + primitive_conversion(other))
+
+    def __sub__(self, other):
+        return float(primitive_conversion(self) - primitive_conversion(other))
+
+    def __mul__(self, other):
+        return float(primitive_conversion(self) * primitive_conversion(other))
+
+    def __truediv__(self, other):
+        return float(primitive_conversion(self) / primitive_conversion(other))
+
+    def __floordiv__(self, other):
+        return primitive_conversion(self) // primitive_conversion(other)
+
+    def __mod__(self, other):
+        return primitive_conversion(self) % primitive_conversion(other)
+
+    def __divmod__(self, other):
+        return divmod(primitive_conversion(self), primitive_conversion(other))
+
+    def __pow__(self, power, modulo):
+        return pow(primitive_conversion(self), power, modulo)
+
+    def __lshift__(self, other):
+        return primitive_conversion(self) << primitive_conversion(other)
+
+    def __rshift__(self, other):
+        return primitive_conversion(self) >> primitive_conversion(other)
+
+    def __and__(self, other):
+        return primitive_conversion(self) & primitive_conversion(other)
+
+    def __xor__(self, other):
+        return primitive_conversion(self) ^ primitive_conversion(other)
+
+    def __or__(self, other):
+        return primitive_conversion(self) | primitive_conversion(other)
+
+    def __radd__(self, other):
+        return float(primitive_conversion(other) + primitive_conversion(self))
+
+    def __rsub__(self, other):
+        return float(primitive_conversion(other) - primitive_conversion(self))
+
+    def __rmul__(self, other):
+        return primitive_conversion(other) * primitive_conversion(self)
+
+    def __rtruediv__(self, other):
+        return float(primitive_conversion(other) / primitive_conversion(self))
+
+    def __rfloordiv__(self, other):
+        return primitive_conversion(other) // primitive_conversion(self)
+
+    def __rmod__(self, other):
+        return primitive_conversion(other) % primitive_conversion(self)
+
+    def __rdivmod__(self, other):
+        return divmod(primitive_conversion(other), primitive_conversion(self))
+
+    def __rpow__(self, other, modulo):
+        return pow(primitive_conversion(other), primitive_conversion(self), modulo)
+
+    def __rlshift__(self, other):
+        return primitive_conversion(other) << primitive_conversion(self)
+
+    def __rrshift__(self, other):
+        return primitive_conversion(other) >> primitive_conversion(self)
+
+    def __rand__(self, other):
+        return primitive_conversion(other) & primitive_conversion(self)
+
+    def __rxor__(self, other):
+        return primitive_conversion(other) ^ primitive_conversion(self)
+
+    def __ror__(self, other):
+        return primitive_conversion(other) | primitive_conversion(self)
+
+    def __neg__(self):
+        return -self.value
+
+    def __pos__(self):
+        return +self.value
+
+    def __abs__(self):
+        return abs(self.value)
+
+    def __float__(self):
+        return self.value
+
+    def __round__(self, n=None):
+        return round(self.value, n)
+
+    def __trunc__(self):
+        return trunc(self.value)
+
+    def __floor__(self):
+        return floor(self.value)
+
+    def __ceil__(self):
+        return ceil(self.value)
+
+
 cdef inline primitive_conversion(obj):
     return obj.value if isinstance(obj, _TAG_Value) else obj
 
 
-cdef class TAG_Byte(_TAG_Value):
+cdef class TAG_Byte(_Int):
     cdef readonly char value
 
     def __cinit__(self):
@@ -212,103 +417,7 @@ cdef class TAG_Byte(_TAG_Value):
     cdef void write_value(self, buffer, little_endian):
         write_byte(self.value, buffer)
 
-    #def __eq__(self, other) -> bool:
-    #    return (isinstance(other, self.__class__) and self.value == other.value) or (isinstance(other, (int, float)) and self.value == other)
-
-    def __add__(self, other):
-        return primitive_conversion(self) + primitive_conversion(other)
-
-    def __sub__(self, other):
-        return primitive_conversion(self) - primitive_conversion(other)
-
-    def __mul__(self, other):
-        return primitive_conversion(self) * primitive_conversion(other)
-
-    def __truediv__(self, other):
-        return primitive_conversion(self) / primitive_conversion(other)
-
-    def __floordiv__(self, other):
-        return primitive_conversion(self) // primitive_conversion(other)
-
-    def __mod__(self, other):
-        return primitive_conversion(self) % primitive_conversion(other)
-
-    def __divmod__(self, other):
-        return divmod(primitive_conversion(self), primitive_conversion(other))
-
-    def __pow__(self, power, modulo):
-        return pow(primitive_conversion(self), power, modulo)
-
-    def __lshift__(self, other):
-        return primitive_conversion(self) << primitive_conversion(other)
-
-    def __rshift__(self, other):
-        return primitive_conversion(self) >> primitive_conversion(other)
-
-    def __and__(self, other):
-        return primitive_conversion(self) & primitive_conversion(other)
-
-    def __xor__(self, other):
-        return primitive_conversion(self) ^ primitive_conversion(other)
-
-    def __or__(self, other):
-        return primitive_conversion(self) | primitive_conversion(other)
-
-    def __radd__(self, other):
-        return primitive_conversion(other) + primitive_conversion(self)
-
-    def __rsub__(self, other):
-        return primitive_conversion(other) - primitive_conversion(self)
-
-    def __rmul__(self, other):
-        return primitive_conversion(other) * primitive_conversion(self)
-
-    def __rtruediv__(self, other):
-        return primitive_conversion(other) / primitive_conversion(self)
-
-    def __rfloordiv__(self, other):
-        return primitive_conversion(other) // primitive_conversion(self)
-
-    def __rmod__(self, other):
-        primitive_conversion(other) % primitive_conversion(self)
-
-    def __rdivmod__(self, other):
-        return divmod(primitive_conversion(other), primitive_conversion(self))
-
-    def __rpow__(self, other, modulo):
-        return pow(primitive_conversion(other), primitive_conversion(self), modulo)
-
-    def __rlshift__(self, other):
-        return primitive_conversion(other) << primitive_conversion(self)
-
-    def __rrshift__(self, other):
-        return primitive_conversion(other) >> primitive_conversion(self)
-
-    def __rand__(self, other):
-        return primitive_conversion(other) & primitive_conversion(self)
-
-    def __rxor__(self, other):
-        return primitive_conversion(other) ^ primitive_conversion(self)
-
-    def __ror__(self, other):
-        return primitive_conversion(other) | primitive_conversion(self)
-
-    def __neg__(self):
-        return -self.value
-
-    def __pos__(self):
-        return +self.value
-
-    def __abs__(self):
-        return abs(self.value)
-
-    def __invert__(self):
-        return ~self.value
-
-    def __int__(self):
-        return self.value
-
-cdef class TAG_Short(_TAG_Value):
+cdef class TAG_Short(_Int):
     cdef readonly short value
 
     def __cinit__(self):
@@ -323,103 +432,8 @@ cdef class TAG_Short(_TAG_Value):
     cdef void write_value(self, buffer, little_endian):
         write_short(self.value, buffer, little_endian)
 
-    #def __eq__(self, other) -> bool:
-    #    return (isinstance(other, self.__class__) and self.value == other.value) or (isinstance(other, (int, float)) and self.value == other)
 
-    def __add__(self, other):
-        return primitive_conversion(self) + primitive_conversion(other)
-
-    def __sub__(self, other):
-        return primitive_conversion(self) - primitive_conversion(other)
-
-    def __mul__(self, other):
-        return primitive_conversion(self) * primitive_conversion(other)
-
-    def __truediv__(self, other):
-        return primitive_conversion(self) / primitive_conversion(other)
-
-    def __floordiv__(self, other):
-        return primitive_conversion(self) // primitive_conversion(other)
-
-    def __mod__(self, other):
-        return primitive_conversion(self) % primitive_conversion(other)
-
-    def __divmod__(self, other):
-        return divmod(primitive_conversion(self), primitive_conversion(other))
-
-    def __pow__(self, power, modulo):
-        return pow(primitive_conversion(self), power, modulo)
-
-    def __lshift__(self, other):
-        return primitive_conversion(self) << primitive_conversion(other)
-
-    def __rshift__(self, other):
-        return primitive_conversion(self) >> primitive_conversion(other)
-
-    def __and__(self, other):
-        return primitive_conversion(self) & primitive_conversion(other)
-
-    def __xor__(self, other):
-        return primitive_conversion(self) ^ primitive_conversion(other)
-
-    def __or__(self, other):
-        return primitive_conversion(self) | primitive_conversion(other)
-
-    def __radd__(self, other):
-        return primitive_conversion(other) + primitive_conversion(self)
-
-    def __rsub__(self, other):
-        return primitive_conversion(other) - primitive_conversion(self)
-
-    def __rmul__(self, other):
-        return primitive_conversion(other) * primitive_conversion(self)
-
-    def __rtruediv__(self, other):
-        return primitive_conversion(other) / primitive_conversion(self)
-
-    def __rfloordiv__(self, other):
-        return primitive_conversion(other) // primitive_conversion(self)
-
-    def __rmod__(self, other):
-        primitive_conversion(other) % primitive_conversion(self)
-
-    def __rdivmod__(self, other):
-        return divmod(primitive_conversion(other), primitive_conversion(self))
-
-    def __rpow__(self, other, modulo):
-        return pow(primitive_conversion(other), primitive_conversion(self), modulo)
-
-    def __rlshift__(self, other):
-        return primitive_conversion(other) << primitive_conversion(self)
-
-    def __rrshift__(self, other):
-        return primitive_conversion(other) >> primitive_conversion(self)
-
-    def __rand__(self, other):
-        return primitive_conversion(other) & primitive_conversion(self)
-
-    def __rxor__(self, other):
-        return primitive_conversion(other) ^ primitive_conversion(self)
-
-    def __ror__(self, other):
-        return primitive_conversion(other) | primitive_conversion(self)
-
-    def __neg__(self):
-        return -self.value
-
-    def __pos__(self):
-        return +self.value
-
-    def __abs__(self):
-        return abs(self.value)
-
-    def __invert__(self):
-        return ~self.value
-
-    def __int__(self):
-        return self.value
-
-cdef class TAG_Int(_TAG_Value):
+cdef class TAG_Int(_Int):
     cdef readonly int value
 
     def __cinit__(self):
@@ -434,103 +448,8 @@ cdef class TAG_Int(_TAG_Value):
     cdef void write_value(self, buffer, little_endian):
         write_int(self.value, buffer, little_endian)
 
-    #def __eq__(self, other) -> bool:
-    #    return (isinstance(other, self.__class__) and self.value == other.value) or (isinstance(other, (int, float)) and self.value == other)
 
-    def __add__(self, other):
-        return primitive_conversion(self) + primitive_conversion(other)
-
-    def __sub__(self, other):
-        return primitive_conversion(self) - primitive_conversion(other)
-
-    def __mul__(self, other):
-        return primitive_conversion(self) * primitive_conversion(other)
-
-    def __truediv__(self, other):
-        return primitive_conversion(self) / primitive_conversion(other)
-
-    def __floordiv__(self, other):
-        return primitive_conversion(self) // primitive_conversion(other)
-
-    def __mod__(self, other):
-        return primitive_conversion(self) % primitive_conversion(other)
-
-    def __divmod__(self, other):
-        return divmod(primitive_conversion(self), primitive_conversion(other))
-
-    def __pow__(self, power, modulo):
-        return pow(primitive_conversion(self), power, modulo)
-
-    def __lshift__(self, other):
-        return primitive_conversion(self) << primitive_conversion(other)
-
-    def __rshift__(self, other):
-        return primitive_conversion(self) >> primitive_conversion(other)
-
-    def __and__(self, other):
-        return primitive_conversion(self) & primitive_conversion(other)
-
-    def __xor__(self, other):
-        return primitive_conversion(self) ^ primitive_conversion(other)
-
-    def __or__(self, other):
-        return primitive_conversion(self) | primitive_conversion(other)
-
-    def __radd__(self, other):
-        return primitive_conversion(other) + primitive_conversion(self)
-
-    def __rsub__(self, other):
-        return primitive_conversion(other) - primitive_conversion(self)
-
-    def __rmul__(self, other):
-        return primitive_conversion(other) * primitive_conversion(self)
-
-    def __rtruediv__(self, other):
-        return primitive_conversion(other) / primitive_conversion(self)
-
-    def __rfloordiv__(self, other):
-        return primitive_conversion(other) // primitive_conversion(self)
-
-    def __rmod__(self, other):
-        primitive_conversion(other) % primitive_conversion(self)
-
-    def __rdivmod__(self, other):
-        return divmod(primitive_conversion(other), primitive_conversion(self))
-
-    def __rpow__(self, other, modulo):
-        return pow(primitive_conversion(other), primitive_conversion(self), modulo)
-
-    def __rlshift__(self, other):
-        return primitive_conversion(other) << primitive_conversion(self)
-
-    def __rrshift__(self, other):
-        return primitive_conversion(other) >> primitive_conversion(self)
-
-    def __rand__(self, other):
-        return primitive_conversion(other) & primitive_conversion(self)
-
-    def __rxor__(self, other):
-        return primitive_conversion(other) ^ primitive_conversion(self)
-
-    def __ror__(self, other):
-        return primitive_conversion(other) | primitive_conversion(self)
-
-    def __neg__(self):
-        return -self.value
-
-    def __pos__(self):
-        return +self.value
-
-    def __abs__(self):
-        return abs(self.value)
-
-    def __invert__(self):
-        return ~self.value
-
-    def __int__(self):
-        return self.value
-
-cdef class TAG_Long(_TAG_Value):
+cdef class TAG_Long(_Int):
     cdef readonly long long value
 
     def __cinit__(self):
@@ -545,103 +464,8 @@ cdef class TAG_Long(_TAG_Value):
     cdef void write_value(self, buffer, little_endian):
         write_long(self.value, buffer, little_endian)
 
-    #def __eq__(self, other) -> bool:
-    #    return (isinstance(other, self.__class__) and self.value == other.value) or (isinstance(other, (int, float)) and self.value == other)
 
-    def __add__(self, other):
-        return primitive_conversion(self) + primitive_conversion(other)
-
-    def __sub__(self, other):
-        return primitive_conversion(self) - primitive_conversion(other)
-
-    def __mul__(self, other):
-        return primitive_conversion(self) * primitive_conversion(other)
-
-    def __truediv__(self, other):
-        return primitive_conversion(self) / primitive_conversion(other)
-
-    def __floordiv__(self, other):
-        return primitive_conversion(self) // primitive_conversion(other)
-
-    def __mod__(self, other):
-        return primitive_conversion(self) % primitive_conversion(other)
-
-    def __divmod__(self, other):
-        return divmod(primitive_conversion(self), primitive_conversion(other))
-
-    def __pow__(self, power, modulo):
-        return pow(primitive_conversion(self), power, modulo)
-
-    def __lshift__(self, other):
-        return primitive_conversion(self) << primitive_conversion(other)
-
-    def __rshift__(self, other):
-        return primitive_conversion(self) >> primitive_conversion(other)
-
-    def __and__(self, other):
-        return primitive_conversion(self) & primitive_conversion(other)
-
-    def __xor__(self, other):
-        return primitive_conversion(self) ^ primitive_conversion(other)
-
-    def __or__(self, other):
-        return primitive_conversion(self) | primitive_conversion(other)
-
-    def __radd__(self, other):
-        return primitive_conversion(other) + primitive_conversion(self)
-
-    def __rsub__(self, other):
-        return primitive_conversion(other) - primitive_conversion(self)
-
-    def __rmul__(self, other):
-        return primitive_conversion(other) * primitive_conversion(self)
-
-    def __rtruediv__(self, other):
-        return primitive_conversion(other) / primitive_conversion(self)
-
-    def __rfloordiv__(self, other):
-        return primitive_conversion(other) // primitive_conversion(self)
-
-    def __rmod__(self, other):
-        primitive_conversion(other) % primitive_conversion(self)
-
-    def __rdivmod__(self, other):
-        return divmod(primitive_conversion(other), primitive_conversion(self))
-
-    def __rpow__(self, other, modulo):
-        return pow(primitive_conversion(other), primitive_conversion(self), modulo)
-
-    def __rlshift__(self, other):
-        return primitive_conversion(other) << primitive_conversion(self)
-
-    def __rrshift__(self, other):
-        return primitive_conversion(other) >> primitive_conversion(self)
-
-    def __rand__(self, other):
-        return primitive_conversion(other) & primitive_conversion(self)
-
-    def __rxor__(self, other):
-        return primitive_conversion(other) ^ primitive_conversion(self)
-
-    def __ror__(self, other):
-        return primitive_conversion(other) | primitive_conversion(self)
-
-    def __neg__(self):
-        return -self.value
-
-    def __pos__(self):
-        return +self.value
-
-    def __abs__(self):
-        return abs(self.value)
-
-    def __invert__(self):
-        return ~self.value
-
-    def __int__(self):
-        return self.value
-
-cdef class TAG_Float(_TAG_Value):
+cdef class TAG_Float(_Float):
     cdef readonly float value
 
     def __cinit__(self):
@@ -656,112 +480,8 @@ cdef class TAG_Float(_TAG_Value):
     cdef void write_value(self, buffer, little_endian):
         write_float(self.value, buffer, little_endian)
 
-    #def __eq__(self, other) -> bool:
-    #    return (isinstance(other, self.__class__) and self.value == other.value) or (isinstance(other, (int, float)) and self.value == other)
 
-    def __add__(self, other):
-        return primitive_conversion(self) + primitive_conversion(other)
-
-    def __sub__(self, other):
-        return primitive_conversion(self) - primitive_conversion(other)
-
-    def __mul__(self, other):
-        return primitive_conversion(self) * primitive_conversion(other)
-
-    def __truediv__(self, other):
-        return primitive_conversion(self) / primitive_conversion(other)
-
-    def __floordiv__(self, other):
-        return primitive_conversion(self) // primitive_conversion(other)
-
-    def __mod__(self, other):
-        return primitive_conversion(self) % primitive_conversion(other)
-
-    def __divmod__(self, other):
-        return divmod(primitive_conversion(self), primitive_conversion(other))
-
-    def __pow__(self, power, modulo):
-        return pow(primitive_conversion(self), power, modulo)
-
-    def __lshift__(self, other):
-        return primitive_conversion(self) << primitive_conversion(other)
-
-    def __rshift__(self, other):
-        return primitive_conversion(self) >> primitive_conversion(other)
-
-    def __and__(self, other):
-        return primitive_conversion(self) & primitive_conversion(other)
-
-    def __xor__(self, other):
-        return primitive_conversion(self) ^ primitive_conversion(other)
-
-    def __or__(self, other):
-        return primitive_conversion(self) | primitive_conversion(other)
-
-    def __radd__(self, other):
-        return primitive_conversion(other) + primitive_conversion(self)
-
-    def __rsub__(self, other):
-        return primitive_conversion(other) - primitive_conversion(self)
-
-    def __rmul__(self, other):
-        return primitive_conversion(other) * primitive_conversion(self)
-
-    def __rtruediv__(self, other):
-        return primitive_conversion(other) / primitive_conversion(self)
-
-    def __rfloordiv__(self, other):
-        return primitive_conversion(other) // primitive_conversion(self)
-
-    def __rmod__(self, other):
-        primitive_conversion(other) % primitive_conversion(self)
-
-    def __rdivmod__(self, other):
-        return divmod(primitive_conversion(other), primitive_conversion(self))
-
-    def __rpow__(self, other, modulo):
-        return pow(primitive_conversion(other), primitive_conversion(self), modulo)
-
-    def __rlshift__(self, other):
-        return primitive_conversion(other) << primitive_conversion(self)
-
-    def __rrshift__(self, other):
-        return primitive_conversion(other) >> primitive_conversion(self)
-
-    def __rand__(self, other):
-        return primitive_conversion(other) & primitive_conversion(self)
-
-    def __rxor__(self, other):
-        return primitive_conversion(other) ^ primitive_conversion(self)
-
-    def __ror__(self, other):
-        return primitive_conversion(other) | primitive_conversion(self)
-
-    def __neg__(self):
-        return -self.value
-
-    def __pos__(self):
-        return +self.value
-
-    def __abs__(self):
-        return abs(self.value)
-
-    def __float__(self):
-        return self.value
-
-    def __round__(self, n=None):
-        return round(self.value, n)
-
-    def __trunc__(self):
-        return trunc(self.value)
-
-    def __floor__(self):
-        return floor(self.value)
-
-    def __ceil__(self):
-        return ceil(self.value)
-
-cdef class TAG_Double(_TAG_Value):
+cdef class TAG_Double(_Float):
     cdef readonly double value
 
     def __cinit__(self):
@@ -776,110 +496,6 @@ cdef class TAG_Double(_TAG_Value):
     cdef void write_value(self, buffer, little_endian):
         write_double(self.value, buffer, little_endian)
 
-    #def __eq__(self, other) -> bool:
-    #    return (isinstance(other, self.__class__) and self.value == other.value) or (isinstance(other, (int, float)) and self.value == other)
-
-    def __add__(self, other):
-        return primitive_conversion(self) + primitive_conversion(other)
-
-    def __sub__(self, other):
-        return primitive_conversion(self) - primitive_conversion(other)
-
-    def __mul__(self, other):
-        return primitive_conversion(self) * primitive_conversion(other)
-
-    def __truediv__(self, other):
-        return primitive_conversion(self) / primitive_conversion(other)
-
-    def __floordiv__(self, other):
-        return primitive_conversion(self) // primitive_conversion(other)
-
-    def __mod__(self, other):
-        return primitive_conversion(self) % primitive_conversion(other)
-
-    def __divmod__(self, other):
-        return divmod(primitive_conversion(self), primitive_conversion(other))
-
-    def __pow__(self, power, modulo):
-        return pow(primitive_conversion(self), power, modulo)
-
-    def __lshift__(self, other):
-        return primitive_conversion(self) << primitive_conversion(other)
-
-    def __rshift__(self, other):
-        return primitive_conversion(self) >> primitive_conversion(other)
-
-    def __and__(self, other):
-        return primitive_conversion(self) & primitive_conversion(other)
-
-    def __xor__(self, other):
-        return primitive_conversion(self) ^ primitive_conversion(other)
-
-    def __or__(self, other):
-        return primitive_conversion(self) | primitive_conversion(other)
-
-    def __radd__(self, other):
-        return primitive_conversion(other) + primitive_conversion(self)
-
-    def __rsub__(self, other):
-        return primitive_conversion(other) - primitive_conversion(self)
-
-    def __rmul__(self, other):
-        return primitive_conversion(other) * primitive_conversion(self)
-
-    def __rtruediv__(self, other):
-        return primitive_conversion(other) / primitive_conversion(self)
-
-    def __rfloordiv__(self, other):
-        return primitive_conversion(other) // primitive_conversion(self)
-
-    def __rmod__(self, other):
-        primitive_conversion(other) % primitive_conversion(self)
-
-    def __rdivmod__(self, other):
-        return divmod(primitive_conversion(other), primitive_conversion(self))
-
-    def __rpow__(self, other, modulo):
-        return pow(primitive_conversion(other), primitive_conversion(self), modulo)
-
-    def __rlshift__(self, other):
-        return primitive_conversion(other) << primitive_conversion(self)
-
-    def __rrshift__(self, other):
-        return primitive_conversion(other) >> primitive_conversion(self)
-
-    def __rand__(self, other):
-        return primitive_conversion(other) & primitive_conversion(self)
-
-    def __rxor__(self, other):
-        return primitive_conversion(other) ^ primitive_conversion(self)
-
-    def __ror__(self, other):
-        return primitive_conversion(other) | primitive_conversion(self)
-
-    def __neg__(self):
-        return -self.value
-
-    def __pos__(self):
-        return +self.value
-
-    def __abs__(self):
-        return abs(self.value)
-
-    def __float__(self):
-        return self.value
-
-    def __round__(self, n=None):
-        return round(self.value, n)
-
-    def __trunc__(self):
-        return trunc(self.value)
-
-    def __floor__(self):
-        return floor(self.value)
-
-    def __ceil__(self):
-        return ceil(self.value)
 
 def escape(string: str):
     return string.replace('\\', '\\\\').replace('"', '\\"')
@@ -920,9 +536,6 @@ cdef class TAG_String(_TAG_Value):
     def __rmul__(self, other):
         return primitive_conversion(other) * primitive_conversion(self)
 
-    #def __eq__(self, other) -> bool:
-    #    return isinstance(other, self.__class__) and self.value == other.value
-
 cdef class _TAG_Array(_TAG_Value):
     cdef public object value
     big_endian_data_type = little_endian_data_type = numpy.dtype("int8")
@@ -941,9 +554,6 @@ cdef class _TAG_Array(_TAG_Value):
             raise Exception(f'Unexpected object {value} given to {self.__class__.__name__}')
 
         self.value = value
-
-    #def __eq__(self, other: _TAG_Array) -> bool:
-    #    return isinstance(other, self.__class__) and self.tag_id == other.tag_id and numpy.array_equal(self.value,
 
     def __eq__(self, other):
         return numpy.array_equal(primitive_conversion(self), primitive_conversion(other))

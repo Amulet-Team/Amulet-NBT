@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import gzip
 import itertools
-from collections.abc import MutableMapping, MutableSequence
+from collections.abc import MutableMapping
 from dataclasses import dataclass, field
 from io import BytesIO
 from math import trunc, floor, ceil

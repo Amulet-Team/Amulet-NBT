@@ -217,6 +217,12 @@ class _Int:
     def __int__(self):
         return self.value
 
+    def __getattr__(self, item):
+        return self.value.__getattribute__(item)
+
+    def __dir__(self):
+        return dir(self.value)
+
 
 class _Float:
     def __eq__(self, other):
@@ -323,6 +329,12 @@ class _Float:
 
     def __ceil__(self):
         return ceil(self.value)
+
+    def __getattr__(self, item):
+        return self.value.__getattribute__(item)
+
+    def __dir__(self):
+        return dir(self.value)
 
 
 class _Eq:

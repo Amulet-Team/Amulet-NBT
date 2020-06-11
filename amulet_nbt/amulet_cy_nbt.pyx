@@ -290,6 +290,12 @@ cdef class _Int(_TAG_Value):
     def __int__(self):
         return self.value
 
+    def __getattr__(self, item):
+        return self.value.__getattribute__(item)
+
+    def __dir__(self):
+        return dir(self.value)
+
 
 cdef class _Float(_TAG_Value):
     def __eq__(self, other):
@@ -396,6 +402,12 @@ cdef class _Float(_TAG_Value):
 
     def __ceil__(self):
         return ceil(self.value)
+
+    def __getattr__(self, item):
+        return self.value.__getattribute__(item)
+
+    def __dir__(self):
+        return dir(self.value)
 
 
 cdef inline primitive_conversion(obj):

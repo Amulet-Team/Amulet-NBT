@@ -581,6 +581,35 @@ class AbstractNBTTest:
                     c[not_nbt.__class__.__name__] = not_nbt
                 self.assertRaises(TypeError, f)
 
+        def test_init(self):
+            for inp in (
+                    5,
+                    self.nbt.TAG_Byte(5),
+                    self.nbt.TAG_Short(5),
+                    self.nbt.TAG_Int(5),
+                    self.nbt.TAG_Long(5),
+                    5.5,
+                    self.nbt.TAG_Float(5.5),
+                    self.nbt.TAG_Double(5.5)
+            ):
+                for nbt_type in self._int_types:
+                    self.assertIsInstance(nbt_type(inp).value, int)
+                    self.assertEqual(nbt_type(inp), 5)
+                for nbt_type in self._float_types:
+                    self.assertIsInstance(nbt_type(inp).value, float)
+                    if inp == 5:
+                        self.assertEqual(nbt_type(inp), 5)
+                    else:
+                        self.assertEqual(nbt_type(inp), 5.5)
+
+            self.nbt.TAG_String(self.nbt.TAG_String())
+            self.nbt.TAG_List(self.nbt.TAG_List())
+            self.nbt.TAG_Compound(self.nbt.TAG_Compound())
+
+            self.nbt.TAG_Byte_Array(self.nbt.TAG_Byte_Array())
+            self.nbt.TAG_Int_Array(self.nbt.TAG_Int_Array())
+            self.nbt.TAG_Long_Array(self.nbt.TAG_Long_Array())
+
 
 @unittest.skipUnless(TEST_CYTHON_LIB, "Cythonized library not available")
 class CythonNBTTest(AbstractNBTTest.NBTTests):

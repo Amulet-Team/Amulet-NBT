@@ -217,6 +217,9 @@ class _Int:
     def __int__(self):
         return self._value
 
+    def __float__(self):
+        return float(self._value)
+
     def __getattr__(self, item):
         return self._value.__getattribute__(item)
 

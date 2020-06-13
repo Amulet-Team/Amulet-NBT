@@ -290,6 +290,9 @@ cdef class _Int(_TAG_Value):
     def __int__(self):
         return self.value
 
+    def __float__(self):
+        return float(self.value)
+
     def __getattr__(self, item):
         return self.value.__getattribute__(item)
 
@@ -420,8 +423,8 @@ cdef class TAG_Byte(_Int):
     def __cinit__(self):
         self.tag_id = _ID_BYTE
 
-    def __init__(self, char value = 0):
-        self.value = primitive_conversion(value)
+    def __init__(self, value = 0):
+        self.value = int(primitive_conversion(value))
 
     cpdef str to_snbt(self):
         return f"{self.value}b"
@@ -435,8 +438,8 @@ cdef class TAG_Short(_Int):
     def __cinit__(self):
         self.tag_id = _ID_SHORT
 
-    def __init__(self, short value = 0):
-        self.value = primitive_conversion(value)
+    def __init__(self, value = 0):
+        self.value = int(primitive_conversion(value))
 
     cpdef str to_snbt(self):
         return f"{self.value}s"
@@ -451,8 +454,8 @@ cdef class TAG_Int(_Int):
     def __cinit__(self):
         self.tag_id = _ID_INT
 
-    def __init__(self, int value = 0):
-        self.value = primitive_conversion(value)
+    def __init__(self, value = 0):
+        self.value = int(primitive_conversion(value))
 
     cpdef str to_snbt(self):
         return f"{self.value}"
@@ -467,8 +470,8 @@ cdef class TAG_Long(_Int):
     def __cinit__(self):
         self.tag_id = _ID_LONG
 
-    def __init__(self, long long value = 0):
-        self.value = primitive_conversion(value)
+    def __init__(self, value = 0):
+        self.value = int(primitive_conversion(value))
 
     cpdef str to_snbt(self):
         return f"{self.value}L"
@@ -483,8 +486,8 @@ cdef class TAG_Float(_Float):
     def __cinit__(self):
         self.tag_id = _ID_FLOAT
 
-    def __init__(self, float value = 0):
-        self.value = primitive_conversion(value)
+    def __init__(self, value = 0):
+        self.value = float(primitive_conversion(value))
 
     cpdef str to_snbt(self):
         return f"{self.value:.20f}".rstrip('0') + "f"
@@ -499,8 +502,8 @@ cdef class TAG_Double(_Float):
     def __cinit__(self):
         self.tag_id = _ID_DOUBLE
 
-    def __init__(self, double value = 0):
-        self.value = primitive_conversion(value)
+    def __init__(self, value = 0):
+        self.value = float(primitive_conversion(value))
 
     cpdef str to_snbt(self):
         return f"{self.value:.20f}".rstrip('0') + "d"
@@ -521,8 +524,8 @@ cdef class TAG_String(_TAG_Value):
     def __cinit__(self):
         self.tag_id = _ID_STRING
 
-    def __init__(self, unicode value = ""):
-        self.value = value
+    def __init__(self, value = ""):
+        self.value = str(value)
 
     def __len__(self) -> int:
         return len(self.value)
@@ -547,6 +550,9 @@ cdef class TAG_String(_TAG_Value):
 
     def __rmul__(self, other):
         return primitive_conversion(other) * primitive_conversion(self)
+
+    def __str__(self):
+        return self.value
 
 cdef class _TAG_Array(_TAG_Value):
     cdef public object value
@@ -668,7 +674,7 @@ cdef class _TAG_List(_TAG_Value):
     def __cinit__(self):
         self.tag_id = _ID_LIST
 
-    def __init__(self, list value = None, char list_data_type = 1):
+    def __init__(self, value = None, char list_data_type = 1):
         self.list_data_type = list_data_type
         self.value = []
         if value:
@@ -749,7 +755,7 @@ cdef class _TAG_Compound(_TAG_Value):
     def __cinit__(self):
         self.tag_id = _ID_COMPOUND
 
-    def __init__(self, dict value = None):
+    def __init__(self, value = None):
         self.value = value or {}
         for key in self.value.keys():
             self._check_key(key)

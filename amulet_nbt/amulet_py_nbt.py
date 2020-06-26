@@ -966,6 +966,8 @@ def load(
     little_endian: bool = False,
 ) -> Union[NBTFile, Tuple[Union[NBTFile, List[NBTFile]], int]]:
     if filename:
+        if not isinstance(filename, str):
+            raise Exception("filename must be a string. If you want to load nbt from bytes use the buffer input.")
         buffer = open(filename, "rb")
     data_in = buffer
 

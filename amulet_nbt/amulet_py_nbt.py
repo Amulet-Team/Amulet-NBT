@@ -804,23 +804,18 @@ class TAG_Compound(_TAG_Value, MutableMapping):
 
     def __init__(self, value: Dict[str, AnyNBT] = None):
         self._value = value or {}
-        for key in self._value.keys():
-            self._check_key(key)
-        for tag in self._value.values():
-            self._check_tag(tag)
+        for key, value in self._value.items():
+            self._check_entry(key, value)
 
     @staticmethod
-    def _check_key(key: str):
+    def _check_entry(key: str, value: AnyNBT):
         if not isinstance(key, str):
             raise TypeError(
                 f"TAG_Compound key must be a string. Got {key.__class__.__name__}"
             )
-
-    @staticmethod
-    def _check_tag(value: _TAG_Value):
         if not isinstance(value, _TAG_Value):
             raise TypeError(
-                f"Invalid type {value.__class__.__name__} for TAG_List. Must be an NBT object."
+                f"Invalid type {value.__class__.__name__} for key \"{key}\" in TAG_Compound. Must be an NBT object."
             )
 
     @classmethod
@@ -851,8 +846,7 @@ class TAG_Compound(_TAG_Value, MutableMapping):
         return self._value.__getitem__(key)
 
     def __setitem__(self, key: str, value: AnyNBT):
-        self._check_key(key)
-        self._check_tag(value)
+        self._check_entry(key, value)
         self._value.__setitem__(key, value)
 
     def __delitem__(self, key: str):

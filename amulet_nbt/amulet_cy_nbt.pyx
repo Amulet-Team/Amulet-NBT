@@ -582,6 +582,9 @@ cdef class _TAG_Array(_TAG_Value):
     def __setitem__(self, key, value):
         self.value.__setitem__(key, value)
 
+    def __deepcopy__(self, memo=None):
+        return self.__class__(self.value.__deepcopy__(memo or {}))
+
     def __getattr__(self, item):
         return self.value.__getattribute__(item)
 

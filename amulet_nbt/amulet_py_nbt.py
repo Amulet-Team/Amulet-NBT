@@ -220,6 +220,9 @@ class _Int:
     def __float__(self):
         return float(self._value)
 
+    def __deepcopy__(self, memo=None):
+        return self.__class__(self.value.__deepcopy__(memo or {}))
+
     def __getattr__(self, item):
         return self._value.__getattribute__(item)
 

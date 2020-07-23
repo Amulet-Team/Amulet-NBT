@@ -74,6 +74,8 @@ AnyNBT = Union[
     'TAG_Long_Array'
 ]
 
+SNBTType = str
+
 
 # Utility Methods
 class NBTFormatError(ValueError):

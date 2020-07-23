@@ -174,7 +174,7 @@ cdef class _TAG_Value:
     cpdef str to_snbt(self):
         raise NotImplementedError()
 
-    cdef void write_value(self, buffer, little_endian):
+    cdef void write_value(self, buffer, little_endian) except *:
         raise NotImplementedError()
 
     cpdef bint strict_equal(self, other):
@@ -729,7 +729,7 @@ cdef class _TAG_List(_TAG_Value):
         self._check_tag(value)
         self.value.append(value)
 
-    cdef void write_value(self, buffer, little_endian):
+    cdef void write_value(self, buffer, little_endian) except *:
         cdef char list_type = self.list_data_type
 
         write_tag_id(list_type, buffer)
@@ -1165,7 +1165,7 @@ cdef int _strip_whitespace(str snbt, int index):
     else:
         return match.end()
 
-cdef int _strip_comma(str snbt, int index, str end_chr):
+cdef int _strip_comma(str snbt, int index, str end_chr) except -1:
     cdef object match
 
     match = comma.match(snbt, index)
@@ -1177,7 +1177,7 @@ cdef int _strip_comma(str snbt, int index, str end_chr):
         index = match.end()
     return index
 
-cdef int _strip_colon(str snbt, int index):
+cdef int _strip_colon(str snbt, int index) except -1:
     cdef object match
 
     match = colon.match(snbt, index)

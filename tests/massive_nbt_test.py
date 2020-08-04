@@ -3,7 +3,7 @@ import amulet_nbt.amulet_cy_nbt as cynbt
 import numpy
 
 for amulet_nbt in (pynbt, cynbt):
-    test_ = amulet_nbt.NBTFile(value=amulet_nbt.TAG_Compound(), name='hello')
+    test_ = amulet_nbt.NBTFile(amulet_nbt.TAG_Compound(), name='hello')
 
     test = amulet_nbt.NBTFile(name='hello')  # fill with an empty compound if not defined
 

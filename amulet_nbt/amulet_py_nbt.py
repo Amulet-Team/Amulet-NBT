@@ -356,8 +356,7 @@ class _Eq:
         return result and self.__eq__(other)
 
 
-
-@dataclass(eq=False,repr=False)
+@dataclass(eq=False, repr=False)
 class _TAG_Value(_Eq):
     _value: Any
     tag_id: ClassVar[int]
@@ -584,6 +583,136 @@ class _TAG_Array(_TAG_Value):
         return (primitive_conversion(self) - primitive_conversion(other)).astype(
             self.big_endian_data_type
         )
+
+    def __mul__(self, other):
+        return (primitive_conversion(self) - primitive_conversion(other)).astype(
+            self.big_endian_data_type
+        )
+
+    def __matmul__(self, other):
+        return (primitive_conversion(self) @ primitive_conversion(other)).astype(
+            self.big_endian_data_type
+        )
+
+    def __truediv__(self, other):
+        return (primitive_conversion(self) / primitive_conversion(other)).astype(
+            self.big_endian_data_type
+        )
+
+    def __floordiv__(self, other):
+        return (primitive_conversion(self) // primitive_conversion(other)).astype(
+            self.big_endian_data_type
+        )
+
+    def __mod__(self, other):
+        return (primitive_conversion(self) % primitive_conversion(other)).astype(
+            self.big_endian_data_type
+        )
+
+    def __divmod__(self, other):
+        return divmod(primitive_conversion(self), primitive_conversion(other))
+
+    def __pow__(self, power, modulo):
+        return pow(primitive_conversion(self), power, modulo).astype(
+            self.big_endian_data_type
+        )
+
+    def __lshift__(self, other):
+        return (primitive_conversion(self) << primitive_conversion(other)).astype(
+            self.big_endian_data_type
+        )
+
+    def __rshift__(self, other):
+        return (primitive_conversion(self) >> primitive_conversion(other)).astype(
+            self.big_endian_data_type
+        )
+
+    def __and__(self, other):
+        return (primitive_conversion(self) & primitive_conversion(other)).astype(
+            self.big_endian_data_type
+        )
+
+    def __xor__(self, other):
+        return (primitive_conversion(self) ^ primitive_conversion(other)).astype(
+            self.big_endian_data_type
+        )
+
+    def __or__(self, other):
+        return (primitive_conversion(self) | primitive_conversion(other)).astype(
+            self.big_endian_data_type
+        )
+
+    def __radd__(self, other):
+        return (primitive_conversion(other) + primitive_conversion(self)).astype(
+            self.big_endian_data_type
+        )
+
+    def __rsub__(self, other):
+        return (primitive_conversion(other) - primitive_conversion(self)).astype(
+            self.big_endian_data_type
+        )
+
+    def __rmul__(self, other):
+        return (primitive_conversion(other) * primitive_conversion(self)).astype(
+            self.big_endian_data_type
+        )
+
+    def __rtruediv__(self, other):
+        return (primitive_conversion(other) / primitive_conversion(self)).astype(
+            self.big_endian_data_type
+        )
+
+    def __rfloordiv__(self, other):
+        return (primitive_conversion(other) // primitive_conversion(self)).astype(
+            self.big_endian_data_type
+        )
+
+    def __rmod__(self, other):
+        return (primitive_conversion(other) % primitive_conversion(self)).astype(
+            self.big_endian_data_type
+        )
+
+    def __rdivmod__(self, other):
+        return divmod(primitive_conversion(other), primitive_conversion(self))
+
+    def __rpow__(self, other, modulo):
+        return pow(
+            primitive_conversion(other), primitive_conversion(self), modulo
+        ).astype(self.big_endian_data_type)
+
+    def __rlshift__(self, other):
+        return (primitive_conversion(other) << primitive_conversion(self)).astype(
+            self.big_endian_data_type
+        )
+
+    def __rrshift__(self, other):
+        return (primitive_conversion(other) >> primitive_conversion(self)).astype(
+            self.big_endian_data_type
+        )
+
+    def __rand__(self, other):
+        return (primitive_conversion(other) & primitive_conversion(self)).astype(
+            self.big_endian_data_type
+        )
+
+    def __rxor__(self, other):
+        return (primitive_conversion(other) ^ primitive_conversion(self)).astype(
+            self.big_endian_data_type
+        )
+
+    def __ror__(self, other):
+        return (primitive_conversion(other) | primitive_conversion(self)).astype(
+            self.big_endian_data_type
+        )
+
+    def __neg__(self):
+        return (-self.value).astype(self.big_endian_data_type)
+
+    def __pos__(self):
+        return (+self.value).astype(self.big_endian_data_type)
+
+    def __abs__(self):
+        return abs(self.value).astype(self.big_endian_data_type)
 
 
 BaseArrayType = _TAG_Array
@@ -820,7 +949,7 @@ class TAG_Compound(_TAG_Value, MutableMapping):
             )
         if not isinstance(value, _TAG_Value):
             raise TypeError(
-                f"Invalid type {value.__class__.__name__} for key \"{key}\" in TAG_Compound. Must be an NBT object."
+                f'Invalid type {value.__class__.__name__} for key "{key}" in TAG_Compound. Must be an NBT object.'
             )
 
     @classmethod
@@ -966,7 +1095,9 @@ def load(
 ) -> Union[NBTFile, Tuple[Union[NBTFile, List[NBTFile]], int]]:
     if filename:
         if not isinstance(filename, str):
-            raise Exception("filename must be a string. If you want to load nbt from bytes use the buffer input.")
+            raise Exception(
+                "filename must be a string. If you want to load nbt from bytes use the buffer input."
+            )
         buffer = open(filename, "rb")
     data_in = buffer
 

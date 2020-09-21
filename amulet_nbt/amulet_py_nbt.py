@@ -44,8 +44,6 @@ IMPLEMENTATION = "python"
 _string_len_fmt_be = Struct(">H")
 _string_len_fmt_le = Struct("<H")
 
-_NON_QUOTED_KEY = re.compile(r"^[a-zA-Z0-9-]+$")
-
 AnyNBT = Union[
     "TAG_Byte",
     "TAG_Short",
@@ -62,6 +60,8 @@ AnyNBT = Union[
 ]
 
 SNBTType = str
+CommaNewline = ",\n"
+CommaSpace = ", "
 
 
 class NBTFormatError(Exception):
@@ -405,11 +405,21 @@ class _TAG_Value(_Eq):
         else:
             buffer.write(self.tag_format_be.pack(self._value))
 
-    def to_snbt(self) -> SNBTType:
-        raise NotImplemented
+    def to_snbt(self, indent_chr=None):
+        if isinstance(indent_chr, int):
+            return self._pretty_to_snbt(" " * indent_chr)
+        elif isinstance(indent_chr, str):
+            return self._pretty_to_snbt(indent_chr)
+        return self._to_snbt()
+
+    def _to_snbt(self) -> SNBTType:
+        raise NotImplementedError
+
+    def _pretty_to_snbt(self, indent_chr="", indent_count=0, leading_indent=True):
+        return f"{indent_chr * indent_count * leading_indent}{self._to_snbt()}"
 
     def __repr__(self):
-        return self.to_snbt()
+        return self._to_snbt()
 
 
 BaseValueType = _TAG_Value
@@ -423,7 +433,7 @@ class TAG_Byte(_TAG_Value, _Int):
     tag_format_le = Struct("<b")
     _data_type = int
 
-    def to_snbt(self) -> SNBTType:
+    def _to_snbt(self) -> SNBTType:
         return f"{self._value}b"
 
 
@@ -434,7 +444,7 @@ class TAG_Short(_TAG_Value, _Int):
     tag_format_be = Struct(">h")
     tag_format_le = Struct("<h")
 
-    def to_snbt(self) -> SNBTType:
+    def _to_snbt(self) -> SNBTType:
         return f"{self._value}s"
 
 
@@ -445,7 +455,7 @@ class TAG_Int(_TAG_Value, _Int):
     tag_format_be = Struct(">i")
     tag_format_le = Struct("<i")
 
-    def to_snbt(self) -> SNBTType:
+    def _to_snbt(self) -> SNBTType:
         return f"{self._value}"
 
 
@@ -456,7 +466,7 @@ class TAG_Long(_TAG_Value, _Int):
     tag_format_be = Struct(">q")
     tag_format_le = Struct("<q")
 
-    def to_snbt(self) -> SNBTType:
+    def _to_snbt(self) -> SNBTType:
         return f"{self._value}L"
 
 
@@ -467,7 +477,7 @@ class TAG_Float(_TAG_Value, _Float):
     tag_format_be = Struct(">f")
     tag_format_le = Struct("<f")
 
-    def to_snbt(self) -> SNBTType:
+    def _to_snbt(self) -> SNBTType:
         return f"{self._value:.20f}".rstrip("0") + "f"
 
 
@@ -478,7 +488,7 @@ class TAG_Double(_TAG_Value, _Float):
     tag_format_be = Struct(">d")
     tag_format_le = Struct("<d")
 
-    def to_snbt(self) -> SNBTType:
+    def _to_snbt(self) -> SNBTType:
         return f"{self._value:.20f}".rstrip("0") + "d"
 
 
@@ -736,7 +746,7 @@ class TAG_Byte_Array(_TAG_Array):
     ):
         super().__init__(value)
 
-    def to_snbt(self) -> SNBTType:
+    def _to_snbt(self) -> SNBTType:
         return f"[B;{'B, '.join(str(val) for val in self._value)}B]"
 
 
@@ -759,8 +769,8 @@ class TAG_Int_Array(_TAG_Array):
     ):
         super().__init__(value)
 
-    def to_snbt(self) -> SNBTType:
-        return f"[I;{', '.join(str(val) for val in self._value)}]"
+    def _to_snbt(self) -> SNBTType:
+        return f"[I;{CommaSpace.join(str(val) for val in self._value)}]"
 
 
 @dataclass(eq=False, init=False, repr=False)
@@ -782,8 +792,8 @@ class TAG_Long_Array(_TAG_Array):
     ):
         super().__init__(value)
 
-    def to_snbt(self) -> SNBTType:
-        return f"[L;{', '.join(str(val) for val in self._value)}]"
+    def _to_snbt(self) -> SNBTType:
+        return f"[L;{CommaSpace.join(str(val) for val in self._value)}]"
 
 
 # TODO: these could probably do with being improved
@@ -807,7 +817,7 @@ class TAG_String(_TAG_Value):
     def write_value(self, buffer, little_endian=False):
         write_string(buffer, self._value, little_endian)
 
-    def to_snbt(self) -> SNBTType:
+    def _to_snbt(self) -> SNBTType:
         return f'"{escape(self._value)}"'
 
     def __len__(self) -> int:
@@ -927,8 +937,14 @@ class TAG_List(_TAG_Value):
         for item in self._value:
             item.write_value(buffer, little_endian)
 
-    def to_snbt(self) -> SNBTType:
-        return f"[{', '.join(elem.to_snbt() for elem in self._value)}]"
+    def _to_snbt(self) -> SNBTType:
+        return f"[{CommaSpace.join(elem._to_snbt() for elem in self._value)}]"
+
+    def _pretty_to_snbt(self, indent_chr="", indent_count=0, leading_indent=True):
+        if self._value:
+            return f"{indent_chr * indent_count * leading_indent}[\n{CommaNewline.join(elem._pretty_to_snbt(indent_chr, indent_count + 1) for elem in self._value)}\n{indent_chr * indent_count}]"
+        else:
+            return f"{indent_chr * indent_count * leading_indent}[]"
 
 
 @dataclass(eq=False, init=False, repr=False)
@@ -995,25 +1011,28 @@ class TAG_Compound(_TAG_Value, MutableMapping):
     def __len__(self) -> int:
         return self._value.__len__()
 
-    def to_snbt(self) -> SNBTType:
-        # TODO: make this faster
-        data = (
-            (
-                f'"{name}"' if _NON_QUOTED_KEY.match(name) is None else name,
-                elem.to_snbt(),
-            )
-            for name, elem in self._value.items()
+    def _to_snbt(self) -> SNBTType:
+        tags = (
+            f'"{name}": {elem._to_snbt()}' for name, elem in self._value.items()
         )
-        return f"{{{', '.join(f'{name}: {elem}' for name, elem in data)}}}"
+        return f"{{{CommaSpace.join(tags)}}}"
 
+    def _pretty_to_snbt(self, indent_chr="", indent_count=0, leading_indent=True):
+        if self._value:
+            tags = (
+                f'{indent_chr * (indent_count + 1)}"{name}": {elem._pretty_to_snbt(indent_chr, indent_count + 1, False)}' for name, elem in self._value.items()
+            )
+            return f"{indent_chr * indent_count * leading_indent}{{\n{CommaNewline.join(tags)}\n{indent_chr * indent_count}}}"
+        else:
+            return f"{indent_chr * indent_count * leading_indent}{{}}"
 
 @dataclass
 class NBTFile:
     _value: TAG_Compound = field(default_factory=TAG_Compound)
     name: str = ""
 
-    def to_snbt(self) -> SNBTType:
-        return self._value.to_snbt()
+    def to_snbt(self, indent_chr=None) -> SNBTType:
+        return self._value.to_snbt(indent_chr)
 
     def save_to(
         self, filename_or_buffer=None, compressed=True, little_endian=False

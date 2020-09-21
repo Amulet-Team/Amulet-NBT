@@ -57,8 +57,6 @@ cdef dict TAG_CLASSES = {
     _ID_LONG_ARRAY: TAG_Long_Array
 }
 
-_NON_QUOTED_KEY = re.compile(r"^[a-zA-Z0-9-]+$")
-
 AnyNBT = Union[
     'TAG_Byte',
     'TAG_Short',
@@ -75,6 +73,8 @@ AnyNBT = Union[
 ]
 
 SNBTType = str
+cdef str CommaNewline = ",\n"
+cdef str CommaSpace = ", "
 
 
 # Utility Methods
@@ -171,8 +171,18 @@ cdef class _TAG_Value:
     def copy(self):
         return self.__class__(self.value)
 
-    cpdef str to_snbt(self):
+    cpdef str to_snbt(self, indent_chr=None):
+        if isinstance(indent_chr, int):
+            return self._pretty_to_snbt(" " * indent_chr)
+        elif isinstance(indent_chr, str):
+            return self._pretty_to_snbt(indent_chr)
+        return self._to_snbt()
+
+    cpdef str _to_snbt(self):
         raise NotImplementedError()
+
+    cpdef str _pretty_to_snbt(self, indent_chr="", indent_count=0, leading_indent=True):
+        return f"{indent_chr * indent_count * leading_indent}{self._to_snbt()}"
 
     cdef void write_value(self, buffer, little_endian) except *:
         raise NotImplementedError()
@@ -188,7 +198,7 @@ cdef class _TAG_Value:
         return primitive_conversion(self) == primitive_conversion(other)
 
     def __repr__(self):
-        return self.to_snbt()
+        return self._to_snbt()
 
     def __reduce__(self):
         return unpickle_nbt, (self.tag_id, self.value)
@@ -428,7 +438,7 @@ cdef class TAG_Byte(_Int):
     def __init__(self, value = 0):
         self.value = int(primitive_conversion(value))
 
-    cpdef str to_snbt(self):
+    cpdef str _to_snbt(self):
         return f"{self.value}b"
 
     cdef void write_value(self, buffer, little_endian):
@@ -443,7 +453,7 @@ cdef class TAG_Short(_Int):
     def __init__(self, value = 0):
         self.value = int(primitive_conversion(value))
 
-    cpdef str to_snbt(self):
+    cpdef str _to_snbt(self):
         return f"{self.value}s"
 
     cdef void write_value(self, buffer, little_endian):
@@ -459,7 +469,7 @@ cdef class TAG_Int(_Int):
     def __init__(self, value = 0):
         self.value = int(primitive_conversion(value))
 
-    cpdef str to_snbt(self):
+    cpdef str _to_snbt(self):
         return f"{self.value}"
 
     cdef void write_value(self, buffer, little_endian):
@@ -475,7 +485,7 @@ cdef class TAG_Long(_Int):
     def __init__(self, value = 0):
         self.value = int(primitive_conversion(value))
 
-    cpdef str to_snbt(self):
+    cpdef str _to_snbt(self):
         return f"{self.value}L"
 
     cdef void write_value(self, buffer, little_endian):
@@ -491,7 +501,7 @@ cdef class TAG_Float(_Float):
     def __init__(self, value = 0):
         self.value = float(primitive_conversion(value))
 
-    cpdef str to_snbt(self):
+    cpdef str _to_snbt(self):
         return f"{self.value:.20f}".rstrip('0') + "f"
 
     cdef void write_value(self, buffer, little_endian):
@@ -507,7 +517,7 @@ cdef class TAG_Double(_Float):
     def __init__(self, value = 0):
         self.value = float(primitive_conversion(value))
 
-    cpdef str to_snbt(self):
+    cpdef str _to_snbt(self):
         return f"{self.value:.20f}".rstrip('0') + "d"
 
     cdef void write_value(self, buffer, little_endian):
@@ -532,7 +542,7 @@ cdef class TAG_String(_TAG_Value):
     def __len__(self) -> int:
         return len(self.value)
 
-    cpdef str to_snbt(self):
+    cpdef str _to_snbt(self):
         return f"\"{escape(self.value)}\""
 
     cdef void write_value(self, buffer, little_endian):
@@ -699,7 +709,7 @@ cdef class TAG_Byte_Array(_TAG_Array):
     def __cinit__(self):
         self.tag_id = _ID_BYTE_ARRAY
 
-    cpdef str to_snbt(self):
+    cpdef str _to_snbt(self):
         cdef int elem
         cdef list tags = []
         for elem in self.value:
@@ -721,12 +731,12 @@ cdef class TAG_Int_Array(_TAG_Array):
     def __cinit__(self):
         self.tag_id = _ID_INT_ARRAY
 
-    cpdef str to_snbt(self):
+    cpdef str _to_snbt(self):
         cdef int elem
         cdef list tags = []
         for elem in self.value:
             tags.append(str(elem))
-        return f"[I;{', '.join(tags)}]"
+        return f"[I;{CommaSpace.join(tags)}]"
 
     cdef void write_value(self, buffer, little_endian):
         data_type = self.little_endian_data_type if little_endian else self.big_endian_data_type
@@ -743,12 +753,12 @@ cdef class TAG_Long_Array(_TAG_Array):
     def __cinit__(self):
         self.tag_id = _ID_LONG_ARRAY
 
-    cpdef str to_snbt(self):
+    cpdef str _to_snbt(self):
         cdef int elem
         cdef list tags = []
         for elem in self.value:
             tags.append(str(elem))
-        return f"[L;{', '.join(tags)}]"
+        return f"[L;{CommaSpace.join(tags)}]"
 
     cdef void write_value(self, buffer, little_endian):
         data_type = self.little_endian_data_type if little_endian else self.big_endian_data_type
@@ -828,12 +838,22 @@ cdef class _TAG_List(_TAG_Value):
                                                                                                    list_type))
             write_tag_value(subtag, buffer, little_endian)
 
-    cpdef str to_snbt(self):
+    cpdef str _to_snbt(self):
         cdef _TAG_Value elem
         cdef list tags = []
         for elem in self.value:
-            tags.append(elem.to_snbt())
-        return f"[{', '.join(tags)}]"
+            tags.append(elem._to_snbt())
+        return f"[{CommaSpace.join(tags)}]"
+
+    cpdef str _pretty_to_snbt(self, indent_chr="", indent_count=0, leading_indent=True):
+        cdef _TAG_Value elem
+        cdef list tags = []
+        for elem in self.value:
+            tags.append(elem._pretty_to_snbt(indent_chr, indent_count + 1))
+        if tags:
+            return f"{indent_chr * indent_count * leading_indent}[\n{CommaNewline.join(tags)}\n{indent_chr * indent_count}]"
+        else:
+            return f"{indent_chr * indent_count * leading_indent}[]"
 
 
 class TAG_List(_TAG_List, MutableSequence):
@@ -862,19 +882,24 @@ cdef class _TAG_Compound(_TAG_Value):
                 f"Invalid type {value.__class__.__name__} for key \"{key}\" in TAG_Compound. Must be an NBT object."
             )
 
-    cpdef str to_snbt(self):
-        cdef str k
-        cdef _TAG_Value v
+    cpdef str _to_snbt(self):
+        cdef str name
+        cdef _TAG_Value elem
         cdef list tags = []
-        for k, v in self.value.items():
-            if _NON_QUOTED_KEY.match(k) is None:
-                tags.append(f'"{k}": {v.to_snbt()}')
-            else:
-                tags.append(f'{k}: {v.to_snbt()}')
-        return f"{{{', '.join(tags)}}}"
-        # TODO: key should be in quotes if spaces in name
-        # data = ((f'"{name}"' if not name.isalnum() else name, elem.to_snbt()) for name, elem in self.value.items())
-        # return f"{{{', '.join(f'{name}: {elem}' for name, elem in data)}}}"
+        for name, elem in self.value.items():
+            tags.append(f'"{name}": {elem._to_snbt()}')
+        return f"{{{CommaSpace.join(tags)}}}"
+
+    cpdef str _pretty_to_snbt(self, indent_chr="", indent_count=0, leading_indent=True):
+        cdef str name
+        cdef _TAG_Value elem
+        cdef list tags = []
+        for name, elem in self.value.items():
+            tags.append(f'{indent_chr * (indent_count + 1)}"{name}": {elem._pretty_to_snbt(indent_chr, indent_count + 1, False)}')
+        if tags:
+            return f"{indent_chr * indent_count * leading_indent}{{\n{CommaNewline.join(tags)}\n{indent_chr * indent_count}}}"
+        else:
+            return f"{indent_chr * indent_count * leading_indent}{{}}"
 
     cdef void write_value(self, buffer, little_endian):
         cdef str key
@@ -922,8 +947,8 @@ class NBTFile:
         self.value = TAG_Compound() if value is None else value
         self.name = name
 
-    def to_snbt(self) -> str:
-        return self.value.to_snbt()
+    def to_snbt(self, indent_chr=None) -> str:
+        return self.value.to_snbt(indent_chr)
 
     def save_to(self, filename_or_buffer=None, compressed=True, little_endian=False) -> Optional[bytes]:
         buffer = BytesIO()

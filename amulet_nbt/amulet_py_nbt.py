@@ -22,6 +22,7 @@ from typing import (
     Iterable,
 )
 import re
+from copy import deepcopy
 
 import numpy as np
 
@@ -223,7 +224,7 @@ class _Int:
         return float(self._value)
 
     def __deepcopy__(self, memo=None):
-        return self.__class__(self.value.__deepcopy__(memo or {}))
+        return self.__class__(deepcopy(self.value, memo=memo))
 
     def __getattr__(self, item):
         return self._value.__getattribute__(item)
@@ -337,6 +338,9 @@ class _Float:
 
     def __ceil__(self):
         return ceil(self._value)
+
+    def __deepcopy__(self, memo=None):
+        return self.__class__(deepcopy(self.value, memo=memo))
 
     def __getattr__(self, item):
         return self._value.__getattribute__(item)

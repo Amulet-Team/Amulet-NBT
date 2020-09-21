@@ -65,10 +65,12 @@ CommaSpace = ", "
 
 
 class NBTFormatError(Exception):
+    """Indicates the NBT format is invalid."""
     pass
 
 
 class SNBTParseError(Exception):
+    """Indicates the SNBT format is invalid."""
     pass
 
 
@@ -103,6 +105,90 @@ def write_string(buffer, _str, little_endian=False):
 
 def primitive_conversion(obj):
     return obj._value if isinstance(obj, _TAG_Value) else obj
+
+
+def safe_gunzip(data):
+    if data[:2] == b"\x1f\x8b":  # if the first two bytes are this it should be gzipped
+        try:
+            data = gzip.GzipFile(fileobj=BytesIO(data)).read()
+        except IOError as e:
+            pass
+    return data
+
+
+@dataclass(eq=False, repr=False)
+class _TAG_Value:
+    _value: Any
+    tag_id: ClassVar[int]
+    _data_type: ClassVar[Any]
+    tag_format_be: Struct = field(init=False, repr=False, compare=False)
+    tag_format_le: Struct = field(init=False, repr=False, compare=False)
+
+    def __new__(cls, *args, **kwargs):
+        cls._data_type = get_type_hints(cls)["_value"]
+        return super(_TAG_Value, cls).__new__(cls)
+
+    def __init__(self, value=None):
+        if value is None:
+            value = self._data_type()
+        self._value = self.format(value)
+
+    @property
+    def value(self):
+        return self._value
+
+    @classmethod
+    def load_from(cls, context: _BufferContext, little_endian: bool) -> AnyNBT:
+        data = context.buffer[context.offset :]
+        if little_endian:
+            tag = cls(cls.tag_format_le.unpack_from(data)[0])
+            context.offset += cls.tag_format_le.size
+        else:
+            tag = cls(cls.tag_format_be.unpack_from(data)[0])
+            context.offset += cls.tag_format_be.size
+        return tag
+
+    def format(self, value):
+        return self._data_type(value)
+
+    def write_tag_id(self, buffer):
+        buffer.write(bytes(chr(self.tag_id), "utf-8"))
+
+    def write_payload(self, buffer, name="", little_endian=False):
+        self.write_tag_id(buffer)
+        write_string(buffer, name, little_endian)
+        self.write_value(buffer, little_endian)
+
+    def write_value(self, buffer, little_endian=False):
+        if little_endian:
+            buffer.write(self.tag_format_le.pack(self._value))
+        else:
+            buffer.write(self.tag_format_be.pack(self._value))
+
+    def to_snbt(self, indent_chr=None):
+        if isinstance(indent_chr, int):
+            return self._pretty_to_snbt(" " * indent_chr)
+        elif isinstance(indent_chr, str):
+            return self._pretty_to_snbt(indent_chr)
+        return self._to_snbt()
+
+    def _to_snbt(self) -> SNBTType:
+        raise NotImplementedError
+
+    def _pretty_to_snbt(self, indent_chr="", indent_count=0, leading_indent=True):
+        return f"{indent_chr * indent_count * leading_indent}{self._to_snbt()}"
+
+    def __repr__(self):
+        return self._to_snbt()
+
+    def __eq__(self, other):
+        return self._value == other
+
+    def strict_equals(self, other):
+        return isinstance(other, self.__class__) and self.tag_id == other.tag_id and self.__eq__(other)
+
+
+BaseValueType = _TAG_Value
 
 
 def ensure_float(func):
@@ -343,86 +429,6 @@ class _Float:
 
     def __dir__(self):
         return dir(self._value)
-
-
-class _Eq:
-    def __eq__(self, other):
-        return self._value == other
-
-    def strict_equals(self, other):
-        result = isinstance(other, self.__class__)
-        if result:
-            result = result and self.tag_id == other.tag_id
-        return result and self.__eq__(other)
-
-
-@dataclass(eq=False, repr=False)
-class _TAG_Value(_Eq):
-    _value: Any
-    tag_id: ClassVar[int]
-    _data_type: ClassVar[Any]
-    tag_format_be: Struct = field(init=False, repr=False, compare=False)
-    tag_format_le: Struct = field(init=False, repr=False, compare=False)
-
-    def __new__(cls, *args, **kwargs):
-        cls._data_type = get_type_hints(cls)["_value"]
-        return super(_TAG_Value, cls).__new__(cls)
-
-    def __init__(self, value=None):
-        if value is None:
-            value = self._data_type()
-        self._value = self.format(value)
-
-    @property
-    def value(self):
-        return self._value
-
-    @classmethod
-    def load_from(cls, context: _BufferContext, little_endian: bool) -> AnyNBT:
-        data = context.buffer[context.offset :]
-        if little_endian:
-            tag = cls(cls.tag_format_le.unpack_from(data)[0])
-            context.offset += cls.tag_format_le.size
-        else:
-            tag = cls(cls.tag_format_be.unpack_from(data)[0])
-            context.offset += cls.tag_format_be.size
-        return tag
-
-    def format(self, value):
-        return self._data_type(value)
-
-    def write_tag_id(self, buffer):
-        buffer.write(bytes(chr(self.tag_id), "utf-8"))
-
-    def write_payload(self, buffer, name="", little_endian=False):
-        self.write_tag_id(buffer)
-        write_string(buffer, name, little_endian)
-        self.write_value(buffer, little_endian)
-
-    def write_value(self, buffer, little_endian=False):
-        if little_endian:
-            buffer.write(self.tag_format_le.pack(self._value))
-        else:
-            buffer.write(self.tag_format_be.pack(self._value))
-
-    def to_snbt(self, indent_chr=None):
-        if isinstance(indent_chr, int):
-            return self._pretty_to_snbt(" " * indent_chr)
-        elif isinstance(indent_chr, str):
-            return self._pretty_to_snbt(indent_chr)
-        return self._to_snbt()
-
-    def _to_snbt(self) -> SNBTType:
-        raise NotImplementedError
-
-    def _pretty_to_snbt(self, indent_chr="", indent_count=0, leading_indent=True):
-        return f"{indent_chr * indent_count * leading_indent}{self._to_snbt()}"
-
-    def __repr__(self):
-        return self._to_snbt()
-
-
-BaseValueType = _TAG_Value
 
 
 @dataclass(eq=False, init=False, repr=False)
@@ -1093,15 +1099,6 @@ class NBTFile:
     @property
     def value(self):
         return self._value
-
-
-def safe_gunzip(data):
-    if data[:2] == b"\x1f\x8b":  # if the first two bytes are this it should be gzipped
-        try:
-            data = gzip.GzipFile(fileobj=BytesIO(data)).read()
-        except IOError as e:
-            pass
-    return data
 
 
 def load(

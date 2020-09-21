@@ -77,9 +77,13 @@ cdef str CommaNewline = ",\n"
 cdef str CommaSpace = ", "
 
 
-# Utility Methods
 class NBTFormatError(ValueError):
     """Indicates the NBT format is invalid."""
+    pass
+
+
+class SNBTParseError(Exception):
+    """Indicates the SNBT format is invalid."""
     pass
 
 
@@ -523,49 +527,6 @@ cdef class TAG_Double(_Float):
     cdef void write_value(self, buffer, little_endian):
         write_double(self.value, buffer, little_endian)
 
-
-def escape(string: str):
-    return string.replace('\\', '\\\\').replace('"', '\\"')
-
-def unescape(string: str):
-    return string.replace('\\"', '"').replace("\\\\", "\\")
-
-cdef class TAG_String(_TAG_Value):
-    cdef readonly unicode value
-
-    def __cinit__(self):
-        self.tag_id = _ID_STRING
-
-    def __init__(self, value = ""):
-        self.value = str(value)
-
-    def __len__(self) -> int:
-        return len(self.value)
-
-    cpdef str _to_snbt(self):
-        return f"\"{escape(self.value)}\""
-
-    cdef void write_value(self, buffer, little_endian):
-        write_string(self.value.encode("utf-8"), buffer, little_endian)
-
-    def __getitem__(self, item):
-        return self.value.__getitem__(item)
-
-    def __add__(self, other):
-        return primitive_conversion(self) + primitive_conversion(other)
-
-    def __radd__(self, other):
-        return primitive_conversion(other) + primitive_conversion(self)
-
-    def __mul__(self, other):
-        return primitive_conversion(self) * primitive_conversion(other)
-
-    def __rmul__(self, other):
-        return primitive_conversion(other) * primitive_conversion(self)
-
-    def __str__(self):
-        return self.value
-
 cdef class _TAG_Array(_TAG_Value):
     cdef public object value
     big_endian_data_type = little_endian_data_type = numpy.dtype("int8")
@@ -700,7 +661,6 @@ cdef class _TAG_Array(_TAG_Value):
         return abs(self.value).astype(self.big_endian_data_type)
 
 
-
 BaseArrayType = _TAG_Array
 
 cdef class TAG_Byte_Array(_TAG_Array):
@@ -767,6 +727,50 @@ cdef class TAG_Long_Array(_TAG_Array):
                 print(f'[Warning] Mismatch array dtype. Expected: {data_type.str}, got: {self.value.dtype.str}')
             self.value = self.value.astype(data_type)
         write_array(self.value, buffer, 8, little_endian)
+
+
+def escape(string: str):
+    return string.replace('\\', '\\\\').replace('"', '\\"')
+
+def unescape(string: str):
+    return string.replace('\\"', '"').replace("\\\\", "\\")
+
+cdef class TAG_String(_TAG_Value):
+    cdef readonly unicode value
+
+    def __cinit__(self):
+        self.tag_id = _ID_STRING
+
+    def __init__(self, value = ""):
+        self.value = str(value)
+
+    def __len__(self) -> int:
+        return len(self.value)
+
+    cpdef str _to_snbt(self):
+        return f"\"{escape(self.value)}\""
+
+    cdef void write_value(self, buffer, little_endian):
+        write_string(self.value.encode("utf-8"), buffer, little_endian)
+
+    def __getitem__(self, item):
+        return self.value.__getitem__(item)
+
+    def __add__(self, other):
+        return primitive_conversion(self) + primitive_conversion(other)
+
+    def __radd__(self, other):
+        return primitive_conversion(other) + primitive_conversion(self)
+
+    def __mul__(self, other):
+        return primitive_conversion(self) * primitive_conversion(other)
+
+    def __rmul__(self, other):
+        return primitive_conversion(other) * primitive_conversion(self)
+
+    def __str__(self):
+        return self.value
+
 
 cdef class _TAG_List(_TAG_Value):
     cdef public list value
@@ -1253,10 +1257,6 @@ def unpickle_nbt(tag_id, tag_value):
     elif tag_id == _ID_LIST:
         return TAG_List(tag_value)
     return TAG_CLASSES[tag_id](tag_value)
-
-
-class SNBTParseError(Exception):
-    pass
 
 
 whitespace = re.compile('[ \t\r\n]*')

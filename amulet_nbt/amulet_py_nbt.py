@@ -45,8 +45,6 @@ IMPLEMENTATION = "python"
 _string_len_fmt_be = Struct(">H")
 _string_len_fmt_le = Struct("<H")
 
-_NON_QUOTED_KEY = re.compile(r"^[a-zA-Z0-9-]+$")
-
 AnyNBT = Union[
     "TAG_Byte",
     "TAG_Short",
@@ -63,13 +61,17 @@ AnyNBT = Union[
 ]
 
 SNBTType = str
+CommaNewline = ",\n"
+CommaSpace = ", "
 
 
 class NBTFormatError(Exception):
+    """Indicates the NBT format is invalid."""
     pass
 
 
 class SNBTParseError(Exception):
+    """Indicates the SNBT format is invalid."""
     pass
 
 
@@ -104,6 +106,90 @@ def write_string(buffer, _str, little_endian=False):
 
 def primitive_conversion(obj):
     return obj._value if isinstance(obj, _TAG_Value) else obj
+
+
+def safe_gunzip(data):
+    if data[:2] == b"\x1f\x8b":  # if the first two bytes are this it should be gzipped
+        try:
+            data = gzip.GzipFile(fileobj=BytesIO(data)).read()
+        except IOError as e:
+            pass
+    return data
+
+
+@dataclass(eq=False, repr=False)
+class _TAG_Value:
+    _value: Any
+    tag_id: ClassVar[int]
+    _data_type: ClassVar[Any]
+    tag_format_be: Struct = field(init=False, repr=False, compare=False)
+    tag_format_le: Struct = field(init=False, repr=False, compare=False)
+
+    def __new__(cls, *args, **kwargs):
+        cls._data_type = get_type_hints(cls)["_value"]
+        return super(_TAG_Value, cls).__new__(cls)
+
+    def __init__(self, value=None):
+        if value is None:
+            value = self._data_type()
+        self._value = self.format(value)
+
+    @property
+    def value(self):
+        return self._value
+
+    @classmethod
+    def load_from(cls, context: _BufferContext, little_endian: bool) -> AnyNBT:
+        data = context.buffer[context.offset :]
+        if little_endian:
+            tag = cls(cls.tag_format_le.unpack_from(data)[0])
+            context.offset += cls.tag_format_le.size
+        else:
+            tag = cls(cls.tag_format_be.unpack_from(data)[0])
+            context.offset += cls.tag_format_be.size
+        return tag
+
+    def format(self, value):
+        return self._data_type(value)
+
+    def write_tag_id(self, buffer):
+        buffer.write(bytes(chr(self.tag_id), "utf-8"))
+
+    def write_payload(self, buffer, name="", little_endian=False):
+        self.write_tag_id(buffer)
+        write_string(buffer, name, little_endian)
+        self.write_value(buffer, little_endian)
+
+    def write_value(self, buffer, little_endian=False):
+        if little_endian:
+            buffer.write(self.tag_format_le.pack(self._value))
+        else:
+            buffer.write(self.tag_format_be.pack(self._value))
+
+    def to_snbt(self, indent_chr=None):
+        if isinstance(indent_chr, int):
+            return self._pretty_to_snbt(" " * indent_chr)
+        elif isinstance(indent_chr, str):
+            return self._pretty_to_snbt(indent_chr)
+        return self._to_snbt()
+
+    def _to_snbt(self) -> SNBTType:
+        raise NotImplementedError
+
+    def _pretty_to_snbt(self, indent_chr="", indent_count=0, leading_indent=True):
+        return f"{indent_chr * indent_count * leading_indent}{self._to_snbt()}"
+
+    def __repr__(self):
+        return self._to_snbt()
+
+    def __eq__(self, other):
+        return self._value == other
+
+    def strict_equals(self, other):
+        return isinstance(other, self.__class__) and self.tag_id == other.tag_id and self.__eq__(other)
+
+
+BaseValueType = _TAG_Value
 
 
 def ensure_float(func):
@@ -349,76 +435,6 @@ class _Float:
         return dir(self._value)
 
 
-class _Eq:
-    def __eq__(self, other):
-        return self._value == other
-
-    def strict_equals(self, other):
-        result = isinstance(other, self.__class__)
-        if result:
-            result = result and self.tag_id == other.tag_id
-        return result and self.__eq__(other)
-
-
-@dataclass(eq=False, repr=False)
-class _TAG_Value(_Eq):
-    _value: Any
-    tag_id: ClassVar[int]
-    _data_type: ClassVar[Any]
-    tag_format_be: Struct = field(init=False, repr=False, compare=False)
-    tag_format_le: Struct = field(init=False, repr=False, compare=False)
-
-    def __new__(cls, *args, **kwargs):
-        cls._data_type = get_type_hints(cls)["_value"]
-        return super(_TAG_Value, cls).__new__(cls)
-
-    def __init__(self, value=None):
-        if value is None:
-            value = self._data_type()
-        self._value = self.format(value)
-
-    @property
-    def value(self):
-        return self._value
-
-    @classmethod
-    def load_from(cls, context: _BufferContext, little_endian: bool) -> AnyNBT:
-        data = context.buffer[context.offset :]
-        if little_endian:
-            tag = cls(cls.tag_format_le.unpack_from(data)[0])
-            context.offset += cls.tag_format_le.size
-        else:
-            tag = cls(cls.tag_format_be.unpack_from(data)[0])
-            context.offset += cls.tag_format_be.size
-        return tag
-
-    def format(self, value):
-        return self._data_type(value)
-
-    def write_tag_id(self, buffer):
-        buffer.write(bytes(chr(self.tag_id), "utf-8"))
-
-    def write_payload(self, buffer, name="", little_endian=False):
-        self.write_tag_id(buffer)
-        write_string(buffer, name, little_endian)
-        self.write_value(buffer, little_endian)
-
-    def write_value(self, buffer, little_endian=False):
-        if little_endian:
-            buffer.write(self.tag_format_le.pack(self._value))
-        else:
-            buffer.write(self.tag_format_be.pack(self._value))
-
-    def to_snbt(self) -> SNBTType:
-        raise NotImplemented
-
-    def __repr__(self):
-        return self.to_snbt()
-
-
-BaseValueType = _TAG_Value
-
-
 @dataclass(eq=False, init=False, repr=False)
 class TAG_Byte(_TAG_Value, _Int):
     _value: int = 0
@@ -427,7 +443,7 @@ class TAG_Byte(_TAG_Value, _Int):
     tag_format_le = Struct("<b")
     _data_type = int
 
-    def to_snbt(self) -> SNBTType:
+    def _to_snbt(self) -> SNBTType:
         return f"{self._value}b"
 
 
@@ -438,7 +454,7 @@ class TAG_Short(_TAG_Value, _Int):
     tag_format_be = Struct(">h")
     tag_format_le = Struct("<h")
 
-    def to_snbt(self) -> SNBTType:
+    def _to_snbt(self) -> SNBTType:
         return f"{self._value}s"
 
 
@@ -449,7 +465,7 @@ class TAG_Int(_TAG_Value, _Int):
     tag_format_be = Struct(">i")
     tag_format_le = Struct("<i")
 
-    def to_snbt(self) -> SNBTType:
+    def _to_snbt(self) -> SNBTType:
         return f"{self._value}"
 
 
@@ -460,7 +476,7 @@ class TAG_Long(_TAG_Value, _Int):
     tag_format_be = Struct(">q")
     tag_format_le = Struct("<q")
 
-    def to_snbt(self) -> SNBTType:
+    def _to_snbt(self) -> SNBTType:
         return f"{self._value}L"
 
 
@@ -471,7 +487,7 @@ class TAG_Float(_TAG_Value, _Float):
     tag_format_be = Struct(">f")
     tag_format_le = Struct("<f")
 
-    def to_snbt(self) -> SNBTType:
+    def _to_snbt(self) -> SNBTType:
         return f"{self._value:.20f}".rstrip("0") + "f"
 
 
@@ -482,7 +498,7 @@ class TAG_Double(_TAG_Value, _Float):
     tag_format_be = Struct(">d")
     tag_format_le = Struct("<d")
 
-    def to_snbt(self) -> SNBTType:
+    def _to_snbt(self) -> SNBTType:
         return f"{self._value:.20f}".rstrip("0") + "d"
 
 
@@ -740,7 +756,7 @@ class TAG_Byte_Array(_TAG_Array):
     ):
         super().__init__(value)
 
-    def to_snbt(self) -> SNBTType:
+    def _to_snbt(self) -> SNBTType:
         return f"[B;{'B, '.join(str(val) for val in self._value)}B]"
 
 
@@ -763,8 +779,8 @@ class TAG_Int_Array(_TAG_Array):
     ):
         super().__init__(value)
 
-    def to_snbt(self) -> SNBTType:
-        return f"[I;{', '.join(str(val) for val in self._value)}]"
+    def _to_snbt(self) -> SNBTType:
+        return f"[I;{CommaSpace.join(str(val) for val in self._value)}]"
 
 
 @dataclass(eq=False, init=False, repr=False)
@@ -786,8 +802,8 @@ class TAG_Long_Array(_TAG_Array):
     ):
         super().__init__(value)
 
-    def to_snbt(self) -> SNBTType:
-        return f"[L;{', '.join(str(val) for val in self._value)}]"
+    def _to_snbt(self) -> SNBTType:
+        return f"[L;{CommaSpace.join(str(val) for val in self._value)}]"
 
 
 # TODO: these could probably do with being improved
@@ -811,7 +827,7 @@ class TAG_String(_TAG_Value):
     def write_value(self, buffer, little_endian=False):
         write_string(buffer, self._value, little_endian)
 
-    def to_snbt(self) -> SNBTType:
+    def _to_snbt(self) -> SNBTType:
         return f'"{escape(self._value)}"'
 
     def __len__(self) -> int:
@@ -931,8 +947,14 @@ class TAG_List(_TAG_Value):
         for item in self._value:
             item.write_value(buffer, little_endian)
 
-    def to_snbt(self) -> SNBTType:
-        return f"[{', '.join(elem.to_snbt() for elem in self._value)}]"
+    def _to_snbt(self) -> SNBTType:
+        return f"[{CommaSpace.join(elem._to_snbt() for elem in self._value)}]"
+
+    def _pretty_to_snbt(self, indent_chr="", indent_count=0, leading_indent=True):
+        if self._value:
+            return f"{indent_chr * indent_count * leading_indent}[\n{CommaNewline.join(elem._pretty_to_snbt(indent_chr, indent_count + 1) for elem in self._value)}\n{indent_chr * indent_count}]"
+        else:
+            return f"{indent_chr * indent_count * leading_indent}[]"
 
 
 @dataclass(eq=False, init=False, repr=False)
@@ -999,25 +1021,28 @@ class TAG_Compound(_TAG_Value, MutableMapping):
     def __len__(self) -> int:
         return self._value.__len__()
 
-    def to_snbt(self) -> SNBTType:
-        # TODO: make this faster
-        data = (
-            (
-                f'"{name}"' if _NON_QUOTED_KEY.match(name) is None else name,
-                elem.to_snbt(),
-            )
-            for name, elem in self._value.items()
+    def _to_snbt(self) -> SNBTType:
+        tags = (
+            f'"{name}": {elem._to_snbt()}' for name, elem in self._value.items()
         )
-        return f"{{{', '.join(f'{name}: {elem}' for name, elem in data)}}}"
+        return f"{{{CommaSpace.join(tags)}}}"
 
+    def _pretty_to_snbt(self, indent_chr="", indent_count=0, leading_indent=True):
+        if self._value:
+            tags = (
+                f'{indent_chr * (indent_count + 1)}"{name}": {elem._pretty_to_snbt(indent_chr, indent_count + 1, False)}' for name, elem in self._value.items()
+            )
+            return f"{indent_chr * indent_count * leading_indent}{{\n{CommaNewline.join(tags)}\n{indent_chr * indent_count}}}"
+        else:
+            return f"{indent_chr * indent_count * leading_indent}{{}}"
 
 @dataclass
 class NBTFile:
     _value: TAG_Compound = field(default_factory=TAG_Compound)
     name: str = ""
 
-    def to_snbt(self) -> SNBTType:
-        return self._value.to_snbt()
+    def to_snbt(self, indent_chr=None) -> SNBTType:
+        return self._value.to_snbt(indent_chr)
 
     def save_to(
         self, filename_or_buffer=None, compressed=True, little_endian=False
@@ -1078,15 +1103,6 @@ class NBTFile:
     @property
     def value(self):
         return self._value
-
-
-def safe_gunzip(data):
-    if data[:2] == b"\x1f\x8b":  # if the first two bytes are this it should be gzipped
-        try:
-            data = gzip.GzipFile(fileobj=BytesIO(data)).read()
-        except IOError as e:
-            pass
-    return data
 
 
 def load(

@@ -57,6 +57,8 @@ cdef dict TAG_CLASSES = {
     _ID_LONG_ARRAY: TAG_Long_Array
 }
 
+_NON_QUOTED_KEY = re.compile(r"^[a-zA-Z0-9-]+$")
+
 AnyNBT = Union[
     'TAG_Byte',
     'TAG_Short',
@@ -891,7 +893,10 @@ cdef class _TAG_Compound(_TAG_Value):
         cdef _TAG_Value elem
         cdef list tags = []
         for name, elem in self.value.items():
-            tags.append(f'"{name}": {elem._to_snbt()}')
+            if _NON_QUOTED_KEY.match(name) is None:
+                tags.append(f'"{name}": {elem.to_snbt()}')
+            else:
+                tags.append(f'{name}: {elem.to_snbt()}')
         return f"{{{CommaSpace.join(tags)}}}"
 
     cpdef str _pretty_to_snbt(self, indent_chr="", indent_count=0, leading_indent=True):

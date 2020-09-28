@@ -45,6 +45,8 @@ IMPLEMENTATION = "python"
 _string_len_fmt_be = Struct(">H")
 _string_len_fmt_le = Struct("<H")
 
+_NON_QUOTED_KEY = re.compile(r"^[a-zA-Z0-9-]+$")
+
 AnyNBT = Union[
     "TAG_Byte",
     "TAG_Short",
@@ -1022,9 +1024,12 @@ class TAG_Compound(_TAG_Value, MutableMapping):
         return self._value.__len__()
 
     def _to_snbt(self) -> SNBTType:
-        tags = (
-            f'"{name}": {elem._to_snbt()}' for name, elem in self._value.items()
-        )
+        tags = []
+        for name, elem in self._value.items():
+            if _NON_QUOTED_KEY.match(name) is None:
+                tags.append(f'"{name}": {elem.to_snbt()}')
+            else:
+                tags.append(f'{name}: {elem.to_snbt()}')
         return f"{{{CommaSpace.join(tags)}}}"
 
     def _pretty_to_snbt(self, indent_chr="", indent_count=0, leading_indent=True):

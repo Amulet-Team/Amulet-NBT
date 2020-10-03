@@ -716,7 +716,7 @@ cdef class TAG_Long_Array(_TAG_Array):
         self.tag_id = _ID_LONG_ARRAY
 
     cpdef str _to_snbt(self):
-        cdef int elem
+        cdef long long elem
         cdef list tags = []
         for elem in self.value:
             tags.append(str(elem))

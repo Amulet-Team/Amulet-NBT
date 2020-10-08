@@ -23,6 +23,7 @@ from typing import (
 )
 import re
 from copy import deepcopy
+import os
 
 import numpy as np
 
@@ -67,12 +68,21 @@ CommaNewline = ",\n"
 CommaSpace = ", "
 
 
-class NBTFormatError(Exception):
+class NBTError(Exception):
+    """Some error in the NBT library."""
+
+
+class NBTLoadError(NBTError):
+    """The NBT data failed to load for some reason."""
+    pass
+
+
+class NBTFormatError(NBTLoadError):
     """Indicates the NBT format is invalid."""
     pass
 
 
-class SNBTParseError(Exception):
+class SNBTParseError(NBTError):
     """Indicates the SNBT format is invalid."""
     pass
 
@@ -531,7 +541,7 @@ class _TAG_Array(_TAG_Value):
             if value.dtype != self.big_endian_data_type:
                 value = value.astype(self.big_endian_data_type)
         else:
-            raise Exception(
+            raise NBTError(
                 f"Unexpected object {value} given to {self.__class__.__name__}"
             )
 
@@ -1050,7 +1060,7 @@ class NBTFile:
         return self._value.to_snbt(indent_chr)
 
     def save_to(
-        self, filename_or_buffer=None, compressed=True, little_endian=False
+        self, filepath_or_buffer=None, compressed=True, little_endian=False
     ) -> Optional[bytes]:
         buffer = BytesIO()
         self._value.write_payload(buffer, self.name, little_endian)
@@ -1063,14 +1073,14 @@ class NBTFile:
                 gz.write(data)
             data = gzip_buffer.getvalue()
 
-        if not filename_or_buffer:
+        if not filepath_or_buffer:
             return data
 
-        if isinstance(filename_or_buffer, str):
-            with open(filename_or_buffer, "wb") as fp:
+        if isinstance(filepath_or_buffer, str):
+            with open(filepath_or_buffer, "wb") as fp:
                 fp.write(data)
         else:
-            filename_or_buffer.write(data)
+            filepath_or_buffer.write(data)
 
     def __eq__(self, other):
         return isinstance(other, NBTFile) and self._value.__eq__(other._value)
@@ -1111,30 +1121,40 @@ class NBTFile:
 
 
 def load(
-    filename="",
-    buffer=None,
+    filepath_or_buffer: Union[str, bytes, BytesIO, None] = None,  # TODO: This should become a required input
     compressed=True,
     count: int = None,
     offset: bool = False,
     little_endian: bool = False,
+    buffer=None,  # TODO: this should get depreciated and removed.
 ) -> Union[NBTFile, Tuple[Union[NBTFile, List[NBTFile]], int]]:
-    if filename:
-        if not isinstance(filename, str):
-            raise Exception(
-                "filename must be a string. If you want to load nbt from bytes use the buffer input."
-            )
-        buffer = open(filename, "rb")
-    data_in = buffer
+    if isinstance(filepath_or_buffer, str):
+        # if a string load from the file path
+        if not os.path.isfile(filepath_or_buffer):
+            raise NBTLoadError(f"There is no file at {filepath_or_buffer}")
+        with open(filepath_or_buffer, "rb") as f:
+            data_in = f.read()
+    else:
+        # TODO: when buffer is removed, remove this if block and make the next if block an elif part of the parent if block
+        if filepath_or_buffer is None:  # For backwards compatability with buffer.
+            if buffer is None:
+                raise NBTLoadError("No object given to load.")
+            filepath_or_buffer = buffer
 
-    if hasattr(buffer, "read"):
-        data_in = buffer.read()
-
-    if hasattr(buffer, "close"):
-        buffer.close()
-    elif hasattr(buffer, "open"):
-        print(
-            "[Warning]: Input buffer didn't have close() function. Memory leak may occur!"
-        )
+        if isinstance(filepath_or_buffer, bytes):
+            data_in = filepath_or_buffer
+        elif hasattr(filepath_or_buffer, "read"):
+            data_in = filepath_or_buffer.read()
+            if not isinstance(data_in, bytes):
+                raise NBTLoadError(f"buffer.read() must return a bytes object. Got {type(data_in)} instead.")
+            if hasattr(filepath_or_buffer, "close"):
+                filepath_or_buffer.close()
+            elif hasattr(filepath_or_buffer, "open"):
+                print(
+                    "[Warning]: Input buffer didn't have close() function. Memory leak may occur!"
+                )
+        else:
+            raise NBTLoadError("buffer did not have a read method.")
 
     if compressed:
         data_in = safe_gunzip(data_in)

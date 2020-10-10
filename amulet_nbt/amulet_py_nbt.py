@@ -20,6 +20,7 @@ from typing import (
     Iterator,
     overload,
     Iterable,
+    BinaryIO,
 )
 import re
 from copy import deepcopy
@@ -1121,7 +1122,7 @@ class NBTFile:
 
 
 def load(
-    filepath_or_buffer: Union[str, bytes, BytesIO, None] = None,  # TODO: This should become a required input
+    filepath_or_buffer: Union[str, bytes, BinaryIO, None] = None,  # TODO: This should become a required input
     compressed=True,
     count: int = None,
     offset: bool = False,

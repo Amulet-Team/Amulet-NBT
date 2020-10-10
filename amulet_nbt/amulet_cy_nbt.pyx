@@ -3,7 +3,7 @@ from math import trunc, floor, ceil
 import zlib
 from collections.abc import MutableMapping, MutableSequence
 from io import BytesIO
-from typing import Optional, Union, Tuple, List, Iterator
+from typing import Optional, Union, Tuple, List, Iterator, BinaryIO
 
 import numpy
 import os
@@ -1027,7 +1027,7 @@ class NBTFile:
 
 
 def load(
-    filepath_or_buffer: Union[str, bytes, BytesIO, None] = None,  # TODO: This should become a required input
+    filepath_or_buffer: Union[str, bytes, BinaryIO, None] = None,  # TODO: This should become a required input
     compressed=True,
     count: int = None,
     offset: bool = False,

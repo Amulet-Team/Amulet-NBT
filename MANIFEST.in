@@ -1,0 +1,6 @@
+include README.md
+include requirements.txt
+include versioneer.py
+include pyproject.toml
+include amulet_nbt/amulet_cy_nbt.pyx
+include amulet_nbt/_version.py

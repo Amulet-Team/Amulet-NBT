@@ -5,9 +5,9 @@ name: Python test
 
 on:
   push:
-    branches: [ $default-branch ]
+    branches: [ master ]
   pull_request:
-    branches: [ $default-branch ]
+    branches: [ master ]
 
 jobs:
   unittests:
@@ -48,5 +48,5 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: run stylecheck
       run: |
-        python -m black --check --diff amulet
+        python -m black --check --diff amulet_nbt
         python -m black --check --diff tests

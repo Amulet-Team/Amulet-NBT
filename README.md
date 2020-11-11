@@ -1,6 +1,6 @@
 # Amulet-NBT
 
-![Build](https://github.com/Amulet-Team/Amulet-NBT/workflows/Build/badge.svg?event=push)
+![Build](https://github.com/Amulet-Team/Amulet-NBT/workflows/Build/badge.svg)
 ![Unittests](https://github.com/Amulet-Team/Amulet-NBT/workflows/Unittests/badge.svg?event=push)
 ![Stylecheck](https://github.com/Amulet-Team/Amulet-NBT/workflows/Stylecheck/badge.svg?event=push)
 

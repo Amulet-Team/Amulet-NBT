@@ -75,16 +75,19 @@ class NBTError(Exception):
 
 class NBTLoadError(NBTError):
     """The NBT data failed to load for some reason."""
+
     pass
 
 
 class NBTFormatError(NBTLoadError):
     """Indicates the NBT format is invalid."""
+
     pass
 
 
 class SNBTParseError(NBTError):
     """Indicates the SNBT format is invalid."""
+
     pass
 
 
@@ -199,7 +202,11 @@ class _TAG_Value:
         return self._value == other
 
     def strict_equals(self, other):
-        return isinstance(other, self.__class__) and self.tag_id == other.tag_id and self.__eq__(other)
+        return (
+            isinstance(other, self.__class__)
+            and self.tag_id == other.tag_id
+            and self.__eq__(other)
+        )
 
 
 BaseValueType = _TAG_Value
@@ -1040,17 +1047,19 @@ class TAG_Compound(_TAG_Value, MutableMapping):
             if _NON_QUOTED_KEY.match(name) is None:
                 tags.append(f'"{name}": {elem.to_snbt()}')
             else:
-                tags.append(f'{name}: {elem.to_snbt()}')
+                tags.append(f"{name}: {elem.to_snbt()}")
         return f"{{{CommaSpace.join(tags)}}}"
 
     def _pretty_to_snbt(self, indent_chr="", indent_count=0, leading_indent=True):
         if self._value:
             tags = (
-                f'{indent_chr * (indent_count + 1)}"{name}": {elem._pretty_to_snbt(indent_chr, indent_count + 1, False)}' for name, elem in self._value.items()
+                f'{indent_chr * (indent_count + 1)}"{name}": {elem._pretty_to_snbt(indent_chr, indent_count + 1, False)}'
+                for name, elem in self._value.items()
             )
             return f"{indent_chr * indent_count * leading_indent}{{\n{CommaNewline.join(tags)}\n{indent_chr * indent_count}}}"
         else:
             return f"{indent_chr * indent_count * leading_indent}{{}}"
+
 
 @dataclass
 class NBTFile:
@@ -1122,7 +1131,9 @@ class NBTFile:
 
 
 def load(
-    filepath_or_buffer: Union[str, bytes, BinaryIO, None] = None,  # TODO: This should become a required input
+    filepath_or_buffer: Union[
+        str, bytes, BinaryIO, None
+    ] = None,  # TODO: This should become a required input
     compressed=True,
     count: int = None,
     offset: bool = False,
@@ -1147,7 +1158,9 @@ def load(
         elif hasattr(filepath_or_buffer, "read"):
             data_in = filepath_or_buffer.read()
             if not isinstance(data_in, bytes):
-                raise NBTLoadError(f"buffer.read() must return a bytes object. Got {type(data_in)} instead.")
+                raise NBTLoadError(
+                    f"buffer.read() must return a bytes object. Got {type(data_in)} instead."
+                )
             if hasattr(filepath_or_buffer, "close"):
                 filepath_or_buffer.close()
             elif hasattr(filepath_or_buffer, "open"):

@@ -1,5 +1,9 @@
 # Amulet-NBT
 
+![Build](https://github.com/Amulet-Team/Amulet-NBT/workflows/Build/badge.svg?event=push)
+![Unittests](https://github.com/Amulet-Team/Amulet-NBT/workflows/Unittests/badge.svg?event=push)
+![Stylecheck](https://github.com/Amulet-Team/Amulet-NBT/workflows/Stylecheck/badge.svg?event=push)
+
 amulet_nbt is a Python 3 library for reading and writing both binary NBT and SNBT.
 
 SNBT (or Stringified-NBT) is the JSON like format used in Java commands.

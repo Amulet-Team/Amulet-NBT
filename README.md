@@ -69,6 +69,6 @@ nbt_obj4 = amulet_nbt.NBTFile(  # everything should be wrapped in this class
 ```
 
 ## Cython
-There is both a pure Python and Cython version of this library. The Cython version is much faster than the pure Python verison.
+There is both a pure Python and Cython version of this library. The Cython version is much faster than the pure Python version.
 
 If you are installing from PyPi using `pip` the Cython version should get built automatically.

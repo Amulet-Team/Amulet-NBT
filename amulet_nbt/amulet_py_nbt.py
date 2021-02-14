@@ -587,10 +587,10 @@ class _TAG_Array(_TAG_Value):
                 )
             self._value = self._value.astype(data_type)
         if little_endian:
-            value = self._value.tostring()
+            value = self._value.tobytes()
             buffer.write(pack(f"<I{len(value)}s", self._value.size, value))
         else:
-            value = self._value.tostring()
+            value = self._value.tobytes()
             buffer.write(pack(f">I{len(value)}s", self._value.size, value))
 
     def __eq__(self, other):

@@ -1218,7 +1218,7 @@ cdef void write_string(bytes value, object buffer, bint little_endian):
     cwrite(buffer, s, len(value))
 
 cdef void write_array(object value, object buffer, char size, bint little_endian):
-    value = value.tostring()
+    value = value.tobytes()
     cdef char*s = value
     cdef int length = <int> len(value) // size
     to_little_endian(&length, 4, little_endian)

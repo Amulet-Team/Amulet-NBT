@@ -1129,6 +1129,12 @@ class NBTFile:
     def value(self):
         return self._value
 
+    @value.setter
+    def value(self, value: TAG_Compound):
+        if type(value) is not TAG_Compound:
+            raise ValueError("value must be TAG_Compound")
+        self._value = value
+
 
 def load(
     filepath_or_buffer: Union[

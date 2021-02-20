@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import gzip
 import itertools
-from collections.abc import MutableMapping
+from collections.abc import MutableMapping, MutableSequence
 from dataclasses import dataclass, field
 from io import BytesIO
 from math import trunc, floor, ceil
@@ -870,7 +870,7 @@ class TAG_String(_TAG_Value):
 
 
 @dataclass(eq=False, init=False, repr=False)
-class TAG_List(_TAG_Value):
+class TAG_List(_TAG_Value, MutableSequence):
     tag_id = TAG_LIST
     _value: List[AnyNBT] = field(default_factory=list)
     list_data_type: int = TAG_BYTE

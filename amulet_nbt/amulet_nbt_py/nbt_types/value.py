@@ -103,10 +103,7 @@ class TAG_Value:
 
     def strict_equals(self, other):
         """Extension of equals that also compares types."""
-        return (
-            type(self) is type(other)
-            and self == other
-        )
+        return type(self) is type(other) and self == other
 
     @staticmethod
     def get_primitive(obj):

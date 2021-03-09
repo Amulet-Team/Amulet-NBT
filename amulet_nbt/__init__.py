@@ -21,7 +21,7 @@ try:
         SNBTType,
     )
 except (ImportError, ModuleNotFoundError) as e:
-    from .amulet_py_nbt import (
+    from .amulet_nbt_py import (
         TAG_Byte,
         TAG_Short,
         TAG_Int,

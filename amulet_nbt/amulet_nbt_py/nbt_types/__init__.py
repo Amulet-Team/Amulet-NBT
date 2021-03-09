@@ -21,4 +21,31 @@ AnyNBT = Union[
     TAG_List,
     TAG_Compound,
 ]
+
+AnyNumber = Union[
+    TAG_Byte,
+    TAG_Short,
+    TAG_Int,
+    TAG_Long,
+    TAG_Float,
+    TAG_Double,
+]
+
+AnyInt = Union[
+    TAG_Byte,
+    TAG_Short,
+    TAG_Int,
+    TAG_Long,
+]
+
+AnyFloat = Union[
+    TAG_Float,
+    TAG_Double,
+]
+
+AnyArray = Union[
+    TAG_Byte_Array,
+    TAG_Int_Array,
+    TAG_Long_Array,
+]
 del Union

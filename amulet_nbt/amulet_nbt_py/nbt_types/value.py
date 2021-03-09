@@ -10,7 +10,7 @@ from typing import (
 from struct import Struct
 from copy import deepcopy, copy
 
-from amulet_nbt.amulet_nbt_py.data_types import SNBTType
+from amulet_nbt.amulet_nbt_py.const import SNBTType
 
 if TYPE_CHECKING:
     from . import AnyNBT
@@ -75,7 +75,7 @@ class TAG_Value:
             buffer.write(_string_len_fmt_be.pack(len(encoded_str)))
         buffer.write(encoded_str)
 
-    def write_value(self, buffer, little_endian=False):
+    def write_value(self, buffer: BinaryIO, little_endian=False):
         """Write the value to a file like object."""
         raise NotImplementedError
 

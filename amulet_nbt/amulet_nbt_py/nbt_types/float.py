@@ -1,15 +1,15 @@
 from __future__ import annotations
 
 from struct import Struct
-from typing import ClassVar, Any, Optional
+from typing import ClassVar, Optional
 
-from ..data_types import SNBTType
+from ..const import SNBTType
 from .numeric import NumericTAG
 
 
 class BaseFloatTAG(NumericTAG):
     _value: float
-    _data_type: ClassVar[Any] = float
+    _data_type: ClassVar = float
 
     def __init__(self, value: Optional[float] = None):
         if self.__class__ is BaseFloatTAG:

@@ -8,7 +8,7 @@ from typing import (
 from struct import Struct
 from math import floor, ceil, trunc
 
-from amulet_nbt.amulet_nbt_py.data_types import SNBTType
+from amulet_nbt.amulet_nbt_py.const import SNBTType
 
 from .value import TAG_Value
 
@@ -42,7 +42,7 @@ class NumericTAG(TAG_Value):
             tag = cls(cls.tag_format_be.unpack_from(data)[0])
         return tag
 
-    def write_value(self, buffer, little_endian=False):
+    def write_value(self, buffer: BinaryIO, little_endian=False):
         if little_endian:
             buffer.write(self.tag_format_le.pack(self._value))
         else:

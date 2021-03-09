@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 from struct import Struct
-from typing import ClassVar, Any, Optional
+from typing import ClassVar, Optional
 
 from .numeric import NumericTAG
 
 
 class BaseIntegerTAG(NumericTAG):
     _value: int
-    _data_type: ClassVar[Any] = int
+    _data_type: ClassVar = int
 
     def __init__(self, value: Optional[int] = None):
         if self.__class__ is BaseIntegerTAG:

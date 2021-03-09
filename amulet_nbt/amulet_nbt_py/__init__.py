@@ -15,4 +15,4 @@ from .nbt_types import (
     AnyNBT,
 )
 from ._load import load, from_snbt
-from .data_types import SNBTType
+from .const import SNBTType

@@ -1,0 +1,1 @@
+SNBTType = str

@@ -30,14 +30,14 @@ class BaseFloatTAG(NumericTAG):
 
 
 class TAG_Float(BaseFloatTAG):
-    tag_id = 5
+    tag_id: ClassVar[int] = 5
     tag_format_be = Struct(">f")
     tag_format_le = Struct("<f")
     fstring = "{}f"
 
 
 class TAG_Double(BaseFloatTAG):
-    tag_id = 6
+    tag_id: ClassVar[int] = 6
     tag_format_be = Struct(">d")
     tag_format_le = Struct("<d")
     fstring = "{}d"

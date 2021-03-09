@@ -56,28 +56,28 @@ class BaseIntegerTAG(NumericTAG):
 
 
 class TAG_Byte(BaseIntegerTAG):
-    tag_id = 1
+    tag_id: ClassVar[int] = 1
     tag_format_be = Struct(">b")
     tag_format_le = Struct("<b")
     fstring = "{}b"
 
 
 class TAG_Short(BaseIntegerTAG):
-    tag_id = 2
+    tag_id: ClassVar[int] = 2
     tag_format_be = Struct(">h")
     tag_format_le = Struct("<h")
     fstring = "{}s"
 
 
 class TAG_Int(BaseIntegerTAG):
-    tag_id = 3
+    tag_id: ClassVar[int] = 3
     tag_format_be = Struct(">i")
     tag_format_le = Struct("<i")
     fstring = "{}"
 
 
 class TAG_Long(BaseIntegerTAG):
-    tag_id = 4
+    tag_id: ClassVar[int] = 4
     tag_format_be = Struct(">q")
     tag_format_le = Struct("<q")
     fstring = "{}L"

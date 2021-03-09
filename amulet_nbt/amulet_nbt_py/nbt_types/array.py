@@ -200,7 +200,7 @@ class ArrayTag(TAG_Value):
 
 class TAG_Byte_Array(ArrayTag):
     big_endian_data_type = little_endian_data_type = np.dtype("int8")
-    tag_id = 7
+    tag_id: ClassVar[int] = 7
 
     def _to_snbt(self) -> SNBTType:
         return f"[B;{'B, '.join(str(val) for val in self._value)}B]"
@@ -209,7 +209,7 @@ class TAG_Byte_Array(ArrayTag):
 class TAG_Int_Array(ArrayTag):
     big_endian_data_type = np.dtype(">i4")
     little_endian_data_type = np.dtype("<i4")
-    tag_id = 11
+    tag_id: ClassVar[int] = 11
 
     def _to_snbt(self) -> SNBTType:
         return f"[I;{CommaSpace.join(str(val) for val in self._value)}]"
@@ -218,7 +218,7 @@ class TAG_Int_Array(ArrayTag):
 class TAG_Long_Array(ArrayTag):
     big_endian_data_type = np.dtype(">i8")
     little_endian_data_type = np.dtype("<i8")
-    tag_id = 12
+    tag_id: ClassVar[int] = 12
 
     def _to_snbt(self) -> SNBTType:
         return f"[L;{CommaSpace.join(str(val) for val in self._value)}]"

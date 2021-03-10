@@ -96,10 +96,14 @@ class NumericTAG(TAG_Value):
         return self._value.__rdivmod__(self.get_primitive(other))
 
     def __pow__(self, power, modulo):
-        return self._value.__pow__(self.get_primitive(power), self.get_primitive(modulo))
+        return self._value.__pow__(
+            self.get_primitive(power), self.get_primitive(modulo)
+        )
 
     def __rpow__(self, other, modulo):
-        return self._value.__rpow__(self.get_primitive(other), self.get_primitive(modulo))
+        return self._value.__rpow__(
+            self.get_primitive(other), self.get_primitive(modulo)
+        )
 
     def __neg__(self):
         return self._value.__neg__()

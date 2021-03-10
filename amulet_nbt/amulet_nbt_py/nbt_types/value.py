@@ -34,7 +34,9 @@ class TAG_Value:
         assert self._data_type is not None, f"_data_type not set for {self.__class__}"
         value = self._sanitise_value(value)
         if type(value) is not self._data_type:
-            raise ValueError(f"value of {self.__class__.__name__} must be of type {self._data_type}")
+            raise ValueError(
+                f"value of {self.__class__.__name__} must be of type {self._data_type}"
+            )
         self._value = value
 
     def _sanitise_value(self, value: Optional[Any]) -> Any:
@@ -105,6 +107,9 @@ class TAG_Value:
         """Internal method to format the class data as SNBT with indentation."""
         return f"{indent_chr * indent_count * leading_indent}{self._to_snbt()}"
 
+    def __getattr__(self, item):
+        return getattr(self._value, item)
+
     def __repr__(self):
         return self._to_snbt()
 
@@ -112,7 +117,7 @@ class TAG_Value:
         return self._value.__dir__()
 
     def __eq__(self, other):
-        return self._value == self.get_primitive(other)
+        return self._value.__eq__(self.get_primitive(other))
 
     def strict_equals(self, other):
         """Extension of equals that also compares types."""
@@ -145,3 +150,6 @@ class TAG_Value:
 
     def __copy__(self):
         return self.__class__(copy(self._value))
+
+
+BaseValueType = TAG_Value

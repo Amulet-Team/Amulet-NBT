@@ -31,11 +31,11 @@ class ArrayTag(TAG_Value):
                 "ArrayTag cannot be directly instanced. Use one of its subclasses."
             )
         assert isinstance(
-            self.tag_format_be, np.dtype
-        ), f"tag_format_be not set for {self.__class__}"
+            self.big_endian_data_type, np.dtype
+        ), f"big_endian_data_type not set for {self.__class__}"
         assert isinstance(
-            self.tag_format_le, np.dtype
-        ), f"tag_format_le not set for {self.__class__}"
+            self.little_endian_data_type, np.dtype
+        ), f"little_endian_data_type not set for {self.__class__}"
         super().__init__(value)
 
     def _sanitise_value(self, value: Optional[Any]) -> Any:
@@ -89,14 +89,14 @@ class ArrayTag(TAG_Value):
             buffer.write(TAG_Int.tag_format_be.pack(self._value.size))
         buffer.write(value)
 
+    def __eq__(self, other):
+        return np.array_equal(self._value, self.get_primitive(other))
+
     def __getitem__(self, item):
         return self._value.__getitem__(item)
 
     def __setitem__(self, key, value):
         self._value.__setitem__(key, value)
-
-    def __getattr__(self, item):
-        return self._value.__getattribute__(item)
 
     def __array__(self):
         return self._value
@@ -219,3 +219,6 @@ class TAG_Long_Array(ArrayTag):
 
     def _to_snbt(self) -> SNBTType:
         return f"[L;{CommaSpace.join(str(val) for val in self._value)}]"
+
+
+BaseArrayType = ArrayTag

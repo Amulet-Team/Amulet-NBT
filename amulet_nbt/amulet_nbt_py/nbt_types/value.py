@@ -32,8 +32,11 @@ class TAG_Value:
         assert isinstance(self.tag_id, int), f"tag_id not set for {self.__class__}"
         assert self._data_type is not None, f"_data_type not set for {self.__class__}"
         if value is None:
-            value = self._data_type()
-        self._value = self._data_type(value)
+            self._value = self._data_type()
+        else:
+            if isinstance(value, TAG_Value):
+                value = value.value
+            self._value = self._data_type(value)
 
     @property
     def value(self) -> Any:

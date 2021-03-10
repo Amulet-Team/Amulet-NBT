@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import (
     ClassVar,
-    Optional,
     BinaryIO,
+    Union,
 )
 from struct import Struct
-from math import floor, ceil, trunc
+import numpy as np
 
 from amulet_nbt.amulet_nbt_py.const import SNBTType
 
@@ -14,11 +14,12 @@ from .value import TAG_Value
 
 
 class NumericTAG(TAG_Value):
+    _value: np.number
     tag_format_be: ClassVar[Struct] = None
     tag_format_le: ClassVar[Struct] = None
     fstring: str = None
 
-    def __init__(self, value: Optional[int] = None):
+    def __init__(self, value: Union[int, float, np.number, NumericTAG, None] = None):
         if self.__class__ is NumericTAG:
             raise TypeError(
                 "NumericTAG cannot be directly instanced. Use one of its subclasses."
@@ -51,101 +52,98 @@ class NumericTAG(TAG_Value):
     def _to_snbt(self) -> SNBTType:
         return self.fstring.format(self._value)
 
-    def __eq__(self, other):
-        return self._value == self.get_primitive(other)
-
     def __add__(self, other):
-        return self._value + self.get_primitive(other)
+        return self._value.__add__(self.get_primitive(other))
 
     def __radd__(self, other):
-        return self.get_primitive(other) + self._value
+        return self._value.__radd__(self.get_primitive(other))
 
     def __sub__(self, other):
-        return self._value - self.get_primitive(other)
+        return self._value.__sub__(self.get_primitive(other))
 
     def __rsub__(self, other):
-        return self.get_primitive(other) - self._value
+        return self._value.__rsub__(self.get_primitive(other))
 
     def __mul__(self, other):
-        return self._value * self.get_primitive(other)
+        return self._value.__mul__(self.get_primitive(other))
 
     def __rmul__(self, other):
-        return self.get_primitive(other) * self._value
+        return self._value.__rmul__(self.get_primitive(other))
 
     def __truediv__(self, other):
-        return self._value / self.get_primitive(other)
+        return self._value.__truediv__(self.get_primitive(other))
 
     def __rtruediv__(self, other):
-        return self.get_primitive(other) / self._value
+        return self._value.__rtruediv__(self.get_primitive(other))
 
     def __floordiv__(self, other):
-        return self._value // self.get_primitive(other)
+        return self._value.__floordiv__(self.get_primitive(other))
 
     def __rfloordiv__(self, other):
-        return self.get_primitive(other) // self._value
+        return self._value.__rfloordiv__(self.get_primitive(other))
 
     def __mod__(self, other):
-        return self._value % self.get_primitive(other)
+        return self._value.__mod__(self.get_primitive(other))
 
     def __rmod__(self, other):
-        return self.get_primitive(other) % self._value
+        return self._value.__rmod__(self.get_primitive(other))
 
     def __divmod__(self, other):
-        return divmod(self._value, self.get_primitive(other))
+        return self._value.__divmod__(self.get_primitive(other))
 
     def __rdivmod__(self, other):
-        return divmod(self.get_primitive(other), self._value)
+        return self._value.__rdivmod__(self.get_primitive(other))
 
     def __pow__(self, power, modulo):
-        return pow(self._value, power, modulo)
+        return self._value.__pow__(self.get_primitive(power), self.get_primitive(modulo))
 
     def __rpow__(self, other, modulo):
-        return pow(self.get_primitive(other), self._value, modulo)
+        return self._value.__rpow__(self.get_primitive(other), self.get_primitive(modulo))
 
     def __neg__(self):
-        return -self._value
+        return self._value.__neg__()
 
     def __pos__(self):
-        return +self._value
+        return self._value.__pos__()
 
     def __abs__(self):
-        return abs(self._value)
+        return self._value.__abs__()
 
     def __int__(self):
-        return int(self._value)
+        return self._value.__int__()
 
     def __float__(self):
-        return float(self._value)
+        return self._value.__float__()
 
     def __round__(self, n=None):
-        return round(self._value, n)
+        return self._value.__round__(n)
 
     def __trunc__(self):
-        return trunc(self._value)
+        return self._value.__trunc__()
 
     def __floor__(self):
-        return floor(self._value)
+        return self._value.__floor__()
 
     def __ceil__(self):
-        return ceil(self._value)
+        return self._value.__ceil__()
 
     def __getattr__(self, item):
         return self._value.__getattribute__(item)
 
     def __dir__(self):
-        return dir(self._value)
+        return self._value.__dir__()
 
     def __bool__(self):
-        return bool(self)
+        return self._value.__bool__()
 
     def __ge__(self, other):
-        return self._value >= self.get_primitive(other)
+        return self._value.__ge__(self.get_primitive(other))
 
     def __gt__(self, other):
-        return self._value > self.get_primitive(other)
+        return self._value.__gt__(self.get_primitive(other))
 
     def __le__(self, other):
-        return self._value <= self.get_primitive(other)
+        return self._value.__le__(self.get_primitive(other))
 
     def __lt__(self, other):
-        return self._value < self.get_primitive(other)
+        return self._value.__lt__(self.get_primitive(other))

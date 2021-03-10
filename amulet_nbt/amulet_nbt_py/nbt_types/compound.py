@@ -9,6 +9,7 @@ from typing import (
     Dict,
     Optional,
     Iterator,
+    Iterable,
 )
 
 from amulet_nbt.amulet_nbt_py.const import SNBTType
@@ -20,13 +21,15 @@ from . import class_map
 if TYPE_CHECKING:
     from . import AnyNBT
 
+NBTDictType = Dict[str, AnyNBT]
+
 
 class TAG_Compound(TAG_Value):
     tag_id: ClassVar[int] = 10
-    _value: Dict[str, AnyNBT]
+    _value: NBTDictType
     _data_type: ClassVar = dict
 
-    def __init__(self, value: Union[Dict[str, AnyNBT], TAG_Compound, None] = None):
+    def __init__(self, value: Union[NBTDictType, TAG_Compound, None] = None):
         super().__init__(value)
 
     def _sanitise_value(self, value: Optional[Any]) -> Any:
@@ -52,7 +55,7 @@ class TAG_Compound(TAG_Value):
             )
 
     @property
-    def value(self) -> Dict[str, AnyNBT]:
+    def value(self) -> NBTDictType:
         """The raw data stored in the object."""
         return self._value
 
@@ -92,21 +95,37 @@ class TAG_Compound(TAG_Value):
         else:
             return f"{indent_chr * indent_count * leading_indent}{{}}"
 
+    def __contains__(self, item: str) -> bool:
+        return self._value.__contains__(item)
+
+    def __delitem__(self, key: str):
+        self._value.__delitem__(key)
+
     def __getitem__(self, key: str) -> AnyNBT:
         return self._value.__getitem__(key)
+
+    def __iter__(self) -> Iterator[str]:
+        return self._value.__iter__()
+
+    def __len__(self) -> int:
+        return self._value.__len__()
 
     def __setitem__(self, key: str, value: AnyNBT):
         self._check_entry(key, value)
         self._value.__setitem__(key, value)
 
-    def __delitem__(self, key: str):
-        self._value.__delitem__(key)
+    def copy(self):
+        return TAG_Compound(self._value.copy())
 
-    def __iter__(self) -> Iterator[str]:
-        return self._value.__iter__()
+    def fromkeys(self, keys: Iterable, value: AnyNBT):
+        return TAG_Compound(dict.fromkeys(keys, value))
 
-    def __contains__(self, item: str) -> bool:
-        return self._value.__contains__(item)
+    def setdefault(self, k: str, default: AnyNBT):
+        self._check_entry(k, default)
+        return self._value.setdefault(k, default)
 
-    def __len__(self) -> int:
-        return self._value.__len__()
+    def update(self, other: Union[NBTDictType, TAG_Compound]):
+        other: NBTDictType = self.get_primitive(other)
+        for k, v in other.items():
+            self._check_entry(k, v)
+        self._value.update(other)

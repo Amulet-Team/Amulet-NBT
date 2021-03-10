@@ -12,6 +12,8 @@ from typing import (
     Iterable,
     Optional,
 )
+from collections.abc import Sequence
+import numpy as np
 
 from amulet_nbt.amulet_nbt_py.const import SNBTType
 
@@ -23,15 +25,17 @@ from .int import TAG_Int
 if TYPE_CHECKING:
     from . import AnyNBT
 
+NBTListType = List[AnyNBT]
+
 
 class TAG_List(TAG_Value):
     tag_id: ClassVar[int] = 9
-    _value: List[AnyNBT]
+    _value: NBTListType
     _data_type: ClassVar = list
 
     def __init__(
         self,
-        value: Union[List[AnyNBT], TAG_List, None] = None,
+        value: Union[NBTListType, TAG_List, None] = None,
         list_data_type: int = TAG_BYTE,
     ):
         self.list_data_type = list_data_type
@@ -43,23 +47,34 @@ class TAG_List(TAG_Value):
             if isinstance(value, TAG_Value):
                 value = value.value
             value = self._data_type(value)
-            self._check_tag(value[0])
-            self._value = value
-            for tag in value[1:]:
-                self._check_tag(tag)
-        return self._value
+            self._check_tag_iterable(value)
+        else:
+            value = self._value
+        return value
 
-    def _check_tag(self, value: TAG_Value):
+    def _check_tag(self, value: TAG_Value, fix_if_empty=True):
+        """Check the format of value is correct.
+
+        :param value: The value to check
+        :param fix_if_empty: If true and the internal list is empty the internal data type will be set to that of value.
+        :return:
+        """
         if not isinstance(value, TAG_Value):
             raise TypeError(
                 f"Invalid type {value.__class__.__name__} for TAG_List. Must be an NBT object."
             )
-        if not self._value:
+        if fix_if_empty and not self._value:
             self.list_data_type = value.tag_id
-        elif value.tag_id != self.list_data_type:
+        if value.tag_id != self.list_data_type:
             raise TypeError(
                 f"Invalid type {value.__class__.__name__} for TAG_List({class_map.TAG_CLASSES[self.list_data_type].__name__})"
             )
+
+    def _check_tag_iterable(self, value: Sequence[TAG_Value]):
+        if value:
+            self._check_tag(value[0])
+            for tag in value[1:]:
+                self._check_tag(tag, False)
 
     @classmethod
     def load_from(cls, context: BinaryIO, little_endian: bool) -> TAG_List:
@@ -102,40 +117,87 @@ class TAG_List(TAG_Value):
         else:
             return f"{indent_chr * indent_count * leading_indent}[]"
 
-    def __getitem__(self, index: int) -> AnyNBT:
-        return self._value[index]
+    def __add__(self, other):
+        other = self.get_primitive(other)
+        self._check_tag_iterable(other)
+        return TAG_List(self._value.__add__(other), self.list_data_type)
 
-    @overload
-    def __setitem__(self, index: int, value: AnyNBT):
-        ...
-
-    @overload
-    def __setitem__(self, index: slice, value: Iterable[AnyNBT]):
-        ...
-
-    def __setitem__(self, index, value):
-        if isinstance(index, slice):
-            map(self._check_tag, value)
-        else:
-            self._check_tag(value)
-        self._value[index] = value
-
-    def __delitem__(self, index: int):
-        del self._value[index]
-
-    def __iter__(self) -> Iterator[AnyNBT]:
-        return iter(self._value)
+    def __radd__(self, other):
+        other = self.get_primitive(other)
+        self._check_tag_iterable(other)
+        return TAG_List(other + self._value, self.list_data_type)
 
     def __contains__(self, item: AnyNBT) -> bool:
         return item in self._value
 
-    def __len__(self) -> int:
-        return len(self._value)
+    def __delitem__(self, index: int):
+        del self._value[index]
 
-    def insert(self, index: int, value: AnyNBT):
-        self._check_tag(value)
-        self._value.insert(index, value)
+    @overload
+    def __getitem__(self, item: int) -> AnyNBT:
+        ...
+
+    @overload
+    def __getitem__(self, item: slice) -> Iterable[AnyNBT]:
+        ...
+
+    def __getitem__(self, item):
+        return self._value.__getitem__(item)
+
+    def __iadd__(self, other):
+        self.extend(other)
+        return self
+
+    def __imul__(self, other):
+        other = self.get_primitive(other)
+        if isinstance(other, (int, np.integer)):
+            self._value.__imul__(int(other))
+            return self
+        return NotImplemented
+
+    def __iter__(self) -> Iterator[AnyNBT]:
+        return self._value.__iter__()
+
+    def __len__(self) -> int:
+        return self._value.__len__()
+
+    def __mul__(self, other):
+        other = self.get_primitive(other)
+        if isinstance(other, (int, np.integer)):
+            return TAG_List(self._value.__mul__(int(other)), self.list_data_type)
+        return NotImplemented
+
+    def __rmul__(self, other):
+        return self.__mul__(other)
+
+    @overload
+    def __setitem__(self, item: int, value: AnyNBT):
+        ...
+
+    @overload
+    def __setitem__(self, item: slice, value: Iterable[AnyNBT]):
+        ...
+
+    def __setitem__(self, item, value):
+        if isinstance(item, slice):
+            self._check_tag_iterable(value)
+        else:
+            self._check_tag(value)
+        self._value.__setitem__(item, value)
 
     def append(self, value: AnyNBT) -> None:
         self._check_tag(value)
         self._value.append(value)
+
+    def copy(self):
+        return TAG_List(self._value.copy(), self.list_data_type)
+
+    def extend(self, other):
+        other = self.get_primitive(other)
+        self._check_tag_iterable(other)
+        self._value.extend(other)
+        return self
+
+    def insert(self, index: int, value: AnyNBT):
+        self._check_tag(value)
+        self._value.insert(index, value)

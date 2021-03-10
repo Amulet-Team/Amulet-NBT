@@ -21,8 +21,8 @@ _string_len_fmt_le = Struct("<H")
 
 
 class TAG_Value:
-    _value: Any
     tag_id: ClassVar[int] = None
+    _value: Any
     _data_type: ClassVar = None
 
     def __init__(self, value: Optional[Any] = None):

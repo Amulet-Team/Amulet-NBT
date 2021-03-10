@@ -1,17 +1,17 @@
 from __future__ import annotations
 
-from typing import BinaryIO, ClassVar, Union, Iterable
+from typing import BinaryIO, ClassVar, Union, Iterable, Optional, Any
 import numpy as np
 
 from amulet_nbt.amulet_nbt_py.const import SNBTType
 from .int import TAG_Int
 from .value import TAG_Value
-from ..errors import NBTError
 from ..const import CommaSpace
 
 
 class ArrayTag(TAG_Value):
     _value: np.ndarray
+    _data_type: ClassVar = np.ndarray
     big_endian_data_type: ClassVar[np.dtype] = None
     little_endian_data_type: ClassVar[np.dtype] = None
 
@@ -26,22 +26,25 @@ class ArrayTag(TAG_Value):
             None,
         ] = None,
     ):
-        if value is None:
-            value = np.zeros((0,), self.big_endian_data_type)
-        elif isinstance(value, (TAG_Byte_Array, TAG_Int_Array, TAG_Long_Array)):
-            value = value.value
-        elif not isinstance(value, np.ndarray):
-            value = np.array(value, self.big_endian_data_type)
-
-        if isinstance(value, np.ndarray):
-            if value.dtype != self.big_endian_data_type:
-                value = value.astype(self.big_endian_data_type)
-        else:
-            raise NBTError(
-                f"Unexpected object {value} given to {self.__class__.__name__}"
+        if self.__class__ is ArrayTag:
+            raise TypeError(
+                "ArrayTag cannot be directly instanced. Use one of its subclasses."
             )
-
+        assert isinstance(
+            self.tag_format_be, np.dtype
+        ), f"tag_format_be not set for {self.__class__}"
+        assert isinstance(
+            self.tag_format_le, np.dtype
+        ), f"tag_format_le not set for {self.__class__}"
         super().__init__(value)
+
+    def _sanitise_value(self, value: Optional[Any]) -> Any:
+        if value is None:
+            return np.zeros((0,), self.big_endian_data_type)
+        else:
+            if isinstance(value, TAG_Value):
+                value = value.value
+            return np.array(value, self.big_endian_data_type)
 
     @property
     def value(self) -> np.ndarray:

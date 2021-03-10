@@ -21,6 +21,7 @@ try:
         SNBTType,
     )
 except (ImportError, ModuleNotFoundError) as e:
+    print("Failed to import cython nbt library. Falling back to python version. This will run a lot slower.")
     from .amulet_nbt_py import (
         TAG_Byte,
         TAG_Short,

@@ -89,9 +89,6 @@ class ArrayTag(TAG_Value):
             buffer.write(TAG_Int.tag_format_be.pack(self._value.size))
         buffer.write(value)
 
-    def __eq__(self, other):
-        return self._value.__eq__(self.get_primitive(other))
-
     def __getitem__(self, item):
         return self._value.__getitem__(item)
 
@@ -100,9 +97,6 @@ class ArrayTag(TAG_Value):
 
     def __getattr__(self, item):
         return self._value.__getattribute__(item)
-
-    def __dir__(self):
-        return self._value.__dir__()
 
     def __array__(self):
         return self._value

@@ -131,20 +131,5 @@ class NumericTAG(TAG_Value):
     def __getattr__(self, item):
         return self._value.__getattribute__(item)
 
-    def __dir__(self):
-        return self._value.__dir__()
-
     def __bool__(self):
         return self._value.__bool__()
-
-    def __ge__(self, other):
-        return self._value.__ge__(self.get_primitive(other))
-
-    def __gt__(self, other):
-        return self._value.__gt__(self.get_primitive(other))
-
-    def __le__(self, other):
-        return self._value.__le__(self.get_primitive(other))
-
-    def __lt__(self, other):
-        return self._value.__lt__(self.get_primitive(other))

@@ -108,12 +108,30 @@ class TAG_Value:
     def __repr__(self):
         return self._to_snbt()
 
+    def __dir__(self):
+        return self._value.__dir__()
+
     def __eq__(self, other):
         return self._value == self.get_primitive(other)
 
     def strict_equals(self, other):
         """Extension of equals that also compares types."""
         return type(self) is type(other) and self == other
+
+    def __ge__(self, other):
+        return self._value.__ge__(self.get_primitive(other))
+
+    def __gt__(self, other):
+        return self._value.__gt__(self.get_primitive(other))
+
+    def __le__(self, other):
+        return self._value.__le__(self.get_primitive(other))
+
+    def __lt__(self, other):
+        return self._value.__lt__(self.get_primitive(other))
+
+    def __hash__(self):
+        return self._value.__hash__()
 
     @staticmethod
     def get_primitive(obj):

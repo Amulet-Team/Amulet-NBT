@@ -2,7 +2,7 @@ import os
 import unittest
 import re
 
-import amulet_nbt.amulet_py_nbt as pynbt
+import amulet_nbt.amulet_nbt_py as pynbt
 
 TEST_CYTHON_LIB = True
 try:
@@ -50,9 +50,7 @@ class AbstractNBTTest:
 
             le_fp = open(os.path.join(TESTS_DIR, "little_endian_level.dat"), "rb")
             le_fp.seek(8)
-            self.little_endian_level_dat = self.nbt.load(
-                buffer=le_fp, little_endian=True
-            )
+            self.little_endian_level_dat = self.nbt.load(le_fp, little_endian=True)
             le_fp.close()
 
             self.snbt_data = ""
@@ -133,7 +131,7 @@ class AbstractNBTTest:
             le_fp = open(
                 os.path.join(TESTS_DIR, f"little_endian.{self.nbt.__name__}.dat"), "rb"
             )
-            saved_little_endian = self.nbt.load(buffer=le_fp, little_endian=True)
+            saved_little_endian = self.nbt.load(le_fp, little_endian=True)
             le_fp.close()
 
             self.assertEqual(self.little_endian_level_dat, saved_little_endian)

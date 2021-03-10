@@ -15,6 +15,7 @@ from .value import TAG_Value
 
 class NumericTAG(TAG_Value):
     _value: np.number
+    _data_type: ClassVar = np.number
     tag_format_be: ClassVar[Struct] = None
     tag_format_le: ClassVar[Struct] = None
     fstring: str = None

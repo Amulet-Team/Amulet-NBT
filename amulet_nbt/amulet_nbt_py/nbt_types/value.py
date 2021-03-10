@@ -6,6 +6,7 @@ from typing import (
     ClassVar,
     BinaryIO,
     Union,
+    Optional,
 )
 from struct import Struct
 from copy import deepcopy, copy
@@ -24,19 +25,25 @@ class TAG_Value:
     tag_id: ClassVar[int] = None
     _data_type: ClassVar = None
 
-    def __init__(self, value=None):
+    def __init__(self, value: Optional[Any] = None):
         if self.__class__ is TAG_Value:
             raise TypeError(
                 "TAG_Value cannot be directly instanced. Use one of its subclasses."
             )
         assert isinstance(self.tag_id, int), f"tag_id not set for {self.__class__}"
         assert self._data_type is not None, f"_data_type not set for {self.__class__}"
+        value = self._sanitise_value(value)
+        if type(value) is not self._data_type:
+            raise ValueError(f"value of {self.__class__.__name__} must be of type {self._data_type}")
+        self._value = value
+
+    def _sanitise_value(self, value: Optional[Any]) -> Any:
         if value is None:
-            self._value = self._data_type()
+            return self._data_type()
         else:
             if isinstance(value, TAG_Value):
                 value = value.value
-            self._value = self._data_type(value)
+            return self._data_type(value)
 
     @property
     def value(self) -> Any:

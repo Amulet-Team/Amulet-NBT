@@ -118,7 +118,11 @@ class TAG_List(TAG_Value):
             return f"{indent_chr * indent_count * leading_indent}[]"
 
     def __eq__(self, other):
-        if isinstance(other, TAG_List) and self._value and self.list_data_type != other.list_data_type:
+        if (
+            isinstance(other, TAG_List)
+            and self._value
+            and self.list_data_type != other.list_data_type
+        ):
             return False
         return self._value.__eq__(self.get_primitive(other))
 

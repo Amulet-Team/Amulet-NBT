@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, overload, BinaryIO
 from io import BytesIO
 import gzip
 
@@ -42,9 +42,47 @@ class NBTFile:
     def to_snbt(self, indent_chr=None) -> SNBTType:
         return self._value.to_snbt(indent_chr)
 
+    @overload
     def save_to(
-        self, filepath_or_buffer=None, compressed=True, little_endian=False
-    ) -> Optional[bytes]:
+        self,
+        filepath_or_buffer: None = None,
+        compressed: bool = True,
+        little_endian: bool = False,
+    ) -> bytes:
+        """If filepath_or_buffer is None the raw bytes will be returned."""
+        ...
+
+    @overload
+    def save_to(
+        self,
+        filepath_or_buffer: str = None,
+        compressed: bool = True,
+        little_endian: bool = False,
+    ) -> bytes:
+        """If filepath_or_buffer is a valid file path in string form the data will be written to that file."""
+        ...
+
+    @overload
+    def save_to(
+        self,
+        filepath_or_buffer: BinaryIO = None,
+        compressed: bool = True,
+        little_endian: bool = False,
+    ) -> bytes:
+        """If filepath_or_buffer is a file like object the bytes will be written to it using `write`."""
+        ...
+
+    def save_to(self, filepath_or_buffer=None, compressed=True, little_endian=False):
+        """Save the data in binary NBT format.
+        If filepath_or_buffer is None the raw bytes will be returned.
+        If filepath_or_buffer is a valid file path in string form the data will be written to that file.
+        If filepath_or_buffer is a file like object the bytes will be written to it using `write`.
+
+        :param filepath_or_buffer: A path or `write`able object to write the data to. If None the bytes will be returned.
+        :param compressed: Should the bytes be compressed with gzip.
+        :param little_endian: Should the bytes be saved in little endian format.
+        :return: If filepath_or_buffer is None the raw bytes will be returned. None otherwise
+        """
         buffer = BytesIO()
         self._value.write_payload(buffer, self.name, little_endian)
 
@@ -56,14 +94,13 @@ class NBTFile:
                 gz.write(data)
             data = gzip_buffer.getvalue()
 
-        if not filepath_or_buffer:
-            return data
-
         if isinstance(filepath_or_buffer, str):
             with open(filepath_or_buffer, "wb") as fp:
                 fp.write(data)
-        else:
+        elif hasattr(filepath_or_buffer, "write"):
             filepath_or_buffer.write(data)
+        else:
+            return data
 
     def __eq__(self, other):
         return isinstance(other, NBTFile) and self._value.__eq__(other._value)

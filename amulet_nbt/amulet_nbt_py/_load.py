@@ -6,6 +6,9 @@ from typing import (
     Tuple,
     Union,
     BinaryIO,
+    Optional,
+    overload,
+    Literal,
 )
 import re
 import os
@@ -36,13 +39,66 @@ from .const import SNBTType
 TAG_COMPOUND = 10
 
 
+@overload
 def load(
     filepath_or_buffer: Union[str, bytes, BinaryIO],
-    compressed=True,
-    count: int = None,
+    compressed: bool,
+    count: None,
+    offset: Literal[False],
+    little_endian: bool,
+) -> NBTFile:
+    ...
+
+
+@overload
+def load(
+    filepath_or_buffer: Union[str, bytes, BinaryIO],
+    compressed: bool,
+    count: None,
+    offset: Literal[True],
+    little_endian: bool,
+) -> Tuple[NBTFile, int]:
+    ...
+
+
+@overload
+def load(
+    filepath_or_buffer: Union[str, bytes, BinaryIO],
+    compressed: bool,
+    count: int,
+    offset: Literal[False],
+    little_endian: bool,
+) -> List[NBTFile]:
+    ...
+
+
+@overload
+def load(
+    filepath_or_buffer: Union[str, bytes, BinaryIO],
+    compressed: bool,
+    count: int,
+    offset: Literal[True],
+    little_endian: bool,
+) -> Tuple[List[NBTFile], int]:
+    ...
+
+
+def load(
+    filepath_or_buffer: Union[str, bytes, BinaryIO],
+    compressed: bool = True,
+    count: Optional[int] = None,
     offset: bool = False,
     little_endian: bool = False,
-) -> Union[NBTFile, Tuple[Union[NBTFile, List[NBTFile]], int]]:
+):
+    """Read binary NBT from a file or bytes.
+
+    :param filepath_or_buffer: A path or `read`able object to read the data from.
+    :param compressed: Is the input data compressed using gzip.
+    :param count: If None only one NBTFile is returned. If int a list of `NBTFile`s is returned.
+    :param offset: If True return Tuple[data, pointer] where pointer is the int pointer location. Useful when reading multiple from one file.
+    :param little_endian: Should the binary NBT read in little endian format.
+    :return: The NBTFile data. The output varies based on inputs.
+    """
     if isinstance(filepath_or_buffer, str):
         # if a string load from the file path
         if not os.path.isfile(filepath_or_buffer):
@@ -82,7 +138,7 @@ def load(
     context = BytesIO(data_in)
     results = []
 
-    for i in range(count or 1):
+    for i in range(1 if count is None else count):
         tag_type = context.read(1)[0]
         if tag_type != TAG_COMPOUND:
             raise NBTFormatError(

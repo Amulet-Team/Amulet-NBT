@@ -1,4 +1,4 @@
-import amulet_nbt.amulet_py_nbt as pynbt
+import amulet_nbt.amulet_nbt_py as pynbt
 import amulet_nbt.amulet_cy_nbt as cynbt
 import numpy
 

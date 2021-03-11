@@ -255,9 +255,6 @@ class ArrayTag(TAG_Value):
     def __float__(self):
         return self._value.__float__()
 
-    def __getattr__(self, item):
-        return self._value.__getattribute__(item)
-
     def __bool__(self):
         return self._value.__bool__()
 

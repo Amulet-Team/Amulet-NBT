@@ -153,8 +153,5 @@ class NumericTAG(TAG_Value):
     def __ceil__(self):
         return self._value.__ceil__()
 
-    def __getattr__(self, item):
-        return self._value.__getattribute__(item)
-
     def __bool__(self):
         return self._value.__bool__()

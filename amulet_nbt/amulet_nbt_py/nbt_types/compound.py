@@ -21,7 +21,7 @@ from . import class_map
 if TYPE_CHECKING:
     from . import AnyNBT
 
-NBTDictType = Dict[str, AnyNBT]
+NBTDictType = Dict[str, "AnyNBT"]
 
 
 class TAG_Compound(TAG_Value):

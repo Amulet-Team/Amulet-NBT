@@ -25,7 +25,7 @@ from .int import TAG_Int
 if TYPE_CHECKING:
     from . import AnyNBT
 
-NBTListType = List[AnyNBT]
+NBTListType = List["AnyNBT"]
 
 
 class TAG_List(TAG_Value):

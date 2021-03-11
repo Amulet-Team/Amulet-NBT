@@ -53,87 +53,108 @@ class NumericTAG(TAG_Value):
     def _to_snbt(self) -> SNBTType:
         return self.fstring.format(self._value)
 
+    def _to_python(self, value):
+        """Convert numpy data types to their python equivalent."""
+        if isinstance(value, np.floating):
+            return float(value)
+        elif isinstance(value, np.integer):
+            return int(value)
+        elif isinstance(value, np.generic):
+            raise ValueError(f"Unexpected numpy type {type(value)}")
+        else:
+            return value
+
     def __add__(self, other):
-        return self._value.__add__(self.get_primitive(other))
+        return self._to_python(self._value.__add__(self.get_primitive(other)))
 
     def __radd__(self, other):
-        return self._value.__radd__(self.get_primitive(other))
+        return self._to_python(self._value.__radd__(self.get_primitive(other)))
 
     def __iadd__(self, other):
         return self.__class__(self._value.__add__(self.get_primitive(other)))
 
     def __sub__(self, other):
-        return self._value.__sub__(self.get_primitive(other))
+        return self._to_python(self._value.__sub__(self.get_primitive(other)))
 
     def __rsub__(self, other):
-        return self._value.__rsub__(self.get_primitive(other))
+        return self._to_python(self._value.__rsub__(self.get_primitive(other)))
 
     def __isub__(self, other):
         return self.__class__(self._value.__sub__(self.get_primitive(other)))
 
     def __mul__(self, other):
-        return self._value.__mul__(self.get_primitive(other))
+        return self._to_python(self._value.__mul__(self.get_primitive(other)))
 
     def __rmul__(self, other):
-        return self._value.__rmul__(self.get_primitive(other))
+        return self._to_python(self._value.__rmul__(self.get_primitive(other)))
 
     def __imul__(self, other):
         return self.__class__(self._value.__mul__(self.get_primitive(other)))
 
     def __truediv__(self, other):
-        return self._value.__truediv__(self.get_primitive(other))
+        return self._to_python(
+            self._value.__truediv__(self.get_primitive(other))
+        )
 
     def __rtruediv__(self, other):
-        return self._value.__rtruediv__(self.get_primitive(other))
+        return self._to_python(
+            self._value.__rtruediv__(self.get_primitive(other))
+        )
 
     def __itruediv__(self, other):
         return self.__class__(self._value.__truediv__(self.get_primitive(other)))
 
     def __floordiv__(self, other):
-        return self._value.__floordiv__(self.get_primitive(other))
+        return self._to_python(
+            self._value.__floordiv__(self.get_primitive(other))
+        )
 
     def __rfloordiv__(self, other):
-        return self._value.__rfloordiv__(self.get_primitive(other))
+        return self._to_python(
+            self._value.__rfloordiv__(self.get_primitive(other))
+        )
 
     def __ifloordiv__(self, other):
         return self.__class__(self._value.__floordiv__(self.get_primitive(other)))
 
     def __mod__(self, other):
-        return self._value.__mod__(self.get_primitive(other))
+        return self._to_python(self._value.__mod__(self.get_primitive(other)))
 
     def __rmod__(self, other):
-        return self._value.__rmod__(self.get_primitive(other))
+        return self._to_python(self._value.__rmod__(self.get_primitive(other)))
 
     def __imod__(self, other):
         return self.__class__(self._value.__mod__(self.get_primitive(other)))
 
     def __divmod__(self, other):
-        return self._value.__divmod__(self.get_primitive(other))
+        return self._to_python(self._value.__divmod__(self.get_primitive(other)))
 
     def __rdivmod__(self, other):
-        return self._value.__rdivmod__(self.get_primitive(other))
+        return self._to_python(
+            self._value.__rdivmod__(self.get_primitive(other))
+        )
 
     def __pow__(self, power, modulo):
-        return self._value.__pow__(
-            self.get_primitive(power), self.get_primitive(modulo)
+        return self._to_python(
+            self._value.__pow__(self.get_primitive(power), self.get_primitive(modulo))
         )
 
     def __rpow__(self, other, modulo):
-        return self._value.__rpow__(
-            self.get_primitive(other), self.get_primitive(modulo)
+        return self._to_python(
+            self._value.__rpow__(self.get_primitive(other), self.get_primitive(modulo))
         )
 
     def __ipow__(self, other):
         return self.__class__(self._value.__pow__(self.get_primitive(other)))
 
     def __neg__(self):
-        return self._value.__neg__()
+        return self._to_python(self._value.__neg__())
 
     def __pos__(self):
-        return self._value.__pos__()
+        return self._to_python(self._value.__pos__())
 
     def __abs__(self):
-        return self._value.__abs__()
+        return self._to_python(self._value.__abs__())
 
     def __int__(self):
         return self._value.__int__()

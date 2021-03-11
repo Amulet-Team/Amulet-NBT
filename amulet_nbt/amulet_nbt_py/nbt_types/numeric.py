@@ -59,11 +59,17 @@ class NumericTAG(TAG_Value):
     def __radd__(self, other):
         return self._value.__radd__(self.get_primitive(other))
 
+    def __iadd__(self, other):
+        return self.__class__(self._value.__add__(self.get_primitive(other)))
+
     def __sub__(self, other):
         return self._value.__sub__(self.get_primitive(other))
 
     def __rsub__(self, other):
         return self._value.__rsub__(self.get_primitive(other))
+
+    def __isub__(self, other):
+        return self.__class__(self._value.__sub__(self.get_primitive(other)))
 
     def __mul__(self, other):
         return self._value.__mul__(self.get_primitive(other))
@@ -71,11 +77,17 @@ class NumericTAG(TAG_Value):
     def __rmul__(self, other):
         return self._value.__rmul__(self.get_primitive(other))
 
+    def __imul__(self, other):
+        return self.__class__(self._value.__mul__(self.get_primitive(other)))
+
     def __truediv__(self, other):
         return self._value.__truediv__(self.get_primitive(other))
 
     def __rtruediv__(self, other):
         return self._value.__rtruediv__(self.get_primitive(other))
+
+    def __itruediv__(self, other):
+        return self.__class__(self._value.__truediv__(self.get_primitive(other)))
 
     def __floordiv__(self, other):
         return self._value.__floordiv__(self.get_primitive(other))
@@ -83,11 +95,17 @@ class NumericTAG(TAG_Value):
     def __rfloordiv__(self, other):
         return self._value.__rfloordiv__(self.get_primitive(other))
 
+    def __ifloordiv__(self, other):
+        return self.__class__(self._value.__floordiv__(self.get_primitive(other)))
+
     def __mod__(self, other):
         return self._value.__mod__(self.get_primitive(other))
 
     def __rmod__(self, other):
         return self._value.__rmod__(self.get_primitive(other))
+
+    def __imod__(self, other):
+        return self.__class__(self._value.__mod__(self.get_primitive(other)))
 
     def __divmod__(self, other):
         return self._value.__divmod__(self.get_primitive(other))
@@ -104,6 +122,9 @@ class NumericTAG(TAG_Value):
         return self._value.__rpow__(
             self.get_primitive(other), self.get_primitive(modulo)
         )
+
+    def __ipow__(self, other):
+        return self.__class__(self._value.__pow__(self.get_primitive(other)))
 
     def __neg__(self):
         return self._value.__neg__()

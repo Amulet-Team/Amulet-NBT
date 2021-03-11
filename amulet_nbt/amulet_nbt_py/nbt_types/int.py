@@ -28,11 +28,17 @@ class BaseIntegerTAG(NumericTAG):
     def __rlshift__(self, other):
         return self._value.__rlshift__(self.get_primitive(other))
 
+    def __ilshift__(self, other):
+        return self.__class__(self._value.__lshift__(self.get_primitive(other)))
+
     def __rshift__(self, other):
         return self._value.__rshift__(self.get_primitive(other))
 
     def __rrshift__(self, other):
         return self._value.__rrshift__(self.get_primitive(other))
+
+    def __irshift__(self, other):
+        return self.__class__(self._value.__rshift__(self.get_primitive(other)))
 
     def __and__(self, other):
         return self._value.__and__(self.get_primitive(other))
@@ -40,17 +46,26 @@ class BaseIntegerTAG(NumericTAG):
     def __rand__(self, other):
         return self._value.__rand__(self.get_primitive(other))
 
+    def __iand__(self, other):
+        return self.__class__(self._value.__and__(self.get_primitive(other)))
+
     def __xor__(self, other):
         return self._value.__xor__(self.get_primitive(other))
 
     def __rxor__(self, other):
         return self._value.__rxor__(self.get_primitive(other))
 
+    def __ixor__(self, other):
+        return self.__class__(self._value.__xor__(self.get_primitive(other)))
+
     def __or__(self, other):
         return self._value.__or__(self.get_primitive(other))
 
     def __ror__(self, other):
         return self._value.__ror__(self.get_primitive(other))
+
+    def __ior__(self, other):
+        return self.__class__(self._value.__or__(self.get_primitive(other)))
 
     def __invert__(self):
         return self._value.__invert__()

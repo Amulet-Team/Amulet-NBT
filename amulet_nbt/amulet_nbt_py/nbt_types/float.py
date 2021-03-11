@@ -20,8 +20,8 @@ class BaseFloatTAG(NumericTAG):
         super().__init__(value)
 
     @property
-    def value(self) -> np.floating:
-        return self._value
+    def value(self) -> float:
+        return float(self._value)
 
     def _to_snbt(self) -> SNBTType:
         return self.fstring.format(f"{self._value:.20f}".rstrip("0"))

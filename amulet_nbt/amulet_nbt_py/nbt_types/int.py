@@ -19,8 +19,8 @@ class BaseIntegerTAG(NumericTAG):
         super().__init__(value)
 
     @property
-    def value(self) -> np.signedinteger:
-        return self._value
+    def value(self) -> int:
+        return int(self._value)
 
     def __lshift__(self, other):
         return self._value.__lshift__(self.get_primitive(other))

@@ -42,10 +42,10 @@ TAG_COMPOUND = 10
 @overload
 def load(
     filepath_or_buffer: Union[str, bytes, BinaryIO],
-    compressed: bool,
-    count: None,
-    offset: Literal[False],
-    little_endian: bool,
+    compressed: bool = True,
+    count: None = None,
+    offset: Literal[False] = False,
+    little_endian: bool = False,
 ) -> NBTFile:
     ...
 
@@ -53,10 +53,10 @@ def load(
 @overload
 def load(
     filepath_or_buffer: Union[str, bytes, BinaryIO],
-    compressed: bool,
-    count: None,
-    offset: Literal[True],
-    little_endian: bool,
+    compressed: bool = True,
+    count: None = None,
+    offset: Literal[True] = False,
+    little_endian: bool = False,
 ) -> Tuple[NBTFile, int]:
     ...
 
@@ -64,10 +64,10 @@ def load(
 @overload
 def load(
     filepath_or_buffer: Union[str, bytes, BinaryIO],
-    compressed: bool,
-    count: int,
-    offset: Literal[False],
-    little_endian: bool,
+    compressed: bool = True,
+    count: int = None,
+    offset: Literal[False] = False,
+    little_endian: bool = False,
 ) -> List[NBTFile]:
     ...
 
@@ -75,10 +75,10 @@ def load(
 @overload
 def load(
     filepath_or_buffer: Union[str, bytes, BinaryIO],
-    compressed: bool,
-    count: int,
-    offset: Literal[True],
-    little_endian: bool,
+    compressed: bool = True,
+    count: int = None,
+    offset: Literal[True] = False,
+    little_endian: bool = False,
 ) -> Tuple[List[NBTFile], int]:
     ...
 

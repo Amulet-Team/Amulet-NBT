@@ -128,10 +128,10 @@ class TAG_List(TAG_Value):
         return TAG_List(other + self._value, self.list_data_type)
 
     def __contains__(self, item: AnyNBT) -> bool:
-        return item in self._value
+        return self._value.__contains__(item)
 
-    def __delitem__(self, index: int):
-        del self._value[index]
+    def __delitem__(self, item: int):
+        self._value.__delitem__(item)
 
     @overload
     def __getitem__(self, item: int) -> AnyNBT:

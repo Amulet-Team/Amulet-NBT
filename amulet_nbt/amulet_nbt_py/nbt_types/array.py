@@ -107,11 +107,29 @@ class ArrayTag(TAG_Value):
     def __add__(self, other):
         return self._value.__add__(self.get_primitive(other))
 
+    def __radd__(self, other):
+        return self._value.__radd__(self.get_primitive(other))
+
+    def __iadd__(self, other):
+        return self.__class__(self._value.__add__(self.get_primitive(other)))
+
     def __sub__(self, other):
         return self._value.__sub__(self.get_primitive(other))
 
+    def __rsub__(self, other):
+        return self._value.__rsub__(self.get_primitive(other))
+
+    def __isub__(self, other):
+        return self.__class__(self._value.__sub__(self.get_primitive(other)))
+
     def __mul__(self, other):
         return self._value.__mul__(self.get_primitive(other))
+
+    def __rmul__(self, other):
+        return self._value.__rmul__(self.get_primitive(other))
+
+    def __imul__(self, other):
+        return self.__class__(self._value.__mul__(self.get_primitive(other)))
 
     def __matmul__(self, other):
         return self._value.__matmul__(self.get_primitive(other))
@@ -119,71 +137,96 @@ class ArrayTag(TAG_Value):
     def __truediv__(self, other):
         return self._value.__truediv__(self.get_primitive(other))
 
-    def __floordiv__(self, other):
-        return self._value.__floordiv__(self.get_primitive(other))
-
-    def __mod__(self, other):
-        return self._value.__mod__(self.get_primitive(other))
-
-    def __divmod__(self, other):
-        return self._value.__divmod__(self.get_primitive(other))
-
-    def __pow__(self, power, modulo):
-        return self._value.__pow__(power, modulo)
-
-    def __lshift__(self, other):
-        return self._value.__lshift__(self.get_primitive(other))
-
-    def __rshift__(self, other):
-        return self._value.__rshift__(self.get_primitive(other))
-
-    def __and__(self, other):
-        return self._value.__and__(self.get_primitive(other))
-
-    def __xor__(self, other):
-        return self._value.__xor__(self.get_primitive(other))
-
-    def __or__(self, other):
-        return self._value.__or__(self.get_primitive(other))
-
-    def __radd__(self, other):
-        return self._value.__radd__(self.get_primitive(other))
-
-    def __rsub__(self, other):
-        return self._value.__rsub__(self.get_primitive(other))
-
-    def __rmul__(self, other):
-        return self._value.__rmul__(self.get_primitive(other))
-
     def __rtruediv__(self, other):
         return self._value.__rtruediv__(self.get_primitive(other))
+
+    def __itruediv__(self, other):
+        return self.__class__(self._value.__truediv__(self.get_primitive(other)))
+
+    def __floordiv__(self, other):
+        return self._value.__floordiv__(self.get_primitive(other))
 
     def __rfloordiv__(self, other):
         return self._value.__rfloordiv__(self.get_primitive(other))
 
+    def __ifloordiv__(self, other):
+        return self.__class__(self._value.__floordiv__(self.get_primitive(other)))
+
+    def __mod__(self, other):
+        return self._value.__mod__(self.get_primitive(other))
+
     def __rmod__(self, other):
         return self._value.__rmod__(self.get_primitive(other))
+
+    def __imod__(self, other):
+        return self.__class__(self._value.__mod__(self.get_primitive(other)))
+
+    def __divmod__(self, other):
+        return self._value.__divmod__(self.get_primitive(other))
 
     def __rdivmod__(self, other):
         return self._value.__rdivmod__(self.get_primitive(other))
 
+    def __pow__(self, power, modulo):
+        return self._value.__pow__(
+            self.get_primitive(power), self.get_primitive(modulo)
+        )
+
     def __rpow__(self, other, modulo):
-        return self._value.__rpow__(self.get_primitive(other))
+        return self._value.__rpow__(
+            self.get_primitive(other), self.get_primitive(modulo)
+        )
+
+    def __ipow__(self, other):
+        return self.__class__(self._value.__pow__(self.get_primitive(other)))
+
+    def __lshift__(self, other):
+        return self._value.__lshift__(self.get_primitive(other))
 
     def __rlshift__(self, other):
         return self._value.__rlshift__(self.get_primitive(other))
 
+    def __ilshift__(self, other):
+        return self.__class__(self._value.__lshift__(self.get_primitive(other)))
+
+    def __rshift__(self, other):
+        return self._value.__rshift__(self.get_primitive(other))
+
     def __rrshift__(self, other):
         return self._value.__rrshift__(self.get_primitive(other))
+
+    def __irshift__(self, other):
+        return self.__class__(self._value.__rshift__(self.get_primitive(other)))
+
+    def __and__(self, other):
+        return self._value.__and__(self.get_primitive(other))
 
     def __rand__(self, other):
         return self._value.__rand__(self.get_primitive(other))
 
+    def __iand__(self, other):
+        return self.__class__(self._value.__and__(self.get_primitive(other)))
+
+    def __xor__(self, other):
+        return self._value.__xor__(self.get_primitive(other))
+
     def __rxor__(self, other):
         return self._value.__rxor__(self.get_primitive(other))
 
+    def __ixor__(self, other):
+        return self.__class__(self._value.__xor__(self.get_primitive(other)))
+
+    def __or__(self, other):
+        return self._value.__or__(self.get_primitive(other))
+
     def __ror__(self, other):
         return self._value.__ror__(self.get_primitive(other))
+
+    def __ior__(self, other):
+        return self.__class__(self._value.__or__(self.get_primitive(other)))
+
+    def __invert__(self):
+        return self._value.__invert__()
 
     def __neg__(self):
         return self._value.__neg__()
@@ -193,6 +236,18 @@ class ArrayTag(TAG_Value):
 
     def __abs__(self):
         return self._value.__abs__()
+
+    def __int__(self):
+        return self._value.__int__()
+
+    def __float__(self):
+        return self._value.__float__()
+
+    def __getattr__(self, item):
+        return self._value.__getattribute__(item)
+
+    def __bool__(self):
+        return self._value.__bool__()
 
 
 class TAG_Byte_Array(ArrayTag):

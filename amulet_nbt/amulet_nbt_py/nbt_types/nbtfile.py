@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, overload, BinaryIO
+from typing import TYPE_CHECKING, overload, BinaryIO, Optional
 from io import BytesIO
 import gzip
 
@@ -15,7 +15,11 @@ class NBTFile:
     _value: TAG_Compound
     _name: str
 
-    def __init__(self, tag: TAG_Compound, name: str = ""):
+    def __init__(self, tag: Optional[TAG_Compound] = None, name: str = ""):
+        if tag is None:
+            tag = TAG_Compound()
+        if type(tag) is not TAG_Compound:
+            raise ValueError("tag must be a TAG_Compound")
         self._value = tag
         self._name = name
 

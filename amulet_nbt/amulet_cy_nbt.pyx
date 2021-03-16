@@ -327,6 +327,18 @@ cdef class _Int(_TAG_Value):
     def __dir__(self):
         return dir(self.value)
 
+    def __ge__(self, other):
+        return self.value.__ge__(primitive_conversion(other))
+
+    def __gt__(self, other):
+        return self.value.__gt__(primitive_conversion(other))
+
+    def __le__(self, other):
+        return self.value.__le__(primitive_conversion(other))
+
+    def __lt__(self, other):
+        return self.value.__lt__(primitive_conversion(other))
+
 
 cdef class _Float(_TAG_Value):
     def __eq__(self, other):

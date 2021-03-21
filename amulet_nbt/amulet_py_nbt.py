@@ -107,7 +107,11 @@ def load_string(context: _BufferContext, little_endian=False) -> str:
     else:
         (str_len,) = _string_len_fmt_be.unpack_from(data)
 
-    value = data[2 : str_len + 2].decode("utf-8")
+    encoded = data[2 : str_len + 2]
+    try:
+        value = encoded.decode("utf-8")
+    except:
+        value = encoded.decode("Latin-1")
     context.offset += str_len + 2
     return value
 

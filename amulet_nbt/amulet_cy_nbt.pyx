@@ -7,7 +7,7 @@ from typing import Optional, Union, Tuple, List, Iterator, BinaryIO
 
 import numpy
 import os
-from cpython cimport PyUnicode_DecodeUTF8, PyList_Append
+from cpython cimport PyUnicode_DecodeUTF8, PyUnicode_DecodeCharmap, PyList_Append
 
 import re
 
@@ -97,6 +97,8 @@ class NBTFormatError(NBTLoadError):
 class SNBTParseError(NBTError):
     """Indicates the SNBT format is invalid."""
     pass
+
+CHAR_MAP = "".join(map(chr, range(256)))
 
 
 cdef class buffer_context:
@@ -1142,7 +1144,11 @@ cdef str load_string(buffer_context context, bint little_endian):
     cdef unsigned short length = pointer[0]
     to_little_endian(&length, 2, little_endian)
     b = read_data(context, length)
-    return PyUnicode_DecodeUTF8(b, length, "strict")
+    try:
+        return PyUnicode_DecodeUTF8(b, length, "strict")
+    except:
+        return PyUnicode_DecodeCharmap(b, length, CHAR_MAP, "strict")
+
 
 cdef TAG_Byte_Array load_byte_array(buffer_context context, bint little_endian):
     cdef int*pointer = <int *> read_data(context, 4)

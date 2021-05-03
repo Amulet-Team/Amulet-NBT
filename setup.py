@@ -44,7 +44,6 @@ setup(
     author="Ben Gothard, James Clare",
     author_email="amuleteditor@gmail.com",
     install_requires=depends_on,
-    setup_requires=depends_on,
     packages=find_packages(),
     ext_modules=ext_modules,
     include_dirs=[get_numpy_include()],

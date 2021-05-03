@@ -1,0 +1,3 @@
+cython>=0.29.13
+wheel
+-r requirements.txt

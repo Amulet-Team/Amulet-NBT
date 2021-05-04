@@ -2,6 +2,6 @@
 requires = [
     "setuptools >= 42",
     "cython >= 0.29.13",
+    "numpy >= 1.15.2",
     "wheel"
 ]
-build-backend = "setuptools.build_meta"

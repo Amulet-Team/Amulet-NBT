@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -20,16 +21,11 @@ _string_len_fmt_be = Struct(">H")
 _string_len_fmt_le = Struct("<H")
 
 
-class TAG_Value:
-    tag_id: ClassVar[int] = None
+class TAG_Value(ABC):
     _value: Any
     _data_type: ClassVar = None
 
     def __init__(self, value: Optional[Any] = None):
-        if self.__class__ is TAG_Value:
-            raise TypeError(
-                "TAG_Value cannot be directly instanced. Use one of its subclasses."
-            )
         assert isinstance(self.tag_id, int), f"tag_id not set for {self.__class__}"
         assert self._data_type is not None, f"_data_type not set for {self.__class__}"
         value = self._sanitise_value(value)
@@ -38,6 +34,12 @@ class TAG_Value:
                 f"value of {self.__class__.__name__} must be of type {self._data_type}"
             )
         self._value = value
+
+    @property
+    @classmethod
+    @abstractmethod
+    def tag_id(cls) -> int:
+        raise NotImplementedError
 
     def _sanitise_value(self, value: Optional[Any]) -> Any:
         if value is None:
@@ -53,6 +55,7 @@ class TAG_Value:
         return self._value
 
     @classmethod
+    @abstractmethod
     def load_from(cls, context: BinaryIO, little_endian: bool) -> AnyNBT:
         """Load binary NBT from a file like object."""
         raise NotImplementedError
@@ -91,6 +94,7 @@ class TAG_Value:
             buffer.write(_string_len_fmt_be.pack(len(encoded_str)))
         buffer.write(encoded_str)
 
+    @abstractmethod
     def write_value(self, buffer: BinaryIO, little_endian=False):
         """Write the value to a file like object."""
         raise NotImplementedError
@@ -103,6 +107,7 @@ class TAG_Value:
             return self._pretty_to_snbt(indent_chr)
         return self._to_snbt()
 
+    @abstractmethod
     def _to_snbt(self) -> SNBTType:
         """Internal method to format the class data as SNBT."""
         raise NotImplementedError

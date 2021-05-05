@@ -37,6 +37,22 @@ if CYTHON_COMPILE:
 else:
     ext_modules = []
 
+
+command_classes = versioneer.get_cmdclass()
+
+try:
+    from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
+
+    class bdist_wheel(command_classes.get("bdist_wheel", _bdist_wheel)):
+        def finalize_options(self):
+            super().finalize_options()
+            self.root_is_pure = False
+
+    command_classes["bdist_wheel"] = bdist_wheel
+
+except ImportError:
+    pass
+
 setup(
     name="amulet-nbt",
     version=versioneer.get_version(),
@@ -44,11 +60,10 @@ setup(
     author="Ben Gothard, James Clare",
     author_email="amuleteditor@gmail.com",
     install_requires=depends_on,
-    setup_requires=depends_on,
     packages=find_packages(),
     ext_modules=ext_modules,
     include_dirs=[get_numpy_include()],
     include_package_data=True,
-    cmdclass=versioneer.get_cmdclass(),
+    cmdclass=command_classes,
     zip_safe=False,
 )

@@ -1,4 +1,5 @@
 import amulet_nbt.amulet_nbt_py as pynbt
+
 try:
     import amulet_nbt.amulet_cy_nbt as cynbt
 except ImportError:

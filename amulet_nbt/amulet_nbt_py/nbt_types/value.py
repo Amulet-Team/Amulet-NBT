@@ -33,6 +33,8 @@ class TAG_Value(ABC):
             raise ValueError(
                 f"value of {self.__class__.__name__} must be of type {self._data_type}"
             )
+        if isinstance(value, TAG_Value):
+            raise ValueError("value must not be a instance of TAG_Value")
         self._value = value
 
     @property
@@ -117,6 +119,10 @@ class TAG_Value(ABC):
         return f"{indent_chr * indent_count * leading_indent}{self._to_snbt()}"
 
     def __getattr__(self, item):
+        if item == "_value":
+            # there is a case during unpickling when self._value is not defined
+            # without this a recursion error will be hit.
+            raise AttributeError
         return getattr(self._value, item)
 
     def __repr__(self):

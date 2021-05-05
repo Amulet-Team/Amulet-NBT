@@ -61,7 +61,11 @@ class AbstractNBTTest:
             for group1, load1, _ in self._groups:
                 for path1 in os.listdir(os.path.join(DATA_DIR, group1)):
                     name = os.path.splitext(path1)[0]
-                    data = load1(os.path.join(DATA_DIR, group1, path1))
+                    try:
+                        data = load1(os.path.join(DATA_DIR, group1, path1))
+                    except Exception as e_:
+                        print(group1, path1)
+                        raise e_
                     self.assertIsInstance(data, self.nbt.NBTFile)
                     self.assertIsInstance(data.value, self.nbt.TAG_Compound)
                     group_data.setdefault(name, {})[group1] = data

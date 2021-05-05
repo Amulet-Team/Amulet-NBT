@@ -3,18 +3,17 @@ import unittest
 
 import amulet_nbt.amulet_nbt_py as pynbt
 
-TEST_CYTHON_LIB = True
 try:
     import amulet_nbt.amulet_cy_nbt as cynbt
 except (ImportError, ModuleNotFoundError) as e:
-    TEST_CYTHON_LIB = False
+    cynbt = None
 
 TESTS_DIR = os.path.dirname(__file__)
 DATA_DIR = os.path.join(TESTS_DIR, "data")
 
 
 class AbstractNBTTest:
-    class NBTTests(unittest.TestCase):
+    class FileNBTTests(unittest.TestCase):
         def _setUp(self, nbt_library):
             self.maxDiff = None
             self.nbt = nbt_library
@@ -90,18 +89,18 @@ class AbstractNBTTest:
                     self.assertEqual(data, load(save(data)), f"{group1} {name}")
 
 
-@unittest.skipUnless(TEST_CYTHON_LIB, "Cythonized library not available")
-class CythonNBTTest(AbstractNBTTest.NBTTests):
+@unittest.skipUnless(cynbt, "Cythonized library not available")
+class CythonNBTTest(AbstractNBTTest.FileNBTTests):
     def setUp(self):
         self._setUp(cynbt)
 
 
-class PythonNBTTest(AbstractNBTTest.NBTTests):
+class PythonNBTTest(AbstractNBTTest.FileNBTTests):
     def setUp(self):
         self._setUp(pynbt)
 
 
-@unittest.skipUnless(TEST_CYTHON_LIB, "Cythonized library not available")
+@unittest.skipUnless(cynbt, "Cythonized library not available")
 class CrossCompatabilityTest(unittest.TestCase):
     def setUp(self):
         self.cy_level_root_tag = cynbt.load(

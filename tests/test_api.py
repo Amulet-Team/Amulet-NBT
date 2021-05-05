@@ -3,11 +3,9 @@ import numpy
 
 import amulet_nbt.amulet_nbt_py as pynbt
 
-TEST_CYTHON_LIB = True
 try:
     import amulet_nbt.amulet_cy_nbt as cynbt
 except (ImportError, ModuleNotFoundError) as e:
-    TEST_CYTHON_LIB = False
     cynbt = None
 
 
@@ -680,7 +678,7 @@ class AbstractNBTTest:
             self.nbt.TAG_Long_Array(self.nbt.TAG_Long_Array())
 
 
-@unittest.skipUnless(TEST_CYTHON_LIB, "Cythonized library not available")
+@unittest.skipUnless(cynbt, "Cythonized library not available")
 class CythonNBTTest(AbstractNBTTest.NBTTests):
     def setUp(self):
         self._setUp(cynbt)

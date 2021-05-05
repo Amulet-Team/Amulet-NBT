@@ -8,6 +8,7 @@ try:
     import amulet_nbt.amulet_cy_nbt as cynbt
 except (ImportError, ModuleNotFoundError) as e:
     TEST_CYTHON_LIB = False
+    cynbt = None
 
 
 class AbstractNBTTest:

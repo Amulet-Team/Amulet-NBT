@@ -1,8 +1,13 @@
 import amulet_nbt.amulet_nbt_py as pynbt
-import amulet_nbt.amulet_cy_nbt as cynbt
+try:
+    import amulet_nbt.amulet_cy_nbt as cynbt
+except ImportError:
+    cynbt = None
 import numpy
 
 for amulet_nbt in (pynbt, cynbt):
+    if amulet_nbt is None:
+        continue
     test_ = amulet_nbt.NBTFile(amulet_nbt.TAG_Compound(), name="hello")
 
     test = amulet_nbt.NBTFile(
@@ -49,19 +54,19 @@ for amulet_nbt in (pynbt, cynbt):
 
     # test the array types with numpy data of varying dtypes
     test["numpyDtypeTestByteArray"] = amulet_nbt.TAG_Byte_Array(
-        numpy.array([i for i in range(-128, 127)], dtype=numpy.int)
+        numpy.array([i for i in range(-128, 127)], dtype=int)
     )
     test["numpyDtypeuTestByteArray"] = amulet_nbt.TAG_Byte_Array(
         numpy.array([i for i in range(-128, 127)], dtype=numpy.uint)
     )
     test["numpyDtypeTestIntArray"] = amulet_nbt.TAG_Int_Array(
-        numpy.array([i for i in range(-400, 400)], dtype=numpy.int)
+        numpy.array([i for i in range(-400, 400)], dtype=int)
     )
     test["numpyDtypeuTestIntArray"] = amulet_nbt.TAG_Int_Array(
         numpy.array([i for i in range(-400, 400)], dtype=numpy.uint)
     )
     test["numpyDtypeTestLongArray"] = amulet_nbt.TAG_Long_Array(
-        numpy.array([i for i in range(-400, 400)], dtype=numpy.int)
+        numpy.array([i for i in range(-400, 400)], dtype=int)
     )
     test["numpyDtypeuTestLongArray"] = amulet_nbt.TAG_Long_Array(
         numpy.array([i for i in range(-400, 400)], dtype=numpy.uint)
@@ -80,7 +85,7 @@ for amulet_nbt in (pynbt, cynbt):
     # test the extremes of the array types
     # byte array tested above
     test["numpyExtremeTestIntArray"] = amulet_nbt.TAG_Int_Array(
-        numpy.array([-(2 ** 31), (2 ** 31) - 1], dtype=numpy.int)
+        numpy.array([-(2 ** 31), (2 ** 31) - 1], dtype=int)
     )
     test["numpyExtremeTestLongArray"] = amulet_nbt.TAG_Long_Array(
         numpy.array([-(2 ** 63), (2 ** 63) - 1], dtype="q")

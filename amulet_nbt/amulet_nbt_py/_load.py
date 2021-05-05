@@ -8,7 +8,7 @@ from typing import (
     BinaryIO,
     Optional,
     overload,
-    Literal,
+    # Literal,
 )
 import re
 import os
@@ -44,7 +44,7 @@ def load(
     filepath_or_buffer: Union[str, bytes, BinaryIO],
     compressed: bool = True,
     count: None = None,
-    offset: Literal[False] = False,
+    offset=False,  # Literal[False] = False,
     little_endian: bool = False,
 ) -> NBTFile:
     ...
@@ -55,7 +55,7 @@ def load(
     filepath_or_buffer: Union[str, bytes, BinaryIO],
     compressed: bool = True,
     count: None = None,
-    offset: Literal[True] = False,
+    offset=False,  # Literal[True] = False,
     little_endian: bool = False,
 ) -> Tuple[NBTFile, int]:
     ...
@@ -66,7 +66,7 @@ def load(
     filepath_or_buffer: Union[str, bytes, BinaryIO],
     compressed: bool = True,
     count: int = None,
-    offset: Literal[False] = False,
+    offset=False,  # Literal[False] = False,
     little_endian: bool = False,
 ) -> List[NBTFile]:
     ...
@@ -77,7 +77,7 @@ def load(
     filepath_or_buffer: Union[str, bytes, BinaryIO],
     compressed: bool = True,
     count: int = None,
-    offset: Literal[True] = False,
+    offset=False,  # Literal[True] = False,
     little_endian: bool = False,
 ) -> Tuple[List[NBTFile], int]:
     ...

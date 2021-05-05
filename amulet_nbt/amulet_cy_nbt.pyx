@@ -7,7 +7,7 @@ from typing import Optional, Union, Tuple, List, Iterator, BinaryIO
 
 import numpy
 import os
-from cpython cimport PyUnicode_DecodeUTF8, PyList_Append
+from cpython cimport PyUnicode_DecodeUTF8, PyUnicode_DecodeCharmap, PyList_Append
 
 import re
 
@@ -98,6 +98,8 @@ class SNBTParseError(NBTError):
     """Indicates the SNBT format is invalid."""
     pass
 
+CHAR_MAP = "".join(map(chr, range(256)))
+
 
 cdef class buffer_context:
     cdef size_t offset
@@ -182,7 +184,7 @@ cpdef bytes safe_gunzip(bytes data):
     return data
 
 cdef class _TAG_Value:
-    cdef public char tag_id
+    tag_id = None
 
     def copy(self):
         return self.__class__(self.value)
@@ -327,6 +329,18 @@ cdef class _Int(_TAG_Value):
     def __dir__(self):
         return dir(self.value)
 
+    def __ge__(self, other):
+        return self.value.__ge__(primitive_conversion(other))
+
+    def __gt__(self, other):
+        return self.value.__gt__(primitive_conversion(other))
+
+    def __le__(self, other):
+        return self.value.__le__(primitive_conversion(other))
+
+    def __lt__(self, other):
+        return self.value.__lt__(primitive_conversion(other))
+
 
 cdef class _Float(_TAG_Value):
     def __eq__(self, other):
@@ -446,10 +460,8 @@ cdef inline primitive_conversion(obj):
 
 
 cdef class TAG_Byte(_Int):
+    tag_id = _ID_BYTE
     cdef readonly char value
-
-    def __cinit__(self):
-        self.tag_id = _ID_BYTE
 
     def __init__(self, value = 0):
         self.value = int(primitive_conversion(value))
@@ -461,10 +473,8 @@ cdef class TAG_Byte(_Int):
         write_byte(self.value, buffer)
 
 cdef class TAG_Short(_Int):
+    tag_id = _ID_SHORT
     cdef readonly short value
-
-    def __cinit__(self):
-        self.tag_id = _ID_SHORT
 
     def __init__(self, value = 0):
         self.value = int(primitive_conversion(value))
@@ -477,10 +487,8 @@ cdef class TAG_Short(_Int):
 
 
 cdef class TAG_Int(_Int):
+    tag_id = _ID_INT
     cdef readonly int value
-
-    def __cinit__(self):
-        self.tag_id = _ID_INT
 
     def __init__(self, value = 0):
         self.value = int(primitive_conversion(value))
@@ -493,10 +501,8 @@ cdef class TAG_Int(_Int):
 
 
 cdef class TAG_Long(_Int):
+    tag_id = _ID_LONG
     cdef readonly long long value
-
-    def __cinit__(self):
-        self.tag_id = _ID_LONG
 
     def __init__(self, value = 0):
         self.value = int(primitive_conversion(value))
@@ -509,10 +515,8 @@ cdef class TAG_Long(_Int):
 
 
 cdef class TAG_Float(_Float):
+    tag_id = _ID_FLOAT
     cdef readonly float value
-
-    def __cinit__(self):
-        self.tag_id = _ID_FLOAT
 
     def __init__(self, value = 0):
         self.value = float(primitive_conversion(value))
@@ -525,10 +529,8 @@ cdef class TAG_Float(_Float):
 
 
 cdef class TAG_Double(_Float):
+    tag_id = _ID_DOUBLE
     cdef readonly double value
-
-    def __cinit__(self):
-        self.tag_id = _ID_DOUBLE
 
     def __init__(self, value = 0):
         self.value = float(primitive_conversion(value))
@@ -676,10 +678,8 @@ cdef class _TAG_Array(_TAG_Value):
 BaseArrayType = _TAG_Array
 
 cdef class TAG_Byte_Array(_TAG_Array):
+    tag_id = _ID_BYTE_ARRAY
     big_endian_data_type = little_endian_data_type = numpy.dtype("int8")
-
-    def __cinit__(self):
-        self.tag_id = _ID_BYTE_ARRAY
 
     cpdef str _to_snbt(self):
         cdef int elem
@@ -697,11 +697,9 @@ cdef class TAG_Byte_Array(_TAG_Array):
         write_array(self.value, buffer, 1, little_endian)
 
 cdef class TAG_Int_Array(_TAG_Array):
+    tag_id = _ID_INT_ARRAY
     big_endian_data_type = numpy.dtype(">i4")
     little_endian_data_type = numpy.dtype("<i4")
-
-    def __cinit__(self):
-        self.tag_id = _ID_INT_ARRAY
 
     cpdef str _to_snbt(self):
         cdef int elem
@@ -719,11 +717,9 @@ cdef class TAG_Int_Array(_TAG_Array):
         write_array(self.value, buffer, 4, little_endian)
 
 cdef class TAG_Long_Array(_TAG_Array):
+    tag_id = _ID_LONG_ARRAY
     big_endian_data_type = numpy.dtype(">i8")
     little_endian_data_type = numpy.dtype("<i8")
-
-    def __cinit__(self):
-        self.tag_id = _ID_LONG_ARRAY
 
     cpdef str _to_snbt(self):
         cdef long long elem
@@ -748,10 +744,8 @@ def unescape(string: str):
     return string.replace('\\"', '"').replace("\\\\", "\\")
 
 cdef class TAG_String(_TAG_Value):
+    tag_id = _ID_STRING
     cdef readonly unicode value
-
-    def __cinit__(self):
-        self.tag_id = _ID_STRING
 
     def __init__(self, value = ""):
         self.value = str(value)
@@ -785,11 +779,9 @@ cdef class TAG_String(_TAG_Value):
 
 
 cdef class _TAG_List(_TAG_Value):
+    tag_id = _ID_LIST
     cdef public list value
     cdef public char list_data_type
-
-    def __cinit__(self):
-        self.tag_id = _ID_LIST
 
     def __init__(self, value = None, char list_data_type = 1):
         self.list_data_type = list_data_type
@@ -877,10 +869,8 @@ class TAG_List(_TAG_List, MutableSequence):
 
 
 cdef class _TAG_Compound(_TAG_Value):
+    tag_id = _ID_COMPOUND
     cdef public dict value
-
-    def __cinit__(self):
-        self.tag_id = _ID_COMPOUND
 
     def __init__(self, value = None):
         self.value = value or {}
@@ -1154,7 +1144,11 @@ cdef str load_string(buffer_context context, bint little_endian):
     cdef unsigned short length = pointer[0]
     to_little_endian(&length, 2, little_endian)
     b = read_data(context, length)
-    return PyUnicode_DecodeUTF8(b, length, "strict")
+    try:
+        return PyUnicode_DecodeUTF8(b, length, "strict")
+    except:
+        return PyUnicode_DecodeCharmap(b, length, CHAR_MAP, "strict")
+
 
 cdef TAG_Byte_Array load_byte_array(buffer_context context, bint little_endian):
     cdef int*pointer = <int *> read_data(context, 4)

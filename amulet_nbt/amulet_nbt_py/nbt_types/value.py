@@ -65,7 +65,11 @@ class TAG_Value:
             str_len = _string_len_fmt_le.unpack(data)[0]
         else:
             str_len = _string_len_fmt_be.unpack(data)[0]
-        return context.read(str_len).decode("utf-8")
+        encoded = context.read(str_len)
+        try:
+            return encoded.decode("utf-8")
+        except:
+            return encoded.decode("Latin-1")
 
     def write_payload(self, buffer: BinaryIO, name="", little_endian=False):
         """Write the tag id, name and value to a file like object."""

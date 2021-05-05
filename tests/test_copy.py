@@ -33,12 +33,12 @@ class AbstractNBTTest:
             self._test_copy(self.nbt.TAG_Long(10))
             self._test_copy(self.nbt.TAG_Float(10))
             self._test_copy(self.nbt.TAG_Double(10))
-            self._test_copy(self.nbt.TAG_Byte_Array([1,2,3]))
+            self._test_copy(self.nbt.TAG_Byte_Array([1, 2, 3]))
             self._test_copy(self.nbt.TAG_String())
             self._test_copy(self.nbt.TAG_List())
             self._test_copy(self.nbt.TAG_Compound())
-            self._test_copy(self.nbt.TAG_Int_Array([1,2,3]))
-            self._test_copy(self.nbt.TAG_Long_Array([1,2,3]))
+            self._test_copy(self.nbt.TAG_Int_Array([1, 2, 3]))
+            self._test_copy(self.nbt.TAG_Long_Array([1, 2, 3]))
             self._test_copy(self.nbt.NBTFile())
 
 

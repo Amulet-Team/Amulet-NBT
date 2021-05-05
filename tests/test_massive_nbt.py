@@ -55,9 +55,13 @@ class AbstractNBTTest:
             test["zeroNumpyLongArray"] = self.nbt.TAG_Long_Array(numpy.array([]))
 
             # test the array types with some python data
-            test["listByteArray"] = self.nbt.TAG_Byte_Array([i for i in range(-128, 127)])
+            test["listByteArray"] = self.nbt.TAG_Byte_Array(
+                [i for i in range(-128, 127)]
+            )
             test["listIntArray"] = self.nbt.TAG_Int_Array([i for i in range(-400, 400)])
-            test["listLongArray"] = self.nbt.TAG_Long_Array([i for i in range(-400, 400)])
+            test["listLongArray"] = self.nbt.TAG_Long_Array(
+                [i for i in range(-400, 400)]
+            )
 
             # test the array types with numpy data of varying dtypes
             test["numpyDtypeTestByteArray"] = self.nbt.TAG_Byte_Array(
@@ -131,12 +135,18 @@ class AbstractNBTTest:
             test.save_to("massive_nbt_test_big_endian.nbt", compressed=False)
             test.save_to("massive_nbt_test_big_endian_compressed.nbt", compressed=True)
             test.save_to(
-                "massive_nbt_test_little_endian.nbt", compressed=False, little_endian=True
+                "massive_nbt_test_little_endian.nbt",
+                compressed=False,
+                little_endian=True,
             )
 
             test_be = self.nbt.load("massive_nbt_test_big_endian.nbt")
-            test_be_compressed = self.nbt.load("massive_nbt_test_big_endian_compressed.nbt")
-            test_le = self.nbt.load("massive_nbt_test_little_endian.nbt", little_endian=True)
+            test_be_compressed = self.nbt.load(
+                "massive_nbt_test_big_endian_compressed.nbt"
+            )
+            test_le = self.nbt.load(
+                "massive_nbt_test_little_endian.nbt", little_endian=True
+            )
 
             assert test_be == test
             assert test_be_compressed == test

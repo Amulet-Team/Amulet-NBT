@@ -1,5 +1,6 @@
 import unittest
 import numpy
+import os
 import amulet_nbt.amulet_nbt_py as pynbt
 
 try:
@@ -132,26 +133,26 @@ class AbstractNBTTest:
 
             # save then load back up and check the data matches
 
-            test.save_to("massive_nbt_test_big_endian.nbt", compressed=False)
-            test.save_to("massive_nbt_test_big_endian_compressed.nbt", compressed=True)
+            os.makedirs("temp", exist_ok=True)
+            test.save_to(os.path.join("temp", "massive_nbt_test_big_endian.nbt"), compressed=False)
+            test.save_to(os.path.join("temp", "massive_nbt_test_big_endian_compressed.nbt"), compressed=True)
             test.save_to(
-                "massive_nbt_test_little_endian.nbt",
+                os.path.join("temp", "massive_nbt_test_little_endian.nbt"),
                 compressed=False,
                 little_endian=True,
             )
 
-            test_be = self.nbt.load("massive_nbt_test_big_endian.nbt")
+            test_be = self.nbt.load(os.path.join("temp", "massive_nbt_test_big_endian.nbt"))
             test_be_compressed = self.nbt.load(
-                "massive_nbt_test_big_endian_compressed.nbt"
+                os.path.join("temp", "massive_nbt_test_big_endian_compressed.nbt")
             )
             test_le = self.nbt.load(
-                "massive_nbt_test_little_endian.nbt", little_endian=True
+                os.path.join("temp", "massive_nbt_test_little_endian.nbt"), little_endian=True
             )
 
             assert test_be == test
             assert test_be_compressed == test
             assert test_le == test
-            print(f"Finished massive nbt test for {self.nbt.__name__} without issue\n")
 
 
 @unittest.skipUnless(cynbt, "Cythonized library not available")

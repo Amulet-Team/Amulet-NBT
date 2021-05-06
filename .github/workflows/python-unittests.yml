@@ -28,7 +28,7 @@ jobs:
         python -m pip install cython
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Build Cython Version
-        run: |
-          python setup.py build_ext --inplace
+      run: |
+        python setup.py build_ext --inplace
     - name: Test with unittest
       run: python -m unittest discover -v -s tests

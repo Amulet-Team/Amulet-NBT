@@ -1,0 +1,205 @@
+{
+    "Data": {
+        "RandomSeed": -199552259844446636L,
+        "generatorName": "debug_all_block_states",
+        "BorderCenterZ": 0.d,
+        "Difficulty": 0b,
+        "BorderSizeLerpTime": 0L,
+        "raining": 0b,
+        "DimensionData": {
+            "1": {
+                "DragonFight": {
+                    "Gateways": [
+                        15,
+                        13,
+                        10,
+                        3,
+                        11,
+                        9,
+                        16,
+                        19,
+                        1,
+                        2,
+                        14,
+                        5,
+                        6,
+                        4,
+                        12,
+                        17,
+                        0,
+                        7,
+                        18,
+                        8
+                    ],
+                    "DragonKilled": 1b,
+                    "PreviouslyKilled": 1b
+                }
+            }
+        },
+        "Time": 89L,
+        "GameType": 3,
+        "MapFeatures": 0b,
+        "BorderCenterX": 0.d,
+        "BorderDamagePerBlock": 0.2000000000000000111d,
+        "BorderWarningBlocks": 5.d,
+        "BorderSizeLerpTarget": 60000000.d,
+        "Version": {
+            "Snapshot": 1b,
+            "Id": 1497,
+            "Name": "18w22a"
+        },
+        "DayTime": 6000L,
+        "initialized": 1b,
+        "allowCommands": 1b,
+        "SizeOnDisk": 0L,
+        "CustomBossEvents": {},
+        "GameRules": {
+            "doTileDrops": "true",
+            "doFireTick": "true",
+            "maxCommandChainLength": "65536",
+            "reducedDebugInfo": "false",
+            "naturalRegeneration": "true",
+            "disableElytraMovementCheck": "false",
+            "doMobLoot": "true",
+            "announceAdvancements": "true",
+            "keepInventory": "false",
+            "doEntityDrops": "true",
+            "doLimitedCrafting": "false",
+            "mobGriefing": "true",
+            "randomTickSpeed": "3",
+            "commandBlockOutput": "true",
+            "spawnRadius": "10",
+            "doMobSpawning": "true",
+            "maxEntityCramming": "24",
+            "logAdminCommands": "true",
+            "spectatorsGenerateChunks": "true",
+            "doWeatherCycle": "true",
+            "sendCommandFeedback": "true",
+            "doDaylightCycle": "false",
+            "showDeathMessages": "true"
+        },
+        "Player": {
+            "HurtByTimestamp": 0,
+            "SleepTimer": 0s,
+            "Attributes": [
+                {
+                    "Base": 20.d,
+                    "Name": "generic.maxHealth"
+                },
+                {
+                    "Base": 0.d,
+                    "Name": "generic.knockbackResistance"
+                },
+                {
+                    "Base": 0.10000000149011611938d,
+                    "Name": "generic.movementSpeed"
+                },
+                {
+                    "Base": 0.d,
+                    "Name": "generic.armor"
+                },
+                {
+                    "Base": 0.d,
+                    "Name": "generic.armorToughness"
+                },
+                {
+                    "Base": 1.d,
+                    "Name": "generic.attackDamage"
+                },
+                {
+                    "Base": 4.d,
+                    "Name": "generic.attackSpeed"
+                },
+                {
+                    "Base": 0.d,
+                    "Name": "generic.luck"
+                }
+            ],
+            "Invulnerable": 0b,
+            "FallFlying": 0b,
+            "PortalCooldown": 0,
+            "AbsorptionAmount": 0.f,
+            "abilities": {
+                "invulnerable": 1b,
+                "mayfly": 1b,
+                "instabuild": 0b,
+                "walkSpeed": 0.10000000149011611938f,
+                "mayBuild": 0b,
+                "flying": 1b,
+                "flySpeed": 0.05000000074505805969f
+            },
+            "FallDistance": 0.f,
+            "recipeBook": {
+                "recipes": [],
+                "isFilteringCraftable": 0b,
+                "toBeDisplayed": [],
+                "isFurnaceGuiOpen": 0b,
+                "isGuiOpen": 0b,
+                "isFurnaceFilteringCraftable": 0b
+            },
+            "DeathTime": 0s,
+            "XpSeed": 0,
+            "XpTotal": 0,
+            "playerGameType": 3,
+            "seenCredits": 0b,
+            "Motion": [
+                0.d,
+                0.d,
+                0.d
+            ],
+            "UUIDLeast": -7965449663550299548L,
+            "Health": 20.f,
+            "foodSaturationLevel": 5.f,
+            "Air": 300s,
+            "OnGround": 0b,
+            "Dimension": 0,
+            "Rotation": [
+                0.f,
+                0.f
+            ],
+            "XpLevel": 0,
+            "Score": 0,
+            "UUIDMost": 1283543676063598931L,
+            "Sleeping": 0b,
+            "Pos": [
+                0.5d,
+                2.d,
+                0.5d
+            ],
+            "Fire": -20s,
+            "XpP": 0.f,
+            "EnderItems": [],
+            "DataVersion": 1497,
+            "foodLevel": 20,
+            "foodExhaustionLevel": 0.f,
+            "HurtTime": 0s,
+            "SelectedItemSlot": 0,
+            "Inventory": [],
+            "foodTickTimer": 0
+        },
+        "SpawnY": 1,
+        "rainTime": 1,
+        "thunderTime": 1,
+        "SpawnZ": 0,
+        "hardcore": 0b,
+        "DifficultyLocked": 1b,
+        "SpawnX": 0,
+        "clearWeatherTime": 999999911,
+        "thundering": 0b,
+        "generatorVersion": 0,
+        "version": 19133,
+        "BorderSafeZone": 5.d,
+        "generatorOptions": "{}",
+        "LastPlayed": 1527647775463L,
+        "BorderWarningTime": 15.d,
+        "LevelName": "1.13 World",
+        "BorderSize": 60000000.d,
+        "DataVersion": 1497,
+        "DataPacks": {
+            "Enabled": [
+                "vanilla"
+            ],
+            "Disabled": []
+        }
+    }
+}

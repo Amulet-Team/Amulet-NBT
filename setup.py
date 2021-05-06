@@ -4,13 +4,11 @@ import shutil
 from setuptools import setup, find_packages, Extension
 import versioneer
 
-CYTHON_COMPILE = False
 try:
     from Cython.Build import cythonize
-
-    CYTHON_COMPILE = True
-except Exception:
-    pass
+except (ImportError, ModuleNotFoundError):
+    print("Could not find cython. The cython version will not be built.")
+    cythonize = None
 
 
 class get_numpy_include:
@@ -27,7 +25,7 @@ for d in glob.glob("*.egg-info"):
 with open(os.path.join(".", "requirements.txt")) as requirements_fp:
     depends_on = [line.strip() for line in requirements_fp.readlines()]
 
-if CYTHON_COMPILE:
+if cythonize:
     extensions = [
         Extension(
             name="amulet_nbt.amulet_cy_nbt", sources=["amulet_nbt/amulet_cy_nbt.pyx"]

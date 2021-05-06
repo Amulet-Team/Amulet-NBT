@@ -134,20 +134,29 @@ class AbstractNBTTest:
             # save then load back up and check the data matches
 
             os.makedirs("temp", exist_ok=True)
-            test.save_to(os.path.join("temp", "massive_nbt_test_big_endian.nbt"), compressed=False)
-            test.save_to(os.path.join("temp", "massive_nbt_test_big_endian_compressed.nbt"), compressed=True)
+            test.save_to(
+                os.path.join("temp", "massive_nbt_test_big_endian.nbt"),
+                compressed=False,
+            )
+            test.save_to(
+                os.path.join("temp", "massive_nbt_test_big_endian_compressed.nbt"),
+                compressed=True,
+            )
             test.save_to(
                 os.path.join("temp", "massive_nbt_test_little_endian.nbt"),
                 compressed=False,
                 little_endian=True,
             )
 
-            test_be = self.nbt.load(os.path.join("temp", "massive_nbt_test_big_endian.nbt"))
+            test_be = self.nbt.load(
+                os.path.join("temp", "massive_nbt_test_big_endian.nbt")
+            )
             test_be_compressed = self.nbt.load(
                 os.path.join("temp", "massive_nbt_test_big_endian_compressed.nbt")
             )
             test_le = self.nbt.load(
-                os.path.join("temp", "massive_nbt_test_little_endian.nbt"), little_endian=True
+                os.path.join("temp", "massive_nbt_test_little_endian.nbt"),
+                little_endian=True,
             )
 
             assert test_be == test

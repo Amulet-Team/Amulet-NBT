@@ -20,7 +20,7 @@ class AbstractNBTTest:
 
             def _open_snbt(path_):
                 if os.path.isfile(path_):
-                    with open(path_) as f_:
+                    with open(path_, encoding="utf-8") as f_:
                         snbt = f_.read()
                 else:
                     snbt = path_

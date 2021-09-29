@@ -135,10 +135,10 @@ cdef str load_name(buffer_context context, bint little_endian):
 
 cdef tuple load_named(buffer_context context, char tagID, bint little_endian):
     cdef str name = load_name(context, little_endian)
-    cdef _TAG_Value tag = load_tag(tagID, context, little_endian)
+    cdef BaseTag tag = load_tag(tagID, context, little_endian)
     return name, tag
 
-cdef _TAG_Value load_tag(char tagID, buffer_context context, bint little_endian):
+cdef BaseTag load_tag(char tagID, buffer_context context, bint little_endian):
     if tagID == _ID_BYTE:
         return load_byte(context, little_endian)
 
@@ -183,8 +183,17 @@ cpdef bytes safe_gunzip(bytes data):
             pass
     return data
 
-cdef class _TAG_Value:
+
+cdef inline primitive_conversion(obj):
+    return obj.value if isinstance(obj, BaseTag) else obj
+
+
+cdef class BaseTag:
     tag_id = None
+
+    @property
+    def value(cls):
+        raise NotImplementedError
 
     def copy(self):
         return self.__class__(self.value)
@@ -197,20 +206,16 @@ cdef class _TAG_Value:
         return self._to_snbt()
 
     cpdef str _to_snbt(self):
-        raise NotImplementedError()
+        raise NotImplementedError
 
     cpdef str _pretty_to_snbt(self, indent_chr="", indent_count=0, leading_indent=True):
         return f"{indent_chr * indent_count * leading_indent}{self._to_snbt()}"
 
     cdef void write_value(self, buffer, little_endian) except *:
-        raise NotImplementedError()
+        raise NotImplementedError
 
     cpdef bint strict_equal(self, other):
-        cdef bint result
-        result = isinstance(other, self.__class__)
-        if result:
-            result = result and self.tag_id == other.tag_id
-        return result and self.__eq__(other)
+        return isinstance(other, self.__class__) and self.tag_id == other.tag_id and self == other
 
     def __eq__(self, other):
         return primitive_conversion(self) == primitive_conversion(other)
@@ -221,12 +226,24 @@ cdef class _TAG_Value:
     def __reduce__(self):
         return unpickle_nbt, (self.tag_id, self.value)
 
-BaseValueType = _TAG_Value
+BaseValueType = BaseTag
 
-cdef class _Int(_TAG_Value):
-    def __eq__(self, other):
-        return primitive_conversion(self) == primitive_conversion(other)
 
+cdef class BaseImmutableTag(BaseTag):
+    # Uncommenting this breaks the tests and I don't understand why.
+    # def __hash__(self):
+    #     return self.value.__hash__()
+    pass
+
+cdef class BaseMutableTag(BaseTag):
+    pass
+
+
+cdef class BaseNumericTag(BaseImmutableTag):
+    pass
+
+
+cdef class BaseIntegerTag(BaseNumericTag):
     def __add__(self, other):
         return primitive_conversion(self) + primitive_conversion(other)
 
@@ -342,7 +359,7 @@ cdef class _Int(_TAG_Value):
         return self.value.__lt__(primitive_conversion(other))
 
 
-cdef class _Float(_TAG_Value):
+cdef class BaseFloatTag(BaseNumericTag):
     def __eq__(self, other):
         return primitive_conversion(self) == primitive_conversion(other)
 
@@ -455,11 +472,7 @@ cdef class _Float(_TAG_Value):
         return dir(self.value)
 
 
-cdef inline primitive_conversion(obj):
-    return obj.value if isinstance(obj, _TAG_Value) else obj
-
-
-cdef class TAG_Byte(_Int):
+cdef class TAG_Byte(BaseIntegerTag):
     tag_id = _ID_BYTE
     cdef readonly char value
 
@@ -472,7 +485,7 @@ cdef class TAG_Byte(_Int):
     cdef void write_value(self, buffer, little_endian):
         write_byte(self.value, buffer)
 
-cdef class TAG_Short(_Int):
+cdef class TAG_Short(BaseIntegerTag):
     tag_id = _ID_SHORT
     cdef readonly short value
 
@@ -486,7 +499,7 @@ cdef class TAG_Short(_Int):
         write_short(self.value, buffer, little_endian)
 
 
-cdef class TAG_Int(_Int):
+cdef class TAG_Int(BaseIntegerTag):
     tag_id = _ID_INT
     cdef readonly int value
 
@@ -500,7 +513,7 @@ cdef class TAG_Int(_Int):
         write_int(self.value, buffer, little_endian)
 
 
-cdef class TAG_Long(_Int):
+cdef class TAG_Long(BaseIntegerTag):
     tag_id = _ID_LONG
     cdef readonly long long value
 
@@ -514,7 +527,7 @@ cdef class TAG_Long(_Int):
         write_long(self.value, buffer, little_endian)
 
 
-cdef class TAG_Float(_Float):
+cdef class TAG_Float(BaseFloatTag):
     tag_id = _ID_FLOAT
     cdef readonly float value
 
@@ -528,7 +541,7 @@ cdef class TAG_Float(_Float):
         write_float(self.value, buffer, little_endian)
 
 
-cdef class TAG_Double(_Float):
+cdef class TAG_Double(BaseFloatTag):
     tag_id = _ID_DOUBLE
     cdef readonly double value
 
@@ -541,7 +554,7 @@ cdef class TAG_Double(_Float):
     cdef void write_value(self, buffer, little_endian):
         write_double(self.value, buffer, little_endian)
 
-cdef class _TAG_Array(_TAG_Value):
+cdef class BaseArrayTag(BaseMutableTag):
     cdef public object value
     big_endian_data_type = little_endian_data_type = numpy.dtype("int8")
 
@@ -675,9 +688,9 @@ cdef class _TAG_Array(_TAG_Value):
         return abs(self.value).astype(self.big_endian_data_type)
 
 
-BaseArrayType = _TAG_Array
+BaseArrayType = BaseArrayTag
 
-cdef class TAG_Byte_Array(_TAG_Array):
+cdef class TAG_Byte_Array(BaseArrayTag):
     tag_id = _ID_BYTE_ARRAY
     big_endian_data_type = little_endian_data_type = numpy.dtype("int8")
 
@@ -696,7 +709,7 @@ cdef class TAG_Byte_Array(_TAG_Array):
             self.value = self.value.astype(data_type)
         write_array(self.value, buffer, 1, little_endian)
 
-cdef class TAG_Int_Array(_TAG_Array):
+cdef class TAG_Int_Array(BaseArrayTag):
     tag_id = _ID_INT_ARRAY
     big_endian_data_type = numpy.dtype(">i4")
     little_endian_data_type = numpy.dtype("<i4")
@@ -716,7 +729,7 @@ cdef class TAG_Int_Array(_TAG_Array):
             self.value = self.value.astype(data_type)
         write_array(self.value, buffer, 4, little_endian)
 
-cdef class TAG_Long_Array(_TAG_Array):
+cdef class TAG_Long_Array(BaseArrayTag):
     tag_id = _ID_LONG_ARRAY
     big_endian_data_type = numpy.dtype(">i8")
     little_endian_data_type = numpy.dtype("<i8")
@@ -743,7 +756,7 @@ def escape(string: str):
 def unescape(string: str):
     return string.replace('\\"', '"').replace("\\\\", "\\")
 
-cdef class TAG_String(_TAG_Value):
+cdef class TAG_String(BaseImmutableTag):
     tag_id = _ID_STRING
     cdef readonly unicode value
 
@@ -778,7 +791,7 @@ cdef class TAG_String(_TAG_Value):
         return self.value
 
 
-cdef class _TAG_List(_TAG_Value):
+cdef class _TAG_List(BaseMutableTag):
     tag_id = _ID_LIST
     cdef public list value
     cdef public char list_data_type
@@ -794,7 +807,7 @@ cdef class _TAG_List(_TAG_Value):
             #map(self._check_tag, value[1:])
 
     def _check_tag(self, value: AnyNBT):
-        if not isinstance(value, _TAG_Value):
+        if not isinstance(value, BaseTag):
             raise TypeError(f"Invalid type {value.__class__.__name__} TAG_List. Must be an NBT object.")
         if not self.value:
             self.list_data_type = value.tag_id
@@ -839,7 +852,7 @@ cdef class _TAG_List(_TAG_Value):
         write_tag_id(list_type, buffer)
         write_int(<int> len(self.value), buffer, little_endian)
 
-        cdef _TAG_Value subtag
+        cdef BaseTag subtag
         for subtag in self.value:
             if subtag.tag_id != list_type:
                 raise ValueError("Asked to save TAG_List with different types! Found %s and %s" % (subtag.tag_id,
@@ -847,14 +860,14 @@ cdef class _TAG_List(_TAG_Value):
             write_tag_value(subtag, buffer, little_endian)
 
     cpdef str _to_snbt(self):
-        cdef _TAG_Value elem
+        cdef BaseTag elem
         cdef list tags = []
         for elem in self.value:
             tags.append(elem._to_snbt())
         return f"[{CommaSpace.join(tags)}]"
 
     cpdef str _pretty_to_snbt(self, indent_chr="", indent_count=0, leading_indent=True):
-        cdef _TAG_Value elem
+        cdef BaseTag elem
         cdef list tags = []
         for elem in self.value:
             tags.append(elem._pretty_to_snbt(indent_chr, indent_count + 1))
@@ -868,7 +881,7 @@ class TAG_List(_TAG_List, MutableSequence):
     pass
 
 
-cdef class _TAG_Compound(_TAG_Value):
+cdef class _TAG_Compound(BaseMutableTag):
     tag_id = _ID_COMPOUND
     cdef public dict value
 
@@ -883,14 +896,14 @@ cdef class _TAG_Compound(_TAG_Value):
             raise TypeError(
                 f"TAG_Compound key must be a string. Got {key.__class__.__name__}"
             )
-        if not isinstance(value, _TAG_Value):
+        if not isinstance(value, BaseTag):
             raise TypeError(
                 f"Invalid type {value.__class__.__name__} for key \"{key}\" in TAG_Compound. Must be an NBT object."
             )
 
     cpdef str _to_snbt(self):
         cdef str name
-        cdef _TAG_Value elem
+        cdef BaseTag elem
         cdef list tags = []
         for name, elem in self.value.items():
             if _NON_QUOTED_KEY.match(name) is None:
@@ -901,7 +914,7 @@ cdef class _TAG_Compound(_TAG_Value):
 
     cpdef str _pretty_to_snbt(self, indent_chr="", indent_count=0, leading_indent=True):
         cdef str name
-        cdef _TAG_Value elem
+        cdef BaseTag elem
         cdef list tags = []
         for name, elem in self.value.items():
             tags.append(f'{indent_chr * (indent_count + 1)}"{name}": {elem._pretty_to_snbt(indent_chr, indent_count + 1, False)}')
@@ -912,7 +925,7 @@ cdef class _TAG_Compound(_TAG_Value):
 
     cdef void write_value(self, buffer, little_endian):
         cdef str key
-        cdef _TAG_Value stag
+        cdef BaseTag stag
 
         for key, stag in self.value.items():
             write_tag_id(stag.tag_id, buffer)
@@ -1127,7 +1140,7 @@ cdef _TAG_Compound load_compound_tag(buffer_context context, bint little_endian)
     cdef char tagID
     #cdef str name
     cdef _TAG_Compound root_tag = TAG_Compound()
-    #cdef _TAG_Value tag
+    #cdef BaseTag tag
     cdef tuple tup
 
     while True:
@@ -1242,7 +1255,7 @@ cdef void write_double(double value, object buffer, bint little_endian):
     to_little_endian(&value, 8, little_endian)
     cwrite(buffer, <char*> &value, 8)
 
-cdef void write_tag_value(_TAG_Value tag, object buf, bint little_endian):
+cdef void write_tag_value(BaseTag tag, object buf, bint little_endian):
     cdef char tagID = tag.tag_id
     if tagID == _ID_BYTE:
         (<TAG_Byte> tag).write_value(buf, little_endian)
@@ -1354,7 +1367,7 @@ cdef tuple _parse_snbt_recursive(str snbt, int index=0):
     cdef list array
     cdef str array_type_chr
     cdef object array_type, first_data_type, int_match, float_match
-    cdef _TAG_Value nested_data, data
+    cdef BaseTag nested_data, data
     cdef str val
     cdef bint strict_str
 

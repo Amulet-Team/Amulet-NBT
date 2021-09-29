@@ -21,7 +21,7 @@ _string_len_fmt_be = Struct(">H")
 _string_len_fmt_le = Struct("<H")
 
 
-class TAG_Value(ABC):
+class BaseTag(ABC):
     _value: Any
     _data_type: ClassVar = None
 
@@ -33,8 +33,6 @@ class TAG_Value(ABC):
             raise ValueError(
                 f"value of {self.__class__.__name__} must be of type {self._data_type}"
             )
-        if isinstance(value, TAG_Value):
-            raise ValueError("value must not be a instance of TAG_Value")
         self._value = value
 
     @property
@@ -47,7 +45,7 @@ class TAG_Value(ABC):
         if value is None:
             return self._data_type()
         else:
-            if isinstance(value, TAG_Value):
+            if isinstance(value, BaseTag):
                 value = value.value
             return self._data_type(value)
 
@@ -150,15 +148,12 @@ class TAG_Value(ABC):
     def __lt__(self, other):
         return self._value.__lt__(self.get_primitive(other))
 
-    def __hash__(self):
-        return self._value.__hash__()
-
     @staticmethod
     def get_primitive(obj):
         """Get the primitive object of the data.
-        If obj is an instance of TAG_Value then obj.value is used.
+        If obj is an instance of BaseTag then obj.value is used.
         Else obj is returned."""
-        return obj.value if isinstance(obj, TAG_Value) else obj
+        return obj.value if isinstance(obj, BaseTag) else obj
 
     def __deepcopy__(self, memo=None):
         return self.__class__(deepcopy(self._value, memo=memo))
@@ -167,4 +162,13 @@ class TAG_Value(ABC):
         return self.__class__(copy(self._value))
 
 
-BaseValueType = TAG_Value
+class BaseImmutableTag(BaseTag, ABC):
+    def __hash__(self):
+        return self._value.__hash__()
+
+
+class BaseMutableTag(BaseTag, ABC):
+    pass
+
+
+BaseValueType = BaseTag

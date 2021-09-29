@@ -1,15 +1,16 @@
 from __future__ import annotations
 
+from abc import ABC
 from typing import BinaryIO, ClassVar, Union, Iterable, Optional, Any
 import numpy as np
 
 from amulet_nbt.amulet_nbt_py.const import SNBTType
 from .int import TAG_Int
-from .value import TAG_Value
+from .value import BaseMutableTag, BaseTag
 from ..const import CommaSpace
 
 
-class ArrayTag(TAG_Value):
+class BaseArrayTag(BaseMutableTag, ABC):
     _value: np.ndarray
     _data_type: ClassVar = np.ndarray
     big_endian_data_type: ClassVar[np.dtype] = None
@@ -26,10 +27,6 @@ class ArrayTag(TAG_Value):
             None,
         ] = None,
     ):
-        if self.__class__ is ArrayTag:
-            raise TypeError(
-                "ArrayTag cannot be directly instanced. Use one of its subclasses."
-            )
         assert isinstance(
             self.big_endian_data_type, np.dtype
         ), f"big_endian_data_type not set for {self.__class__}"
@@ -42,7 +39,7 @@ class ArrayTag(TAG_Value):
         if value is None:
             return np.zeros((0,), self.big_endian_data_type)
         else:
-            if isinstance(value, TAG_Value):
+            if isinstance(value, BaseTag):
                 value = value.value
             return np.array(value, self.big_endian_data_type)
 
@@ -259,7 +256,7 @@ class ArrayTag(TAG_Value):
         return self._value.__bool__()
 
 
-class TAG_Byte_Array(ArrayTag):
+class TAG_Byte_Array(BaseArrayTag):
     big_endian_data_type = little_endian_data_type = np.dtype("int8")
     tag_id: ClassVar[int] = 7
 
@@ -267,7 +264,7 @@ class TAG_Byte_Array(ArrayTag):
         return f"[B;{'B, '.join(str(val) for val in self._value)}B]"
 
 
-class TAG_Int_Array(ArrayTag):
+class TAG_Int_Array(BaseArrayTag):
     big_endian_data_type = np.dtype(">i4")
     little_endian_data_type = np.dtype("<i4")
     tag_id: ClassVar[int] = 11
@@ -276,7 +273,7 @@ class TAG_Int_Array(ArrayTag):
         return f"[I;{CommaSpace.join(str(val) for val in self._value)}]"
 
 
-class TAG_Long_Array(ArrayTag):
+class TAG_Long_Array(BaseArrayTag):
     big_endian_data_type = np.dtype(">i8")
     little_endian_data_type = np.dtype("<i8")
     tag_id: ClassVar[int] = 12
@@ -285,4 +282,4 @@ class TAG_Long_Array(ArrayTag):
         return f"[L;{CommaSpace.join(str(val) for val in self._value)}]"
 
 
-BaseArrayType = ArrayTag
+BaseArrayType = BaseArrayTag

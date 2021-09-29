@@ -17,7 +17,7 @@ import numpy as np
 
 from amulet_nbt.amulet_nbt_py.const import SNBTType
 
-from .value import TAG_Value
+from .value import BaseTag, BaseMutableTag
 from . import class_map
 from ..const import TAG_BYTE, CommaSpace, CommaNewline
 from .int import TAG_Int
@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 NBTListType = List["AnyNBT"]
 
 
-class TAG_List(TAG_Value):
+class TAG_List(BaseMutableTag):
     tag_id: ClassVar[int] = 9
     _value: NBTListType
     _data_type: ClassVar = list
@@ -44,7 +44,7 @@ class TAG_List(TAG_Value):
     def _sanitise_value(self, value: Optional[Any]) -> Any:
         self._value = self._data_type()
         if value:
-            if isinstance(value, TAG_Value):
+            if isinstance(value, BaseTag):
                 value = value.value
             value = self._data_type(value)
             self._check_tag_iterable(value)
@@ -52,14 +52,14 @@ class TAG_List(TAG_Value):
             value = self._value
         return value
 
-    def _check_tag(self, value: TAG_Value, fix_if_empty=True):
+    def _check_tag(self, value: BaseTag, fix_if_empty=True):
         """Check the format of value is correct.
 
         :param value: The value to check
         :param fix_if_empty: If true and the internal list is empty the internal data type will be set to that of value.
         :return:
         """
-        if not isinstance(value, TAG_Value):
+        if not isinstance(value, BaseTag):
             raise TypeError(
                 f"Invalid type {value.__class__.__name__} for TAG_List. Must be an NBT object."
             )
@@ -70,7 +70,7 @@ class TAG_List(TAG_Value):
                 f"Invalid type {value.__class__.__name__} for TAG_List({class_map.TAG_CLASSES[self.list_data_type].__name__})"
             )
 
-    def _check_tag_iterable(self, value: Sequence[TAG_Value]):
+    def _check_tag_iterable(self, value: Sequence[BaseTag]):
         if value:
             self._check_tag(value[0])
             for tag in value[1:]:

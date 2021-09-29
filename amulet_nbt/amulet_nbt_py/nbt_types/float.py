@@ -5,19 +5,12 @@ from typing import ClassVar, Union
 import numpy as np
 
 from ..const import SNBTType
-from .numeric import NumericTAG
+from .numeric import BaseNumericTag
 
 
-class BaseFloatTAG(NumericTAG):
+class BaseFloatTag(BaseNumericTag):
     _value: np.floating
     _data_type: ClassVar = np.floating
-
-    def __init__(self, value: Union[int, float, np.number, NumericTAG, None] = None):
-        if self.__class__ is BaseFloatTAG:
-            raise TypeError(
-                "BaseFloatTAG cannot be directly instanced. Use one of its subclasses."
-            )
-        super().__init__(value)
 
     @property
     def value(self) -> float:
@@ -27,7 +20,7 @@ class BaseFloatTAG(NumericTAG):
         return self.fstring.format(f"{self._value:.20f}".rstrip("0"))
 
 
-class TAG_Float(BaseFloatTAG):
+class TAG_Float(BaseFloatTag):
     tag_id: ClassVar[int] = 5
     _value: np.float32
     _data_type: ClassVar = np.float32
@@ -36,7 +29,7 @@ class TAG_Float(BaseFloatTAG):
     fstring = "{}f"
 
 
-class TAG_Double(BaseFloatTAG):
+class TAG_Double(BaseFloatTag):
     tag_id: ClassVar[int] = 6
     _value: np.float64
     _data_type: ClassVar = np.float64

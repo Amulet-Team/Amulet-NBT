@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import ABC
 from typing import (
     ClassVar,
     BinaryIO,
@@ -10,21 +11,19 @@ import numpy as np
 
 from amulet_nbt.amulet_nbt_py.const import SNBTType
 
-from .value import TAG_Value
+from .value import BaseImmutableTag
 
 
-class NumericTAG(TAG_Value):
+class BaseNumericTag(BaseImmutableTag, ABC):
     _value: np.number
     _data_type: ClassVar = np.number
     tag_format_be: ClassVar[Struct] = None
     tag_format_le: ClassVar[Struct] = None
     fstring: str = None
 
-    def __init__(self, value: Union[int, float, np.number, NumericTAG, None] = None):
-        if self.__class__ is NumericTAG:
-            raise TypeError(
-                "NumericTAG cannot be directly instanced. Use one of its subclasses."
-            )
+    def __init__(
+        self, value: Union[int, float, np.number, BaseNumericTag, None] = None
+    ):
         assert isinstance(
             self.tag_format_be, Struct
         ), f"tag_format_be not set for {self.__class__}"

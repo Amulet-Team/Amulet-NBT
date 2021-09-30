@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC
 from struct import Struct
-from typing import ClassVar, Union
+from typing import ClassVar, Optional, Any
 import numpy as np
 
 from .numeric import BaseNumericTag
@@ -11,6 +11,15 @@ from .numeric import BaseNumericTag
 class BaseIntegerTag(BaseNumericTag, ABC):
     _value: np.signedinteger
     _data_type: ClassVar = np.signedinteger
+
+    def _sanitise_value(self, value: Optional[Any]) -> Any:
+        if value is None:
+            return self._data_type()
+        else:
+            low = np.iinfo(self._data_type).min
+            high = np.iinfo(self._data_type).max + 1
+            value = ((int(value) - low) % (high - low)) + low
+            return self._data_type(value)
 
     @property
     def value(self) -> int:

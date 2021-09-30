@@ -41,8 +41,14 @@ class TAG_String(BaseImmutableTag):
     def __radd__(self, other):
         return self.get_primitive(other) + self._value
 
+    def __iadd__(self, other):
+        return self.__class__(self + other)
+
     def __mul__(self, other):
         return self._value * self.get_primitive(other)
 
     def __rmul__(self, other):
         return self.get_primitive(other) * self._value
+
+    def __imul__(self, other):
+        return self.__class__(self * other)

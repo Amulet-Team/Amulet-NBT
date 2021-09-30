@@ -23,17 +23,20 @@ _string_len_fmt_le = Struct("<H")
 
 class BaseTag(ABC):
     _value: Any
-    _data_type: ClassVar = None
 
     def __init__(self, value: Optional[Any] = None):
-        assert isinstance(self.tag_id, int), f"tag_id not set for {self.__class__}"
-        assert self._data_type is not None, f"_data_type not set for {self.__class__}"
         value = self._sanitise_value(value)
-        if type(value) is not self._data_type:
+        if not isinstance(value, self._data_type):
             raise ValueError(
                 f"value of {self.__class__.__name__} must be of type {self._data_type}"
             )
         self._value = value
+
+    @property
+    @classmethod
+    @abstractmethod
+    def _data_type(cls) -> Any:
+        raise NotImplementedError
 
     @property
     @classmethod
@@ -123,8 +126,18 @@ class BaseTag(ABC):
             raise AttributeError
         return getattr(self._value, item)
 
+    @staticmethod
+    def get_primitive(obj):
+        """Get the primitive object of the data.
+        If obj is an instance of BaseTag then obj.value is used.
+        Else obj is returned."""
+        return obj.value if isinstance(obj, BaseTag) else obj
+
     def __repr__(self):
         return self._to_snbt()
+
+    def __str__(self):
+        return str(self.value)
 
     def __dir__(self):
         return self._value.__dir__()
@@ -134,26 +147,29 @@ class BaseTag(ABC):
 
     def strict_equals(self, other):
         """Extension of equals that also compares types."""
-        return type(self) is type(other) and self == other
+        return (
+            isinstance(other, self.__class__)
+            and self.tag_id == other.tag_id
+            and self == other
+        )
 
     def __ge__(self, other):
-        return self._value.__ge__(self.get_primitive(other))
+        return self.value >= other
 
     def __gt__(self, other):
-        return self._value.__gt__(self.get_primitive(other))
+        return self.value > other
 
     def __le__(self, other):
-        return self._value.__le__(self.get_primitive(other))
+        return self.value <= other
 
     def __lt__(self, other):
-        return self._value.__lt__(self.get_primitive(other))
+        return self.value < other
 
-    @staticmethod
-    def get_primitive(obj):
-        """Get the primitive object of the data.
-        If obj is an instance of BaseTag then obj.value is used.
-        Else obj is returned."""
-        return obj.value if isinstance(obj, BaseTag) else obj
+    def __reduce__(self):
+        return self.__class__, (self.value,)
+
+    def copy(self):
+        return copy(self)
 
     def __deepcopy__(self, memo=None):
         return self.__class__(deepcopy(self._value, memo=memo))

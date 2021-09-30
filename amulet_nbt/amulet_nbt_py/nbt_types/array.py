@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import BinaryIO, ClassVar, Union, Iterable, Optional, Any
 import numpy as np
 
@@ -13,8 +13,6 @@ from ..const import CommaSpace
 class BaseArrayTag(BaseMutableTag, ABC):
     _value: np.ndarray
     _data_type: ClassVar = np.ndarray
-    big_endian_data_type: ClassVar[np.dtype] = None
-    little_endian_data_type: ClassVar[np.dtype] = None
 
     def __init__(
         self,
@@ -27,13 +25,19 @@ class BaseArrayTag(BaseMutableTag, ABC):
             None,
         ] = None,
     ):
-        assert isinstance(
-            self.big_endian_data_type, np.dtype
-        ), f"big_endian_data_type not set for {self.__class__}"
-        assert isinstance(
-            self.little_endian_data_type, np.dtype
-        ), f"little_endian_data_type not set for {self.__class__}"
         super().__init__(value)
+
+    @property
+    @classmethod
+    @abstractmethod
+    def big_endian_data_type(cls) -> np.dtype:
+        raise NotImplementedError
+
+    @property
+    @classmethod
+    @abstractmethod
+    def little_endian_data_type(cls) -> np.dtype:
+        raise NotImplementedError
 
     def _sanitise_value(self, value: Optional[Any]) -> Any:
         if value is None:

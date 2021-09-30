@@ -230,10 +230,13 @@ BaseValueType = BaseTag
 
 
 cdef class BaseImmutableTag(BaseTag):
-    # Uncommenting this breaks the tests and I don't understand why.
-    # def __hash__(self):
-    #     return self.value.__hash__()
-    pass
+    # https://github.com/cython/cython/issues/3709
+    def __eq__(self, other):
+        return primitive_conversion(self) == primitive_conversion(other)
+
+    def __hash__(self):
+        return self.value.__hash__()
+
 
 cdef class BaseMutableTag(BaseTag):
     pass
@@ -360,9 +363,6 @@ cdef class BaseIntegerTag(BaseNumericTag):
 
 
 cdef class BaseFloatTag(BaseNumericTag):
-    def __eq__(self, other):
-        return primitive_conversion(self) == primitive_conversion(other)
-
     def __add__(self, other):
         return float(primitive_conversion(self) + primitive_conversion(other))
 

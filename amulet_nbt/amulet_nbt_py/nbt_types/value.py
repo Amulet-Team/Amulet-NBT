@@ -143,7 +143,7 @@ class BaseTag(ABC):
         return self._value.__dir__()
 
     def __eq__(self, other):
-        return self._value.__eq__(self.get_primitive(other))
+        return self._value == other
 
     def strict_equals(self, other):
         """Extension of equals that also compares types."""

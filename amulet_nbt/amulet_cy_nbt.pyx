@@ -183,15 +183,11 @@ cpdef bytes safe_gunzip(bytes data):
     return data
 
 
-cdef inline primitive_conversion(obj):
-    return obj.value if isinstance(obj, BaseTag) else obj
-
-
 cdef class BaseTag:
     tag_id = None
 
     @property
-    def value(cls):
+    def value(self):
         raise NotImplementedError
 
     cpdef str to_snbt(self, indent_chr=None):
@@ -524,16 +520,13 @@ cdef class BaseArrayTag(BaseMutableTag):
         self.value = value
 
     def __eq__(self, other):
-        return numpy.array_equal(self.value, primitive_conversion(other))
+        return numpy.array_equal(self.value, other)
 
     def __getitem__(self, item):
         return self.value.__getitem__(item)
 
     def __setitem__(self, key, value):
         self.value.__setitem__(key, value)
-
-    def __deepcopy__(self, memo=None):
-        return self.__class__(self.value.__deepcopy__(memo or {}))
 
     def __array__(self):
         return self.value
@@ -542,94 +535,149 @@ cdef class BaseArrayTag(BaseMutableTag):
         return len(self.value)
 
     def __add__(self, other):
-        return (self.value + primitive_conversion(other)).astype(self.big_endian_data_type)
-
-    def __sub__(self, other):
-        return (self.value - primitive_conversion(other)).astype(self.big_endian_data_type)
-
-    def __mul__(self, other):
-        return (self.value - primitive_conversion(other)).astype(self.big_endian_data_type)
-
-    def __matmul__(self, other):
-        return (self.value @ primitive_conversion(other)).astype(self.big_endian_data_type)
-
-    def __truediv__(self, other):
-        return (self.value / primitive_conversion(other)).astype(self.big_endian_data_type)
-
-    def __floordiv__(self, other):
-        return (self.value // primitive_conversion(other)).astype(self.big_endian_data_type)
-
-    def __mod__(self, other):
-        return (self.value % primitive_conversion(other)).astype(self.big_endian_data_type)
-
-    def __divmod__(self, other):
-        return divmod(self.value, primitive_conversion(other))
-
-    def __pow__(self, power, modulo):
-        return pow(self.value, power, modulo).astype(self.big_endian_data_type)
-
-    def __lshift__(self, other):
-        return (self.value << primitive_conversion(other)).astype(self.big_endian_data_type)
-
-    def __rshift__(self, other):
-        return (self.value >> primitive_conversion(other)).astype(self.big_endian_data_type)
-
-    def __and__(self, other):
-        return (self.value & primitive_conversion(other)).astype(self.big_endian_data_type)
-
-    def __xor__(self, other):
-        return (self.value ^ primitive_conversion(other)).astype(self.big_endian_data_type)
-
-    def __or__(self, other):
-        return (self.value | primitive_conversion(other)).astype(self.big_endian_data_type)
+        return (self._value + other).astype(self.big_endian_data_type)
 
     def __radd__(self, other):
-        return (primitive_conversion(other) + self.value).astype(self.big_endian_data_type)
+        return (other + self._value).astype(self.big_endian_data_type)
+
+    def __iadd__(self, other):
+        self._value += other
+        return self
+
+    def __sub__(self, other):
+        return (self._value - other).astype(self.big_endian_data_type)
 
     def __rsub__(self, other):
-        return (primitive_conversion(other) - self.value).astype(self.big_endian_data_type)
+        return (other - self._value).astype(self.big_endian_data_type)
+
+    def __isub__(self, other):
+        self._value -= other
+        return self
+
+    def __mul__(self, other):
+        return (self._value - other).astype(self.big_endian_data_type)
 
     def __rmul__(self, other):
-        return (primitive_conversion(other) * self.value).astype(self.big_endian_data_type)
+        return (other * self._value).astype(self.big_endian_data_type)
+
+    def __imul__(self, other):
+        self._value *= other
+        return self
+
+    def __matmul__(self, other):
+        return (self._value @ other).astype(self.big_endian_data_type)
+
+    def __rmatmul__(self, other):
+        return (other @ self._value).astype(self.big_endian_data_type)
+
+    def __imatmul__(self, other):
+        self._value @= other
+        return self
+
+    def __truediv__(self, other):
+        return (self._value / other).astype(self.big_endian_data_type)
 
     def __rtruediv__(self, other):
-        return (primitive_conversion(other) / self.value).astype(self.big_endian_data_type)
+        return (other / self._value).astype(self.big_endian_data_type)
+
+    def __itruediv__(self, other):
+        self._value /= other
+        return self
+
+    def __floordiv__(self, other):
+        return (self._value // other).astype(self.big_endian_data_type)
 
     def __rfloordiv__(self, other):
-        return (primitive_conversion(other) // self.value).astype(self.big_endian_data_type)
+        return (other // self._value).astype(self.big_endian_data_type)
+
+    def __ifloordiv__(self, other):
+        self._value //= other
+        return self
+
+    def __mod__(self, other):
+        return (self._value % other).astype(self.big_endian_data_type)
 
     def __rmod__(self, other):
-        return (primitive_conversion(other) % self.value).astype(self.big_endian_data_type)
+        return (other % self._value).astype(self.big_endian_data_type)
+
+    def __imod__(self, other):
+        self._value %= other
+        return self
+
+    def __divmod__(self, other):
+        return divmod(self._value, other)
 
     def __rdivmod__(self, other):
-        return divmod(primitive_conversion(other), self.value)
+        return divmod(other, self._value)
+
+    def __pow__(self, power, modulo):
+        return pow(self._value, power, modulo).astype(self.big_endian_data_type)
 
     def __rpow__(self, other, modulo):
-        return pow(primitive_conversion(other), self.value, modulo).astype(self.big_endian_data_type)
+        return pow(other, self._value, modulo).astype(self.big_endian_data_type)
+
+    def __ipow__(self, other):
+        self._value **= other
+        return self
+
+    def __lshift__(self, other):
+        return (self._value << other).astype(self.big_endian_data_type)
 
     def __rlshift__(self, other):
-        return (primitive_conversion(other) << self.value).astype(self.big_endian_data_type)
+        return (other << self._value).astype(self.big_endian_data_type)
+
+    def __ilshift__(self, other):
+        self._value <<= other
+        return self
+
+    def __rshift__(self, other):
+        return (self._value >> other).astype(self.big_endian_data_type)
 
     def __rrshift__(self, other):
-        return (primitive_conversion(other) >> self.value).astype(self.big_endian_data_type)
+        return (other >> self._value).astype(self.big_endian_data_type)
+
+    def __irshift__(self, other):
+        self._value >>= other
+        return self
+
+    def __and__(self, other):
+        return (self._value & other).astype(self.big_endian_data_type)
 
     def __rand__(self, other):
-        return (primitive_conversion(other) & self.value).astype(self.big_endian_data_type)
+        return (other & self._value).astype(self.big_endian_data_type)
+
+    def __iand__(self, other):
+        self._value &= other
+        return self
+
+    def __xor__(self, other):
+        return (self._value ^ other).astype(self.big_endian_data_type)
 
     def __rxor__(self, other):
-        return (primitive_conversion(other) ^ self.value).astype(self.big_endian_data_type)
+        return (other ^ self._value).astype(self.big_endian_data_type)
+
+    def __ixor__(self, other):
+        self._value ^= other
+        return self
+
+    def __or__(self, other):
+        return (self._value | other).astype(self.big_endian_data_type)
 
     def __ror__(self, other):
-        return (primitive_conversion(other) | self.value).astype(self.big_endian_data_type)
+        return (other | self._value).astype(self.big_endian_data_type)
+
+    def __ior__(self, other):
+        self.value |= other
+        return self
 
     def __neg__(self):
-        return (-self.value).astype(self.big_endian_data_type)
+        return self.value.__neg__().astype(self.big_endian_data_type)
 
     def __pos__(self):
-        return (+self.value).astype(self.big_endian_data_type)
+        return self.value.__pos__().astype(self.big_endian_data_type)
 
     def __abs__(self):
-        return abs(self.value).astype(self.big_endian_data_type)
+        return self.value.__abs__().astype(self.big_endian_data_type)
 
 
 BaseArrayType = BaseArrayTag

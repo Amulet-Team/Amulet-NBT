@@ -257,7 +257,7 @@ cdef class BaseImmutableTag(BaseTag):
         return self.value == other
 
     def __hash__(self):
-        return self.value.__hash__()
+        return hash((self.tag_id, self.value))
 
 
 cdef class BaseMutableTag(BaseTag):

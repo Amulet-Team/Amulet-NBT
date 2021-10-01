@@ -180,7 +180,7 @@ class BaseTag(ABC):
 
 class BaseImmutableTag(BaseTag, ABC):
     def __hash__(self):
-        return self._value.__hash__()
+        return hash((self.tag_id, self._value))
 
 
 class BaseMutableTag(BaseTag, ABC):

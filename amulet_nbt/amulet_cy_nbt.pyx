@@ -423,12 +423,10 @@ cdef class TAG_Byte(BaseIntegerTag):
     cdef readonly char value
 
     def __init__(self, value = 0):
-        self.value = self._sanitise_value(value)
+        self.value = self._sanitise_value(int(value))
 
-    cdef char _sanitise_value(self, long long value):
-        cdef long long low = -2**7
-        cdef long long high = 2**7
-        return ((value - low) % (high - low)) + low
+    cdef char _sanitise_value(self, value):
+        return (value & 0x7F) - (value & 0x80)
 
     cpdef str _to_snbt(self):
         return f"{self.value}b"
@@ -441,12 +439,10 @@ cdef class TAG_Short(BaseIntegerTag):
     cdef readonly short value
 
     def __init__(self, value = 0):
-        self.value = self._sanitise_value(value)
+        self.value = self._sanitise_value(int(value))
 
-    cdef char _sanitise_value(self, long long value):
-        cdef long long low = -2**15
-        cdef long long high = 2**15
-        return ((value - low) % (high - low)) + low
+    cdef short _sanitise_value(self, value):
+        return (value & 0x7FFF) - (value & 0x8000)
 
     cpdef str _to_snbt(self):
         return f"{self.value}s"
@@ -460,12 +456,10 @@ cdef class TAG_Int(BaseIntegerTag):
     cdef readonly int value
 
     def __init__(self, value = 0):
-        self.value = self._sanitise_value(value)
+        self.value = self._sanitise_value(int(value))
 
-    cdef char _sanitise_value(self, long long value):
-        cdef long long low = -2**31
-        cdef long long high = 2**31
-        return ((value - low) % (high - low)) + low
+    cdef int _sanitise_value(self, value):
+        return (value & 0x7FFF_FFFF) - (value & 0x8000_0000)
 
     cpdef str _to_snbt(self):
         return f"{self.value}"
@@ -479,12 +473,10 @@ cdef class TAG_Long(BaseIntegerTag):
     cdef readonly long long value
 
     def __init__(self, value = 0):
-        self.value = self._sanitise_value(value)
+        self.value = self._sanitise_value(int(value))
 
-    cdef char _sanitise_value(self, long long value):
-        cdef long long low = -2**63
-        cdef long long high = 2**63
-        return ((value - low) % (high - low)) + low
+    cdef long long _sanitise_value(self, value):
+        return (value & 0x7FFF_FFFF_FFFF_FFFF) - (value & 0x8000_0000_0000_0000)
 
     cpdef str _to_snbt(self):
         return f"{self.value}L"

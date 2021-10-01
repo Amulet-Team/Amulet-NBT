@@ -65,16 +65,14 @@ class TAG_List(BaseMutableTag):
             )
         if fix_if_empty and not self._value:
             self.list_data_type = value.tag_id
-        if value.tag_id != self.list_data_type:
+        elif value.tag_id != self.list_data_type:
             raise TypeError(
                 f"Invalid type {value.__class__.__name__} for TAG_List({class_map.TAG_CLASSES[self.list_data_type].__name__})"
             )
 
     def _check_tag_iterable(self, value: Sequence[BaseTag]):
-        if value:
-            self._check_tag(value[0])
-            for tag in value[1:]:
-                self._check_tag(tag, False)
+        for i, tag in enumerate(value):
+            self._check_tag(tag, not i)
 
     @classmethod
     def load_from(cls, context: BinaryIO, little_endian: bool) -> TAG_List:
@@ -117,30 +115,14 @@ class TAG_List(BaseMutableTag):
         else:
             return f"{indent_chr * indent_count * leading_indent}[]"
 
-    def __eq__(self, other):
-        if (
-            isinstance(other, TAG_List)
-            and self._value
-            and self.list_data_type != other.list_data_type
-        ):
-            return False
-        return self._value.__eq__(self.get_primitive(other))
-
-    def __add__(self, other):
-        other = self.get_primitive(other)
-        self._check_tag_iterable(other)
-        return TAG_List(self._value.__add__(other), self.list_data_type)
-
-    def __radd__(self, other):
-        other = self.get_primitive(other)
-        self._check_tag_iterable(other)
-        return TAG_List(other + self._value, self.list_data_type)
-
     def __contains__(self, item: AnyNBT) -> bool:
         return self._value.__contains__(item)
 
-    def __delitem__(self, item: int):
-        self._value.__delitem__(item)
+    def __iter__(self) -> Iterator[AnyNBT]:
+        return self._value.__iter__()
+
+    def __len__(self) -> int:
+        return self._value.__len__()
 
     @overload
     def __getitem__(self, item: int) -> AnyNBT:
@@ -152,32 +134,6 @@ class TAG_List(BaseMutableTag):
 
     def __getitem__(self, item):
         return self._value.__getitem__(item)
-
-    def __iadd__(self, other):
-        self.extend(other)
-        return self
-
-    def __imul__(self, other):
-        other = self.get_primitive(other)
-        if isinstance(other, (int, np.integer)):
-            self._value.__imul__(int(other))
-            return self
-        return NotImplemented
-
-    def __iter__(self) -> Iterator[AnyNBT]:
-        return self._value.__iter__()
-
-    def __len__(self) -> int:
-        return self._value.__len__()
-
-    def __mul__(self, other):
-        other = self.get_primitive(other)
-        if isinstance(other, (int, np.integer)):
-            return TAG_List(self._value.__mul__(int(other)), self.list_data_type)
-        return NotImplemented
-
-    def __rmul__(self, other):
-        return self.__mul__(other)
 
     @overload
     def __setitem__(self, item: int, value: AnyNBT):
@@ -194,6 +150,9 @@ class TAG_List(BaseMutableTag):
             self._check_tag(value)
         self._value.__setitem__(item, value)
 
+    def __delitem__(self, item: int):
+        self._value.__delitem__(item)
+
     def append(self, value: AnyNBT) -> None:
         self._check_tag(value)
         self._value.append(value)
@@ -202,7 +161,6 @@ class TAG_List(BaseMutableTag):
         return TAG_List(self._value.copy(), self.list_data_type)
 
     def extend(self, other):
-        other = self.get_primitive(other)
         self._check_tag_iterable(other)
         self._value.extend(other)
         return self
@@ -210,3 +168,32 @@ class TAG_List(BaseMutableTag):
     def insert(self, index: int, value: AnyNBT):
         self._check_tag(value)
         self._value.insert(index, value)
+
+    def __mul__(self, other):
+        return self._value * other
+
+    def __rmul__(self, other):
+        return other * self._value
+
+    def __imul__(self, other):
+        self._value *= other
+        return self
+
+    def __eq__(self, other):
+        if (
+            isinstance(other, TAG_List)
+            and self._value
+            and self.list_data_type != other.list_data_type
+        ):
+            return False
+        return self._value == other
+
+    def __add__(self, other):
+        return self._value + other
+
+    def __radd__(self, other):
+        return other + self._value
+
+    def __iadd__(self, other):
+        self.extend(other)
+        return self

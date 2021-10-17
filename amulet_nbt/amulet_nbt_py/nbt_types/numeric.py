@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import ABC
 from typing import (
     ClassVar,
     BinaryIO,
@@ -10,28 +11,19 @@ import numpy as np
 
 from amulet_nbt.amulet_nbt_py.const import SNBTType
 
-from .value import TAG_Value
+from .value import BaseImmutableTag
 
 
-class NumericTAG(TAG_Value):
+class BaseNumericTag(BaseImmutableTag, ABC):
     _value: np.number
     _data_type: ClassVar = np.number
     tag_format_be: ClassVar[Struct] = None
     tag_format_le: ClassVar[Struct] = None
     fstring: str = None
 
-    def __init__(self, value: Union[int, float, np.number, NumericTAG, None] = None):
-        if self.__class__ is NumericTAG:
-            raise TypeError(
-                "NumericTAG cannot be directly instanced. Use one of its subclasses."
-            )
-        assert isinstance(
-            self.tag_format_be, Struct
-        ), f"tag_format_be not set for {self.__class__}"
-        assert isinstance(
-            self.tag_format_le, Struct
-        ), f"tag_format_le not set for {self.__class__}"
-        assert isinstance(self.fstring, str), f"fstring not set for {self.__class__}"
+    def __init__(
+        self, value: Union[int, float, np.number, BaseNumericTag, None] = None
+    ):
         super().__init__(value)
 
     @classmethod
@@ -65,77 +57,73 @@ class NumericTAG(TAG_Value):
             return value
 
     def __add__(self, other):
-        return self._to_python(self._value.__add__(self.get_primitive(other)))
+        return self._to_python(self.value + other)
 
     def __radd__(self, other):
-        return self._to_python(self._value.__radd__(self.get_primitive(other)))
+        return self._to_python(other + self.value)
 
     def __iadd__(self, other):
-        return self.__class__(self._value.__add__(self.get_primitive(other)))
+        return self.__class__(self + other)
 
     def __sub__(self, other):
-        return self._to_python(self._value.__sub__(self.get_primitive(other)))
+        return self._to_python(self.value - other)
 
     def __rsub__(self, other):
-        return self._to_python(self._value.__rsub__(self.get_primitive(other)))
+        return self._to_python(other - self.value)
 
     def __isub__(self, other):
-        return self.__class__(self._value.__sub__(self.get_primitive(other)))
+        return self.__class__(self - other)
 
     def __mul__(self, other):
-        return self._to_python(self._value.__mul__(self.get_primitive(other)))
+        return self._to_python(self.value * other)
 
     def __rmul__(self, other):
-        return self._to_python(self._value.__rmul__(self.get_primitive(other)))
+        return self._to_python(other * self.value)
 
     def __imul__(self, other):
-        return self.__class__(self._value.__mul__(self.get_primitive(other)))
+        return self.__class__(self * other)
 
     def __truediv__(self, other):
-        return self._to_python(self._value.__truediv__(self.get_primitive(other)))
+        return self._to_python(self.value / other)
 
     def __rtruediv__(self, other):
-        return self._to_python(self._value.__rtruediv__(self.get_primitive(other)))
+        return self._to_python(other / self.value)
 
     def __itruediv__(self, other):
-        return self.__class__(self._value.__truediv__(self.get_primitive(other)))
+        return self.__class__(self.__class__(self / other))
 
     def __floordiv__(self, other):
-        return self._to_python(self._value.__floordiv__(self.get_primitive(other)))
+        return self._to_python(self.value // other)
 
     def __rfloordiv__(self, other):
-        return self._to_python(self._value.__rfloordiv__(self.get_primitive(other)))
+        return self._to_python(other // self.value)
 
     def __ifloordiv__(self, other):
-        return self.__class__(self._value.__floordiv__(self.get_primitive(other)))
+        return self.__class__(self // other)
 
     def __mod__(self, other):
-        return self._to_python(self._value.__mod__(self.get_primitive(other)))
+        return self._to_python(self._value % other)
 
     def __rmod__(self, other):
-        return self._to_python(self._value.__rmod__(self.get_primitive(other)))
+        return self._to_python(other % self._value)
 
     def __imod__(self, other):
-        return self.__class__(self._value.__mod__(self.get_primitive(other)))
+        return self.__class__(self % other)
 
     def __divmod__(self, other):
-        return self._to_python(self._value.__divmod__(self.get_primitive(other)))
+        return self._to_python(divmod(self.value, other))
 
     def __rdivmod__(self, other):
-        return self._to_python(self._value.__rdivmod__(self.get_primitive(other)))
+        return self._to_python(divmod(other, self.value))
 
-    def __pow__(self, power, modulo):
-        return self._to_python(
-            self._value.__pow__(self.get_primitive(power), self.get_primitive(modulo))
-        )
+    def __pow__(self, other, modulo=None):
+        return self._to_python(self.value ** other)
 
-    def __rpow__(self, other, modulo):
-        return self._to_python(
-            self._value.__rpow__(self.get_primitive(other), self.get_primitive(modulo))
-        )
+    def __rpow__(self, other):
+        return self._to_python(other ** self.value)
 
     def __ipow__(self, other):
-        return self.__class__(self._value.__pow__(self.get_primitive(other)))
+        return self.__class__(self ** other)
 
     def __neg__(self):
         return self._to_python(self._value.__neg__())

@@ -1,22 +1,25 @@
 from __future__ import annotations
 
+from abc import ABC
 from struct import Struct
-from typing import ClassVar, Union
+from typing import ClassVar, Optional, Any
 import numpy as np
 
-from .numeric import NumericTAG
+from .numeric import BaseNumericTag
 
 
-class BaseIntegerTAG(NumericTAG):
+class BaseIntegerTag(BaseNumericTag, ABC):
     _value: np.signedinteger
     _data_type: ClassVar = np.signedinteger
 
-    def __init__(self, value: Union[int, float, np.number, NumericTAG, None] = None):
-        if self.__class__ is BaseIntegerTAG:
-            raise TypeError(
-                "BaseIntegerTAG cannot be directly instanced. Use one of its subclasses."
-            )
-        super().__init__(value)
+    def _sanitise_value(self, value: Optional[Any]) -> Any:
+        if value is None:
+            return self._data_type()
+        else:
+            low = np.iinfo(self._data_type).min
+            high = np.iinfo(self._data_type).max + 1
+            value = ((int(value) - low) % (high - low)) + low
+            return self._data_type(value)
 
     @property
     def value(self) -> int:
@@ -71,7 +74,7 @@ class BaseIntegerTAG(NumericTAG):
         return self._value.__invert__()
 
 
-class TAG_Byte(BaseIntegerTAG):
+class TAG_Byte(BaseIntegerTag):
     tag_id: ClassVar[int] = 1
     _value: np.int8
     _data_type: ClassVar = np.int8
@@ -80,7 +83,7 @@ class TAG_Byte(BaseIntegerTAG):
     fstring = "{}b"
 
 
-class TAG_Short(BaseIntegerTAG):
+class TAG_Short(BaseIntegerTag):
     tag_id: ClassVar[int] = 2
     _value: np.int16
     _data_type: ClassVar = np.int16
@@ -89,7 +92,7 @@ class TAG_Short(BaseIntegerTAG):
     fstring = "{}s"
 
 
-class TAG_Int(BaseIntegerTAG):
+class TAG_Int(BaseIntegerTag):
     tag_id: ClassVar[int] = 3
     _value: np.int32
     _data_type: ClassVar = np.int32
@@ -98,7 +101,7 @@ class TAG_Int(BaseIntegerTAG):
     fstring = "{}"
 
 
-class TAG_Long(BaseIntegerTAG):
+class TAG_Long(BaseIntegerTag):
     tag_id: ClassVar[int] = 4
     _value: np.int64
     _data_type: ClassVar = np.int64

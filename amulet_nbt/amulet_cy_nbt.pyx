@@ -1,10 +1,9 @@
 import gzip
-from math import trunc, floor, ceil
 import zlib
 from collections.abc import MutableMapping, MutableSequence
 from io import BytesIO
-from typing import Optional, Union, Tuple, List, Iterator, BinaryIO
-
+from typing import Optional, Union, Tuple, List, Iterator, BinaryIO, Sequence
+from copy import deepcopy, copy
 import numpy
 import os
 from cpython cimport PyUnicode_DecodeUTF8, PyUnicode_DecodeCharmap, PyList_Append
@@ -135,10 +134,10 @@ cdef str load_name(buffer_context context, bint little_endian):
 
 cdef tuple load_named(buffer_context context, char tagID, bint little_endian):
     cdef str name = load_name(context, little_endian)
-    cdef _TAG_Value tag = load_tag(tagID, context, little_endian)
+    cdef BaseTag tag = load_tag(tagID, context, little_endian)
     return name, tag
 
-cdef _TAG_Value load_tag(char tagID, buffer_context context, bint little_endian):
+cdef BaseTag load_tag(char tagID, buffer_context context, bint little_endian):
     if tagID == _ID_BYTE:
         return load_byte(context, little_endian)
 
@@ -183,11 +182,13 @@ cpdef bytes safe_gunzip(bytes data):
             pass
     return data
 
-cdef class _TAG_Value:
+
+cdef class BaseTag:
     tag_id = None
 
-    def copy(self):
-        return self.__class__(self.value)
+    @property
+    def value(self):
+        raise NotImplementedError
 
     cpdef str to_snbt(self, indent_chr=None):
         if isinstance(indent_chr, int):
@@ -197,274 +198,235 @@ cdef class _TAG_Value:
         return self._to_snbt()
 
     cpdef str _to_snbt(self):
-        raise NotImplementedError()
+        raise NotImplementedError
 
     cpdef str _pretty_to_snbt(self, indent_chr="", indent_count=0, leading_indent=True):
         return f"{indent_chr * indent_count * leading_indent}{self._to_snbt()}"
 
     cdef void write_value(self, buffer, little_endian) except *:
-        raise NotImplementedError()
+        raise NotImplementedError
 
-    cpdef bint strict_equal(self, other):
-        cdef bint result
-        result = isinstance(other, self.__class__)
-        if result:
-            result = result and self.tag_id == other.tag_id
-        return result and self.__eq__(other)
-
-    def __eq__(self, other):
-        return primitive_conversion(self) == primitive_conversion(other)
+    def __getattr__(self, item):
+        return self.value.__getattribute__(item)
 
     def __repr__(self):
         return self._to_snbt()
 
-    def __reduce__(self):
-        return unpickle_nbt, (self.tag_id, self.value)
-
-BaseValueType = _TAG_Value
-
-cdef class _Int(_TAG_Value):
-    def __eq__(self, other):
-        return primitive_conversion(self) == primitive_conversion(other)
-
-    def __add__(self, other):
-        return primitive_conversion(self) + primitive_conversion(other)
-
-    def __sub__(self, other):
-        return primitive_conversion(self) - primitive_conversion(other)
-
-    def __mul__(self, other):
-        return primitive_conversion(self) * primitive_conversion(other)
-
-    def __truediv__(self, other):
-        return primitive_conversion(self) / primitive_conversion(other)
-
-    def __floordiv__(self, other):
-        return primitive_conversion(self) // primitive_conversion(other)
-
-    def __mod__(self, other):
-        return primitive_conversion(self) % primitive_conversion(other)
-
-    def __divmod__(self, other):
-        return divmod(primitive_conversion(self), primitive_conversion(other))
-
-    def __pow__(self, power, modulo):
-        return pow(primitive_conversion(self), power, modulo)
-
-    def __lshift__(self, other):
-        return primitive_conversion(self) << primitive_conversion(other)
-
-    def __rshift__(self, other):
-        return primitive_conversion(self) >> primitive_conversion(other)
-
-    def __and__(self, other):
-        return primitive_conversion(self) & primitive_conversion(other)
-
-    def __xor__(self, other):
-        return primitive_conversion(self) ^ primitive_conversion(other)
-
-    def __or__(self, other):
-        return primitive_conversion(self) | primitive_conversion(other)
-
-    def __radd__(self, other):
-        return primitive_conversion(other) + primitive_conversion(self)
-
-    def __rsub__(self, other):
-        return primitive_conversion(other) - primitive_conversion(self)
-
-    def __rmul__(self, other):
-        return primitive_conversion(other) * primitive_conversion(self)
-
-    def __rtruediv__(self, other):
-        return primitive_conversion(other) / primitive_conversion(self)
-
-    def __rfloordiv__(self, other):
-        return primitive_conversion(other) // primitive_conversion(self)
-
-    def __rmod__(self, other):
-        return primitive_conversion(other) % primitive_conversion(self)
-
-    def __rdivmod__(self, other):
-        return divmod(primitive_conversion(other), primitive_conversion(self))
-
-    def __rpow__(self, other, modulo):
-        return pow(primitive_conversion(other), primitive_conversion(self), modulo)
-
-    def __rlshift__(self, other):
-        return primitive_conversion(other) << primitive_conversion(self)
-
-    def __rrshift__(self, other):
-        return primitive_conversion(other) >> primitive_conversion(self)
-
-    def __rand__(self, other):
-        return primitive_conversion(other) & primitive_conversion(self)
-
-    def __rxor__(self, other):
-        return primitive_conversion(other) ^ primitive_conversion(self)
-
-    def __ror__(self, other):
-        return primitive_conversion(other) | primitive_conversion(self)
-
-    def __neg__(self):
-        return -self.value
-
-    def __pos__(self):
-        return +self.value
-
-    def __abs__(self):
-        return abs(self.value)
-
-    def __invert__(self):
-        return ~self.value
-
-    def __int__(self):
-        return self.value
-
-    def __float__(self):
-        return float(self.value)
-
-    def __getattr__(self, item):
-        return self.value.__getattribute__(item)
+    def __str__(self):
+        return str(self.value)
 
     def __dir__(self):
         return dir(self.value)
+
+    def __eq__(self, other):
+        return self.value == other
+
+    cpdef bint strict_equals(self, other):
+        return isinstance(other, self.__class__) and self.tag_id == other.tag_id and self == other
 
     def __ge__(self, other):
-        return self.value.__ge__(primitive_conversion(other))
+        return self.value >= other
 
     def __gt__(self, other):
-        return self.value.__gt__(primitive_conversion(other))
+        return self.value > other
 
     def __le__(self, other):
-        return self.value.__le__(primitive_conversion(other))
+        return self.value <= other
 
     def __lt__(self, other):
-        return self.value.__lt__(primitive_conversion(other))
+        return self.value < other
+
+    def __reduce__(self):
+        return self.__class__, (self.value,)
+
+    def copy(self):
+        return copy(self)
+
+    def __deepcopy__(self, memo=None):
+        return self.__class__(deepcopy(self.value, memo=memo))
+
+    def __copy__(self):
+        return self.__class__(copy(self.value))
+
+BaseValueType = BaseTag
 
 
-cdef class _Float(_TAG_Value):
+cdef class BaseImmutableTag(BaseTag):
+    # https://github.com/cython/cython/issues/3709
     def __eq__(self, other):
-        return primitive_conversion(self) == primitive_conversion(other)
+        return self.value == other
 
+    def __hash__(self):
+        return hash((self.tag_id, self.value))
+
+
+cdef class BaseMutableTag(BaseTag):
+    pass
+
+
+cdef class BaseNumericTag(BaseImmutableTag):
     def __add__(self, other):
-        return float(primitive_conversion(self) + primitive_conversion(other))
-
-    def __sub__(self, other):
-        return float(primitive_conversion(self) - primitive_conversion(other))
-
-    def __mul__(self, other):
-        return float(primitive_conversion(self) * primitive_conversion(other))
-
-    def __truediv__(self, other):
-        return float(primitive_conversion(self) / primitive_conversion(other))
-
-    def __floordiv__(self, other):
-        return primitive_conversion(self) // primitive_conversion(other)
-
-    def __mod__(self, other):
-        return primitive_conversion(self) % primitive_conversion(other)
-
-    def __divmod__(self, other):
-        return divmod(primitive_conversion(self), primitive_conversion(other))
-
-    def __pow__(self, power, modulo):
-        return pow(primitive_conversion(self), power, modulo)
-
-    def __lshift__(self, other):
-        return primitive_conversion(self) << primitive_conversion(other)
-
-    def __rshift__(self, other):
-        return primitive_conversion(self) >> primitive_conversion(other)
-
-    def __and__(self, other):
-        return primitive_conversion(self) & primitive_conversion(other)
-
-    def __xor__(self, other):
-        return primitive_conversion(self) ^ primitive_conversion(other)
-
-    def __or__(self, other):
-        return primitive_conversion(self) | primitive_conversion(other)
+        return self.value + other
 
     def __radd__(self, other):
-        return float(primitive_conversion(other) + primitive_conversion(self))
+        return other + self.value
+
+    def __iadd__(self, other):
+        return self.__class__(self + other)
+
+    def __sub__(self, other):
+        return self.value - other
 
     def __rsub__(self, other):
-        return float(primitive_conversion(other) - primitive_conversion(self))
+        return other - self.value
+
+    def __isub__(self, other):
+        return self.__class__(self - other)
+
+    def __mul__(self, other):
+        return self.value * other
 
     def __rmul__(self, other):
-        return primitive_conversion(other) * primitive_conversion(self)
+        return other * self.value
+
+    def __imul__(self, other):
+        return self.__class__(self * other)
+
+    def __truediv__(self, other):
+        return self.value / other
 
     def __rtruediv__(self, other):
-        return float(primitive_conversion(other) / primitive_conversion(self))
+        return other / self.value
+
+    def __itruediv__(self, other):
+        return self.__class__(self / other)
+
+    def __floordiv__(self, other):
+        return self.value // other
 
     def __rfloordiv__(self, other):
-        return primitive_conversion(other) // primitive_conversion(self)
+        return other // self.value
+
+    def __ifloordiv__(self, other):
+        return self.__class__(self // other)
+
+    def __mod__(self, other):
+        return self.value % other
 
     def __rmod__(self, other):
-        return primitive_conversion(other) % primitive_conversion(self)
+        return other % self.value
+
+    def __imod__(self, other):
+        return self.__class__(self % other)
+
+    def __divmod__(self, other):
+        return divmod(self.value, other)
 
     def __rdivmod__(self, other):
-        return divmod(primitive_conversion(other), primitive_conversion(self))
+        return divmod(other, self.value)
+
+    def __pow__(self, power, modulo):
+        return pow(self.value, power, modulo)
 
     def __rpow__(self, other, modulo):
-        return pow(primitive_conversion(other), primitive_conversion(self), modulo)
+        return pow(other, self.value, modulo)
 
-    def __rlshift__(self, other):
-        return primitive_conversion(other) << primitive_conversion(self)
-
-    def __rrshift__(self, other):
-        return primitive_conversion(other) >> primitive_conversion(self)
-
-    def __rand__(self, other):
-        return primitive_conversion(other) & primitive_conversion(self)
-
-    def __rxor__(self, other):
-        return primitive_conversion(other) ^ primitive_conversion(self)
-
-    def __ror__(self, other):
-        return primitive_conversion(other) | primitive_conversion(self)
+    def __ipow__(self, other):
+        return self.__class__(pow(self, other))
 
     def __neg__(self):
-        return -self.value
+        return self.value.__neg__()
 
     def __pos__(self):
-        return +self.value
+        return self.value.__pos__()
 
     def __abs__(self):
-        return abs(self.value)
+        return self.value.__abs__()
+
+    def __int__(self):
+        return self.value.__int__()
 
     def __float__(self):
-        return self.value
+        return self.value.__float__()
 
     def __round__(self, n=None):
-        return round(self.value, n)
+        return self.value.__round__(n)
 
     def __trunc__(self):
-        return trunc(self.value)
+        return self.value.__trunc__()
 
     def __floor__(self):
-        return floor(self.value)
+        return self.value.__floor__()
 
     def __ceil__(self):
-        return ceil(self.value)
+        return self.value.__ceil__()
 
-    def __getattr__(self, item):
-        return self.value.__getattribute__(item)
+    def __bool__(self):
+        return self.value.__bool__()
 
-    def __dir__(self):
-        return dir(self.value)
+cdef class BaseIntegerTag(BaseNumericTag):
+    def __lshift__(self, other):
+        return self.value << other
+
+    def __rlshift__(self, other):
+        return other << self.value
+
+    def __ilshift__(self, other):
+        self.__class__(self << other)
+
+    def __rshift__(self, other):
+        return self.value >> other
+
+    def __rrshift__(self, other):
+        return other >> self.value
+
+    def __irshift__(self, other):
+        self.__class__(self >> other)
+
+    def __and__(self, other):
+        return self.value & other
+
+    def __rand__(self, other):
+        return other & self.value
+
+    def __iand__(self, other):
+        self.__class__(self & other)
+
+    def __xor__(self, other):
+        return self.value ^ other
+
+    def __rxor__(self, other):
+        return other ^ self.value
+
+    def __ixor__(self, other):
+        self.__class__(self ^ other)
+
+    def __or__(self, other):
+        return self.value | other
+
+    def __ror__(self, other):
+        return other | self.value
+
+    def __ior__(self, other):
+        self.__class__(self | other)
+
+    def __invert__(self):
+        return self.value.__invert__()
 
 
-cdef inline primitive_conversion(obj):
-    return obj.value if isinstance(obj, _TAG_Value) else obj
+cdef class BaseFloatTag(BaseNumericTag):
+    pass
 
 
-cdef class TAG_Byte(_Int):
+cdef class TAG_Byte(BaseIntegerTag):
     tag_id = _ID_BYTE
     cdef readonly char value
 
     def __init__(self, value = 0):
-        self.value = int(primitive_conversion(value))
+        self.value = self._sanitise_value(int(value))
+
+    cdef char _sanitise_value(self, value):
+        return (value & 0x7F) - (value & 0x80)
 
     cpdef str _to_snbt(self):
         return f"{self.value}b"
@@ -472,12 +434,15 @@ cdef class TAG_Byte(_Int):
     cdef void write_value(self, buffer, little_endian):
         write_byte(self.value, buffer)
 
-cdef class TAG_Short(_Int):
+cdef class TAG_Short(BaseIntegerTag):
     tag_id = _ID_SHORT
     cdef readonly short value
 
     def __init__(self, value = 0):
-        self.value = int(primitive_conversion(value))
+        self.value = self._sanitise_value(int(value))
+
+    cdef short _sanitise_value(self, value):
+        return (value & 0x7FFF) - (value & 0x8000)
 
     cpdef str _to_snbt(self):
         return f"{self.value}s"
@@ -486,12 +451,15 @@ cdef class TAG_Short(_Int):
         write_short(self.value, buffer, little_endian)
 
 
-cdef class TAG_Int(_Int):
+cdef class TAG_Int(BaseIntegerTag):
     tag_id = _ID_INT
     cdef readonly int value
 
     def __init__(self, value = 0):
-        self.value = int(primitive_conversion(value))
+        self.value = self._sanitise_value(int(value))
+
+    cdef int _sanitise_value(self, value):
+        return (value & 0x7FFF_FFFF) - (value & 0x8000_0000)
 
     cpdef str _to_snbt(self):
         return f"{self.value}"
@@ -500,12 +468,15 @@ cdef class TAG_Int(_Int):
         write_int(self.value, buffer, little_endian)
 
 
-cdef class TAG_Long(_Int):
+cdef class TAG_Long(BaseIntegerTag):
     tag_id = _ID_LONG
     cdef readonly long long value
 
     def __init__(self, value = 0):
-        self.value = int(primitive_conversion(value))
+        self.value = self._sanitise_value(int(value))
+
+    cdef long long _sanitise_value(self, value):
+        return (value & 0x7FFF_FFFF_FFFF_FFFF) - (value & 0x8000_0000_0000_0000)
 
     cpdef str _to_snbt(self):
         return f"{self.value}L"
@@ -514,12 +485,12 @@ cdef class TAG_Long(_Int):
         write_long(self.value, buffer, little_endian)
 
 
-cdef class TAG_Float(_Float):
+cdef class TAG_Float(BaseFloatTag):
     tag_id = _ID_FLOAT
     cdef readonly float value
 
     def __init__(self, value = 0):
-        self.value = float(primitive_conversion(value))
+        self.value = float(value)
 
     cpdef str _to_snbt(self):
         return f"{self.value:.20f}".rstrip('0') + "f"
@@ -528,12 +499,12 @@ cdef class TAG_Float(_Float):
         write_float(self.value, buffer, little_endian)
 
 
-cdef class TAG_Double(_Float):
+cdef class TAG_Double(BaseFloatTag):
     tag_id = _ID_DOUBLE
     cdef readonly double value
 
     def __init__(self, value = 0):
-        self.value = float(primitive_conversion(value))
+        self.value = float(value)
 
     cpdef str _to_snbt(self):
         return f"{self.value:.20f}".rstrip('0') + "d"
@@ -541,7 +512,7 @@ cdef class TAG_Double(_Float):
     cdef void write_value(self, buffer, little_endian):
         write_double(self.value, buffer, little_endian)
 
-cdef class _TAG_Array(_TAG_Value):
+cdef class BaseArrayTag(BaseMutableTag):
     cdef public object value
     big_endian_data_type = little_endian_data_type = numpy.dtype("int8")
 
@@ -561,22 +532,13 @@ cdef class _TAG_Array(_TAG_Value):
         self.value = value
 
     def __eq__(self, other):
-        return numpy.array_equal(primitive_conversion(self), primitive_conversion(other))
+        return numpy.array_equal(self.value, other)
 
     def __getitem__(self, item):
         return self.value.__getitem__(item)
 
     def __setitem__(self, key, value):
         self.value.__setitem__(key, value)
-
-    def __deepcopy__(self, memo=None):
-        return self.__class__(self.value.__deepcopy__(memo or {}))
-
-    def __getattr__(self, item):
-        return self.value.__getattribute__(item)
-
-    def __dir__(self):
-        return dir(self.value)
 
     def __array__(self):
         return self.value
@@ -585,99 +547,154 @@ cdef class _TAG_Array(_TAG_Value):
         return len(self.value)
 
     def __add__(self, other):
-        return (primitive_conversion(self) + primitive_conversion(other)).astype(self.big_endian_data_type)
-
-    def __sub__(self, other):
-        return (primitive_conversion(self) - primitive_conversion(other)).astype(self.big_endian_data_type)
-
-    def __mul__(self, other):
-        return (primitive_conversion(self) - primitive_conversion(other)).astype(self.big_endian_data_type)
-
-    def __matmul__(self, other):
-        return (primitive_conversion(self) @ primitive_conversion(other)).astype(self.big_endian_data_type)
-
-    def __truediv__(self, other):
-        return (primitive_conversion(self) / primitive_conversion(other)).astype(self.big_endian_data_type)
-
-    def __floordiv__(self, other):
-        return (primitive_conversion(self) // primitive_conversion(other)).astype(self.big_endian_data_type)
-
-    def __mod__(self, other):
-        return (primitive_conversion(self) % primitive_conversion(other)).astype(self.big_endian_data_type)
-
-    def __divmod__(self, other):
-        return divmod(primitive_conversion(self), primitive_conversion(other))
-
-    def __pow__(self, power, modulo):
-        return pow(primitive_conversion(self), power, modulo).astype(self.big_endian_data_type)
-
-    def __lshift__(self, other):
-        return (primitive_conversion(self) << primitive_conversion(other)).astype(self.big_endian_data_type)
-
-    def __rshift__(self, other):
-        return (primitive_conversion(self) >> primitive_conversion(other)).astype(self.big_endian_data_type)
-
-    def __and__(self, other):
-        return (primitive_conversion(self) & primitive_conversion(other)).astype(self.big_endian_data_type)
-
-    def __xor__(self, other):
-        return (primitive_conversion(self) ^ primitive_conversion(other)).astype(self.big_endian_data_type)
-
-    def __or__(self, other):
-        return (primitive_conversion(self) | primitive_conversion(other)).astype(self.big_endian_data_type)
+        return (self.value + other).astype(self.big_endian_data_type)
 
     def __radd__(self, other):
-        return (primitive_conversion(other) + primitive_conversion(self)).astype(self.big_endian_data_type)
+        return (other + self.value).astype(self.big_endian_data_type)
+
+    def __iadd__(self, other):
+        self.value += other
+        return self
+
+    def __sub__(self, other):
+        return (self.value - other).astype(self.big_endian_data_type)
 
     def __rsub__(self, other):
-        return (primitive_conversion(other) - primitive_conversion(self)).astype(self.big_endian_data_type)
+        return (other - self.value).astype(self.big_endian_data_type)
+
+    def __isub__(self, other):
+        self.value -= other
+        return self
+
+    def __mul__(self, other):
+        return (self.value - other).astype(self.big_endian_data_type)
 
     def __rmul__(self, other):
-        return (primitive_conversion(other) * primitive_conversion(self)).astype(self.big_endian_data_type)
+        return (other * self.value).astype(self.big_endian_data_type)
+
+    def __imul__(self, other):
+        self.value *= other
+        return self
+
+    def __matmul__(self, other):
+        return (self.value @ other).astype(self.big_endian_data_type)
+
+    def __rmatmul__(self, other):
+        return (other @ self.value).astype(self.big_endian_data_type)
+
+    def __imatmul__(self, other):
+        self.value @= other
+        return self
+
+    def __truediv__(self, other):
+        return (self.value / other).astype(self.big_endian_data_type)
 
     def __rtruediv__(self, other):
-        return (primitive_conversion(other) / primitive_conversion(self)).astype(self.big_endian_data_type)
+        return (other / self.value).astype(self.big_endian_data_type)
+
+    def __itruediv__(self, other):
+        self.value /= other
+        return self
+
+    def __floordiv__(self, other):
+        return (self.value // other).astype(self.big_endian_data_type)
 
     def __rfloordiv__(self, other):
-        return (primitive_conversion(other) // primitive_conversion(self)).astype(self.big_endian_data_type)
+        return (other // self.value).astype(self.big_endian_data_type)
+
+    def __ifloordiv__(self, other):
+        self.value //= other
+        return self
+
+    def __mod__(self, other):
+        return (self.value % other).astype(self.big_endian_data_type)
 
     def __rmod__(self, other):
-        return (primitive_conversion(other) % primitive_conversion(self)).astype(self.big_endian_data_type)
+        return (other % self.value).astype(self.big_endian_data_type)
+
+    def __imod__(self, other):
+        self.value %= other
+        return self
+
+    def __divmod__(self, other):
+        return divmod(self.value, other)
 
     def __rdivmod__(self, other):
-        return divmod(primitive_conversion(other), primitive_conversion(self))
+        return divmod(other, self.value)
+
+    def __pow__(self, power, modulo):
+        return pow(self.value, power, modulo).astype(self.big_endian_data_type)
 
     def __rpow__(self, other, modulo):
-        return pow(primitive_conversion(other), primitive_conversion(self), modulo).astype(self.big_endian_data_type)
+        return pow(other, self.value, modulo).astype(self.big_endian_data_type)
+
+    def __ipow__(self, other):
+        self.value **= other
+        return self
+
+    def __lshift__(self, other):
+        return (self.value << other).astype(self.big_endian_data_type)
 
     def __rlshift__(self, other):
-        return (primitive_conversion(other) << primitive_conversion(self)).astype(self.big_endian_data_type)
+        return (other << self.value).astype(self.big_endian_data_type)
+
+    def __ilshift__(self, other):
+        self.value <<= other
+        return self
+
+    def __rshift__(self, other):
+        return (self.value >> other).astype(self.big_endian_data_type)
 
     def __rrshift__(self, other):
-        return (primitive_conversion(other) >> primitive_conversion(self)).astype(self.big_endian_data_type)
+        return (other >> self.value).astype(self.big_endian_data_type)
+
+    def __irshift__(self, other):
+        self.value >>= other
+        return self
+
+    def __and__(self, other):
+        return (self.value & other).astype(self.big_endian_data_type)
 
     def __rand__(self, other):
-        return (primitive_conversion(other) & primitive_conversion(self)).astype(self.big_endian_data_type)
+        return (other & self.value).astype(self.big_endian_data_type)
+
+    def __iand__(self, other):
+        self.value &= other
+        return self
+
+    def __xor__(self, other):
+        return (self.value ^ other).astype(self.big_endian_data_type)
 
     def __rxor__(self, other):
-        return (primitive_conversion(other) ^ primitive_conversion(self)).astype(self.big_endian_data_type)
+        return (other ^ self.value).astype(self.big_endian_data_type)
+
+    def __ixor__(self, other):
+        self.value ^= other
+        return self
+
+    def __or__(self, other):
+        return (self.value | other).astype(self.big_endian_data_type)
 
     def __ror__(self, other):
-        return (primitive_conversion(other) | primitive_conversion(self)).astype(self.big_endian_data_type)
+        return (other | self.value).astype(self.big_endian_data_type)
+
+    def __ior__(self, other):
+        self.value |= other
+        return self
 
     def __neg__(self):
-        return (-self.value).astype(self.big_endian_data_type)
+        return self.value.__neg__().astype(self.big_endian_data_type)
 
     def __pos__(self):
-        return (+self.value).astype(self.big_endian_data_type)
+        return self.value.__pos__().astype(self.big_endian_data_type)
 
     def __abs__(self):
-        return abs(self.value).astype(self.big_endian_data_type)
+        return self.value.__abs__().astype(self.big_endian_data_type)
 
 
-BaseArrayType = _TAG_Array
+BaseArrayType = BaseArrayTag
 
-cdef class TAG_Byte_Array(_TAG_Array):
+cdef class TAG_Byte_Array(BaseArrayTag):
     tag_id = _ID_BYTE_ARRAY
     big_endian_data_type = little_endian_data_type = numpy.dtype("int8")
 
@@ -696,7 +713,7 @@ cdef class TAG_Byte_Array(_TAG_Array):
             self.value = self.value.astype(data_type)
         write_array(self.value, buffer, 1, little_endian)
 
-cdef class TAG_Int_Array(_TAG_Array):
+cdef class TAG_Int_Array(BaseArrayTag):
     tag_id = _ID_INT_ARRAY
     big_endian_data_type = numpy.dtype(">i4")
     little_endian_data_type = numpy.dtype("<i4")
@@ -716,7 +733,7 @@ cdef class TAG_Int_Array(_TAG_Array):
             self.value = self.value.astype(data_type)
         write_array(self.value, buffer, 4, little_endian)
 
-cdef class TAG_Long_Array(_TAG_Array):
+cdef class TAG_Long_Array(BaseArrayTag):
     tag_id = _ID_LONG_ARRAY
     big_endian_data_type = numpy.dtype(">i8")
     little_endian_data_type = numpy.dtype("<i8")
@@ -743,7 +760,7 @@ def escape(string: str):
 def unescape(string: str):
     return string.replace('\\"', '"').replace("\\\\", "\\")
 
-cdef class TAG_String(_TAG_Value):
+cdef class TAG_String(BaseImmutableTag):
     tag_id = _ID_STRING
     cdef readonly unicode value
 
@@ -763,22 +780,25 @@ cdef class TAG_String(_TAG_Value):
         return self.value.__getitem__(item)
 
     def __add__(self, other):
-        return primitive_conversion(self) + primitive_conversion(other)
+        return self.value + other
 
     def __radd__(self, other):
-        return primitive_conversion(other) + primitive_conversion(self)
+        return other + self.value
+
+    def __iadd__(self, other):
+        self.__class__(self + other)
 
     def __mul__(self, other):
-        return primitive_conversion(self) * primitive_conversion(other)
+        return self.value * other
 
     def __rmul__(self, other):
-        return primitive_conversion(other) * primitive_conversion(self)
+        return other * self.value
 
-    def __str__(self):
-        return self.value
+    def __imul__(self, other):
+        self.__class__(self * other)
 
 
-cdef class _TAG_List(_TAG_Value):
+cdef class _TAG_List(BaseMutableTag):
     tag_id = _ID_LIST
     cdef public list value
     cdef public char list_data_type
@@ -787,51 +807,22 @@ cdef class _TAG_List(_TAG_Value):
         self.list_data_type = list_data_type
         self.value = []
         if value:
-            self._check_tag(value[0])
+            self._check_tag_iterable(value)
             self.value = list(value)
-            for tag in value[1:]:
-                self._check_tag(tag)
-            #map(self._check_tag, value[1:])
 
-    def _check_tag(self, value: AnyNBT):
-        if not isinstance(value, _TAG_Value):
+    def _check_tag(self, value: AnyNBT, fix_if_empty=True):
+        if not isinstance(value, BaseTag):
             raise TypeError(f"Invalid type {value.__class__.__name__} TAG_List. Must be an NBT object.")
-        if not self.value:
+        if fix_if_empty and not self.value:
             self.list_data_type = value.tag_id
         elif value.tag_id != self.list_data_type:
             raise TypeError(
                 f"Invalid type {value.__class__.__name__} for TAG_List({TAG_CLASSES[self.list_data_type].__name__})"
             )
 
-    def __getitem__(self, index: int) -> AnyNBT:
-        return self.value[index]
-
-    def __setitem__(self, index, value):
-        if isinstance(index, slice):
-            map(self._check_tag, value)
-        else:
-            self._check_tag(value)
-        self.value[index] = value
-
-    def __delitem__(self, index: int):
-        del self.value[index]
-
-    def __iter__(self) -> Iterator[AnyNBT]:
-        return iter(self.value)
-
-    def __contains__(self, item: AnyNBT) -> bool:
-        return item in self.value
-
-    def __len__(self) -> int:
-        return len(self.value)
-
-    def insert(self, index: int, value: AnyNBT):
-        self._check_tag(value)
-        self.value.insert(index, value)
-
-    def append(self, value: AnyNBT) -> None:
-        self._check_tag(value)
-        self.value.append(value)
+    def _check_tag_iterable(self, value: Sequence[BaseTag]):
+        for i, tag in enumerate(value):
+            self._check_tag(tag, not i)
 
     cdef void write_value(self, buffer, little_endian) except *:
         cdef char list_type = self.list_data_type
@@ -839,7 +830,7 @@ cdef class _TAG_List(_TAG_Value):
         write_tag_id(list_type, buffer)
         write_int(<int> len(self.value), buffer, little_endian)
 
-        cdef _TAG_Value subtag
+        cdef BaseTag subtag
         for subtag in self.value:
             if subtag.tag_id != list_type:
                 raise ValueError("Asked to save TAG_List with different types! Found %s and %s" % (subtag.tag_id,
@@ -847,14 +838,14 @@ cdef class _TAG_List(_TAG_Value):
             write_tag_value(subtag, buffer, little_endian)
 
     cpdef str _to_snbt(self):
-        cdef _TAG_Value elem
+        cdef BaseTag elem
         cdef list tags = []
         for elem in self.value:
             tags.append(elem._to_snbt())
         return f"[{CommaSpace.join(tags)}]"
 
     cpdef str _pretty_to_snbt(self, indent_chr="", indent_count=0, leading_indent=True):
-        cdef _TAG_Value elem
+        cdef BaseTag elem
         cdef list tags = []
         for elem in self.value:
             tags.append(elem._pretty_to_snbt(indent_chr, indent_count + 1))
@@ -863,12 +854,79 @@ cdef class _TAG_List(_TAG_Value):
         else:
             return f"{indent_chr * indent_count * leading_indent}[]"
 
+    def __contains__(self, item: AnyNBT) -> bool:
+        return self.value.__contains__(item)
+
+    def __iter__(self) -> Iterator[AnyNBT]:
+        return self.value.__iter__()
+
+    def __len__(self) -> int:
+        return self.value.__len__()
+
+    def __getitem__(self, index: int) -> AnyNBT:
+        return self.value[index]
+
+    def __setitem__(self, index, value):
+        if isinstance(index, slice):
+            self._check_tag_iterable(value)
+        else:
+            self._check_tag(value)
+        self.value[index] = value
+
+    def __delitem__(self, index: int):
+        del self.value[index]
+
+    def append(self, value: AnyNBT) -> None:
+        self._check_tag(value)
+        self.value.append(value)
+
+    def copy(self):
+        return TAG_List(self.value.copy(), self.list_data_type)
+
+    def extend(self, other):
+        self._check_tag_iterable(other)
+        self.value.extend(other)
+        return self
+
+    def insert(self, index: int, value: AnyNBT):
+        self._check_tag(value)
+        self.value.insert(index, value)
+
+    def __mul__(self, other):
+        return self.value * other
+
+    def __rmul__(self, other):
+        return other * self.value
+
+    def __imul__(self, other):
+        self.value *= other
+        return self
+
+    def __eq__(self, other):
+        if (
+            isinstance(other, TAG_List)
+            and self.value
+            and self.list_data_type != other.list_data_type
+        ):
+            return False
+        return self.value == other
+
+    def __add__(self, other):
+        return self.value + other
+
+    def __radd__(self, other):
+        return other + self.value
+
+    def __iadd__(self, other):
+        self.extend(other)
+        return self
+
 
 class TAG_List(_TAG_List, MutableSequence):
     pass
 
 
-cdef class _TAG_Compound(_TAG_Value):
+cdef class _TAG_Compound(BaseMutableTag):
     tag_id = _ID_COMPOUND
     cdef public dict value
 
@@ -883,14 +941,14 @@ cdef class _TAG_Compound(_TAG_Value):
             raise TypeError(
                 f"TAG_Compound key must be a string. Got {key.__class__.__name__}"
             )
-        if not isinstance(value, _TAG_Value):
+        if not isinstance(value, BaseTag):
             raise TypeError(
                 f"Invalid type {value.__class__.__name__} for key \"{key}\" in TAG_Compound. Must be an NBT object."
             )
 
     cpdef str _to_snbt(self):
         cdef str name
-        cdef _TAG_Value elem
+        cdef BaseTag elem
         cdef list tags = []
         for name, elem in self.value.items():
             if _NON_QUOTED_KEY.match(name) is None:
@@ -901,7 +959,7 @@ cdef class _TAG_Compound(_TAG_Value):
 
     cpdef str _pretty_to_snbt(self, indent_chr="", indent_count=0, leading_indent=True):
         cdef str name
-        cdef _TAG_Value elem
+        cdef BaseTag elem
         cdef list tags = []
         for name, elem in self.value.items():
             tags.append(f'{indent_chr * (indent_count + 1)}"{name}": {elem._pretty_to_snbt(indent_chr, indent_count + 1, False)}')
@@ -912,7 +970,7 @@ cdef class _TAG_Compound(_TAG_Value):
 
     cdef void write_value(self, buffer, little_endian):
         cdef str key
-        cdef _TAG_Value stag
+        cdef BaseTag stag
 
         for key, stag in self.value.items():
             write_tag_id(stag.tag_id, buffer)
@@ -1127,7 +1185,7 @@ cdef _TAG_Compound load_compound_tag(buffer_context context, bint little_endian)
     cdef char tagID
     #cdef str name
     cdef _TAG_Compound root_tag = TAG_Compound()
-    #cdef _TAG_Value tag
+    #cdef BaseTag tag
     cdef tuple tup
 
     while True:
@@ -1242,7 +1300,7 @@ cdef void write_double(double value, object buffer, bint little_endian):
     to_little_endian(&value, 8, little_endian)
     cwrite(buffer, <char*> &value, 8)
 
-cdef void write_tag_value(_TAG_Value tag, object buf, bint little_endian):
+cdef void write_tag_value(BaseTag tag, object buf, bint little_endian):
     cdef char tagID = tag.tag_id
     if tagID == _ID_BYTE:
         (<TAG_Byte> tag).write_value(buf, little_endian)
@@ -1354,7 +1412,7 @@ cdef tuple _parse_snbt_recursive(str snbt, int index=0):
     cdef list array
     cdef str array_type_chr
     cdef object array_type, first_data_type, int_match, float_match
-    cdef _TAG_Value nested_data, data
+    cdef BaseTag nested_data, data
     cdef str val
     cdef bint strict_str
 

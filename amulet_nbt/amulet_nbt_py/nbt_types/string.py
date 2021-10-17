@@ -3,10 +3,10 @@ from __future__ import annotations
 from typing import ClassVar, BinaryIO
 
 from amulet_nbt.amulet_nbt_py.const import SNBTType
-from .value import TAG_Value
+from .value import BaseImmutableTag
 
 
-class TAG_String(TAG_Value):
+class TAG_String(BaseImmutableTag):
     tag_id: ClassVar[int] = 8
     _value: str
     _data_type: ClassVar = str
@@ -41,8 +41,14 @@ class TAG_String(TAG_Value):
     def __radd__(self, other):
         return self.get_primitive(other) + self._value
 
+    def __iadd__(self, other):
+        return self.__class__(self + other)
+
     def __mul__(self, other):
         return self._value * self.get_primitive(other)
 
     def __rmul__(self, other):
         return self.get_primitive(other) * self._value
+
+    def __imul__(self, other):
+        return self.__class__(self * other)

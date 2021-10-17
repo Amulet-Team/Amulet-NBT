@@ -14,7 +14,7 @@ from typing import (
 
 from amulet_nbt.amulet_nbt_py.const import SNBTType
 
-from .value import TAG_Value
+from .value import BaseTag, BaseMutableTag
 from ..const import TAG_END, NON_QUOTED_KEY, CommaSpace, CommaNewline
 from . import class_map
 
@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 NBTDictType = Dict[str, "AnyNBT"]
 
 
-class TAG_Compound(TAG_Value):
+class TAG_Compound(BaseMutableTag):
     tag_id: ClassVar[int] = 10
     _value: NBTDictType
     _data_type: ClassVar = dict
@@ -36,7 +36,7 @@ class TAG_Compound(TAG_Value):
         if value is None:
             return self._data_type()
         else:
-            if isinstance(value, TAG_Value):
+            if isinstance(value, BaseTag):
                 value = value.value
             value = self._data_type(value)
             for key, value_ in value.items():
@@ -49,7 +49,7 @@ class TAG_Compound(TAG_Value):
             raise TypeError(
                 f"TAG_Compound key must be a string. Got {key.__class__.__name__}"
             )
-        if not isinstance(value, TAG_Value):
+        if not isinstance(value, BaseTag):
             raise TypeError(
                 f'Invalid type {value.__class__.__name__} for key "{key}" in TAG_Compound. Must be an NBT object.'
             )

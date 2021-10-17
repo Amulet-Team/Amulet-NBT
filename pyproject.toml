@@ -6,3 +6,4 @@ requires = [
     "versioneer-518",
     "numpy"
 ]
+build-backend = "setuptools.build_meta"

@@ -1,6 +1,10 @@
-include README.md
+graft amulet_nbt
+graft requirements
 include requirements.txt
 include versioneer.py
-include pyproject.toml
-include amulet_nbt/amulet_cy_nbt.pyx
-include amulet_nbt/_version.py
+prune */__pycache__/*
+global-exclude *.py[cod]
+global-exclude *.c
+global-exclude *.html
+global-exclude *.log
+global-exclude *.md

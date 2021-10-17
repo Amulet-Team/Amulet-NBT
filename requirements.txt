@@ -1,1 +1,1 @@
-numpy>=1.17.4
+-r requirements/requirements-main.txt

@@ -26,9 +26,8 @@ jobs:
       shell: bash
       run: |
         python -m pip install --upgrade pip
-        if [ -f requirements_build.txt ]; then pip install -r requirements_build.txt; fi
-    - name: Build Cython Version
-      run: |
+        pip install -r requirements.txt
+        pip install -r requirements/requirements-setup.txt
         python setup.py build_ext --inplace
     - name: Test with unittest
       run: python -m unittest discover -v -s tests

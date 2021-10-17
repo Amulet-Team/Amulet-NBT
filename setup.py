@@ -1,67 +1,45 @@
-import os
+from typing import List
+from setuptools import setup, find_packages
+from Cython.Build import cythonize
 import glob
-import shutil
-from setuptools import setup, find_packages, Extension
+import pkg_resources
 import versioneer
+import numpy
 
-try:
-    from Cython.Build import cythonize
-except (ImportError, ModuleNotFoundError):
-    print("Could not find cython. The cython version will not be built.")
-    cythonize = None
+PROJECT_PREFIX = "amulet_nbt"
 
 
-class get_numpy_include:
-    def __str__(self):
-        import numpy
-
-        return numpy.get_include()
-
-
-# there were issues with other builds carrying over their cache
-for d in glob.glob("*.egg-info"):
-    shutil.rmtree(d)
-
-with open(os.path.join(".", "requirements.txt")) as requirements_fp:
-    depends_on = [line.strip() for line in requirements_fp.readlines()]
-
-if cythonize:
-    extensions = [
-        Extension(
-            name="amulet_nbt.amulet_cy_nbt", sources=["amulet_nbt/amulet_cy_nbt.pyx"]
-        )
-    ]
-    ext_modules = cythonize(extensions, language_level=3, annotate=True)
-else:
-    ext_modules = []
+def load_requirements(path: str) -> List[str]:
+    requirements = []
+    with open(path) as f:
+        for line in f.readlines():
+            line = line.strip()
+            if line and line[0] != "#":
+                if line.startswith("-r "):
+                    requirements += load_requirements(line[3:])
+                else:
+                    requirements.append(str(pkg_resources.Requirement.parse(line)))
+    return requirements
 
 
-command_classes = versioneer.get_cmdclass()
+required_packages = load_requirements("requirements.txt")
 
-try:
-    from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
-
-    class bdist_wheel(command_classes.get("bdist_wheel", _bdist_wheel)):
-        def finalize_options(self):
-            super().finalize_options()
-            self.root_is_pure = False
-
-    command_classes["bdist_wheel"] = bdist_wheel
-
-except ImportError:
-    pass
+ext = []
+pyx_path = f"{PROJECT_PREFIX}/**/*.pyx"
+if next(glob.iglob(pyx_path, recursive=True), None):
+    # This throws an error if it does not match any files
+    ext += cythonize(
+        pyx_path,
+        language_level=3,
+        annotate=True,
+    )
 
 setup(
-    name="amulet-nbt",
     version=versioneer.get_version(),
-    description="Read and write Minecraft NBT and SNBT data.",
-    author="Ben Gothard, James Clare",
-    author_email="amuleteditor@gmail.com",
-    install_requires=depends_on,
+    install_requires=required_packages,
     packages=find_packages(),
-    ext_modules=ext_modules,
-    include_dirs=[get_numpy_include()],
     include_package_data=True,
-    cmdclass=command_classes,
-    zip_safe=False,
+    cmdclass=versioneer.get_cmdclass(),
+    ext_modules=ext,
+    include_dirs=[numpy.get_include()],
 )

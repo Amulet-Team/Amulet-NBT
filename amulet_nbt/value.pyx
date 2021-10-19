@@ -1,0 +1,195 @@
+from copy import copy, deepcopy
+from io import BytesIO
+import warnings
+import gzip
+
+from .util import write_byte, write_string
+
+
+cdef class BaseTag:
+    tag_id: int = None
+
+    @property
+    def value(self):
+        raise NotImplementedError
+
+    cpdef str to_snbt(self, object indent=None, *, object indent_chr=None):
+        """
+        Return the NBT data in Stringified NBT format.
+        
+        :param indent: int, str or None. If int will indent with this many spaces. If string will indent with this string. If None will return on one line.
+        :param indent_chr: Depreciated. Use indent instead.
+        :return: Stringified NBT representation of the data.
+        """
+        if indent_chr is not None:
+            warnings.warn("indent_chr is deprecated. Use indent instead.", DeprecationWarning)
+            indent = indent_chr
+        if isinstance(indent, int):
+            return self._pretty_to_snbt(" " * indent)
+        elif isinstance(indent, str):
+            if indent.strip():
+                raise ValueError("The indent argument must only contain whitespace.")
+            return self._pretty_to_snbt(indent)
+        return self._to_snbt()
+
+    cdef str _to_snbt(self):
+        """Internal method to format the class data as SNBT."""
+        raise NotImplementedError
+
+    cdef str _pretty_to_snbt(self, indent_chr="", indent_count=0, leading_indent=True):
+        return f"{indent_chr * indent_count * leading_indent}{self._to_snbt()}"
+
+    cpdef bytes to_nbt(
+        self,
+        str name="",
+        bint compressed=True,
+        bint little_endian=False,
+    ):
+        """
+        Get the data in binary NBT format.
+
+        :param name: The root tag name.
+        :param compressed: Should the bytes be compressed with gzip.
+        :param little_endian: Should the bytes be saved in little endian format.
+        :return: The binary NBT representaiton of the class.
+        """
+        cdef BytesIO buffer = BytesIO()
+        self.write_tag(buffer, name, little_endian)
+        cdef bytes data = buffer.getvalue()
+        if compressed:
+            cdef BytesIO gzip_buffer = BytesIO()
+            with gzip.GzipFile(fileobj=gzip_buffer, mode='wb') as gz:
+                gz.write(data)
+            data = gzip_buffer.getvalue()
+        return data
+
+    cpdef bytes save_to(
+        self,
+        object filepath_or_buffer=None,
+        bint compressed=True,
+        bint little_endian=False,
+        str name="",
+    ):
+        """
+        Convert the data to the binary NBT format. Optionally write to a file.
+        If filepath_or_buffer is a valid file path in string form the data will be written to that file.
+        If filepath_or_buffer is a file like object the bytes will be written to it using `write`.
+
+        :param filepath_or_buffer: A path or `write`able object to write the data to.
+        :param compressed: Should the bytes be compressed with gzip.
+        :param little_endian: Should the bytes be saved in little endian format.
+        :param name: The root tag name.
+        :return: The binary NBT representation of the class.
+        """
+        cdef bytes data = self.to_nbt(name, compressed, little_endian)
+
+        if filepath_or_buffer is None:
+            pass
+        elif isinstance(filepath_or_buffer, str):
+            with open(filepath_or_buffer, 'wb') as fp:
+                fp.write(data)
+        else:
+            filepath_or_buffer.write(data)
+        return data
+
+    cdef void write_tag(self, BytesIO buffer, str name, bint little_endian) except *:
+        """
+        Write the header and payload to the buffer.
+        type_byte, name_len, name, payload
+        
+        :param buffer: The buffer to write to.
+        :param name: The name of the tag in the header.
+        :param little_endian: Should the data be written in little endian format.
+        """
+        write_byte(self.tag_id, buffer)
+        write_string(name, buffer, little_endian)
+        self.write_payload(buffer, little_endian)
+
+    cdef void write_payload(self, BytesIO buffer, bint little_endian) except *:
+        """
+        Write the payload to the buffer.
+        This is only the data contained in the class and does not include the header.
+        
+        :param buffer: The buffer to write to.
+        :param little_endian: Should the data be written in little endian format.
+        """
+        raise NotImplementedError
+
+    # @staticmethod
+    # cdef (char, str) read_header(BytesIO buffer, bint little_endian) except *:
+    #     """
+    #     Read the header from the buffer.
+    #     The calling code must have read up to the start of the payload.
+    #
+    #     :param buffer: The buffer to read from.
+    #     :param little_endian: Is the data in little endian format.
+    #     """
+    #     raise NotImplementedError
+
+    @classmethod
+    cdef BaseTag read_payload(cls, BytesIO buffer, bint little_endian) except *:
+        """
+        Read the payload from the buffer.
+        The calling code must have read up to the start of the payload.
+        
+        :param buffer: The buffer to read from.
+        :param little_endian: Is the data in little endian format.
+        """
+        raise NotImplementedError
+
+    def __getattr__(self, item):
+        return self.value.__getattribute__(item)
+
+    def __repr__(self):
+        return self._to_snbt()
+
+    def __str__(self):
+        return str(self.value)
+
+    def __dir__(self):
+        return dir(self.value)
+
+    def __eq__(self, other):
+        return self.value == other
+
+    cpdef bint strict_equals(self, other):
+        return isinstance(other, self.__class__) and self.tag_id == other.tag_id and self == other
+
+    def __ge__(self, other):
+        return self.value >= other
+
+    def __gt__(self, other):
+        return self.value > other
+
+    def __le__(self, other):
+        return self.value <= other
+
+    def __lt__(self, other):
+        return self.value < other
+
+    def __reduce__(self):
+        return self.__class__, (self.value,)
+
+    def copy(self):
+        return copy(self)
+
+    def __deepcopy__(self, memo=None):
+        return self.__class__(deepcopy(self.value, memo=memo))
+
+    def __copy__(self):
+        return self.__class__(copy(self.value))
+
+BaseValueType = BaseTag
+
+
+cdef class BaseImmutableTag(BaseTag):
+    # https://github.com/cython/cython/issues/3709
+    def __eq__(self, other):
+        return self.value == other
+
+    def __hash__(self):
+        return hash((self.tag_id, self.value))
+
+
+cdef class BaseMutableTag(BaseTag):
+    pass

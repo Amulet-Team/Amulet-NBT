@@ -1,50 +1,17 @@
-try:
-    from .amulet_cy_nbt import (
-        TAG_Byte,
-        TAG_Short,
-        TAG_Int,
-        TAG_Long,
-        TAG_Float,
-        TAG_Double,
-        TAG_Byte_Array,
-        TAG_String,
-        TAG_List,
-        TAG_Compound,
-        TAG_Int_Array,
-        TAG_Long_Array,
-        NBTFile,
-        load,
-        from_snbt,
-        BaseValueType,
-        BaseArrayType,
-        AnyNBT,
-        SNBTType,
-    )
-except (ImportError, ModuleNotFoundError) as e:
-    print(
-        "Failed to import cython nbt library. Falling back to python version. This will run a lot slower."
-    )
-    from .amulet_nbt_py import (
-        TAG_Byte,
-        TAG_Short,
-        TAG_Int,
-        TAG_Long,
-        TAG_Float,
-        TAG_Double,
-        TAG_Byte_Array,
-        TAG_String,
-        TAG_List,
-        TAG_Compound,
-        TAG_Int_Array,
-        TAG_Long_Array,
-        NBTFile,
-        load,
-        from_snbt,
-        BaseValueType,
-        BaseArrayType,
-        AnyNBT,
-        SNBTType,
-    )
+from .value import BaseTag, BaseValueType
+from .int import TAG_Byte, TAG_Short, TAG_Int, TAG_Long
+from .float import TAG_Float, TAG_Double
+from .array import BaseArrayTag, BaseArrayType, TAG_Byte_Array, TAG_Int_Array, TAG_Long_Array
+from .string import TAG_String
+from .list import TAG_List
+from .compound import TAG_Compound
+from .nbtfile import NBTFile
+from .load_nbt import load
+from .load_snbt import from_snbt
+# from .amulet_cy_nbt import (
+#     AnyNBT,
+#     SNBTType,
+# )
 
 from ._version import get_versions
 

@@ -1,4 +1,4 @@
-from .value import BaseImmutableTag
+from .value cimport BaseImmutableTag
 
 
 cdef class BaseNumericTag(BaseImmutableTag):

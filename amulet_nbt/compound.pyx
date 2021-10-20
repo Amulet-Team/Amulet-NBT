@@ -1,16 +1,23 @@
 from collections.abc import MutableMapping
-from .value import BaseMutableTag, BaseTag
-from .const import ID_COMPOUND, CommaSpace
+from io import BytesIO
+
+from .value cimport BaseMutableTag, BaseTag
+from .const cimport ID_END, ID_COMPOUND, CommaSpace, CommaNewline
+from .const import NON_QUOTED_KEY
+from .util cimport write_byte, BufferContext
 
 
-cdef class _TAG_Compound(BaseMutableTag):
+cdef class TAG_Compound(BaseMutableTag):
     tag_id = ID_COMPOUND
-    cdef public dict value
 
     def __init__(self, value = None):
-        self.value = value or {}
-        for key, value in self.value.items():
+        self._value = value or {}
+        for key, value in self._value.items():
             self._check_entry(key, value)
+
+    @property
+    def value(self):
+        return self._value.copy()
 
     @staticmethod
     def _check_entry(key: str, value: AnyNBT):
@@ -27,58 +34,55 @@ cdef class _TAG_Compound(BaseMutableTag):
         cdef str name
         cdef BaseTag elem
         cdef list tags = []
-        for name, elem in self.value.items():
-            if _NON_QUOTED_KEY.match(name) is None:
+        for name, elem in self._value.items():
+            if NON_QUOTED_KEY.match(name) is None:
                 tags.append(f'"{name}": {elem.to_snbt()}')
             else:
                 tags.append(f'{name}: {elem.to_snbt()}')
         return f"{{{CommaSpace.join(tags)}}}"
 
-    cdef str _pretty_to_snbt(self, indent_chr="", indent_count=0, leading_indent=True):
+    cdef str _pretty_to_snbt(self, str indent_chr, int indent_count=0, bint leading_indent=True):
         cdef str name
         cdef BaseTag elem
         cdef list tags = []
-        for name, elem in self.value.items():
+        for name, elem in self._value.items():
             tags.append(f'{indent_chr * (indent_count + 1)}"{name}": {elem._pretty_to_snbt(indent_chr, indent_count + 1, False)}')
         if tags:
             return f"{indent_chr * indent_count * leading_indent}{{\n{CommaNewline.join(tags)}\n{indent_chr * indent_count}}}"
         else:
             return f"{indent_chr * indent_count * leading_indent}{{}}"
 
-    cdef void write_payload(self, buffer, little_endian) except *:
+    cdef void write_payload(self, object buffer: BytesIO, bint little_endian) except *:
         cdef str key
-        cdef BaseTag stag
+        cdef BaseTag tag
 
-        for key, stag in self.value.items():
-            write_tag_id(stag.tag_id, buffer)
-            write_string(key, buffer, little_endian)
-            stag.write_payload(buffer, little_endian)
-        write_tag_id(ID_END, buffer)
+        for key, tag in self._value.items():
+            tag.write_tag(buffer, key, little_endian)
+        write_byte(ID_END, buffer)
 
-    def write_payload(self, buffer, name="", little_endian=False):
-        write_tag_id(self.tag_id, buffer)
-        write_string(name, buffer, little_endian)
-        self.write_payload(buffer, little_endian)
+    @staticmethod
+    cdef TAG_Compound read_payload(BufferContext buffer, bint little_endian):
+        raise NotImplementedError
 
     def __getitem__(self, key: str) -> AnyNBT:
-        return self.value[key]
+        return self._value[key]
 
     def __setitem__(self, key: str, value: AnyNBT):
         self._check_entry(key, value)
-        self.value[key] = value
+        self._value[key] = value
 
     def __delitem__(self, key: str):
-        del self.value[key]
+        del self._value[key]
 
     def __iter__(self) -> Iterator[AnyNBT]:
-        yield from self.value
+        yield from self._value
 
     def __contains__(self, key: str) -> bool:
-        return key in self.value
+        return key in self._value
 
     def __len__(self) -> int:
-        return self.value.__len__()
+        return self._value.__len__()
 
 
-class TAG_Compound(_TAG_Compound, MutableMapping):
-    pass
+# class TAG_Compound(_TAG_Compound, MutableMapping):
+#     pass

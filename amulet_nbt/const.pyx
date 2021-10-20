@@ -1,11 +1,10 @@
 import re
 
 SNBTType = str
+NON_QUOTED_KEY = re.compile(r"^[a-zA-Z0-9-]+$")
 
 cdef str CommaNewline = ",\n"
 cdef str CommaSpace = ", "
-
-_NON_QUOTED_KEY = re.compile(r"^[a-zA-Z0-9-]+$")
 
 cdef char ID_END = 0
 cdef char ID_BYTE = 1

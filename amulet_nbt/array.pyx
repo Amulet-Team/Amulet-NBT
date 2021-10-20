@@ -1,14 +1,14 @@
 import numpy
 cimport numpy
+from io import BytesIO
 
-from .value import BaseMutableTag
+from .value cimport BaseMutableTag
 from .errors import NBTError
-from .const import CommaSpace, ID_BYTE_ARRAY, ID_INT_ARRAY, ID_LONG_ARRAY
-from .util import write_array
+from .const cimport CommaSpace, ID_BYTE_ARRAY, ID_INT_ARRAY, ID_LONG_ARRAY
+from .util cimport write_array, BufferContext
 
 
 cdef class BaseArrayTag(BaseMutableTag):
-    cdef public object value
     big_endian_data_type = little_endian_data_type = numpy.dtype("int8")
 
     def __init__(self, object value = None):
@@ -25,6 +25,13 @@ cdef class BaseArrayTag(BaseMutableTag):
             raise NBTError(f'Unexpected object {value} given to {self.__class__.__name__}')
 
         self.value = value
+
+    cdef void _fix_dtype(self, bint little_endian):
+        data_type = self.little_endian_data_type if little_endian else self.big_endian_data_type
+        if self.value.dtype != data_type:
+            if self.value.dtype != self.big_endian_data_type if little_endian else self.little_endian_data_type:
+                print(f'[Warning] Mismatch array dtype. Expected: {data_type.str}, got: {self.value.dtype.str}')
+            self.value = self.value.astype(data_type)
 
     def __eq__(self, other):
         return numpy.array_equal(self.value, other)
@@ -201,13 +208,13 @@ cdef class TAG_Byte_Array(BaseArrayTag):
             tags.append(str(elem))
         return f"[B;{'B, '.join(tags)}B]"
 
-    cdef void write_payload(self, buffer, little_endian) except *:
-        data_type = self.little_endian_data_type if little_endian else self.big_endian_data_type
-        if self.value.dtype != data_type:
-            if self.value.dtype != self.big_endian_data_type if little_endian else self.little_endian_data_type:
-                print(f'[Warning] Mismatch array dtype. Expected: {data_type.str}, got: {self.value.dtype.str}')
-            self.value = self.value.astype(data_type)
+    cdef void write_payload(self, object buffer: BytesIO, bint little_endian) except *:
+        self._fix_dtype(little_endian)
         write_array(self.value, buffer, 1, little_endian)
+
+    @staticmethod
+    cdef TAG_Byte_Array read_payload(BufferContext buffer, bint little_endian):
+        raise NotImplementedError
 
 
 cdef class TAG_Int_Array(BaseArrayTag):
@@ -222,13 +229,13 @@ cdef class TAG_Int_Array(BaseArrayTag):
             tags.append(str(elem))
         return f"[I;{CommaSpace.join(tags)}]"
 
-    cdef void write_payload(self, buffer, little_endian) except *:
-        data_type = self.little_endian_data_type if little_endian else self.big_endian_data_type
-        if self.value.dtype != data_type:
-            if self.value.dtype != self.big_endian_data_type if little_endian else self.little_endian_data_type:
-                print(f'[Warning] Mismatch array dtype. Expected: {data_type.str}, got: {self.value.dtype.str}')
-            self.value = self.value.astype(data_type)
+    cdef void write_payload(self, object buffer: BytesIO, bint little_endian) except *:
+        self._fix_dtype(little_endian)
         write_array(self.value, buffer, 4, little_endian)
+
+    @staticmethod
+    cdef TAG_Int_Array read_payload(BufferContext buffer, bint little_endian):
+        raise NotImplementedError
 
 
 cdef class TAG_Long_Array(BaseArrayTag):
@@ -243,10 +250,10 @@ cdef class TAG_Long_Array(BaseArrayTag):
             tags.append(str(elem))
         return f"[L;{CommaSpace.join(tags)}]"
 
-    cdef void write_payload(self, buffer, little_endian) except *:
-        data_type = self.little_endian_data_type if little_endian else self.big_endian_data_type
-        if self.value.dtype != data_type:
-            if self.value.dtype != self.big_endian_data_type if little_endian else self.little_endian_data_type:
-                print(f'[Warning] Mismatch array dtype. Expected: {data_type.str}, got: {self.value.dtype.str}')
-            self.value = self.value.astype(data_type)
+    cdef void write_payload(self, object buffer: BytesIO, bint little_endian) except *:
+        self._fix_dtype(little_endian)
         write_array(self.value, buffer, 8, little_endian)
+
+    @staticmethod
+    cdef TAG_Long_Array read_payload(BufferContext buffer, bint little_endian):
+        raise NotImplementedError

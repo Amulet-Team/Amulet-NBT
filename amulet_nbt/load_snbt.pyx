@@ -1,4 +1,15 @@
 import re
+import numpy
+cimport numpy
+
+from .errors import SNBTParseError
+from .value cimport BaseTag
+from .int cimport TAG_Byte, TAG_Short, TAG_Int, TAG_Long
+from .float cimport TAG_Float, TAG_Double
+from .array cimport TAG_Byte_Array, TAG_Int_Array, TAG_Long_Array
+from .string cimport TAG_String
+from .list cimport TAG_List
+from .compound cimport TAG_Compound
 
 whitespace = re.compile('[ \t\r\n]*')
 int_numeric = re.compile('-?[0-9]+[bBsSlL]?')
@@ -37,6 +48,9 @@ cdef int _strip_colon(str snbt, int index) except -1:
         raise SNBTParseError(f'Expected : at {index} but got ->{snbt[index:index + 10]} instead')
     else:
         return match.end()
+
+cdef inline unescape(str string):
+    return string.replace('\\"', '"').replace("\\\\", "\\")
 
 cdef tuple _capture_string(str snbt, int index):
     cdef str val, quote

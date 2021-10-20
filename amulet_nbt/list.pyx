@@ -1,58 +1,69 @@
+from io import BytesIO
 from collections.abc import MutableSequence
-from .value import BaseMutableTag
-from .const import ID_LIST
+
+from .value cimport BaseTag, BaseMutableTag
+from .const cimport ID_LIST, CommaSpace, CommaNewline
+from .util cimport write_byte, write_int, BufferContext
+from .load_nbt cimport load_tag
 
 
-cdef class _TAG_List(BaseMutableTag):
+cdef class TAG_List(BaseMutableTag):
     tag_id = ID_LIST
-    cdef public list value
-    cdef public char list_data_type
 
     def __init__(self, value = None, char list_data_type = 1):
         self.list_data_type = list_data_type
-        self.value = []
+        self._value = []
         if value:
             self._check_tag_iterable(value)
-            self.value = list(value)
+            self._value = list(value)
+
+    @property
+    def value(self):
+        return self._value.copy()
 
     def _check_tag(self, value: AnyNBT, fix_if_empty=True):
         if not isinstance(value, BaseTag):
             raise TypeError(f"Invalid type {value.__class__.__name__} TAG_List. Must be an NBT object.")
-        if fix_if_empty and not self.value:
+        if fix_if_empty and not self._value:
             self.list_data_type = value.tag_id
         elif value.tag_id != self.list_data_type:
             raise TypeError(
-                f"Invalid type {value.__class__.__name__} for TAG_List({TAG_CLASSES[self.list_data_type].__name__})"
+                f"Invalid type {value.__class__.__name__} for TAG_List({self.list_data_type})"
             )
 
     def _check_tag_iterable(self, value: Sequence[BaseTag]):
         for i, tag in enumerate(value):
             self._check_tag(tag, not i)
 
-    cdef void write_payload(self, buffer, little_endian) except *:
+    cdef void write_payload(self, object buffer: BytesIO, bint little_endian) except *:
         cdef char list_type = self.list_data_type
 
-        write_tag_id(list_type, buffer)
-        write_int(<int> len(self.value), buffer, little_endian)
+        write_byte(list_type, buffer)
+        write_int(<int> len(self._value), buffer, little_endian)
 
         cdef BaseTag subtag
-        for subtag in self.value:
+        for subtag in self._value:
             if subtag.tag_id != list_type:
-                raise ValueError("Asked to save TAG_List with different types! Found %s and %s" % (subtag.tag_id,
-                                                                                                   list_type))
+                raise ValueError(
+                    f"TAG_List must only contain one type! Found {subtag.tag_id} in list type {list_type}"
+                )
             subtag.write_payload(buffer, little_endian)
+
+    @staticmethod
+    cdef TAG_List read_payload(BufferContext buffer, bint little_endian):
+        raise NotImplementedError
 
     cdef str _to_snbt(self):
         cdef BaseTag elem
         cdef list tags = []
-        for elem in self.value:
+        for elem in self._value:
             tags.append(elem._to_snbt())
         return f"[{CommaSpace.join(tags)}]"
 
-    cdef str _pretty_to_snbt(self, indent_chr="", indent_count=0, leading_indent=True):
+    cdef str _pretty_to_snbt(self, str indent_chr, int indent_count=0, bint leading_indent=True):
         cdef BaseTag elem
         cdef list tags = []
-        for elem in self.value:
+        for elem in self._value:
             tags.append(elem._pretty_to_snbt(indent_chr, indent_count + 1))
         if tags:
             return f"{indent_chr * indent_count * leading_indent}[\n{CommaNewline.join(tags)}\n{indent_chr * indent_count}]"
@@ -60,72 +71,72 @@ cdef class _TAG_List(BaseMutableTag):
             return f"{indent_chr * indent_count * leading_indent}[]"
 
     def __contains__(self, item: AnyNBT) -> bool:
-        return self.value.__contains__(item)
+        return self._value.__contains__(item)
 
     def __iter__(self) -> Iterator[AnyNBT]:
-        return self.value.__iter__()
+        return self._value.__iter__()
 
     def __len__(self) -> int:
-        return self.value.__len__()
+        return self._value.__len__()
 
     def __getitem__(self, index: int) -> AnyNBT:
-        return self.value[index]
+        return self._value[index]
 
     def __setitem__(self, index, value):
         if isinstance(index, slice):
             self._check_tag_iterable(value)
         else:
             self._check_tag(value)
-        self.value[index] = value
+        self._value[index] = value
 
     def __delitem__(self, index: int):
-        del self.value[index]
+        del self._value[index]
 
     def append(self, value: AnyNBT) -> None:
         self._check_tag(value)
-        self.value.append(value)
+        self._value.append(value)
 
     def copy(self):
-        return TAG_List(self.value.copy(), self.list_data_type)
+        return TAG_List(self._value.copy(), self.list_data_type)
 
     def extend(self, other):
         self._check_tag_iterable(other)
-        self.value.extend(other)
+        self._value.extend(other)
         return self
 
     def insert(self, index: int, value: AnyNBT):
         self._check_tag(value)
-        self.value.insert(index, value)
+        self._value.insert(index, value)
 
     def __mul__(self, other):
-        return self.value * other
+        return self._value * other
 
     def __rmul__(self, other):
-        return other * self.value
+        return other * self._value
 
     def __imul__(self, other):
-        self.value *= other
+        self._value *= other
         return self
 
     def __eq__(self, other):
         if (
                 isinstance(other, TAG_List)
-                and self.value
+                and self._value
                 and self.list_data_type != other.list_data_type
         ):
             return False
-        return self.value == other
+        return self._value == other
 
     def __add__(self, other):
-        return self.value + other
+        return self._value + other
 
     def __radd__(self, other):
-        return other + self.value
+        return other + self._value
 
     def __iadd__(self, other):
         self.extend(other)
         return self
 
 
-class TAG_List(_TAG_List, MutableSequence):
-    pass
+# class TAG_List(_TAG_List, MutableSequence):
+#     pass

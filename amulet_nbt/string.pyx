@@ -1,19 +1,16 @@
-from .value import BaseImmutableTag
-from .const import ID_STRING
-from .util import write_string
+from io import BytesIO
+
+from .value cimport BaseImmutableTag
+from .const cimport ID_STRING
+from .util cimport write_string, BufferContext
 
 
-def escape(string: str):
+cdef inline escape(str string):
     return string.replace('\\', '\\\\').replace('"', '\\"')
-
-
-def unescape(string: str):
-    return string.replace('\\"', '"').replace("\\\\", "\\")
 
 
 cdef class TAG_String(BaseImmutableTag):
     tag_id = ID_STRING
-    cdef readonly unicode value
 
     def __init__(self, value = ""):
         self.value = str(value)
@@ -24,8 +21,12 @@ cdef class TAG_String(BaseImmutableTag):
     cdef str _to_snbt(self):
         return f"\"{escape(self.value)}\""
 
-    cdef void write_payload(self, buffer, little_endian) except *:
+    cdef void write_payload(self, object buffer: BytesIO, bint little_endian) except *:
         write_string(self.value, buffer, little_endian)
+
+    @staticmethod
+    cdef TAG_String read_payload(BufferContext buffer, bint little_endian):
+        raise NotImplementedError
 
     def __getitem__(self, item):
         return self.value.__getitem__(item)

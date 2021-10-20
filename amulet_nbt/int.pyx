@@ -1,6 +1,16 @@
-from .numeric import BaseNumericTag
-from .const import ID_BYTE, ID_SHORT, ID_INT, ID_LONG
-from .util import write_byte, write_short, write_int, write_long
+from io import BytesIO
+
+from .numeric cimport BaseNumericTag
+from .const cimport ID_BYTE, ID_SHORT, ID_INT, ID_LONG
+from .util cimport (
+    write_byte,
+    write_short,
+    write_int,
+    write_long,
+    BufferContext,
+    read_data,
+    to_little_endian,
+)
 
 
 cdef class BaseIntegerTag(BaseNumericTag):
@@ -55,7 +65,6 @@ cdef class BaseIntegerTag(BaseNumericTag):
 
 cdef class TAG_Byte(BaseIntegerTag):
     tag_id = ID_BYTE
-    cdef readonly char value
 
     def __init__(self, value = 0):
         self.value = self._sanitise_value(int(value))
@@ -66,13 +75,17 @@ cdef class TAG_Byte(BaseIntegerTag):
     cdef str _to_snbt(self):
         return f"{self.value}b"
 
-    cdef void write_payload(self, buffer, little_endian) except *:
+    cdef void write_payload(self, object buffer: BytesIO, bint little_endian) except *:
         write_byte(self.value, buffer)
+
+    @staticmethod
+    cdef TAG_Byte read_payload(BufferContext buffer, bint little_endian):
+        # return cls(read_data(buffer, 1)[0])
+        return TAG_Byte(<char> read_data(buffer, 1))
 
 
 cdef class TAG_Short(BaseIntegerTag):
     tag_id = ID_SHORT
-    cdef readonly short value
 
     def __init__(self, value = 0):
         self.value = self._sanitise_value(int(value))
@@ -83,13 +96,18 @@ cdef class TAG_Short(BaseIntegerTag):
     cdef str _to_snbt(self):
         return f"{self.value}s"
 
-    cdef void write_payload(self, buffer, little_endian) except *:
+    cdef void write_payload(self, object buffer: BytesIO, bint little_endian) except *:
         write_short(self.value, buffer, little_endian)
+
+    @staticmethod
+    cdef TAG_Short read_payload(BufferContext buffer, bint little_endian):
+        cdef short value = <short> read_data(buffer, 2)
+        to_little_endian(&value, 2, little_endian)
+        return TAG_Short(value)
 
 
 cdef class TAG_Int(BaseIntegerTag):
     tag_id = ID_INT
-    cdef readonly int value
 
     def __init__(self, value = 0):
         self.value = self._sanitise_value(int(value))
@@ -100,13 +118,18 @@ cdef class TAG_Int(BaseIntegerTag):
     cdef str _to_snbt(self):
         return f"{self.value}"
 
-    cdef void write_payload(self, buffer, little_endian) except *:
+    cdef void write_payload(self, object buffer: BytesIO, bint little_endian) except *:
         write_int(self.value, buffer, little_endian)
+
+    @staticmethod
+    cdef TAG_Int read_payload(BufferContext buffer, bint little_endian):
+        cdef int value = <int> read_data(buffer, 4)
+        to_little_endian(&value, 4, little_endian)
+        return TAG_Int(value)
 
 
 cdef class TAG_Long(BaseIntegerTag):
     tag_id = ID_LONG
-    cdef readonly long long value
 
     def __init__(self, value = 0):
         self.value = self._sanitise_value(int(value))
@@ -117,5 +140,11 @@ cdef class TAG_Long(BaseIntegerTag):
     cdef str _to_snbt(self):
         return f"{self.value}L"
 
-    cdef void write_payload(self, buffer, little_endian) except *:
+    cdef void write_payload(self, object buffer: BytesIO, bint little_endian) except *:
         write_long(self.value, buffer, little_endian)
+
+    @staticmethod
+    cdef TAG_Long read_payload(BufferContext buffer, bint little_endian):
+        cdef long long value = <long long> read_data(buffer, 8)
+        to_little_endian(&value, 8, little_endian)
+        return TAG_Long(value)

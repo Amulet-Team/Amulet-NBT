@@ -3,7 +3,7 @@ from io import BytesIO
 import warnings
 import gzip
 
-from .util import write_byte, write_string
+from .util cimport write_byte, write_string, load_string, read_data, BufferContext
 
 
 cdef class BaseTag:
@@ -13,7 +13,7 @@ cdef class BaseTag:
     def value(self):
         raise NotImplementedError
 
-    cpdef str to_snbt(self, object indent=None, *, object indent_chr=None):
+    cpdef str to_snbt(self, object indent=None, object indent_chr=None):
         """
         Return the NBT data in Stringified NBT format.
         
@@ -36,7 +36,7 @@ cdef class BaseTag:
         """Internal method to format the class data as SNBT."""
         raise NotImplementedError
 
-    cdef str _pretty_to_snbt(self, indent_chr="", indent_count=0, leading_indent=True):
+    cdef str _pretty_to_snbt(self, str indent_chr, int indent_count=0, bint leading_indent=True):
         return f"{indent_chr * indent_count * leading_indent}{self._to_snbt()}"
 
     cpdef bytes to_nbt(
@@ -53,11 +53,12 @@ cdef class BaseTag:
         :param little_endian: Should the bytes be saved in little endian format.
         :return: The binary NBT representaiton of the class.
         """
-        cdef BytesIO buffer = BytesIO()
+        cdef object buffer = BytesIO()
+        cdef object gzip_buffer
         self.write_tag(buffer, name, little_endian)
         cdef bytes data = buffer.getvalue()
         if compressed:
-            cdef BytesIO gzip_buffer = BytesIO()
+            gzip_buffer = BytesIO()
             with gzip.GzipFile(fileobj=gzip_buffer, mode='wb') as gz:
                 gz.write(data)
             data = gzip_buffer.getvalue()
@@ -92,7 +93,7 @@ cdef class BaseTag:
             filepath_or_buffer.write(data)
         return data
 
-    cdef void write_tag(self, BytesIO buffer, str name, bint little_endian) except *:
+    cdef void write_tag(self, object buffer: BytesIO, str name, bint little_endian) except *:
         """
         Write the header and payload to the buffer.
         type_byte, name_len, name, payload
@@ -105,7 +106,7 @@ cdef class BaseTag:
         write_string(name, buffer, little_endian)
         self.write_payload(buffer, little_endian)
 
-    cdef void write_payload(self, BytesIO buffer, bint little_endian) except *:
+    cdef void write_payload(self, object buffer: BytesIO, bint little_endian) except *:
         """
         Write the payload to the buffer.
         This is only the data contained in the class and does not include the header.
@@ -115,19 +116,8 @@ cdef class BaseTag:
         """
         raise NotImplementedError
 
-    # @staticmethod
-    # cdef (char, str) read_header(BytesIO buffer, bint little_endian) except *:
-    #     """
-    #     Read the header from the buffer.
-    #     The calling code must have read up to the start of the payload.
-    #
-    #     :param buffer: The buffer to read from.
-    #     :param little_endian: Is the data in little endian format.
-    #     """
-    #     raise NotImplementedError
-
-    @classmethod
-    cdef BaseTag read_payload(cls, BytesIO buffer, bint little_endian) except *:
+    @staticmethod
+    cdef BaseTag read_payload(BufferContext buffer, bint little_endian):
         """
         Read the payload from the buffer.
         The calling code must have read up to the start of the payload.
@@ -138,7 +128,7 @@ cdef class BaseTag:
         raise NotImplementedError
 
     def __getattr__(self, item):
-        return self.value.__getattribute__(item)
+        return getattr(self.value, item)
 
     def __repr__(self):
         return self._to_snbt()
@@ -147,7 +137,7 @@ cdef class BaseTag:
         return str(self.value)
 
     def __dir__(self):
-        return dir(self.value)
+        return list(set(dir(self.__class__) + dir(self.value)))
 
     def __eq__(self, other):
         return self.value == other

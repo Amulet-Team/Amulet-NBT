@@ -1,7 +1,8 @@
+cimport numpy
 from .value cimport BaseMutableTag
 
 cdef class BaseArrayTag(BaseMutableTag):
-    cdef public object value
+    cdef public numpy.ndarray value
     cdef void _fix_dtype(self, bint little_endian)
 
 cdef class TAG_Byte_Array(BaseArrayTag):

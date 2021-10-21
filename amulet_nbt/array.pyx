@@ -12,19 +12,22 @@ cdef class BaseArrayTag(BaseMutableTag):
     big_endian_data_type = little_endian_data_type = numpy.dtype("int8")
 
     def __init__(self, object value = None):
+        cdef numpy.ndarray arr
         if value is None:
-            value = numpy.zeros((0,), self.big_endian_data_type)
+            arr = numpy.zeros((0,), self.big_endian_data_type)
         elif isinstance(value, (list, tuple)):
-            value = numpy.array(value, self.big_endian_data_type)
+            arr = numpy.array(value, self.big_endian_data_type)
         elif isinstance(value, (TAG_Byte_Array, TAG_Int_Array, TAG_Long_Array)):
-            value = value.value
-        if isinstance(value, numpy.ndarray):
-            if value.dtype != self.big_endian_data_type:
-                value = value.astype(self.big_endian_data_type)
+            arr = value.value
+        elif isinstance(value, numpy.ndarray):
+            arr = value
         else:
             raise NBTError(f'Unexpected object {value} given to {self.__class__.__name__}')
 
-        self.value = value
+        if arr.dtype != self.big_endian_data_type:
+            arr = arr.astype(self.big_endian_data_type)
+
+        self.value = arr
 
     cdef void _fix_dtype(self, bint little_endian):
         data_type = self.little_endian_data_type if little_endian else self.big_endian_data_type

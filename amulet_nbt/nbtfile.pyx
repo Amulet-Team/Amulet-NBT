@@ -1,11 +1,17 @@
 from typing import Iterable
 from .value cimport BaseTag
+from .compound cimport TAG_Compound
 
 
 cdef class NBTFile:
-    def __init__(self, BaseTag value, str name=""):
+    def __init__(self, BaseTag value=None, str name=""):
+        if value is None:
+            value = TAG_Compound()
         self.value = value
         self.name = name
+
+    cpdef bytes to_nbt(self, bint compressed=True, bint little_endian=False):
+        return self.value.to_nbt(self.name, compressed, little_endian)
 
     cpdef bytes save_to(
         self,

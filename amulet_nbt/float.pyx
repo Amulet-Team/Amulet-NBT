@@ -2,7 +2,7 @@ from io import BytesIO
 
 from .numeric cimport BaseNumericTag
 from .const cimport ID_FLOAT, ID_DOUBLE
-from .util cimport write_float, write_double, BufferContext
+from .util cimport write_float, write_double, BufferContext, read_data, to_little_endian
 
 
 cdef class BaseFloatTag(BaseNumericTag):
@@ -23,7 +23,11 @@ cdef class TAG_Float(BaseFloatTag):
 
     @staticmethod
     cdef TAG_Float read_payload(BufferContext buffer, bint little_endian):
-        raise NotImplementedError
+        cdef float*pointer = <float*> read_data(buffer, 4)
+        cdef TAG_Float tag = TAG_Float.__new__(TAG_Float)
+        tag.value = pointer[0]
+        to_little_endian(&tag.value, 4, little_endian)
+        return tag
 
 
 cdef class TAG_Double(BaseFloatTag):
@@ -40,4 +44,8 @@ cdef class TAG_Double(BaseFloatTag):
 
     @staticmethod
     cdef TAG_Double read_payload(BufferContext buffer, bint little_endian):
-        raise NotImplementedError
+        cdef double *pointer = <double *> read_data(buffer, 8)
+        cdef TAG_Double tag = TAG_Double.__new__(TAG_Double)
+        tag.value = pointer[0]
+        to_little_endian(&tag.value, 8, little_endian)
+        return tag

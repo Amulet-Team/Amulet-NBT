@@ -3,7 +3,7 @@ from io import BytesIO
 import warnings
 import gzip
 
-from .util cimport write_byte, write_string, load_string, read_data, BufferContext
+from .util cimport write_byte, write_string, BufferContext
 
 
 cdef class BaseTag:

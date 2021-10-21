@@ -4,7 +4,8 @@ from io import BytesIO
 from .value cimport BaseMutableTag, BaseTag
 from .const cimport ID_END, ID_COMPOUND, CommaSpace, CommaNewline
 from .const import NON_QUOTED_KEY
-from .util cimport write_byte, BufferContext
+from .util cimport write_byte, BufferContext, read_byte, read_string
+from .load_nbt cimport load_payload
 
 
 cdef class TAG_Compound(BaseMutableTag):
@@ -62,7 +63,20 @@ cdef class TAG_Compound(BaseMutableTag):
 
     @staticmethod
     cdef TAG_Compound read_payload(BufferContext buffer, bint little_endian):
-        raise NotImplementedError
+        cdef char tag_type
+        cdef TAG_Compound tag = TAG_Compound()
+        cdef str name
+        cdef BaseTag child_tag
+
+        while True:
+            tag_type = read_byte(buffer)
+            if tag_type == ID_END:
+                break
+            else:
+                name = read_string(buffer, little_endian)
+                child_tag = load_payload(buffer, tag_type, little_endian)
+                tag[name] = child_tag
+        return tag
 
     def __getitem__(self, key: str) -> AnyNBT:
         return self._value[key]

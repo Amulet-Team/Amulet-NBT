@@ -3,8 +3,8 @@ from collections.abc import MutableSequence
 
 from .value cimport BaseTag, BaseMutableTag
 from .const cimport ID_LIST, CommaSpace, CommaNewline
-from .util cimport write_byte, write_int, BufferContext
-from .load_nbt cimport load_tag
+from .util cimport write_byte, write_int, BufferContext, read_byte, read_int
+from .load_nbt cimport load_payload
 
 
 cdef class TAG_List(BaseMutableTag):
@@ -51,7 +51,14 @@ cdef class TAG_List(BaseMutableTag):
 
     @staticmethod
     cdef TAG_List read_payload(BufferContext buffer, bint little_endian):
-        raise NotImplementedError
+        cdef char list_type = read_byte(buffer)
+        cdef int length = read_int(buffer, little_endian)
+        cdef TAG_List self = TAG_List(list_data_type=list_type)
+        cdef list val = self._value
+        cdef int i
+        for i in range(length):
+            val.append(load_payload(buffer, list_type, little_endian))
+        return self
 
     cdef str _to_snbt(self):
         cdef BaseTag elem

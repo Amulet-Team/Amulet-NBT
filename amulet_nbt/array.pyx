@@ -5,7 +5,7 @@ from io import BytesIO
 from .value cimport BaseMutableTag
 from .errors import NBTError
 from .const cimport CommaSpace, ID_BYTE_ARRAY, ID_INT_ARRAY, ID_LONG_ARRAY
-from .util cimport write_array, BufferContext
+from .util cimport write_array, BufferContext, read_int, read_data
 
 
 cdef class BaseArrayTag(BaseMutableTag):
@@ -214,7 +214,10 @@ cdef class TAG_Byte_Array(BaseArrayTag):
 
     @staticmethod
     cdef TAG_Byte_Array read_payload(BufferContext buffer, bint little_endian):
-        raise NotImplementedError
+        cdef int length = read_int(buffer, little_endian)
+        cdef char*arr = read_data(buffer, length)
+        data_type = TAG_Byte_Array.little_endian_data_type if little_endian else TAG_Byte_Array.big_endian_data_type
+        return TAG_Byte_Array(numpy.frombuffer(arr[:length], dtype=data_type, count=length))
 
 
 cdef class TAG_Int_Array(BaseArrayTag):
@@ -235,7 +238,11 @@ cdef class TAG_Int_Array(BaseArrayTag):
 
     @staticmethod
     cdef TAG_Int_Array read_payload(BufferContext buffer, bint little_endian):
-        raise NotImplementedError
+        cdef int length = read_int(buffer, little_endian)
+        cdef int byte_length = length * 4
+        cdef char*arr = read_data(buffer, byte_length)
+        cdef object data_type = TAG_Int_Array.little_endian_data_type if little_endian else TAG_Int_Array.big_endian_data_type
+        return TAG_Int_Array(numpy.frombuffer(arr[:byte_length], dtype=data_type, count=length))
 
 
 cdef class TAG_Long_Array(BaseArrayTag):
@@ -256,4 +263,8 @@ cdef class TAG_Long_Array(BaseArrayTag):
 
     @staticmethod
     cdef TAG_Long_Array read_payload(BufferContext buffer, bint little_endian):
-        raise NotImplementedError
+        cdef int length = read_int(buffer, little_endian)
+        cdef int byte_length = length * 8
+        cdef char*arr = read_data(buffer, byte_length)
+        cdef object data_type = TAG_Long_Array.little_endian_data_type if little_endian else TAG_Long_Array.big_endian_data_type
+        return TAG_Long_Array(numpy.frombuffer(arr[:byte_length], dtype=data_type, count=length))

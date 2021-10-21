@@ -2,7 +2,7 @@ from io import BytesIO
 
 from .value cimport BaseImmutableTag
 from .const cimport ID_STRING
-from .util cimport write_string, BufferContext
+from .util cimport write_string, BufferContext, read_string
 
 
 cdef inline escape(str string):
@@ -26,7 +26,9 @@ cdef class TAG_String(BaseImmutableTag):
 
     @staticmethod
     cdef TAG_String read_payload(BufferContext buffer, bint little_endian):
-        raise NotImplementedError
+        cdef TAG_String tag = TAG_String.__new__(TAG_String)
+        tag.value = read_string(buffer, little_endian)
+        return tag
 
     def __getitem__(self, item):
         return self.value.__getitem__(item)

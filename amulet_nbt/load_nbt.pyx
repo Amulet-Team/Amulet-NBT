@@ -6,7 +6,7 @@ import os
 
 from .errors import NBTLoadError
 from .nbtfile cimport NBTFile
-from .util cimport BufferContext, read_data, load_string
+from .util cimport BufferContext, read_string, read_byte
 from .value cimport BaseTag
 from .int cimport TAG_Byte, TAG_Short, TAG_Int, TAG_Long
 from .float cimport TAG_Float, TAG_Double
@@ -89,8 +89,8 @@ cdef BaseTag load_payload(BufferContext buffer, char tag_type, bint little_endia
 
 
 cdef tuple load_tag(BufferContext buffer, bint little_endian):
-    cdef char tag_type = read_data(buffer, 1)[0]
-    cdef str name = load_string(buffer, little_endian)
+    cdef char tag_type = read_byte(buffer)
+    cdef str name = read_string(buffer, little_endian)
     return name, load_payload(buffer, tag_type, little_endian)
 
 

@@ -10,6 +10,7 @@ from .util cimport (
     BufferContext,
     read_data,
     to_little_endian,
+    read_byte,
 )
 
 
@@ -80,8 +81,7 @@ cdef class TAG_Byte(BaseIntegerTag):
 
     @staticmethod
     cdef TAG_Byte read_payload(BufferContext buffer, bint little_endian):
-        # return cls(read_data(buffer, 1)[0])
-        return TAG_Byte(<char> read_data(buffer, 1))
+        return TAG_Byte(read_byte(buffer))
 
 
 cdef class TAG_Short(BaseIntegerTag):
@@ -101,9 +101,11 @@ cdef class TAG_Short(BaseIntegerTag):
 
     @staticmethod
     cdef TAG_Short read_payload(BufferContext buffer, bint little_endian):
-        cdef short value = <short> read_data(buffer, 2)
-        to_little_endian(&value, 2, little_endian)
-        return TAG_Short(value)
+        cdef short *pointer = <short*> read_data(buffer, 2)
+        cdef TAG_Short tag = TAG_Short.__new__(TAG_Short)
+        tag.value = pointer[0]
+        to_little_endian(&tag.value, 2, little_endian)
+        return tag
 
 
 cdef class TAG_Int(BaseIntegerTag):
@@ -123,9 +125,11 @@ cdef class TAG_Int(BaseIntegerTag):
 
     @staticmethod
     cdef TAG_Int read_payload(BufferContext buffer, bint little_endian):
-        cdef int value = <int> read_data(buffer, 4)
-        to_little_endian(&value, 4, little_endian)
-        return TAG_Int(value)
+        cdef int*pointer = <int*> read_data(buffer, 4)
+        cdef TAG_Int tag = TAG_Int.__new__(TAG_Int)
+        tag.value = pointer[0]
+        to_little_endian(&tag.value, 4, little_endian)
+        return tag
 
 
 cdef class TAG_Long(BaseIntegerTag):
@@ -145,6 +149,8 @@ cdef class TAG_Long(BaseIntegerTag):
 
     @staticmethod
     cdef TAG_Long read_payload(BufferContext buffer, bint little_endian):
-        cdef long long value = <long long> read_data(buffer, 8)
-        to_little_endian(&value, 8, little_endian)
-        return TAG_Long(value)
+        cdef long long *pointer = <long long *> read_data(buffer, 8)
+        cdef TAG_Long tag = TAG_Long.__new__(TAG_Long)
+        tag.value = pointer[0]
+        to_little_endian(&tag.value, 8, little_endian)
+        return tag

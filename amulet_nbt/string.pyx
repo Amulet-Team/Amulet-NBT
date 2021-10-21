@@ -18,6 +18,9 @@ cdef class TAG_String(BaseImmutableTag):
     def __len__(self) -> int:
         return len(self.value)
 
+    def __repr__(self):
+        return f"{self.__class__.__name__}(\"{self.value}\")"
+
     cdef str _to_snbt(self):
         return f"\"{escape(self.value)}\""
 

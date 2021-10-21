@@ -2,6 +2,9 @@ from .value cimport BaseImmutableTag
 
 
 cdef class BaseNumericTag(BaseImmutableTag):
+    def __repr__(self):
+        return f"{self.__class__.__name__}({self.value})"
+
     def __add__(self, other):
         return self.value + other
 

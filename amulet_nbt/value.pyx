@@ -131,7 +131,7 @@ cdef class BaseTag:
         return getattr(self.value, item)
 
     def __repr__(self):
-        return self._to_snbt()
+        raise NotImplementedError
 
     def __str__(self):
         return str(self.value)

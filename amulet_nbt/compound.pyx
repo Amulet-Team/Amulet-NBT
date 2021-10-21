@@ -78,6 +78,9 @@ cdef class TAG_Compound(BaseMutableTag):
                 tag[name] = child_tag
         return tag
 
+    def __repr__(self):
+        return f"{self.__class__.__name__}({repr(self.value)})"
+
     def __getitem__(self, key: str) -> AnyNBT:
         return self._value[key]
 

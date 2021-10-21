@@ -33,6 +33,9 @@ cdef class BaseArrayTag(BaseMutableTag):
                 print(f'[Warning] Mismatch array dtype. Expected: {data_type.str}, got: {self.value.dtype.str}')
             self.value = self.value.astype(data_type)
 
+    def __repr__(self):
+        return f"{self.__class__.__name__}({list(self.value)})"
+
     def __eq__(self, other):
         return numpy.array_equal(self.value, other)
 

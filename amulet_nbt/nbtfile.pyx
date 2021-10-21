@@ -22,7 +22,7 @@ cdef class NBTFile:
             return self.value == other
 
     def __repr__(self):
-        return f'NBTFile("{self.name}":{self.value.to_snbt()})'
+        return f'{self.__class__.__name__}({repr(self.value)}, "{self.name}")'
 
     def __getattr__(self, item):
         return getattr(self.value, item)

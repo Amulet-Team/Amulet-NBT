@@ -77,6 +77,9 @@ cdef class TAG_List(BaseMutableTag):
         else:
             return f"{indent_chr * indent_count * leading_indent}[]"
 
+    def __repr__(self):
+        return f"{self.__class__.__name__}({repr(self.value)}, {self.list_data_type})"
+
     def __contains__(self, item: AnyNBT) -> bool:
         return self._value.__contains__(item)
 

@@ -1,5 +1,6 @@
 import unittest
 from typing import List, Tuple
+from copy import copy
 
 import amulet_nbt
 from amulet_nbt import (
@@ -17,6 +18,8 @@ from amulet_nbt import (
     TAG_Compound,
     NBTFile,
 )
+from amulet_nbt.load_nbt import load_tag
+from amulet_nbt.util import BufferContext
 
 
 tests: List[Tuple[NBTFile, bytes, bytes]] = [
@@ -712,14 +715,23 @@ tests: List[Tuple[NBTFile, bytes, bytes]] = [
 
 
 class NBTTests(unittest.TestCase):
+    def _load(self, b: bytes, little_endian: bool = False):
+        buffer = BufferContext(copy(b))
+        name, tag = load_tag(buffer, little_endian)
+        self.assertEqual(b, buffer.get_buffer(), msg="The buffer changed.")
+        nbt_file = amulet_nbt.load(b, little_endian=little_endian)
+        self.assertEqual(name, nbt_file.name)
+        self.assertEqual(tag, nbt_file.value)
+        return nbt_file
+
     def test_read_big_endian(self):
         for obj, be_bytes, le_bytes in tests:
-            self.assertEqual(obj, amulet_nbt.load(be_bytes), msg=str(obj))
+            self.assertEqual(obj, self._load(be_bytes), msg=str(obj))
 
     def test_read_little_endian(self):
         for obj, be_bytes, le_bytes in tests:
             self.assertEqual(
-                obj, amulet_nbt.load(le_bytes, little_endian=True), msg=str(obj)
+                obj, self._load(le_bytes, little_endian=True), msg=str(obj)
             )
 
     def test_write_big_endian(self):

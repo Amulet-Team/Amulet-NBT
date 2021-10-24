@@ -60,13 +60,6 @@ cdef inline char read_byte(BufferContext buffer):
     return read_data(buffer, 1)[0]
 
 
-cdef inline int read_short(BufferContext buffer, bint little_endian):
-    cdef short*pointer = <short*> read_data(buffer, 2)
-    cdef short value = pointer[0]
-    to_little_endian(&value, 2, little_endian)
-    return value
-
-
 cdef inline int read_int(BufferContext buffer, bint little_endian):
     cdef int*pointer = <int*> read_data(buffer, 4)
     cdef int value = pointer[0]

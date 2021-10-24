@@ -9,7 +9,6 @@ cdef char *read_data(BufferContext buffer, size_t tag_size) except *
 cdef void to_little_endian(void *data_buffer, int num_bytes, bint little_endian=*)
 
 cdef char read_byte(BufferContext buffer)
-cdef int read_short(BufferContext buffer, bint little_endian)
 cdef int read_int(BufferContext buffer, bint little_endian)
 cdef str read_string(BufferContext buffer, bint little_endian)
 

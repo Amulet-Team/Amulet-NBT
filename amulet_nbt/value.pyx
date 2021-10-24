@@ -137,7 +137,7 @@ cdef class BaseTag:
         return str(self.value)
 
     def __dir__(self):
-        return list(set(dir(self.__class__) + dir(self.value)))
+        return list(set(list(super().__dir__()) + dir(self.value)))
 
     def __eq__(self, other):
         return self.value == other

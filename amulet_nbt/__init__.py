@@ -6,7 +6,7 @@ from .string import TAG_String
 from .list import TAG_List
 from .compound import TAG_Compound
 from .nbtfile import NBTFile
-from .load_nbt import load
+from .load_nbt import load, load_one, load_many
 from .load_snbt import from_snbt
 
 from .dtype import SNBTType, Int, Float, Number, Array, AnyNBT

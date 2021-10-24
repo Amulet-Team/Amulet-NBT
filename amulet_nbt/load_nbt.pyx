@@ -92,6 +92,52 @@ cpdef tuple load_tag(BufferContext buffer, bint little_endian):
     return name, load_payload(buffer, tag_type, little_endian)
 
 
+cdef class ReadContext:
+    def __cinit__(self):
+        self.offset = 0
+
+
+cpdef NBTFile load_one(
+    object filepath_or_buffer: Union[str, bytes, BinaryIO, None],
+    bint compressed=True,
+    bint little_endian: bool = False,
+    ReadContext read_context = None
+):
+    cdef BufferContext buffer = get_buffer(filepath_or_buffer, compressed)
+    if buffer.size < 1:
+        raise EOFError("load() was supplied an empty buffer")
+    cdef str name
+    cdef BaseTag tag
+    name, tag = load_tag(buffer, little_endian)
+    if read_context is not None:
+        read_context.offset = buffer.offset
+    return NBTFile(tag, name)
+
+
+cpdef list load_many(
+    object filepath_or_buffer: Union[str, bytes, BinaryIO, None],
+    int count = 1,
+    bint compressed=True,
+    bint little_endian: bool = False,
+    ReadContext read_context = None
+):
+    if count < 1:
+        raise ValueError("Count must be 1 or more.")
+    cdef BufferContext buffer = get_buffer(filepath_or_buffer, compressed)
+    if buffer.size < 1:
+        raise EOFError("load() was supplied an empty buffer")
+    cdef list results = []
+    cdef str name
+    cdef BaseTag tag
+    cdef size_t i
+    for i in range(count):
+        name, tag = load_tag(buffer, little_endian)
+        results.append(NBTFile(tag, name))
+    if read_context is not None:
+        read_context.offset = buffer.offset
+    return results
+
+
 cpdef object load(
     object filepath_or_buffer: Union[str, bytes, BinaryIO, None],
     bint compressed=True,
@@ -99,24 +145,30 @@ cpdef object load(
     bint offset: bool = False,
     bint little_endian: bool = False,
 ):# -> Union[NBTFile, Tuple[Union[NBTFile, List[NBTFile]], int]]:
-    cdef BufferContext buffer = get_buffer(filepath_or_buffer, compressed)
+    if offset:
+        read_context = ReadContext()
+    else:
+        read_context = None
 
-    results = []
-
-    if buffer.size < 1:
-        raise EOFError("load() was supplied an empty buffer")
-
-    cdef size_t i
-    cdef str name
-    cdef BaseTag tag
-    for i in range(count or 1):
-        name, tag = load_tag(buffer, little_endian)
-        results.append(NBTFile(tag, name))
+    cdef object result
 
     if count is None:
-        results = results[0]
+        result = load_one(
+            filepath_or_buffer,
+            compressed=compressed,
+            little_endian=little_endian,
+            read_context=read_context
+        )
+    else:
+        result = load_many(
+            filepath_or_buffer,
+            count=count,
+            compressed=compressed,
+            little_endian=little_endian,
+            read_context=read_context
+        )
 
-    if offset:
-        return results, buffer.offset
-
-    return results
+    if read_context is None:
+        return result
+    else:
+        return result, read_context.offset

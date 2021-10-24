@@ -5,6 +5,7 @@ from .value cimport BaseTag, BaseMutableTag
 from .const cimport ID_LIST, CommaSpace, CommaNewline
 from .util cimport write_byte, write_int, BufferContext, read_byte, read_int
 from .load_nbt cimport load_payload
+from .dtype import AnyNBT
 
 
 cdef class TAG_List(BaseMutableTag):

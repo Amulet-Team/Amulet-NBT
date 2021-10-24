@@ -8,10 +8,8 @@ from .compound import TAG_Compound
 from .nbtfile import NBTFile
 from .load_nbt import load
 from .load_snbt import from_snbt
-# from .amulet_cy_nbt import (
-#     AnyNBT,
-#     SNBTType,
-# )
+
+from .dtype import SNBTType, Int, Float, Number, Array, AnyNBT
 
 from ._version import get_versions
 

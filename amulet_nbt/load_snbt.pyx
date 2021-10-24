@@ -10,6 +10,7 @@ from .array cimport TAG_Byte_Array, TAG_Int_Array, TAG_Long_Array
 from .string cimport TAG_String
 from .list cimport TAG_List
 from .compound cimport TAG_Compound
+from .dtype import AnyNBT
 
 whitespace = re.compile('[ \t\r\n]*')
 int_numeric = re.compile('-?[0-9]+[bBsSlL]?')

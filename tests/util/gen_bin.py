@@ -33,9 +33,15 @@ tags: Tuple[Tuple[Tuple[Type[BaseTag], ...], Tuple[Any, ...]], ...] = (
 
 def print_line(name: str, value: BaseTag):
     nbt_file = NBTFile(value, name)
-    be_bytes = nbt_file.to_nbt(compressed=False)
-    le_bytes = nbt_file.to_nbt(compressed=False, little_endian=True)
-    print(f"(" f"{repr(nbt_file)}, " f"{be_bytes}, " f"{le_bytes}" f"),")
+    print(
+        f"("
+        f"{repr(nbt_file)}, "
+        f"{nbt_file.to_nbt(compressed=False, little_endian=False)}, "
+        f"{nbt_file.to_nbt(compressed=False, little_endian=True)}, "
+        f"{nbt_file.to_nbt(compressed=True, little_endian=False)}, "
+        f"{nbt_file.to_nbt(compressed=True, little_endian=True)}"
+        f"),"
+    )
 
 
 def gen_data() -> Iterable[BaseTag]:

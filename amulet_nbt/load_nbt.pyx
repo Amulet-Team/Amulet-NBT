@@ -92,7 +92,7 @@ cpdef tuple load_tag(BufferContext buffer, bint little_endian):
     return name, load_payload(buffer, tag_type, little_endian)
 
 
-cpdef NBTFile load(
+cpdef object load(
     object filepath_or_buffer: Union[str, bytes, BinaryIO, None],
     bint compressed=True,
     object count: int = None,

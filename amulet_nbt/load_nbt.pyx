@@ -88,7 +88,7 @@ cdef BaseTag load_payload(BufferContext buffer, char tag_type, bint little_endia
         raise NBTLoadError(f"Tag {tag_type} does not exist.")
 
 
-cdef tuple load_tag(BufferContext buffer, bint little_endian):
+cpdef tuple load_tag(BufferContext buffer, bint little_endian):
     cdef char tag_type = read_byte(buffer)
     cdef str name = read_string(buffer, little_endian)
     return name, load_payload(buffer, tag_type, little_endian)

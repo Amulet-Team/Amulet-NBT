@@ -52,11 +52,9 @@ cdef BufferContext get_buffer(
 
     if compressed:
         data = safe_gunzip(data)
-    buffer = BufferContext()
-    buffer.offset = 0
-    buffer.buffer = data
-    buffer.size = len(data)
-    return buffer
+    return BufferContext(
+        data
+    )
 
 
 cdef BaseTag load_payload(BufferContext buffer, char tag_type, bint little_endian):
@@ -94,7 +92,7 @@ cpdef tuple load_tag(BufferContext buffer, bint little_endian):
     return name, load_payload(buffer, tag_type, little_endian)
 
 
-cpdef object load(
+cpdef NBTFile load(
     object filepath_or_buffer: Union[str, bytes, BinaryIO, None],
     bint compressed=True,
     object count: int = None,

@@ -29,12 +29,17 @@ cdef class BaseArrayTag(BaseMutableTag):
 
         self.value = arr
 
-    cdef void _fix_dtype(self, bint little_endian):
-        data_type = self.little_endian_data_type if little_endian else self.big_endian_data_type
-        if self.value.dtype != data_type:
-            if self.value.dtype != self.big_endian_data_type if little_endian else self.little_endian_data_type:
-                print(f'[Warning] Mismatch array dtype. Expected: {data_type.str}, got: {self.value.dtype.str}')
-            self.value = self.value.astype(data_type)
+    cdef void _fix_dtype(self):
+        if self.value.dtype != self.big_endian_data_type:
+            print(f'[Warning] Mismatch array dtype. Expected: {self.big_endian_data_type}, got: {self.value.dtype}')
+            self.value = self.value.astype(self.big_endian_data_type)
+
+    cdef numpy.ndarray _as_endianness(self, bint little_endian = False):
+        self._fix_dtype()
+        if little_endian:
+            return self.value.astype(self.little_endian_data_type)
+        else:
+            return self.value
 
     def __repr__(self):
         return f"{self.__class__.__name__}({list(self.value)})"
@@ -215,8 +220,7 @@ cdef class TAG_Byte_Array(BaseArrayTag):
         return f"[B;{'B, '.join(tags)}B]"
 
     cdef void write_payload(self, object buffer: BytesIO, bint little_endian) except *:
-        self._fix_dtype(little_endian)
-        write_array(self.value, buffer, 1, little_endian)
+        write_array(self._as_endianness(little_endian), buffer, 1, little_endian)
 
     @staticmethod
     cdef TAG_Byte_Array read_payload(BufferContext buffer, bint little_endian):
@@ -239,8 +243,7 @@ cdef class TAG_Int_Array(BaseArrayTag):
         return f"[I;{CommaSpace.join(tags)}]"
 
     cdef void write_payload(self, object buffer: BytesIO, bint little_endian) except *:
-        self._fix_dtype(little_endian)
-        write_array(self.value, buffer, 4, little_endian)
+        write_array(self._as_endianness(little_endian), buffer, 4, little_endian)
 
     @staticmethod
     cdef TAG_Int_Array read_payload(BufferContext buffer, bint little_endian):
@@ -264,8 +267,7 @@ cdef class TAG_Long_Array(BaseArrayTag):
         return f"[L;{CommaSpace.join(tags)}]"
 
     cdef void write_payload(self, object buffer: BytesIO, bint little_endian) except *:
-        self._fix_dtype(little_endian)
-        write_array(self.value, buffer, 8, little_endian)
+        write_array(self._as_endianness(little_endian), buffer, 8, little_endian)
 
     @staticmethod
     cdef TAG_Long_Array read_payload(BufferContext buffer, bint little_endian):

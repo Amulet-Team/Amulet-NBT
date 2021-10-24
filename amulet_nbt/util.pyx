@@ -1,4 +1,7 @@
-from cpython cimport PyUnicode_DecodeUTF8, PyUnicode_DecodeCharmap, PyList_Append
+from cpython.unicode cimport PyUnicode_DecodeUTF8, PyUnicode_DecodeCharmap
+from cpython.bytes cimport PyBytes_FromStringAndSize, PyBytes_AsString
+from libc.stdlib cimport malloc, free
+from libc.string cimport memcpy
 
 from .errors import NBTFormatError
 
@@ -7,7 +10,30 @@ CHAR_MAP = "".join(map(chr, range(256)))
 
 
 cdef class BufferContext:
-    pass
+    def __cinit__(self):
+        self.buffer = NULL
+        self.size = 0
+        self.offset = 0
+
+    def __init__(
+        self,
+        bytes buffer = b"",
+        size_t offset = 0
+    ):
+        self.size = len(buffer)
+        self.buffer = <char*> malloc(self.size * sizeof(char))
+        memcpy(self.buffer, PyBytes_AsString(buffer), self.size)
+        if 0 <= offset <= self.size:
+            self.offset = offset
+        else:
+            raise ValueError("offset must be between 0 and the length of the buffer.")
+
+    cpdef bytes get_buffer(self):
+        return PyBytes_FromStringAndSize(self.buffer, self.size)
+
+    def __dealloc__(self):
+        if self.buffer is not NULL:
+            free(self.buffer)
 
 
 cdef char *read_data(BufferContext buffer, size_t tag_size) except *:

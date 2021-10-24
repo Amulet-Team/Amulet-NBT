@@ -1,7 +1,9 @@
 cdef class BufferContext:
-    cdef size_t offset
     cdef char *buffer
-    cdef size_t size
+    cdef readonly size_t size
+    cdef readonly size_t offset
+
+    cpdef bytes get_buffer(self)
 
 cdef char *read_data(BufferContext buffer, size_t tag_size) except *
 cdef void to_little_endian(void *data_buffer, int num_bytes, bint little_endian=*)

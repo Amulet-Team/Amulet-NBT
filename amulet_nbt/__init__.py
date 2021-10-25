@@ -14,6 +14,7 @@ from .compound import TAG_Compound
 from .nbtfile import NBTFile
 from .load_nbt import load, load_one, load_many
 from .load_snbt import from_snbt
+from .errors import NBTError, NBTLoadError, NBTFormatError, SNBTParseError
 
 from .dtype import SNBTType, Int, Float, Number, Array, AnyNBT
 

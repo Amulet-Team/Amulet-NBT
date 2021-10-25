@@ -8,7 +8,7 @@ from .util cimport write_byte, BufferContext, read_byte, read_string
 from .load_nbt cimport load_payload
 from .dtype import AnyNBT
 
-NON_QUOTED_KEY = re.compile(r"^[a-zA-Z0-9-]+$")
+NON_QUOTED_KEY = re.compile('[A-Za-z0-9._+-]+')
 
 
 cdef class TAG_Compound(BaseMutableTag):
@@ -38,8 +38,9 @@ cdef class TAG_Compound(BaseMutableTag):
         cdef str name
         cdef BaseTag elem
         cdef list tags = []
-        for name, elem in self._value.items():
-            if NON_QUOTED_KEY.match(name) is None:
+        for name in sorted(self._value):
+            elem = self._value[name]
+            if NON_QUOTED_KEY.fullmatch(name) is None:
                 tags.append(f'"{name}": {elem.to_snbt()}')
             else:
                 tags.append(f'{name}: {elem.to_snbt()}')
@@ -49,7 +50,8 @@ cdef class TAG_Compound(BaseMutableTag):
         cdef str name
         cdef BaseTag elem
         cdef list tags = []
-        for name, elem in self._value.items():
+        for name in sorted(self._value):
+            elem = self._value[name]
             tags.append(f'{indent_chr * (indent_count + 1)}"{name}": {elem._pretty_to_snbt(indent_chr, indent_count + 1, False)}')
         if tags:
             return f"{indent_chr * indent_count * leading_indent}{{\n{CommaNewline.join(tags)}\n{indent_chr * indent_count}}}"

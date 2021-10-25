@@ -123,8 +123,8 @@ cdef tuple _parse_snbt_recursive(unicode snbt, int index=0):
                         f'Expected an integer value or ] at {index} but got ->{snbt[index:index + 10]} instead')
                 else:
                     val = match.group()
-                    if val[-1].isalpha():
-                        if val[-1] == array_type_chr:
+                    if array_type_chr in {"B", "L"}:
+                        if val[-1].upper() == array_type_chr:
                             val = val[:-1]
                         else:
                             raise SNBTParseError(

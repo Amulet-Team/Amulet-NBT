@@ -1,12 +1,14 @@
-from collections.abc import MutableMapping
 from io import BytesIO
+import re
+from typing import Iterator
 
 from .value cimport BaseMutableTag, BaseTag
 from .const cimport ID_END, ID_COMPOUND, CommaSpace, CommaNewline
-from .const import NON_QUOTED_KEY
 from .util cimport write_byte, BufferContext, read_byte, read_string
 from .load_nbt cimport load_payload
 from .dtype import AnyNBT
+
+NON_QUOTED_KEY = re.compile(r"^[a-zA-Z0-9-]+$")
 
 
 cdef class TAG_Compound(BaseMutableTag):

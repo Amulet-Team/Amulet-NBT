@@ -1,7 +1,3 @@
-import re
-
-NON_QUOTED_KEY = re.compile(r"^[a-zA-Z0-9-]+$")
-
 cdef str CommaNewline = ",\n"
 cdef str CommaSpace = ", "
 

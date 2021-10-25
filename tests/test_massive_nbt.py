@@ -43,9 +43,15 @@ class MassiveNBTTests(unittest.TestCase):
         compound["zeroNumpyLongArray"] = amulet_nbt.TAG_Long_Array(numpy.array([]))
 
         # test the array types with some python data
-        compound["listByteArray"] = amulet_nbt.TAG_Byte_Array([i for i in range(-128, 127)])
-        compound["listIntArray"] = amulet_nbt.TAG_Int_Array([i for i in range(-400, 400)])
-        compound["listLongArray"] = amulet_nbt.TAG_Long_Array([i for i in range(-400, 400)])
+        compound["listByteArray"] = amulet_nbt.TAG_Byte_Array(
+            [i for i in range(-128, 127)]
+        )
+        compound["listIntArray"] = amulet_nbt.TAG_Int_Array(
+            [i for i in range(-400, 400)]
+        )
+        compound["listLongArray"] = amulet_nbt.TAG_Long_Array(
+            [i for i in range(-400, 400)]
+        )
 
         # test the array types with numpy data of varying dtypes
         compound["numpyDtypeTestByteArray"] = amulet_nbt.TAG_Byte_Array(
@@ -97,14 +103,14 @@ class MassiveNBTTests(unittest.TestCase):
         compound["maxLong"] = amulet_nbt.TAG_Long(2 ** 63 - 1)
 
         # these should either overflow when setting or error when saving. Test each and if it errors just comment it out
-        compound['overflowByte'] = amulet_nbt.TAG_Byte(300)
-        compound['underflowByte'] = amulet_nbt.TAG_Byte(-300)
-        compound['overflowShort'] = amulet_nbt.TAG_Short(2**16)
-        compound['underflowShort'] = amulet_nbt.TAG_Short(-2**16)
-        compound['overflowInt'] = amulet_nbt.TAG_Int(2**32)
-        compound['underflowInt'] = amulet_nbt.TAG_Int(-2**32)
-        compound['overflowLong'] = amulet_nbt.TAG_Long(2**64)
-        compound['underflowLong'] = amulet_nbt.TAG_Long(-2**64)
+        compound["overflowByte"] = amulet_nbt.TAG_Byte(300)
+        compound["underflowByte"] = amulet_nbt.TAG_Byte(-300)
+        compound["overflowShort"] = amulet_nbt.TAG_Short(2 ** 16)
+        compound["underflowShort"] = amulet_nbt.TAG_Short(-(2 ** 16))
+        compound["overflowInt"] = amulet_nbt.TAG_Int(2 ** 32)
+        compound["underflowInt"] = amulet_nbt.TAG_Int(-(2 ** 32))
+        compound["overflowLong"] = amulet_nbt.TAG_Long(2 ** 64)
+        compound["underflowLong"] = amulet_nbt.TAG_Long(-(2 ** 64))
 
         # compound['overflowByteArray'] = amulet_nbt.TAG_Byte_Array([-129, 128])
         # compound['overflowIntArray'] = amulet_nbt.TAG_Int_Array([-2**31-1, 2**31])

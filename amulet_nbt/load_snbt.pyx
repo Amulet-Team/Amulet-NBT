@@ -14,7 +14,7 @@ from .compound cimport TAG_Compound
 whitespace = re.compile('[ \t\r\n]*')
 int_numeric = re.compile('-?[0-9]+[bBsSlL]?')
 float_numeric = re.compile('-?[0-9]+\.?[0-9]*[fFdD]?')
-alnumplus = re.compile('[-.a-zA-Z0-9_]*')
+alnumplus = re.compile('[A-Za-z0-9._+-]+')
 comma = re.compile('[ \t\r\n]*,[ \t\r\n]*')
 colon = re.compile('[ \t\r\n]*:[ \t\r\n]*')
 array_lookup = {'B': TAG_Byte_Array, 'I': TAG_Int_Array, 'L': TAG_Long_Array}
@@ -79,7 +79,7 @@ cdef tuple _parse_snbt_recursive(unicode snbt, int index=0):
     cdef dict data_
     cdef list array
     cdef unicode array_type_chr
-    cdef object array_type, first_data_type, int_match, float_match
+    cdef object array_type, first_data_type
     cdef BaseTag nested_data, data
     cdef unicode val
     cdef bint strict_str
@@ -163,8 +163,7 @@ cdef tuple _parse_snbt_recursive(unicode snbt, int index=0):
         if strict_str:
             data = TAG_String(val)
         else:
-            int_match = int_numeric.match(val)
-            if int_match is not None and int_match.end() == len(val):
+            if int_numeric.fullmatch(val) is not None:
                 # we have an int type
                 if val[-1] in {'b', 'B'}:
                     data = TAG_Byte(int(val[:-1]))
@@ -174,19 +173,21 @@ cdef tuple _parse_snbt_recursive(unicode snbt, int index=0):
                     data = TAG_Long(int(val[:-1]))
                 else:
                     data = TAG_Int(int(val))
-            else:
-                float_match = float_numeric.match(val)
-                if float_match is not None and float_match.end() == len(val):
-                    # we have a float type
-                    if val[-1] in {'f', 'F'}:
-                        data = TAG_Float(float(val[:-1]))
-                    elif val[-1] in {'d', 'D'}:
-                        data = TAG_Double(float(val[:-1]))
-                    else:
-                        data = TAG_Double(float(val))
+            elif float_numeric.fullmatch(val) is not None:
+                # we have a float type
+                if val[-1] in {'f', 'F'}:
+                    data = TAG_Float(float(val[:-1]))
+                elif val[-1] in {'d', 'D'}:
+                    data = TAG_Double(float(val[:-1]))
                 else:
-                    # we just have a string type
-                    data = TAG_String(val)
+                    data = TAG_Double(float(val))
+            elif val.lower() == "false":
+                data = TAG_Byte(0)
+            elif val.lower() == "true":
+                data = TAG_Byte(1)
+            else:
+                # we just have a string type
+                data = TAG_String(val)
 
     return data, index
 

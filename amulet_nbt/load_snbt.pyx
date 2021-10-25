@@ -10,7 +10,6 @@ from .array cimport TAG_Byte_Array, TAG_Int_Array, TAG_Long_Array
 from .string cimport TAG_String
 from .list cimport TAG_List
 from .compound cimport TAG_Compound
-from .dtype import AnyNBT
 
 whitespace = re.compile('[ \t\r\n]*')
 int_numeric = re.compile('-?[0-9]+[bBsSlL]?')
@@ -20,7 +19,7 @@ comma = re.compile('[ \t\r\n]*,[ \t\r\n]*')
 colon = re.compile('[ \t\r\n]*:[ \t\r\n]*')
 array_lookup = {'B': TAG_Byte_Array, 'I': TAG_Int_Array, 'L': TAG_Long_Array}
 
-cdef int _strip_whitespace(str snbt, int index):
+cdef int _strip_whitespace(unicode snbt, int index):
     cdef object match
 
     match = whitespace.match(snbt, index)
@@ -29,7 +28,7 @@ cdef int _strip_whitespace(str snbt, int index):
     else:
         return match.end()
 
-cdef int _strip_comma(str snbt, int index, str end_chr) except -1:
+cdef int _strip_comma(unicode snbt, int index, unicode end_chr) except -1:
     cdef object match
 
     match = comma.match(snbt, index)
@@ -41,7 +40,7 @@ cdef int _strip_comma(str snbt, int index, str end_chr) except -1:
         index = match.end()
     return index
 
-cdef int _strip_colon(str snbt, int index) except -1:
+cdef int _strip_colon(unicode snbt, int index) except -1:
     cdef object match
 
     match = colon.match(snbt, index)
@@ -50,11 +49,11 @@ cdef int _strip_colon(str snbt, int index) except -1:
     else:
         return match.end()
 
-cdef inline unescape(str string):
+cdef inline unescape(unicode string):
     return string.replace('\\"', '"').replace("\\\\", "\\")
 
-cdef tuple _capture_string(str snbt, int index):
-    cdef str val, quote
+cdef tuple _capture_string(unicode snbt, int index):
+    cdef unicode val, quote
     cdef bint strict_str
     cdef int end_index
     cdef object match
@@ -76,13 +75,13 @@ cdef tuple _capture_string(str snbt, int index):
 
     return val, strict_str, index
 
-cdef tuple _parse_snbt_recursive(str snbt, int index=0):
+cdef tuple _parse_snbt_recursive(unicode snbt, int index=0):
     cdef dict data_
     cdef list array
-    cdef str array_type_chr
+    cdef unicode array_type_chr
     cdef object array_type, first_data_type, int_match, float_match
     cdef BaseTag nested_data, data
-    cdef str val
+    cdef unicode val
     cdef bint strict_str
 
     index = _strip_whitespace(snbt, index)
@@ -191,7 +190,7 @@ cdef tuple _parse_snbt_recursive(str snbt, int index=0):
 
     return data, index
 
-def from_snbt(snbt: str) -> AnyNBT:
+cpdef BaseTag from_snbt(unicode snbt):
     try:
         return _parse_snbt_recursive(snbt)[0]
     except SNBTParseError as e:

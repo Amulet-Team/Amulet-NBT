@@ -36,10 +36,11 @@ def print_line(name: str, value: BaseTag):
     print(
         f"("
         f"{repr(nbt_file)}, "
-        f"{nbt_file.to_nbt(compressed=False, little_endian=False)}, "
-        f"{nbt_file.to_nbt(compressed=False, little_endian=True)}, "
-        f"{nbt_file.to_nbt(compressed=True, little_endian=False)}, "
-        f"{nbt_file.to_nbt(compressed=True, little_endian=True)}"
+        f"{repr(nbt_file.to_nbt(compressed=False, little_endian=False))}, "
+        f"{repr(nbt_file.to_nbt(compressed=False, little_endian=True))}, "
+        f"{repr(nbt_file.to_nbt(compressed=True, little_endian=False))}, "
+        f"{repr(nbt_file.to_nbt(compressed=True, little_endian=True))}, "
+        f"{repr(nbt_file.value.to_snbt())}"
         f"),"
     )
 

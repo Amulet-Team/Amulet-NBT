@@ -16,7 +16,7 @@ cdef class TAG_Float(BaseFloatTag):
         self.value = float(value)
 
     cdef str _to_snbt(self):
-        return f"{self.value:.20f}".rstrip('0') + "f"
+        return f"{self.value}f"
 
     cdef void write_payload(self, object buffer: BytesIO, bint little_endian) except *:
         write_float(self.value, buffer, little_endian)
@@ -37,7 +37,7 @@ cdef class TAG_Double(BaseFloatTag):
         self.value = float(value)
 
     cdef str _to_snbt(self):
-        return f"{self.value:.20f}".rstrip('0') + "d"
+        return f"{self.value}d"
 
     cdef void write_payload(self, object buffer: BytesIO, bint little_endian) except *:
         write_double(self.value, buffer, little_endian)

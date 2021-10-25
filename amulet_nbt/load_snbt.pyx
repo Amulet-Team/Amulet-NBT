@@ -70,6 +70,10 @@ cdef tuple _capture_string(unicode snbt, int index):
     else:
         strict_str = False
         match = alnumplus.match(snbt, index)
+        if match is None:
+            raise SNBTParseError(
+                f'Expected a string at {index} but got ->{snbt[index:index + 10]} instead'
+            )
         val = match.group()
         index = match.end()
 
@@ -120,7 +124,8 @@ cdef tuple _parse_snbt_recursive(unicode snbt, int index=0):
                 match = int_numeric.match(snbt, index)
                 if match is None:
                     raise SNBTParseError(
-                        f'Expected an integer value or ] at {index} but got ->{snbt[index:index + 10]} instead')
+                        f'Expected an integer value or ] at {index} but got ->{snbt[index:index + 10]} instead'
+                    )
                 else:
                     val = match.group()
                     if array_type_chr in {"B", "L"}:
@@ -195,6 +200,8 @@ cpdef BaseTag from_snbt(unicode snbt):
     try:
         return _parse_snbt_recursive(snbt)[0]
     except SNBTParseError as e:
-        raise SNBTParseError(e)
+        raise e
     except IndexError:
         raise SNBTParseError('SNBT string is incomplete. Reached the end of the string.')
+    except Exception as e:
+        raise SNBTParseError(e)

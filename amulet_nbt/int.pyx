@@ -14,7 +14,7 @@ from .util cimport (
 )
 
 
-cdef class BaseIntegerTag(BaseNumericTag):
+cdef class BaseIntTag(BaseNumericTag):
     def __lshift__(self, other):
         return self.value << other
 
@@ -64,7 +64,7 @@ cdef class BaseIntegerTag(BaseNumericTag):
         return self.value.__invert__()
 
 
-cdef class TAG_Byte(BaseIntegerTag):
+cdef class TAG_Byte(BaseIntTag):
     tag_id = ID_BYTE
 
     def __init__(self, value = 0):
@@ -84,7 +84,7 @@ cdef class TAG_Byte(BaseIntegerTag):
         return TAG_Byte(read_byte(buffer))
 
 
-cdef class TAG_Short(BaseIntegerTag):
+cdef class TAG_Short(BaseIntTag):
     tag_id = ID_SHORT
 
     def __init__(self, value = 0):
@@ -108,7 +108,7 @@ cdef class TAG_Short(BaseIntegerTag):
         return tag
 
 
-cdef class TAG_Int(BaseIntegerTag):
+cdef class TAG_Int(BaseIntTag):
     tag_id = ID_INT
 
     def __init__(self, value = 0):
@@ -132,7 +132,7 @@ cdef class TAG_Int(BaseIntegerTag):
         return tag
 
 
-cdef class TAG_Long(BaseIntegerTag):
+cdef class TAG_Long(BaseIntTag):
     tag_id = ID_LONG
 
     def __init__(self, value = 0):

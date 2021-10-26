@@ -1,6 +1,7 @@
-from .value import BaseTag, BaseValueType
-from .int import TAG_Byte, TAG_Short, TAG_Int, TAG_Long
-from .float import TAG_Float, TAG_Double
+from .value import BaseTag, BaseImmutableTag, BaseMutableTag, BaseValueType
+from .numeric import BaseNumericTag
+from .int import BaseIntTag, TAG_Byte, TAG_Short, TAG_Int, TAG_Long
+from .float import BaseFloatTag, TAG_Float, TAG_Double
 from .array import (
     BaseArrayTag,
     BaseArrayType,

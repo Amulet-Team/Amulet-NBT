@@ -1,5 +1,7 @@
 import warnings
 from typing import Iterable
+from copy import deepcopy
+
 from .value cimport BaseTag
 from .compound cimport TAG_Compound
 
@@ -33,6 +35,15 @@ cdef class NBTFile:
 
     def __dir__(self) -> Iterable[str]:
         return list(set(list(super().__dir__()) + dir(self.value)))
+
+    def __copy__(self):
+        return NBTFile(self.value, self.name)
+
+    def __deepcopy__(self, memodict=None):
+        return NBTFile(
+            deepcopy(self.value),
+            self.name
+        )
 
     def __reduce__(self):
         return NBTFile, (self.value, self.name)

@@ -18,6 +18,7 @@ from amulet_nbt import (
     TAG_String,
     TAG_List,
     TAG_Compound,
+    BaseArrayTag,
 )
 
 NUMERICAL_TYPES = (
@@ -35,11 +36,11 @@ AnyNum = Union[int, float, BaseNumericTag]
 
 class TestNumerical(base_type_test.BaseTypeTest):
     def test_init_empty(self):
-        for tag in NUMERICAL_TYPES:
+        for tag in self._numerical_types:
             self.assertEqual(tag(), 0, msg=tag.__name__)
 
     def test_init(self):
-        for tag_cls in NUMERICAL_TYPES:
+        for tag_cls in self._numerical_types:
             for val in VALUES:
                 for tag in self._iter_tags(val):
                     self.assertEqual(
@@ -53,7 +54,7 @@ class TestNumerical(base_type_test.BaseTypeTest):
 
     def _iter_tags(self, val: AnyNum) -> Iterable[AnyNum]:
         yield val
-        for tag in NUMERICAL_TYPES:
+        for tag in self._numerical_types:
             yield tag(val)
 
     def _iter_two_tags(self, val: AnyNum) -> Iterable[Tuple[AnyNum, AnyNum]]:
@@ -260,19 +261,15 @@ class TestNumerical(base_type_test.BaseTypeTest):
         self.assertEqual(l, 2 ** 63 - 1)
 
     def test_errors(self):
-        invalid_inputs = (
-            "str",
-            TAG_String(),
-            [],
-            TAG_List(),
-            {},
-            TAG_Compound(),
-        )
+        invalid_inputs = self._not_nbt + tuple(self._iter_instance())
         for inp in invalid_inputs:
+            if isinstance(inp, (bool, int, float, BaseNumericTag)):
+                continue
             for tag in NUMERICAL_TYPES:
                 with self.assertRaises(Exception, msg=f"{tag.__name__}({repr(inp)})"):
                     tag(inp)
-                with self.assertRaises(
-                    Exception, msg=f"{tag.__name__}() + {repr(inp)}"
-                ):
-                    tag() + inp
+                if not isinstance(inp, BaseArrayTag):
+                    with self.assertRaises(
+                        Exception, msg=f"{tag.__name__}() + {repr(inp)}"
+                    ):
+                        tag() + inp

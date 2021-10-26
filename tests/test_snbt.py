@@ -116,9 +116,13 @@ class SNBTTests(unittest.TestCase):
             "[B;-5b, 5b]",
         )
         with self.assertRaises(SNBTParseError):
-            amulet_nbt.from_snbt("[B;-5, 5]",)
+            amulet_nbt.from_snbt(
+                "[B;-5, 5]",
+            )
         with self.assertRaises(SNBTParseError):
-            amulet_nbt.from_snbt("[B;-5.0B, 5.0B]",)
+            amulet_nbt.from_snbt(
+                "[B;-5.0B, 5.0B]",
+            )
 
     def test_int_array(self):
         self._is_same(
@@ -130,7 +134,9 @@ class SNBTTests(unittest.TestCase):
             "[I;-5, 5]",
         )
         with self.assertRaises(SNBTParseError):
-            amulet_nbt.from_snbt("[I;-5.0, 5.0]",)
+            amulet_nbt.from_snbt(
+                "[I;-5.0, 5.0]",
+            )
 
     def test_long_array(self):
         self._is_same(
@@ -143,9 +149,13 @@ class SNBTTests(unittest.TestCase):
             "[L;-5l, 5l]",
         )
         with self.assertRaises(SNBTParseError):
-            amulet_nbt.from_snbt("[L;-5, 5]",)
+            amulet_nbt.from_snbt(
+                "[L;-5, 5]",
+            )
         with self.assertRaises(SNBTParseError):
-            amulet_nbt.from_snbt("[L;-5.0L, 5.0L]",)
+            amulet_nbt.from_snbt(
+                "[L;-5.0L, 5.0L]",
+            )
 
     def test_list(self):
         self._is_same(TAG_List(), "[]")

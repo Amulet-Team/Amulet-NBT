@@ -90,7 +90,7 @@ cdef class BaseNumericTag(BaseImmutableTag):
         return self.value.__float__()
 
     def __round__(self, n=None):
-        return self.value.__round__(n)
+        return round(self.value, n)
 
     def __trunc__(self):
         return self.value.__trunc__()

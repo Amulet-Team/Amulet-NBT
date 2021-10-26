@@ -22,7 +22,7 @@ cdef class BaseIntTag(BaseNumericTag):
         return other << self.value
 
     def __ilshift__(self, other):
-        self.__class__(self << other)
+        return self.__class__(self << other)
 
     def __rshift__(self, other):
         return self.value >> other
@@ -31,7 +31,7 @@ cdef class BaseIntTag(BaseNumericTag):
         return other >> self.value
 
     def __irshift__(self, other):
-        self.__class__(self >> other)
+        return self.__class__(self >> other)
 
     def __and__(self, other):
         return self.value & other
@@ -40,7 +40,7 @@ cdef class BaseIntTag(BaseNumericTag):
         return other & self.value
 
     def __iand__(self, other):
-        self.__class__(self & other)
+        return self.__class__(self & other)
 
     def __xor__(self, other):
         return self.value ^ other
@@ -49,7 +49,7 @@ cdef class BaseIntTag(BaseNumericTag):
         return other ^ self.value
 
     def __ixor__(self, other):
-        self.__class__(self ^ other)
+        return self.__class__(self ^ other)
 
     def __or__(self, other):
         return self.value | other
@@ -58,7 +58,7 @@ cdef class BaseIntTag(BaseNumericTag):
         return other | self.value
 
     def __ior__(self, other):
-        self.__class__(self | other)
+        return self.__class__(self | other)
 
     def __invert__(self):
         return self.value.__invert__()

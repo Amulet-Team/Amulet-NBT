@@ -1,4 +1,7 @@
-from typing import Iterable, Tuple, Union
+from typing import Iterable, Tuple, Union, Callable, Any
+import operator
+from copy import deepcopy
+import math
 
 from tests import base_type_test
 
@@ -25,6 +28,7 @@ NUMERICAL_TYPES = (
     TAG_Float,
     TAG_Double,
 )
+VALUES = (3, -3, 3.0, -3.0)
 
 AnyNum = Union[int, float, BaseNumericTag]
 
@@ -36,16 +40,23 @@ class TestNumerical(base_type_test.BaseTypeTest):
 
     def test_init(self):
         for tag_cls in NUMERICAL_TYPES:
-            for val in (5, -5, 5.0, -5.0):
+            for val in VALUES:
                 for tag in self._iter_tags(val):
-                    self.assertEqual(tag_cls(tag), val, msg=f"{tag_cls.__name__}({repr(tag)})")
+                    self.assertEqual(
+                        tag_cls(tag), val, msg=f"{tag_cls.__name__}({repr(tag)})"
+                    )
 
-    def _iter_tags(self, val) -> Iterable[AnyNum]:
+    def _iter_values(self):
+        for val1 in VALUES:
+            for val2 in VALUES:
+                yield val1, val2
+
+    def _iter_tags(self, val: AnyNum) -> Iterable[AnyNum]:
         yield val
         for tag in NUMERICAL_TYPES:
             yield tag(val)
 
-    def _iter_two_tags(self, val) -> Iterable[Tuple[AnyNum, AnyNum]]:
+    def _iter_two_tags(self, val: AnyNum) -> Iterable[Tuple[AnyNum, AnyNum]]:
         for tag1 in self._iter_tags(val):
             for tag2 in self._iter_tags(val):
                 yield tag1, tag2
@@ -55,30 +66,42 @@ class TestNumerical(base_type_test.BaseTypeTest):
             for tag2 in self._iter_tags(10):
                 self.assertNotEqual(tag1, tag2, msg=f"{tag1} == {tag2}")
 
-    def test_numerical_zero_equal(self):
+    def test_zero_equal(self):
         for tag1, tag2 in self._iter_two_tags(0):
             self.assertEqual(tag1, tag2, msg=f"{tag1} != {tag2}")
 
-    def test_numerical_positive_equal(self):
+    def test_positive_equal(self):
         for tag1, tag2 in self._iter_two_tags(50):
             self.assertEqual(tag1, tag2, msg=f"{tag1} != {tag2}")
 
-    def test_numerical_negative_equal(self):
+    def test_negative_equal(self):
         for tag1, tag2 in self._iter_two_tags(-50):
             self.assertEqual(tag1, tag2, msg=f"{tag1} != {tag2}")
 
-    def _test_op(self, val1, val2, op, op_char):
+    @staticmethod
+    def _fix_type(tag: AnyNum, val: AnyNum):
+        if isinstance(tag, BaseIntTag):
+            val = int(val)
+        elif isinstance(tag, BaseFloatTag):
+            val = float(val)
+        return val
+
+    def _test_op(
+        self,
+        val1: AnyNum,
+        val2: AnyNum,
+        op: Callable[[AnyNum, AnyNum], AnyNum],
+        op_char: str,
+        skip_types=(),
+    ):
         for tag1 in self._iter_tags(val1):
             for tag2 in self._iter_tags(val2):
-                val1_, val2_ = val1, val2
-                if isinstance(tag1, BaseIntTag):
-                    val1_ = int(val1_)
-                elif isinstance(tag1, BaseFloatTag):
-                    val1_ = float(val1_)
-                if isinstance(tag2, BaseIntTag):
-                    val2_ = int(val2_)
-                elif isinstance(tag2, BaseFloatTag):
-                    val2_ = float(val2_)
+                if skip_types and (
+                    isinstance(tag1, skip_types) or isinstance(tag2, skip_types)
+                ):
+                    continue
+                val1_ = self._fix_type(tag1, val1)
+                val2_ = self._fix_type(tag2, val2)
                 ground = op(val1_, val2_)
                 test = op(tag1, tag2)
                 self.assertEqual(
@@ -87,26 +110,130 @@ class TestNumerical(base_type_test.BaseTypeTest):
                 self.assertIsInstance(
                     test,
                     ground.__class__,
-                    msg=f"{repr(tag1)} {op_char} {repr(tag2)} != {ground}",
+                    msg=f"{repr(tag1)} {op_char} {repr(tag2)} != {ground.__class__}",
                 )
 
-    def _test_addition(self, val1, val2):
-        self._test_op(val1, val2, lambda x, y: x + y, "+")
+    def _test_iop(
+        self,
+        val1: AnyNum,
+        val2: AnyNum,
+        op: Callable[[AnyNum, AnyNum], AnyNum],
+        op_char: str,
+        skip_types=(),
+    ):
+        for tag1 in self._iter_tags(val1):
+            for tag2 in self._iter_tags(val2):
+                if skip_types and (
+                    isinstance(tag1, skip_types) or isinstance(tag2, skip_types)
+                ):
+                    continue
+                tag1_copy = deepcopy(tag1)
+                val1_ = self._fix_type(tag1, val1)
+                val2_ = self._fix_type(tag2, val2)
+                ground = op(val1_, val2_)
+                test = op(tag1_copy, tag2)
 
-    def test_numerical_addition(self):
-        for val1 in (5, 5.5):
-            for val2 in (5, 5.5):
-                self._test_addition(val1, val2)
+                if isinstance(tag1, BaseNumericTag):
+                    ground = self._fix_type(tag1, ground)
+                    cls = tag1.__class__
+                else:
+                    cls = ground.__class__
 
-    def _test_subtraction(self, val1, val2):
-        self._test_op(val1, val2, lambda x, y: x - y, "-")
+                if isinstance(ground, float):
+                    self.assertAlmostEqual(
+                        test,
+                        ground,
+                        msg=f"{repr(tag1)} {op_char} {repr(tag2)} != {ground}",
+                    )
+                else:
+                    self.assertEqual(
+                        test,
+                        ground,
+                        msg=f"{repr(tag1)} {op_char} {repr(tag2)} != {ground}",
+                    )
+                self.assertIsInstance(
+                    test,
+                    cls,
+                    msg=f"{repr(tag1)} {op_char} {repr(tag2)} != {ground.__class__}",
+                )
 
-    def test_numerical_subtraction(self):
-        for val1 in (5, 5.5):
-            for val2 in (5, 5.5):
-                self._test_subtraction(val1, val2)
+    def _test_single_op(
+        self,
+        val1: AnyNum,
+        op: Callable[[AnyNum], AnyNum],
+        op_name: str,
+        skip_types=(),
+    ):
+        for tag1 in self._iter_tags(val1):
+            if skip_types and isinstance(tag1, skip_types):
+                continue
+            val1_ = self._fix_type(tag1, val1)
+            ground = op(val1_)
+            test = op(tag1)
 
-    def test_numerical_overflow(self):
+            if isinstance(ground, float):
+                self.assertAlmostEqual(
+                    test, ground, msg=f"{op_name}({repr(tag1)}) != {ground}"
+                )
+            else:
+                self.assertEqual(
+                    test, ground, msg=f"{op_name}({repr(tag1)}) != {ground}"
+                )
+            self.assertIsInstance(
+                test,
+                ground.__class__,
+                msg=f"{op_name}({repr(tag1)}) != {ground.__class__}",
+            )
+
+    def test_numerical_operators(self):
+        for val1, val2 in self._iter_values():
+            self._test_op(val1, val2, operator.add, "+")
+            self._test_iop(val1, val2, operator.iadd, "+=")
+            self._test_op(val1, val2, operator.sub, "-")
+            self._test_iop(val1, val2, operator.isub, "-=")
+            self._test_op(val1, val2, operator.mul, "*")
+            self._test_iop(val1, val2, operator.imul, "*=")
+            self._test_op(val1, val2, operator.truediv, "/")
+            self._test_iop(val1, val2, operator.itruediv, "/=")
+            self._test_op(val1, val2, operator.floordiv, "//")
+            self._test_iop(val1, val2, operator.ifloordiv, "//=")
+            self._test_op(val1, val2, operator.mod, "%")
+            self._test_iop(val1, val2, operator.imod, "%=")
+            self._test_op(val1, val2, operator.pow, "**")
+            self._test_iop(val1, val2, operator.ipow, "**=")
+        for val1 in VALUES:
+            self._test_single_op(val1, operator.neg, "-")
+            self._test_single_op(val1, operator.pos, "+")
+            self._test_single_op(val1, abs, "abs")
+            self._test_single_op(val1, int, "int")
+            self._test_single_op(val1, float, "float")
+            self._test_single_op(val1, round, "round")
+            self._test_single_op(val1, math.trunc, "math.trunc")
+            self._test_single_op(val1, math.floor, "math.floor")
+            self._test_single_op(val1, math.ceil, "math.ceil")
+            self._test_single_op(val1, bool, "bool")
+
+    def test_int_operators(self):
+        for val1, val2 in self._iter_values():
+            if val2 >= 0:
+                self._test_op(val1, val2, operator.lshift, "<<", (float, BaseFloatTag))
+                self._test_iop(
+                    val1, val2, operator.ilshift, "<<=", (float, BaseFloatTag)
+                )
+                self._test_op(val1, val2, operator.rshift, ">>", (float, BaseFloatTag))
+                self._test_iop(
+                    val1, val2, operator.irshift, ">>=", (float, BaseFloatTag)
+                )
+            self._test_op(val1, val2, operator.and_, "&", (float, BaseFloatTag))
+            self._test_iop(val1, val2, operator.iand, "&=", (float, BaseFloatTag))
+            self._test_op(val1, val2, operator.xor, "^", (float, BaseFloatTag))
+            self._test_iop(val1, val2, operator.ixor, "^=", (float, BaseFloatTag))
+            self._test_op(val1, val2, operator.or_, "|", (float, BaseFloatTag))
+            self._test_iop(val1, val2, operator.ior, "|=", (float, BaseFloatTag))
+        for val1 in VALUES:
+            self._test_single_op(val1, operator.invert, "~", (float, BaseFloatTag))
+
+    def test_overflow(self):
         b = TAG_Byte()
         s = TAG_Short()
         i = TAG_Int()
@@ -133,10 +260,19 @@ class TestNumerical(base_type_test.BaseTypeTest):
         self.assertEqual(l, 2 ** 63 - 1)
 
     def test_errors(self):
-        invalid_inputs = ("str", TAG_String(), [], TAG_List(), {}, TAG_Compound())
+        invalid_inputs = (
+            "str",
+            TAG_String(),
+            [],
+            TAG_List(),
+            {},
+            TAG_Compound(),
+        )
         for inp in invalid_inputs:
             for tag in NUMERICAL_TYPES:
-                with self.assertRaises(Exception, msg=f"{tag.__name__}({inp})"):
+                with self.assertRaises(Exception, msg=f"{tag.__name__}({repr(inp)})"):
                     tag(inp)
-                with self.assertRaises(Exception, msg=f"{tag.__name__}() + {inp}"):
+                with self.assertRaises(
+                    Exception, msg=f"{tag.__name__}() + {repr(inp)}"
+                ):
                     tag() + inp

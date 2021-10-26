@@ -13,19 +13,19 @@ from .compound cimport TAG_Compound
 
 SNBTType = str
 
-Int = Union[
+IntType = Union[
     TAG_Byte,
     TAG_Short,
     TAG_Int,
     TAG_Long
 ]
 
-Float = Union[
+FloatType = Union[
     TAG_Float,
     TAG_Double
 ]
 
-Number = Union[
+NumberType = Union[
     TAG_Byte,
     TAG_Short,
     TAG_Int,
@@ -34,7 +34,7 @@ Number = Union[
     TAG_Double
 ]
 
-Array = Union[
+ArrayType = Union[
     TAG_Byte_Array,
     TAG_Int_Array,
     TAG_Long_Array

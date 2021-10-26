@@ -167,7 +167,7 @@ cdef class BaseTag:
         return self.__class__(deepcopy(self.value, memo=memo))
 
     def __copy__(self):
-        return self.__class__(copy(self.value))
+        return self.__class__(self.value)
 
 BaseValueType = BaseTag
 

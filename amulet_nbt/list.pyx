@@ -90,6 +90,9 @@ cdef class TAG_List(BaseMutableTag):
     def __repr__(self):
         return f"{self.__class__.__name__}({repr(self.value)}, {self.list_data_type})"
 
+    def __getattr__(self, item):
+        return getattr(self._value, item)
+
     def __contains__(self, item: AnyNBT) -> bool:
         return self._value.__contains__(item)
 
@@ -139,13 +142,20 @@ cdef class TAG_List(BaseMutableTag):
         return self
 
     def __eq__(self, other):
-        if (
-                isinstance(other, TAG_List)
-                and self._value
-                and self.list_data_type != other.list_data_type
-        ):
-            return False
         return self._value == other
+
+    cpdef bint strict_equals(self, other):
+        cdef BaseTag self_val, other_val
+        if (
+            isinstance(other, TAG_List)
+            and self.list_data_type == other.list_data_type
+            and len(self) == len(other)
+        ):
+            for self_val, other_val in zip(self, other):
+                if not self_val.strict_equals(other_val):
+                    return False
+            return True
+        return False
 
     def __add__(self, other):
         return self._value + other

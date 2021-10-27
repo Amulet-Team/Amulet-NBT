@@ -16,18 +16,31 @@ cdef Null = object()
 cdef class TAG_Compound(BaseMutableTag):
     tag_id = ID_COMPOUND
 
-    def __init__(self, object value = Null):
-        cdef str key
-        cdef BaseTag val
+    def __init__(self, object value = Null, **kwvals):
         cdef dict dict_value
         if value is Null:
             dict_value = {}
         else:
             dict_value = dict(value)
-            for key, val in dict_value.items():
-                if key is None or val is None:
-                    raise TypeError()
+        dict_value.update(kwvals)
+        TAG_Compound._check_dict(dict_value)
         self._value = dict_value
+
+    @staticmethod
+    def fromkeys(object keys, BaseTag value=None):
+        cdef dict dict_value = dict.fromkeys(keys, value)
+        TAG_Compound._check_dict(dict_value)
+        cdef TAG_Compound compound = TAG_Compound.__new__(TAG_Compound)
+        compound._value = dict_value
+        return compound
+
+    @staticmethod
+    cdef _check_dict(dict value):
+        cdef str key
+        cdef BaseTag val
+        for key, val in value.items():
+            if key is None or val is None:
+                raise TypeError()
 
     @property
     def value(self):
@@ -82,14 +95,41 @@ cdef class TAG_Compound(BaseMutableTag):
                 tag[name] = child_tag
         return tag
 
+    def __eq__(self, other):
+        return self._value == other
+
+    cpdef bint strict_equals(self, other):
+        cdef str self_key, other_key
+        if (
+                isinstance(other, TAG_Compound)
+                and self.keys() == other.keys()
+        ):
+            for self_key, other_key in zip(self, other):
+                if not self[self_key].strict_equals(other[other_key]):
+                    return False
+            return True
+        return False
+
     def __repr__(self):
         return f"{self.__class__.__name__}({repr(self.value)})"
 
-    def __getitem__(self, key: str) -> AnyNBT:
+    def __getattr__(self, item):
+        return getattr(self._value, item)
+
+    def __getitem__(self, key: str) -> BaseTag:
         return self._value[key]
 
     def __setitem__(self, str key not None, BaseTag value not None):
         self._value[key] = value
+
+    cpdef setdefault(self, str key, BaseTag value):
+        self._value.setdefault(key, value)
+
+    def update(self, object other, **others):
+        cdef dict dict_other = dict(other)
+        dict_other.update(others)
+        TAG_Compound._check_dict(dict_other)
+        self._value.update(dict_other)
 
     def __delitem__(self, key: str):
         del self._value[key]
@@ -102,7 +142,3 @@ cdef class TAG_Compound(BaseMutableTag):
 
     def __len__(self) -> int:
         return self._value.__len__()
-
-
-# class TAG_Compound(_TAG_Compound, MutableMapping):
-#     pass

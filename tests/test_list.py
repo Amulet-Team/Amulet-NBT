@@ -1,3 +1,4 @@
+import unittest
 from tests import base_type_test
 
 from amulet_nbt import (
@@ -60,3 +61,7 @@ class TestList(base_type_test.BaseTypeTest):
                 else:
                     with self.assertRaises(TypeError):
                         tag_list.append(nbt_type2())
+
+
+if __name__ == "__main__":
+    unittest.main()

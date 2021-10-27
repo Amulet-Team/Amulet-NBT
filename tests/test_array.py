@@ -1,3 +1,4 @@
+import unittest
 from tests import base_type_test
 import numpy
 
@@ -55,3 +56,7 @@ class TestArray(base_type_test.BaseTypeTest):
         self.assertTrue(numpy.array_equal(b_arr, [2 ** 7 - 1]))
         self.assertTrue(numpy.array_equal(i_arr, [2 ** 31 - 1]))
         # self.assertTrue(numpy.array_equal(l_arr, [2 ** 63 - 1]))
+
+
+if __name__ == "__main__":
+    unittest.main()

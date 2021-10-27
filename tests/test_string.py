@@ -1,3 +1,4 @@
+import unittest
 from tests import base_type_test
 
 from amulet_nbt import (
@@ -31,3 +32,7 @@ class TestString(base_type_test.BaseTypeTest):
         self.assertIsInstance("test" + TAG_String("test"), str)
         self.assertEqual(TAG_String("test") * 3, "testtesttest")
         self.assertIsInstance(TAG_String("test") * 3, str)
+
+
+if __name__ == "__main__":
+    unittest.main()

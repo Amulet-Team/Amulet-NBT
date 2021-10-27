@@ -1,3 +1,4 @@
+import unittest
 from typing import Union, Callable, Any
 import operator
 from copy import deepcopy
@@ -240,3 +241,7 @@ class TestNumerical(base_type_test.BaseTypeTest):
         self.assertEqual(s, 2 ** 15 - 1)
         self.assertEqual(i, 2 ** 31 - 1)
         self.assertEqual(l, 2 ** 63 - 1)
+
+
+if __name__ == "__main__":
+    unittest.main()

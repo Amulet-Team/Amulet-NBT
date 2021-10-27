@@ -1,3 +1,4 @@
+import unittest
 from tests import base_type_test
 
 from amulet_nbt import (
@@ -51,3 +52,7 @@ class TestCompound(base_type_test.BaseTypeTest):
 
             with self.assertRaises(TypeError, msg=repr(not_nbt)):
                 c[not_nbt.__class__.__name__] = not_nbt
+
+
+if __name__ == "__main__":
+    unittest.main()

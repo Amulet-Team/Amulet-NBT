@@ -17,31 +17,34 @@ from amulet_nbt import (
 
 
 class TestList(base_type_test.BaseTypeTest):
-    def test_init_empty(self):
-        pass
+    this_types = (TAG_List,)
+
+    @property
+    def values(self):
+        return (
+            ([],)
+            + tuple([cls()] for cls in self.nbt_types)
+            + tuple([cls(), cls()] for cls in self.nbt_types)
+        )
 
     def test_init(self):
-        pass
-
-    def test_errors(self):
-        pass
+        self._test_init(list, [], (str,))
 
     def test_list(self):
-        self.assertEqual(TAG_List(), [])
-        for t in self._nbt_types:
+        for t in self.nbt_types:
             self.assertEqual(TAG_List([t() for _ in range(5)]), [t() for _ in range(5)])
 
         # initialisation with and appending not nbt objects
         tag_list = TAG_List()
-        for not_nbt in self._not_nbt:
-            with self.assertRaises(TypeError):
+        for not_nbt in self.not_nbt:
+            with self.assertRaises(TypeError, msg=repr(not_nbt)):
                 TAG_List([not_nbt])
-            with self.assertRaises(TypeError):
+            with self.assertRaises(TypeError, msg=repr(not_nbt)):
                 tag_list.append(not_nbt)
 
         # initialisation with different nbt objects
-        for nbt_type1 in self._nbt_types:
-            for nbt_type2 in self._nbt_types:
+        for nbt_type1 in self.nbt_types:
+            for nbt_type2 in self.nbt_types:
                 if nbt_type1 is nbt_type2:
                     TAG_List([nbt_type1(), nbt_type2()])
                 else:
@@ -49,9 +52,9 @@ class TestList(base_type_test.BaseTypeTest):
                         TAG_List([nbt_type1(), nbt_type2()]),
 
         # adding different nbt objects
-        for nbt_type1 in self._nbt_types:
+        for nbt_type1 in self.nbt_types:
             tag_list = TAG_List([nbt_type1()])
-            for nbt_type2 in self._nbt_types:
+            for nbt_type2 in self.nbt_types:
                 if nbt_type1 is nbt_type2:
                     tag_list.append(nbt_type2())
                 else:

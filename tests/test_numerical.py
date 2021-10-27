@@ -1,4 +1,4 @@
-from typing import Iterable, Tuple, Union, Callable, Any
+from typing import Union, Callable, Any
 import operator
 from copy import deepcopy
 import math
@@ -13,54 +13,35 @@ from amulet_nbt import (
     TAG_Short,
     TAG_Int,
     TAG_Long,
-    TAG_Float,
-    TAG_Double,
-    TAG_String,
-    TAG_List,
-    TAG_Compound,
-    BaseArrayTag,
 )
 
-NUMERICAL_TYPES = (
-    TAG_Byte,
-    TAG_Short,
-    TAG_Int,
-    TAG_Long,
-    TAG_Float,
-    TAG_Double,
-)
-VALUES = (3, -3, 3.0, -3.0)
-
+Num = Union[int, float, BaseNumericTag]
 AnyNum = Union[int, float, BaseNumericTag]
 
 
 class TestNumerical(base_type_test.BaseTypeTest):
-    def test_init_empty(self):
-        for tag in self._numerical_types:
-            self.assertEqual(tag(), 0, msg=tag.__name__)
+    values = (3, -3, 3.0, -3.0)
+
+    @property
+    def this_types(self):
+        return self.numerical_types
 
     def test_init(self):
-        for tag_cls in self._numerical_types:
-            for val in VALUES:
+        for tag_cls in self.numerical_types:
+            self.assertEqual(tag_cls(), 0, msg=tag_cls.__name__)
+            for val in self.values:
                 for tag in self._iter_tags(val):
                     self.assertEqual(
                         tag_cls(tag), val, msg=f"{tag_cls.__name__}({repr(tag)})"
                     )
-
-    def _iter_values(self):
-        for val1 in VALUES:
-            for val2 in VALUES:
-                yield val1, val2
-
-    def _iter_tags(self, val: AnyNum) -> Iterable[AnyNum]:
-        yield val
-        for tag in self._numerical_types:
-            yield tag(val)
-
-    def _iter_two_tags(self, val: AnyNum) -> Iterable[Tuple[AnyNum, AnyNum]]:
-        for tag1 in self._iter_tags(val):
-            for tag2 in self._iter_tags(val):
-                yield tag1, tag2
+            for inp in self.not_nbt + tuple(self._iter_instance()):
+                if isinstance(inp, (bool, int, float, BaseNumericTag)):
+                    tag_cls(inp)
+                else:
+                    with self.assertRaises(
+                        Exception, msg=f"{tag_cls.__name__}({repr(inp)})"
+                    ):
+                        tag_cls(inp)
 
     def test_not_equal(self):
         for tag1 in self._iter_tags(5):
@@ -202,7 +183,7 @@ class TestNumerical(base_type_test.BaseTypeTest):
             self._test_iop(val1, val2, operator.imod, "%=")
             self._test_op(val1, val2, operator.pow, "**")
             self._test_iop(val1, val2, operator.ipow, "**=")
-        for val1 in VALUES:
+        for val1 in self.values:
             self._test_single_op(val1, operator.neg, "-")
             self._test_single_op(val1, operator.pos, "+")
             self._test_single_op(val1, abs, "abs")
@@ -231,7 +212,7 @@ class TestNumerical(base_type_test.BaseTypeTest):
             self._test_iop(val1, val2, operator.ixor, "^=", (float, BaseFloatTag))
             self._test_op(val1, val2, operator.or_, "|", (float, BaseFloatTag))
             self._test_iop(val1, val2, operator.ior, "|=", (float, BaseFloatTag))
-        for val1 in VALUES:
+        for val1 in self.values:
             self._test_single_op(val1, operator.invert, "~", (float, BaseFloatTag))
 
     def test_overflow(self):
@@ -259,17 +240,3 @@ class TestNumerical(base_type_test.BaseTypeTest):
         self.assertEqual(s, 2 ** 15 - 1)
         self.assertEqual(i, 2 ** 31 - 1)
         self.assertEqual(l, 2 ** 63 - 1)
-
-    def test_errors(self):
-        invalid_inputs = self._not_nbt + tuple(self._iter_instance())
-        for inp in invalid_inputs:
-            if isinstance(inp, (bool, int, float, BaseNumericTag)):
-                continue
-            for tag in NUMERICAL_TYPES:
-                with self.assertRaises(Exception, msg=f"{tag.__name__}({repr(inp)})"):
-                    tag(inp)
-                if not isinstance(inp, BaseArrayTag):
-                    with self.assertRaises(
-                        Exception, msg=f"{tag.__name__}() + {repr(inp)}"
-                    ):
-                        tag() + inp

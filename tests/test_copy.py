@@ -10,6 +10,7 @@ from amulet_nbt import (
     TAG_Long,
     TAG_Float,
     TAG_Double,
+    BaseArrayTag,
     TAG_Byte_Array,
     TAG_Int_Array,
     TAG_Long_Array,
@@ -48,7 +49,7 @@ class CopyNBTTests(unittest.TestCase):
             self.assertEqual(obj.value, obj_deepcopy.value)
 
         # Check if the values are the same
-        if isinstance(obj, (BaseFloatTag, TAG_List, TAG_Compound)):
+        if isinstance(obj, (BaseFloatTag, BaseArrayTag, TAG_List, TAG_Compound)):
             # some tags always create copies
             self.assertIsNot(obj.value, obj_copy.value)
             self.assertIsNot(obj.value, obj_deepcopy.value)

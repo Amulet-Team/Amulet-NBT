@@ -17,18 +17,23 @@ from amulet_nbt import (
 
 
 class TestCompound(base_type_test.BaseTypeTest):
-    def test_init_empty(self):
-        pass
+    this_types = (TAG_Compound,)
+
+    @property
+    def values(self):
+        return (
+            ({},)
+            + tuple({"name": cls()} for cls in self.nbt_types)
+            + tuple({"name1": cls(), "name2": cls()} for cls in self.nbt_types)
+            + ({cls.__name__: cls() for cls in self.nbt_types},)
+        )
 
     def test_init(self):
-        pass
-
-    def test_errors(self):
-        pass
+        self._test_init(dict, {})
 
     def test_compound(self):
         self.assertEqual(TAG_Compound(), {})
-        for t in self._nbt_types:
+        for t in self.nbt_types:
             self.assertEqual(TAG_Compound({t.__name__: t()}), {t.__name__: t()})
 
         # keys must be strings
@@ -40,9 +45,9 @@ class TestCompound(base_type_test.BaseTypeTest):
             c[0] = TAG_Int()
 
         # initialisation with and adding not nbt objects
-        for not_nbt in self._not_nbt:
-            with self.assertRaises(TypeError):
+        for not_nbt in self.not_nbt:
+            with self.assertRaises(TypeError, msg=repr(not_nbt)):
                 TAG_Compound({not_nbt.__class__.__name__: not_nbt})
 
-            with self.assertRaises(TypeError):
+            with self.assertRaises(TypeError, msg=repr(not_nbt)):
                 c[not_nbt.__class__.__name__] = not_nbt

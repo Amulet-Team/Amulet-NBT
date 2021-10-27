@@ -20,14 +20,20 @@ from amulet_nbt import (
 
 
 class TestArray(base_type_test.BaseTypeTest):
-    def test_init_empty(self):
-        pass
+    @property
+    def this_types(self):
+        return self.array_types
+
+    @property
+    def values(self):
+        values = []
+        for t in (list, tuple, numpy.array) + self.array_types:
+            for v in ([], [1], [1,2,3]):
+                values.append(t(v))
+        return values
 
     def test_init(self):
-        pass
-
-    def test_errors(self):
-        pass
+        self._test_init(lambda x: numpy.array(x, dtype=numpy.int64), [])
 
     def test_array_overflow(self):
         b_arr = TAG_Byte_Array([0])

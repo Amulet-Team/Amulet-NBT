@@ -17,14 +17,11 @@ from amulet_nbt import (
 
 
 class TestString(base_type_test.BaseTypeTest):
-    def test_init_empty(self):
-        pass
+    values = ("", "test", "value", "value" * 500)
+    this_types = (TAG_String,)
 
     def test_init(self):
-        pass
-
-    def test_errors(self):
-        pass
+        self._test_init(str, "")
 
     def test_string(self):
         self.assertEqual(TAG_String(), "")

@@ -1,28 +1,29 @@
 import numpy
 cimport numpy
 from io import BytesIO
+from copy import copy
 
 from .value cimport BaseMutableTag
 from .errors import NBTError
 from .const cimport CommaSpace, ID_BYTE_ARRAY, ID_INT_ARRAY, ID_LONG_ARRAY
 from .util cimport write_array, BufferContext, read_int, read_data
 
+cdef Null = object()
+
 
 cdef class BaseArrayTag(BaseMutableTag):
     big_endian_data_type = little_endian_data_type = numpy.dtype("int8")
 
-    def __init__(self, object value = None):
+    def __init__(self, object value = Null):
         cdef numpy.ndarray arr
-        if value is None:
+        if value is Null:
             arr = numpy.zeros((0,), self.big_endian_data_type)
-        elif isinstance(value, (list, tuple)):
-            arr = numpy.array(value, self.big_endian_data_type)
-        elif isinstance(value, (TAG_Byte_Array, TAG_Int_Array, TAG_Long_Array)):
-            arr = value.value
+        elif isinstance(value, BaseArrayTag):
+            arr = value.value.flatten()
         elif isinstance(value, numpy.ndarray):
-            arr = value
+            arr = value.flatten()
         else:
-            raise NBTError(f'Unexpected object {value} given to {self.__class__.__name__}')
+            arr = numpy.array(value, self.big_endian_data_type).ravel()
 
         if arr.dtype != self.big_endian_data_type:
             arr = arr.astype(self.big_endian_data_type)

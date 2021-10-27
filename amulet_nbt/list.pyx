@@ -1,3 +1,4 @@
+from typing import Iterator
 from io import BytesIO
 from collections.abc import MutableSequence
 
@@ -7,24 +8,30 @@ from .util cimport write_byte, write_int, BufferContext, read_byte, read_int
 from .load_nbt cimport load_payload
 from .dtype import AnyNBT
 
+cdef Null = object()
+
 
 cdef class TAG_List(BaseMutableTag):
     tag_id = ID_LIST
 
-    def __init__(self, value = None, char list_data_type = 1):
+    def __init__(self, object value = Null, char list_data_type = 1):
         self.list_data_type = list_data_type
         self._value = []
-        if value:
-            self._check_tag_iterable(value)
-            self._value = list(value)
+        cdef list list_value
+        if value is Null:
+            list_value = []
+        else:
+            list_value = list(value)
+            self._check_tag_iterable(list_value)
+        self._value = list_value
 
     @property
     def value(self):
         return self._value.copy()
 
-    def _check_tag(self, value: AnyNBT, fix_if_empty=True):
-        if not isinstance(value, BaseTag):
-            raise TypeError(f"Invalid type {value.__class__.__name__} TAG_List. Must be an NBT object.")
+    cdef void _check_tag(self, BaseTag value, bint fix_if_empty=True) except *:
+        if value is None:
+            raise TypeError("List values must be NBT Tags")
         if fix_if_empty and not self._value:
             self.list_data_type = value.tag_id
         elif value.tag_id != self.list_data_type:
@@ -32,7 +39,9 @@ cdef class TAG_List(BaseMutableTag):
                 f"Invalid type {value.__class__.__name__} for TAG_List({self.list_data_type})"
             )
 
-    def _check_tag_iterable(self, value: Sequence[BaseTag]):
+    cdef void _check_tag_iterable(self, list value) except *:
+        cdef int i
+        cdef BaseTag tag
         for i, tag in enumerate(value):
             self._check_tag(tag, not i)
 
@@ -95,7 +104,7 @@ cdef class TAG_List(BaseMutableTag):
 
     def __setitem__(self, index, value):
         if isinstance(index, slice):
-            self._check_tag_iterable(value)
+            self._check_tag_iterable(list(value))
         else:
             self._check_tag(value)
         self._value[index] = value
@@ -111,7 +120,7 @@ cdef class TAG_List(BaseMutableTag):
         return TAG_List(self._value.copy(), self.list_data_type)
 
     def extend(self, other):
-        self._check_tag_iterable(other)
+        self._check_tag_iterable(list(other))
         self._value.extend(other)
         return self
 

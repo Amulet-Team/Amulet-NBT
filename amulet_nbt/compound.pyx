@@ -10,29 +10,28 @@ from .dtype import AnyNBT
 
 NON_QUOTED_KEY = re.compile('[A-Za-z0-9._+-]+')
 
+cdef Null = object()
+
 
 cdef class TAG_Compound(BaseMutableTag):
     tag_id = ID_COMPOUND
 
-    def __init__(self, value = None):
-        self._value = value or {}
-        for key, value in self._value.items():
-            self._check_entry(key, value)
+    def __init__(self, object value = Null):
+        cdef str key
+        cdef BaseTag val
+        cdef dict dict_value
+        if value is Null:
+            dict_value = {}
+        else:
+            dict_value = dict(value)
+            for key, val in dict_value.items():
+                if key is None or val is None:
+                    raise TypeError()
+        self._value = dict_value
 
     @property
     def value(self):
         return self._value.copy()
-
-    @staticmethod
-    def _check_entry(key: str, value: AnyNBT):
-        if not isinstance(key, str):
-            raise TypeError(
-                f"TAG_Compound key must be a string. Got {key.__class__.__name__}"
-            )
-        if not isinstance(value, BaseTag):
-            raise TypeError(
-                f"Invalid type {value.__class__.__name__} for key \"{key}\" in TAG_Compound. Must be an NBT object."
-            )
 
     cdef str _to_snbt(self):
         cdef str name
@@ -89,8 +88,7 @@ cdef class TAG_Compound(BaseMutableTag):
     def __getitem__(self, key: str) -> AnyNBT:
         return self._value[key]
 
-    def __setitem__(self, key: str, value: AnyNBT):
-        self._check_entry(key, value)
+    def __setitem__(self, str key not None, BaseTag value not None):
         self._value[key] = value
 
     def __delitem__(self, key: str):

@@ -1,4 +1,4 @@
-from .value cimport BaseTag, BaseMutableTag
+from .value cimport BaseMutableTag
 
 
 cdef class TAG_Compound(BaseMutableTag):
@@ -6,5 +6,3 @@ cdef class TAG_Compound(BaseMutableTag):
 
     @staticmethod
     cdef _check_dict(dict value)
-
-    cpdef setdefault(self, str key, BaseTag value)

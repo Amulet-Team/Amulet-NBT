@@ -2,7 +2,7 @@ from io import BytesIO
 import re
 from typing import Iterator
 
-from .value cimport BaseMutableTag, BaseTag
+from .value cimport BaseTag, BaseMutableTag
 from .const cimport ID_END, ID_COMPOUND, CommaSpace, CommaNewline
 from .util cimport write_byte, BufferContext, read_byte, read_string
 from .load_nbt cimport load_payload
@@ -116,29 +116,32 @@ cdef class TAG_Compound(BaseMutableTag):
     def __getattr__(self, item):
         return getattr(self._value, item)
 
-    def __getitem__(self, key: str) -> BaseTag:
+    def __getitem__(self, str key not None) -> BaseTag:
         return self._value[key]
 
     def __setitem__(self, str key not None, BaseTag value not None):
         self._value[key] = value
 
-    cpdef setdefault(self, str key, BaseTag value):
+    def setdefault(self, str key not None, BaseTag value not None):
         self._value.setdefault(key, value)
 
-    def update(self, object other, **others):
+    def update(self, object other=(), **others):
         cdef dict dict_other = dict(other)
         dict_other.update(others)
         TAG_Compound._check_dict(dict_other)
         self._value.update(dict_other)
 
-    def __delitem__(self, key: str):
+    def __delitem__(self, str key not None):
         del self._value[key]
 
     def __iter__(self) -> Iterator[AnyNBT]:
         yield from self._value
 
-    def __contains__(self, key: str) -> bool:
+    def __contains__(self, str key not None) -> bool:
         return key in self._value
 
     def __len__(self) -> int:
         return self._value.__len__()
+
+    def __reversed__(self):
+        return reversed(self._value)

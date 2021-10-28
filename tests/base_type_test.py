@@ -18,7 +18,7 @@ from amulet_nbt import (
 )
 
 
-class BaseTypeTest(unittest.TestCase):
+class BaseTagsTest(unittest.TestCase):
     def setUp(self):
         self.int_types = (
             TAG_Byte,
@@ -50,6 +50,8 @@ class BaseTypeTest(unittest.TestCase):
 
         self.not_nbt = (None, True, False, 0, 0.0, "str", [], {}, set())
 
+
+class BaseTypeTest(BaseTagsTest):
     def _iter_instance(self):
         for cls in self.nbt_types:
             yield cls()

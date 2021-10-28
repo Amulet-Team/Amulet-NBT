@@ -2,6 +2,7 @@ import unittest
 import copy
 import numpy
 from amulet_nbt import (
+    BaseTag,
     BaseIntTag,
     TAG_Byte,
     TAG_Short,
@@ -24,41 +25,53 @@ from amulet_nbt import (
 class CopyNBTTests(unittest.TestCase):
     def _test_copy(self, obj):
         obj_copy = copy.copy(obj)
+        if isinstance(obj, BaseTag):
+            obj_copy2 = obj.copy()
+        else:
+            obj_copy2 = obj_copy
         obj_deepcopy = copy.deepcopy(obj)
 
         # Compare the objects
         self.assertEqual(obj, obj_copy)
+        self.assertEqual(obj, obj_copy2)
         self.assertEqual(obj, obj_deepcopy)
 
         # Check if they are the same
         self.assertIsNot(obj, obj_copy)
+        self.assertIsNot(obj, obj_copy2)
         self.assertIsNot(obj, obj_deepcopy)
 
         if isinstance(obj, NBTFile):
             # Check if the names are the same
             self.assertIs(obj.name, obj_copy.name)
+            self.assertIs(obj.name, obj_copy2.name)
             # python caches strings
             self.assertIs(obj.name, obj_deepcopy.name)
 
         # Check the values match
         if isinstance(obj.value, numpy.ndarray):
             numpy.testing.assert_array_equal(obj.value, obj_copy.value)
+            numpy.testing.assert_array_equal(obj.value, obj_copy2.value)
             numpy.testing.assert_array_equal(obj.value, obj_deepcopy.value)
         else:
             self.assertEqual(obj.value, obj_copy.value)
+            self.assertEqual(obj.value, obj_copy2.value)
             self.assertEqual(obj.value, obj_deepcopy.value)
 
         # Check if the values are the same
         if isinstance(obj, (BaseFloatTag, BaseArrayTag, TAG_List, TAG_Compound)):
             # some tags always create copies
             self.assertIsNot(obj.value, obj_copy.value)
+            self.assertIsNot(obj.value, obj_copy2.value)
             self.assertIsNot(obj.value, obj_deepcopy.value)
         elif isinstance(obj, (BaseIntTag, TAG_String)):
             # python does some caching
             self.assertIs(obj.value, obj_copy.value)
+            self.assertIs(obj.value, obj_copy2.value)
             self.assertIs(obj.value, obj_deepcopy.value)
         else:
             self.assertIs(obj.value, obj_copy.value)
+            self.assertIs(obj.value, obj_copy2.value)
             self.assertIsNot(obj.value, obj_deepcopy.value)
 
     def test_copy(self):

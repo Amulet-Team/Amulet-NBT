@@ -7,6 +7,7 @@ from .const cimport ID_LIST, CommaSpace, CommaNewline
 from .util cimport write_byte, write_int, BufferContext, read_byte, read_int
 from .load_nbt cimport load_payload
 from .dtype import AnyNBT
+from .array import BaseArrayTag
 
 cdef Null = object()
 
@@ -142,6 +143,8 @@ cdef class TAG_List(BaseMutableTag):
         return self
 
     def __eq__(self, other):
+        if isinstance(other, BaseArrayTag):
+            return NotImplemented
         return self._value == other
 
     cpdef bint strict_equals(self, other):

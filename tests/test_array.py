@@ -29,7 +29,7 @@ class TestArray(base_type_test.BaseTypeTest):
     def values(self):
         values = []
         for t in (list, tuple, numpy.array) + self.array_types:
-            for v in ([], [1], [1,2,3]):
+            for v in ([], [1], [1, 2, 3]):
                 values.append(t(v))
         return values
 

@@ -7,6 +7,7 @@ from .value cimport BaseMutableTag
 from .errors import NBTError
 from .const cimport CommaSpace, ID_BYTE_ARRAY, ID_INT_ARRAY, ID_LONG_ARRAY
 from .util cimport write_array, BufferContext, read_int, read_data
+from .list cimport TAG_List
 
 cdef Null = object()
 
@@ -46,7 +47,9 @@ cdef class BaseArrayTag(BaseMutableTag):
         return f"{self.__class__.__name__}({list(self.value)})"
 
     def __eq__(self, other):
-        return numpy.array_equal(self.value, other)
+        if isinstance(other, (BaseArrayType, numpy.ndarray, list, tuple, TAG_List)):
+            return numpy.array_equal(self.value, other)
+        return NotImplemented
 
     def __getitem__(self, item):
         return self.value.__getitem__(item)

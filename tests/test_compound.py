@@ -262,11 +262,12 @@ class TestCompound(base_type_test.BaseTypeTest):
         self.assertIn("key1", c)
         self.assertNotIn("key2", c)
         for not_nbt in self.not_nbt:
-            if isinstance(not_nbt, str):
-                self.assertNotIn(not_nbt, c)
-            else:
+            if isinstance(not_nbt, (list, dict, set)):
                 with self.assertRaises(TypeError, msg=not_nbt):
                     not_nbt in c
+            else:
+                self.assertNotIn(not_nbt, c)
+
 
     def test_delitem(self):
         c = TAG_Compound(

@@ -131,7 +131,7 @@ cdef class TAG_Compound(BaseMutableTag):
     def __iter__(self) -> Iterator[AnyNBT]:
         yield from self._value
 
-    def __contains__(self, str key not None) -> bool:
+    def __contains__(self, object key) -> bool:
         return key in self._value
 
     def __len__(self) -> int:

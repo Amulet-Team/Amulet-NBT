@@ -115,8 +115,11 @@ class TestCompound(base_type_test.BaseTypeTest):
             "key3": TAG_String("val3"),
         }
         c = TAG_Compound(d)
-        for i, t in enumerate(c):
-            self.assertEqual(list(d)[i], t)
+        it = iter(c)
+        self.assertEqual(next(it), "key1")
+        self.assertEqual(next(it), "key2")
+        self.assertEqual(next(it), "key3")
+
         self.assertEqual(list(d), list(c))
         self.assertIsInstance(list(c), list)
         self.assertEqual(dict(d), dict(c))
@@ -267,7 +270,6 @@ class TestCompound(base_type_test.BaseTypeTest):
                     not_nbt in c
             else:
                 self.assertNotIn(not_nbt, c)
-
 
     def test_delitem(self):
         c = TAG_Compound(

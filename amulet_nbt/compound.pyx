@@ -10,18 +10,12 @@ from .dtype import AnyNBT
 
 NON_QUOTED_KEY = re.compile('[A-Za-z0-9._+-]+')
 
-cdef Null = object()
-
 
 cdef class TAG_Compound(BaseMutableTag):
     tag_id = ID_COMPOUND
 
-    def __init__(self, object value = Null, **kwvals):
-        cdef dict dict_value
-        if value is Null:
-            dict_value = {}
-        else:
-            dict_value = dict(value)
+    def __init__(self, object value = (), **kwvals):
+        cdef dict dict_value = dict(value)
         dict_value.update(kwvals)
         TAG_Compound._check_dict(dict_value)
         self._value = dict_value

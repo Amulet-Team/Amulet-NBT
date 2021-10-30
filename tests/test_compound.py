@@ -1,3 +1,4 @@
+import sys
 import unittest
 from tests import base_type_test
 
@@ -333,6 +334,7 @@ class TestCompound(base_type_test.BaseTypeTest):
             3,
         )
 
+    @unittest.skipUnless(sys.version_info >= (3, 8), "dicts are ")
     def test_reversed(self):
         d = {
             "key1": TAG_String("val1"),

@@ -1,4 +1,5 @@
 from .value cimport BaseImmutableTag
+from libc.math cimport floor, ceil
 
 
 cdef class BaseNumericTag(BaseImmutableTag):
@@ -96,10 +97,10 @@ cdef class BaseNumericTag(BaseImmutableTag):
         return self.value.__trunc__()
 
     def __floor__(self):
-        return self.value.__floor__()
+        return floor(self.value)
 
     def __ceil__(self):
-        return self.value.__ceil__()
+        return ceil(self.value)
 
     def __bool__(self):
         return self.value.__bool__()

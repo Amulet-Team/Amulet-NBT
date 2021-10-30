@@ -1,6 +1,5 @@
 from typing import Iterator
 from io import BytesIO
-from collections.abc import MutableSequence
 
 from .value cimport BaseTag, BaseMutableTag
 from .const cimport ID_LIST, CommaSpace, CommaNewline
@@ -9,21 +8,16 @@ from .load_nbt cimport load_payload
 from .dtype import AnyNBT
 from .array import BaseArrayTag
 
-cdef Null = object()
-
 
 cdef class TAG_List(BaseMutableTag):
     tag_id = ID_LIST
 
-    def __init__(self, object value = Null, char list_data_type = 1):
+    def __init__(self, object value = (), char list_data_type = 1):
         self.list_data_type = list_data_type
         self._value = []
         cdef list list_value
-        if value is Null:
-            list_value = []
-        else:
-            list_value = list(value)
-            self._check_tag_iterable(list_value)
+        list_value = list(value)
+        self._check_tag_iterable(list_value)
         self._value = list_value
 
     @property
@@ -94,8 +88,8 @@ cdef class TAG_List(BaseMutableTag):
     def __getattr__(self, item):
         return getattr(self._value, item)
 
-    def __contains__(self, item: AnyNBT) -> bool:
-        return self._value.__contains__(item)
+    def __contains__(self, object item) -> bool:
+        return isinstance(item, BaseTag) and item.tag_id == self.list_data_type and self._value.__contains__(item)
 
     def __iter__(self) -> Iterator[AnyNBT]:
         return self._value.__iter__()
@@ -108,35 +102,37 @@ cdef class TAG_List(BaseMutableTag):
 
     def __setitem__(self, index, value):
         if isinstance(index, slice):
-            self._check_tag_iterable(list(value))
+            value = list(value)
+            self._check_tag_iterable(value)
         else:
             self._check_tag(value)
         self._value[index] = value
 
-    def __delitem__(self, index: int):
+    def __delitem__(self, object index):
         del self._value[index]
 
-    def append(self, value: AnyNBT) -> None:
+    def append(self, BaseTag value not None) -> None:
         self._check_tag(value)
         self._value.append(value)
 
     def copy(self):
         return TAG_List(self._value.copy(), self.list_data_type)
 
-    def extend(self, other):
-        self._check_tag_iterable(list(other))
+    def extend(self, object other):
+        other = list(other)
+        self._check_tag_iterable(other)
         self._value.extend(other)
         return self
 
-    def insert(self, index: int, value: AnyNBT):
+    def insert(self, object index, BaseTag value not None):
         self._check_tag(value)
         self._value.insert(index, value)
 
     def __mul__(self, other):
-        return self._value * other
+        return self.value * other
 
     def __rmul__(self, other):
-        return other * self._value
+        return other * self.value
 
     def __imul__(self, other):
         self._value *= other
@@ -160,16 +156,15 @@ cdef class TAG_List(BaseMutableTag):
             return True
         return False
 
+    # TODO: https://github.com/cython/cython/issues/4434
+    #  These methods get the Python object not the cython object.
+    #  As such they cannot access _value. This may be a cython bug.
     def __add__(self, other):
-        return self._value + other
+        return self.value + other
 
     def __radd__(self, other):
-        return other + self._value
+        return other + self.value
 
     def __iadd__(self, other):
         self.extend(other)
         return self
-
-
-# class TAG_List(_TAG_List, MutableSequence):
-#     pass

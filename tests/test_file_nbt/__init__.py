@@ -3,7 +3,7 @@ import unittest
 import amulet_nbt
 
 TESTS_DIR = os.path.dirname(__file__)
-DATA_DIR = os.path.join(TESTS_DIR, "data")
+DATA_DIR = os.path.join(TESTS_DIR, "src")
 
 
 class FileNBTTests(unittest.TestCase):

@@ -1,5 +1,5 @@
 from .value cimport BaseImmutableTag
-from libc.math cimport floor, ceil
+from math import floor, ceil
 
 
 cdef class BaseNumericTag(BaseImmutableTag):

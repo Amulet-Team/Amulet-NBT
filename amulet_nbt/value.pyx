@@ -11,6 +11,11 @@ cdef class BaseTag:
 
     @property
     def value(self):
+        """
+        An immutable version/copy of the data in the class.
+        The immutable types return the internal immutable data.
+        The mutable types return a copy of the data. To modify these classes use the public API.
+        """
         raise NotImplementedError
 
     cpdef str to_snbt(self, object indent=None, object indent_chr=None):
@@ -128,46 +133,46 @@ cdef class BaseTag:
         raise NotImplementedError
 
     def __getattr__(self, item):
-        return getattr(self.value, item)
+        return getattr(self.value_, item)
 
     def __repr__(self):
         raise NotImplementedError
 
     def __str__(self):
-        return str(self.value)
+        return str(self.value_)
 
     def __dir__(self):
-        return list(set(list(super().__dir__()) + dir(self.value)))
+        return list(set(list(super().__dir__()) + dir(self.value_)))
 
     def __eq__(self, other):
-        return self.value == other
+        return self.value_ == other
 
     cpdef bint strict_equals(self, other):
         return isinstance(other, self.__class__) and self.tag_id == other.tag_id and self == other
 
     def __ge__(self, other):
-        return self.value >= other
+        return self.value_ >= other
 
     def __gt__(self, other):
-        return self.value > other
+        return self.value_ > other
 
     def __le__(self, other):
-        return self.value <= other
+        return self.value_ <= other
 
     def __lt__(self, other):
-        return self.value < other
+        return self.value_ < other
 
     def __reduce__(self):
-        return self.__class__, (self.value,)
+        return self.__class__, (self.value_,)
 
     def copy(self):
         return copy(self)
 
     def __deepcopy__(self, memo=None):
-        return self.__class__(deepcopy(self.value, memo=memo))
+        return self.__class__(deepcopy(self.value_, memo=memo))
 
     def __copy__(self):
-        return self.__class__(self.value)
+        return self.__class__(self.value_)
 
 BaseValueType = BaseTag
 
@@ -175,11 +180,19 @@ BaseValueType = BaseTag
 cdef class BaseImmutableTag(BaseTag):
     # https://github.com/cython/cython/issues/3709
     def __eq__(self, other):
-        return self.value == other
+        return self.value_ == other
 
     def __hash__(self):
-        return hash((self.tag_id, self.value))
+        return hash((self.tag_id, self.value_))
+
+    @property
+    def value(self):
+        return self.value_
 
 
 cdef class BaseMutableTag(BaseTag):
-    pass
+    @property
+    def value(self):
+        return copy(self.value_)
+
+    __hash__ = None

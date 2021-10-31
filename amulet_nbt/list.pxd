@@ -1,7 +1,7 @@
 from .value cimport BaseTag, BaseMutableTag
 
 cdef class TAG_List(BaseMutableTag):
-    cdef list _value
+    cdef readonly list value_
     cdef readonly char list_data_type
 
     cdef void _check_tag(self, BaseTag value, bint fix_if_empty=*) except *

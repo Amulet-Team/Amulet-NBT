@@ -18,14 +18,14 @@ cdef class TAG_Compound(BaseMutableTag):
         cdef dict dict_value = dict(value)
         dict_value.update(kwvals)
         TAG_Compound._check_dict(dict_value)
-        self._value = dict_value
+        self.value_ = dict_value
 
     @staticmethod
     def fromkeys(object keys, BaseTag value=None):
         cdef dict dict_value = dict.fromkeys(keys, value)
         TAG_Compound._check_dict(dict_value)
         cdef TAG_Compound compound = TAG_Compound.__new__(TAG_Compound)
-        compound._value = dict_value
+        compound.value_ = dict_value
         return compound
 
     @staticmethod
@@ -36,16 +36,12 @@ cdef class TAG_Compound(BaseMutableTag):
             if key is None or val is None:
                 raise TypeError()
 
-    @property
-    def value(self):
-        return self._value.copy()
-
     cdef str _to_snbt(self):
         cdef str name
         cdef BaseTag elem
         cdef list tags = []
-        for name in sorted(self._value):
-            elem = self._value[name]
+        for name in sorted(self.value_):
+            elem = self.value_[name]
             if NON_QUOTED_KEY.fullmatch(name) is None:
                 tags.append(f'"{name}": {elem.to_snbt()}')
             else:
@@ -56,8 +52,8 @@ cdef class TAG_Compound(BaseMutableTag):
         cdef str name
         cdef BaseTag elem
         cdef list tags = []
-        for name in sorted(self._value):
-            elem = self._value[name]
+        for name in sorted(self.value_):
+            elem = self.value_[name]
             tags.append(f'{indent_chr * (indent_count + 1)}"{name}": {elem._pretty_to_snbt(indent_chr, indent_count + 1, False)}')
         if tags:
             return f"{indent_chr * indent_count * leading_indent}{{\n{CommaNewline.join(tags)}\n{indent_chr * indent_count}}}"
@@ -68,7 +64,7 @@ cdef class TAG_Compound(BaseMutableTag):
         cdef str key
         cdef BaseTag tag
 
-        for key, tag in self._value.items():
+        for key, tag in self.value_.items():
             tag.write_tag(buffer, key, little_endian)
         write_byte(ID_END, buffer)
 
@@ -90,7 +86,7 @@ cdef class TAG_Compound(BaseMutableTag):
         return tag
 
     def __eq__(self, other):
-        return self._value == other
+        return self.value_ == other
 
     cpdef bint strict_equals(self, other):
         cdef str self_key, other_key
@@ -105,37 +101,37 @@ cdef class TAG_Compound(BaseMutableTag):
         return False
 
     def __repr__(self):
-        return f"{self.__class__.__name__}({repr(self.value)})"
+        return f"{self.__class__.__name__}({repr(self.value_)})"
 
     def __getattr__(self, item):
-        return getattr(self._value, item)
+        return getattr(self.value_, item)
 
     def __getitem__(self, str key not None) -> BaseTag:
-        return self._value[key]
+        return self.value_[key]
 
     def __setitem__(self, str key not None, BaseTag value not None):
-        self._value[key] = value
+        self.value_[key] = value
 
     def setdefault(self, str key not None, BaseTag value not None):
-        self._value.setdefault(key, value)
+        self.value_.setdefault(key, value)
 
     def update(self, object other=(), **others):
         cdef dict dict_other = dict(other)
         dict_other.update(others)
         TAG_Compound._check_dict(dict_other)
-        self._value.update(dict_other)
+        self.value_.update(dict_other)
 
     def __delitem__(self, str key not None):
-        del self._value[key]
+        del self.value_[key]
 
     def __iter__(self) -> Iterator[AnyNBT]:
-        yield from self._value
+        yield from self.value_
 
     def __contains__(self, object key) -> bool:
-        return key in self._value
+        return key in self.value_
 
     def __len__(self) -> int:
-        return self._value.__len__()
+        return self.value_.__len__()
 
     def __reversed__(self):
-        return reversed(self._value)
+        return reversed(self.value_)

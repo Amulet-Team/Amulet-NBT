@@ -133,66 +133,61 @@ cdef class BaseTag:
         raise NotImplementedError
 
     def __getattr__(self, item):
-        return getattr(self.value_, item)
+        raise NotImplementedError
 
     def __repr__(self):
         raise NotImplementedError
 
     def __str__(self):
-        return str(self.value_)
+        raise NotImplementedError
 
     def __dir__(self):
-        return list(set(list(super().__dir__()) + dir(self.value_)))
+        raise NotImplementedError
 
     def __eq__(self, other):
-        return self.value_ == other
+        raise NotImplementedError
 
     cpdef bint strict_equals(self, other):
         return isinstance(other, self.__class__) and self.tag_id == other.tag_id and self == other
 
     def __ge__(self, other):
-        return self.value_ >= other
+        raise NotImplementedError
 
     def __gt__(self, other):
-        return self.value_ > other
+        raise NotImplementedError
 
     def __le__(self, other):
-        return self.value_ <= other
+        raise NotImplementedError
 
     def __lt__(self, other):
-        return self.value_ < other
+        raise NotImplementedError
 
     def __reduce__(self):
-        return self.__class__, (self.value_,)
+        raise NotImplementedError
 
     def copy(self):
         return copy(self)
 
     def __deepcopy__(self, memo=None):
-        return self.__class__(deepcopy(self.value_, memo=memo))
+        raise NotImplementedError
 
     def __copy__(self):
-        return self.__class__(self.value_)
+        raise NotImplementedError
+
+    @property
+    def value(self):
+        raise NotImplementedError
+
+    def __hash__(self):
+        raise NotImplementedError
+
 
 BaseValueType = BaseTag
 
 
 cdef class BaseImmutableTag(BaseTag):
-    # https://github.com/cython/cython/issues/3709
-    def __eq__(self, other):
-        return self.value_ == other
-
-    def __hash__(self):
-        return hash((self.tag_id, self.value_))
-
-    @property
-    def value(self):
-        return self.value_
+    pass
 
 
 cdef class BaseMutableTag(BaseTag):
-    @property
-    def value(self):
-        return copy(self.value_)
-
-    __hash__ = None
+    pass

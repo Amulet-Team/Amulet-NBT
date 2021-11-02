@@ -1,0 +1,34 @@
+    def __getattr__(self, item):
+        if item == "value_":
+            raise Exception
+        return getattr(self.value_, item)
+
+    def __str__(self):
+        return str(self.value_)
+
+    def __dir__(self):
+        return list(set(list(super().__dir__()) + dir(self.value_)))
+
+    def __eq__(self, other):
+        return self.value_ == other
+
+    def __ge__(self, other):
+        return self.value_ >= other
+
+    def __gt__(self, other):
+        return self.value_ > other
+
+    def __le__(self, other):
+        return self.value_ <= other
+
+    def __lt__(self, other):
+        return self.value_ < other
+
+    def __reduce__(self):
+        return self.__class__, (self.value_,)
+
+    def __deepcopy__(self, memo=None):
+        return self.__class__(deepcopy(self.value_, memo=memo))
+
+    def __copy__(self):
+        return self.__class__(self.value_)

@@ -1,0 +1,12 @@
+{{py:from tools.tempita import include}}
+{{include("amulet_nbt/BaseTag.pyx.in")}}
+    # https://github.com/cython/cython/issues/3709
+    def __eq__(self, other):
+        return self.value_ == other
+
+    def __hash__(self):
+        return hash((self.tag_id, self.value_))
+
+    @property
+    def value(self):
+        return self.value_

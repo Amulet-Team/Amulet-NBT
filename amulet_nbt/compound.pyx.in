@@ -8,6 +8,7 @@ from .const cimport ID_END, ID_COMPOUND, CommaSpace, CommaNewline
 from .util cimport write_byte, BufferContext, read_byte, read_string
 from .load_nbt cimport load_payload
 from .dtype import AnyNBT
+{{py:from tools.tempita import include}}
 
 NON_QUOTED_KEY = re.compile('[A-Za-z0-9._+-]+')
 
@@ -21,47 +22,7 @@ cdef class TAG_Compound(BaseMutableTag):
         TAG_Compound._check_dict(dict_value)
         self.value_ = dict_value
 
-    def __getattr__(self, item):
-        if item == "value_":
-            raise Exception
-        return getattr(self.value_, item)
-
-    def __str__(self):
-        return str(self.value_)
-
-    def __dir__(self):
-        return list(set(list(super().__dir__()) + dir(self.value_)))
-
-    def __eq__(self, other):
-        return self.value_ == other
-
-    def __ge__(self, other):
-        return self.value_ >= other
-
-    def __gt__(self, other):
-        return self.value_ > other
-
-    def __le__(self, other):
-        return self.value_ <= other
-
-    def __lt__(self, other):
-        return self.value_ < other
-
-    def __reduce__(self):
-        return self.__class__, (self.value_,)
-
-    def __deepcopy__(self, memo=None):
-        return self.__class__(deepcopy(self.value_, memo=memo))
-
-    def __copy__(self):
-        return self.__class__(self.value_)
-
-    @property
-    def value(self):
-        return copy(self.value_)
-
-    __hash__ = None
-
+{{include("amulet_nbt/BaseMutableTag.pyx.in")}}
 
     @staticmethod
     def fromkeys(object keys, BaseTag value=None):
@@ -89,7 +50,7 @@ cdef class TAG_Compound(BaseMutableTag):
                 tags.append(f'"{name}": {elem.to_snbt()}')
             else:
                 tags.append(f'{name}: {elem.to_snbt()}')
-        return f"{{{CommaSpace.join(tags)}}}"
+        return f"{{start_braces}}{CommaSpace.join(tags)}{{end_braces}}"
 
     cdef str _pretty_to_snbt(self, str indent_chr, int indent_count=0, bint leading_indent=True):
         cdef str name
@@ -99,9 +60,9 @@ cdef class TAG_Compound(BaseMutableTag):
             elem = self.value_[name]
             tags.append(f'{indent_chr * (indent_count + 1)}"{name}": {elem._pretty_to_snbt(indent_chr, indent_count + 1, False)}')
         if tags:
-            return f"{indent_chr * indent_count * leading_indent}{{\n{CommaNewline.join(tags)}\n{indent_chr * indent_count}}}"
+            return f"{indent_chr * indent_count * leading_indent}{{start_braces}}\n{CommaNewline.join(tags)}\n{indent_chr * indent_count}{{end_braces}}"
         else:
-            return f"{indent_chr * indent_count * leading_indent}{{}}"
+            return f"{indent_chr * indent_count * leading_indent}{{start_braces}}{{end_braces}}"
 
     cdef void write_payload(self, object buffer: BytesIO, bint little_endian) except *:
         cdef str key

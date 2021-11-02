@@ -7,6 +7,7 @@ from .value cimport BaseMutableTag
 from .const cimport CommaSpace, ID_BYTE_ARRAY, ID_INT_ARRAY, ID_LONG_ARRAY
 from .util cimport write_array, BufferContext, read_int, read_data
 from .list cimport TAG_List
+{{py:from tools.tempita import include}}
 
 
 cdef class BaseArrayTag(BaseMutableTag):
@@ -26,47 +27,7 @@ cdef class BaseArrayTag(BaseMutableTag):
 
         self.value_ = arr
 
-    def __getattr__(self, item):
-        if item == "value_":
-            raise Exception
-        return getattr(self.value_, item)
-
-    def __str__(self):
-        return str(self.value_)
-
-    def __dir__(self):
-        return list(set(list(super().__dir__()) + dir(self.value_)))
-
-    def __eq__(self, other):
-        return self.value_ == other
-
-    def __ge__(self, other):
-        return self.value_ >= other
-
-    def __gt__(self, other):
-        return self.value_ > other
-
-    def __le__(self, other):
-        return self.value_ <= other
-
-    def __lt__(self, other):
-        return self.value_ < other
-
-    def __reduce__(self):
-        return self.__class__, (self.value_,)
-
-    def __deepcopy__(self, memo=None):
-        return self.__class__(deepcopy(self.value_, memo=memo))
-
-    def __copy__(self):
-        return self.__class__(self.value_)
-
-    @property
-    def value(self):
-        return copy(self.value_)
-
-    __hash__ = None
-
+{{include("amulet_nbt/BaseMutableTag.pyx.in")}}
 
     cdef void _fix_dtype(self):
         if self.value_.dtype != self.big_endian_data_type:

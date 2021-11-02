@@ -1,0 +1,49 @@
+{{py:from tools.tempita import include}}
+{{include("amulet_nbt/BaseNumericTag.pyx.in")}}
+    def __lshift__(self, other):
+        return self.value_ << other
+
+    def __rlshift__(self, other):
+        return other << self.value_
+
+    def __ilshift__(self, other):
+        return self.__class__(self << other)
+
+    def __rshift__(self, other):
+        return self.value_ >> other
+
+    def __rrshift__(self, other):
+        return other >> self.value_
+
+    def __irshift__(self, other):
+        return self.__class__(self >> other)
+
+    def __and__(self, other):
+        return self.value_ & other
+
+    def __rand__(self, other):
+        return other & self.value_
+
+    def __iand__(self, other):
+        return self.__class__(self & other)
+
+    def __xor__(self, other):
+        return self.value_ ^ other
+
+    def __rxor__(self, other):
+        return other ^ self.value_
+
+    def __ixor__(self, other):
+        return self.__class__(self ^ other)
+
+    def __or__(self, other):
+        return self.value_ | other
+
+    def __ror__(self, other):
+        return other | self.value_
+
+    def __ior__(self, other):
+        return self.__class__(self | other)
+
+    def __invert__(self):
+        return self.value_.__invert__()

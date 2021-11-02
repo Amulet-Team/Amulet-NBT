@@ -13,18 +13,7 @@ cdef class BaseArrayTag(BaseMutableTag):
     big_endian_data_type = little_endian_data_type = numpy.dtype("int8")
 
     def __init__(BaseArrayTag self, object value = ()):
-        cdef numpy.ndarray arr
-        if isinstance(value, BaseArrayTag):
-            arr = value.value.flatten()
-        elif isinstance(value, numpy.ndarray):
-            arr = value.flatten()
-        else:
-            arr = numpy.array(value, self.big_endian_data_type).ravel()
-
-        if arr.dtype != self.big_endian_data_type:
-            arr = arr.astype(self.big_endian_data_type)
-
-        self.value_ = arr
+        self.value_ = numpy.array(value, self.big_endian_data_type).ravel()
 
     def __getattr__(BaseArrayTag self, item):
         return getattr(self.value_, item)

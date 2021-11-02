@@ -105,10 +105,6 @@ cdef class TAG_Byte(BaseIntTag):
     def __copy__(TAG_Byte self):
         return self.__class__(self.value_)
 
-    # https://github.com/cython/cython/issues/3709
-    def __eq__(TAG_Byte self, other):
-        return self.value_ == other
-
     def __hash__(TAG_Byte self):
         return hash((self.tag_id, self.value_))
 
@@ -316,10 +312,6 @@ cdef class TAG_Short(BaseIntTag):
 
     def __copy__(TAG_Short self):
         return self.__class__(self.value_)
-
-    # https://github.com/cython/cython/issues/3709
-    def __eq__(TAG_Short self, other):
-        return self.value_ == other
 
     def __hash__(TAG_Short self):
         return hash((self.tag_id, self.value_))
@@ -533,10 +525,6 @@ cdef class TAG_Int(BaseIntTag):
     def __copy__(TAG_Int self):
         return self.__class__(self.value_)
 
-    # https://github.com/cython/cython/issues/3709
-    def __eq__(TAG_Int self, other):
-        return self.value_ == other
-
     def __hash__(TAG_Int self):
         return hash((self.tag_id, self.value_))
 
@@ -748,10 +736,6 @@ cdef class TAG_Long(BaseIntTag):
 
     def __copy__(TAG_Long self):
         return self.__class__(self.value_)
-
-    # https://github.com/cython/cython/issues/3709
-    def __eq__(TAG_Long self, other):
-        return self.value_ == other
 
     def __hash__(TAG_Long self):
         return hash((self.tag_id, self.value_))

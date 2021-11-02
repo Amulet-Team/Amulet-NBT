@@ -1,9 +1,5 @@
 {{py:from tools.tempita import include}}
 {{include("amulet_nbt/BaseTag.pyx.in", cls_name=cls_name)}}
-    # https://github.com/cython/cython/issues/3709
-    def __eq__({{cls_name}} self, other):
-        return self.value_ == other
-
     def __hash__({{cls_name}} self):
         return hash((self.tag_id, self.value_))
 

@@ -89,9 +89,6 @@ cdef class TAG_Compound(BaseMutableTag):
                 tag[name] = child_tag
         return tag
 
-    def __eq__(TAG_Compound self, other):
-        return self.value_ == other
-
     cpdef bint strict_equals(TAG_Compound self, other):
         cdef str self_key, other_key
         if (

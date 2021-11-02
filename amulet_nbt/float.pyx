@@ -50,10 +50,6 @@ cdef class TAG_Float(BaseFloatTag):
     def __copy__(TAG_Float self):
         return self.__class__(self.value_)
 
-    # https://github.com/cython/cython/issues/3709
-    def __eq__(TAG_Float self, other):
-        return self.value_ == other
-
     def __hash__(TAG_Float self):
         return hash((self.tag_id, self.value_))
 
@@ -215,10 +211,6 @@ cdef class TAG_Double(BaseFloatTag):
 
     def __copy__(TAG_Double self):
         return self.__class__(self.value_)
-
-    # https://github.com/cython/cython/issues/3709
-    def __eq__(TAG_Double self, other):
-        return self.value_ == other
 
     def __hash__(TAG_Double self):
         return hash((self.tag_id, self.value_))

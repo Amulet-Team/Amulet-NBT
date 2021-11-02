@@ -49,10 +49,6 @@ cdef class TAG_String(BaseImmutableTag):
     def __copy__(TAG_String self):
         return self.__class__(self.value_)
 
-    # https://github.com/cython/cython/issues/3709
-    def __eq__(TAG_String self, other):
-        return self.value_ == other
-
     def __hash__(TAG_String self):
         return hash((self.tag_id, self.value_))
 

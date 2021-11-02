@@ -73,8 +73,6 @@ cdef class TAG_Byte(BaseIntTag):
         self.value_ = self._sanitise_value(int(value))
 
     def __getattr__(TAG_Byte self, item):
-        if item == "value_":
-            raise Exception
         return getattr(self.value_, item)
 
     def __str__(TAG_Byte self):
@@ -287,8 +285,6 @@ cdef class TAG_Short(BaseIntTag):
         self.value_ = self._sanitise_value(int(value))
 
     def __getattr__(TAG_Short self, item):
-        if item == "value_":
-            raise Exception
         return getattr(self.value_, item)
 
     def __str__(TAG_Short self):
@@ -505,8 +501,6 @@ cdef class TAG_Int(BaseIntTag):
         self.value_ = self._sanitise_value(int(value))
 
     def __getattr__(TAG_Int self, item):
-        if item == "value_":
-            raise Exception
         return getattr(self.value_, item)
 
     def __str__(TAG_Int self):
@@ -723,8 +717,6 @@ cdef class TAG_Long(BaseIntTag):
         self.value_ = self._sanitise_value(int(value))
 
     def __getattr__(TAG_Long self, item):
-        if item == "value_":
-            raise Exception
         return getattr(self.value_, item)
 
     def __str__(TAG_Long self):

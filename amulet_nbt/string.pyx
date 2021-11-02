@@ -17,8 +17,6 @@ cdef class TAG_String(BaseImmutableTag):
         self.value_ = str(value)
 
     def __getattr__(TAG_String self, item):
-        if item == "value_":
-            raise Exception
         return getattr(self.value_, item)
 
     def __str__(TAG_String self):

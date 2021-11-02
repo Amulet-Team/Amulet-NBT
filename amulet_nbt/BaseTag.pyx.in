@@ -1,6 +1,4 @@
     def __getattr__({{cls_name}} self, item):
-        if item == "value_":
-            raise Exception
         return getattr(self.value_, item)
 
     def __str__({{cls_name}} self):

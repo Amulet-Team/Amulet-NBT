@@ -18,8 +18,6 @@ cdef class TAG_Float(BaseFloatTag):
         self.value_ = float(value)
 
     def __getattr__(TAG_Float self, item):
-        if item == "value_":
-            raise Exception
         return getattr(self.value_, item)
 
     def __str__(TAG_Float self):
@@ -186,8 +184,6 @@ cdef class TAG_Double(BaseFloatTag):
         self.value_ = float(value)
 
     def __getattr__(TAG_Double self, item):
-        if item == "value_":
-            raise Exception
         return getattr(self.value_, item)
 
     def __str__(TAG_Double self):

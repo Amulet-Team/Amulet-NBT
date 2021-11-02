@@ -22,8 +22,6 @@ cdef class TAG_Compound(BaseMutableTag):
         self.value_ = dict_value
 
     def __getattr__(TAG_Compound self, item):
-        if item == "value_":
-            raise Exception
         return getattr(self.value_, item)
 
     def __str__(TAG_Compound self):

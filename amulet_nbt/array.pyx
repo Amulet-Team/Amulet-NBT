@@ -27,8 +27,6 @@ cdef class BaseArrayTag(BaseMutableTag):
         self.value_ = arr
 
     def __getattr__(BaseArrayTag self, item):
-        if item == "value_":
-            raise Exception
         return getattr(self.value_, item)
 
     def __str__(BaseArrayTag self):

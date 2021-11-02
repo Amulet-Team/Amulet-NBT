@@ -15,15 +15,15 @@ cdef class BaseFloatTag(BaseNumericTag):
 cdef class TAG_Float(BaseFloatTag):
     tag_id = ID_FLOAT
 
-    def __init__(self, value = 0):
+    def __init__(TAG_Float self, value = 0):
         self.value_ = float(value)
 
-{{include("amulet_nbt/BaseNumericTag.pyx.in")}}
+{{include("amulet_nbt/BaseNumericTag.pyx.in", cls_name="TAG_Float")}}
 
-    cdef str _to_snbt(self):
+    cdef str _to_snbt(TAG_Float self):
         return f"{self.value_}f"
 
-    cdef void write_payload(self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(TAG_Float self, object buffer: BytesIO, bint little_endian) except *:
         write_float(self.value_, buffer, little_endian)
 
     @staticmethod
@@ -38,15 +38,15 @@ cdef class TAG_Float(BaseFloatTag):
 cdef class TAG_Double(BaseFloatTag):
     tag_id = ID_DOUBLE
 
-    def __init__(self, value = 0):
+    def __init__(TAG_Double self, value = 0):
         self.value_ = float(value)
 
-{{include("amulet_nbt/BaseNumericTag.pyx.in")}}
+{{include("amulet_nbt/BaseNumericTag.pyx.in", cls_name="TAG_Double")}}
 
-    cdef str _to_snbt(self):
+    cdef str _to_snbt(TAG_Double self):
         return f"{self.value_}d"
 
-    cdef void write_payload(self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(TAG_Double self, object buffer: BytesIO, bint little_endian) except *:
         write_double(self.value_, buffer, little_endian)
 
     @staticmethod

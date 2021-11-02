@@ -8,7 +8,7 @@ from Cython import Tempita as tempita
 ROOT_PATH = os.path.dirname(os.path.dirname(__file__))
 
 
-def include(rel_path):
+def include(rel_path, **kwargs):
     """
     Load and bake a template file.
 
@@ -16,7 +16,7 @@ def include(rel_path):
     :return: The baked cython code.
     """
     with open(os.path.join(ROOT_PATH, rel_path)) as f:
-        return tempita.sub(f.read())
+        return tempita.sub(f.read(), **kwargs)
 
 
 def main():

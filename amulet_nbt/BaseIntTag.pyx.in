@@ -1,49 +1,49 @@
 {{py:from tools.tempita import include}}
-{{include("amulet_nbt/BaseNumericTag.pyx.in")}}
-    def __lshift__(self, other):
+{{include("amulet_nbt/BaseNumericTag.pyx.in", cls_name=cls_name)}}
+    def __lshift__({{cls_name}} self, other):
         return self.value_ << other
 
-    def __rlshift__(self, other):
+    def __rlshift__({{cls_name}} self, other):
         return other << self.value_
 
-    def __ilshift__(self, other):
+    def __ilshift__({{cls_name}} self, other):
         return self.__class__(self << other)
 
-    def __rshift__(self, other):
+    def __rshift__({{cls_name}} self, other):
         return self.value_ >> other
 
-    def __rrshift__(self, other):
+    def __rrshift__({{cls_name}} self, other):
         return other >> self.value_
 
-    def __irshift__(self, other):
+    def __irshift__({{cls_name}} self, other):
         return self.__class__(self >> other)
 
-    def __and__(self, other):
+    def __and__({{cls_name}} self, other):
         return self.value_ & other
 
-    def __rand__(self, other):
+    def __rand__({{cls_name}} self, other):
         return other & self.value_
 
-    def __iand__(self, other):
+    def __iand__({{cls_name}} self, other):
         return self.__class__(self & other)
 
-    def __xor__(self, other):
+    def __xor__({{cls_name}} self, other):
         return self.value_ ^ other
 
-    def __rxor__(self, other):
+    def __rxor__({{cls_name}} self, other):
         return other ^ self.value_
 
-    def __ixor__(self, other):
+    def __ixor__({{cls_name}} self, other):
         return self.__class__(self ^ other)
 
-    def __or__(self, other):
+    def __or__({{cls_name}} self, other):
         return self.value_ | other
 
-    def __ror__(self, other):
+    def __ror__({{cls_name}} self, other):
         return other | self.value_
 
-    def __ior__(self, other):
+    def __ior__({{cls_name}} self, other):
         return self.__class__(self | other)
 
-    def __invert__(self):
+    def __invert__({{cls_name}} self):
         return self.value_.__invert__()

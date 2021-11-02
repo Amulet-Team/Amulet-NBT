@@ -14,10 +14,10 @@ cdef inline escape(str string):
 cdef class TAG_String(BaseImmutableTag):
     tag_id = ID_STRING
 
-    def __init__(self, value = ""):
+    def __init__(TAG_String self, value = ""):
         self.value_ = str(value)
 
-{{include("amulet_nbt/BaseImmutableTag.pyx.in")}}
+{{include("amulet_nbt/BaseImmutableTag.pyx.in", cls_name="TAG_String")}}
 
     def __len__(TAG_String self) -> int:
         return len(self.value_)
@@ -28,7 +28,7 @@ cdef class TAG_String(BaseImmutableTag):
     cdef str _to_snbt(TAG_String self):
         return f"\"{escape(self.value_)}\""
 
-    cdef void write_payload(self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(TAG_String self, object buffer: BytesIO, bint little_endian) except *:
         write_string(self.value_, buffer, little_endian)
 
     @staticmethod

@@ -13,7 +13,7 @@ from .list cimport TAG_List
 cdef class BaseArrayTag(BaseMutableTag):
     big_endian_data_type = little_endian_data_type = numpy.dtype("int8")
 
-    def __init__(self, object value = ()):
+    def __init__(BaseArrayTag self, object value = ()):
         cdef numpy.ndarray arr
         if isinstance(value, BaseArrayTag):
             arr = value.value.flatten()
@@ -27,14 +27,14 @@ cdef class BaseArrayTag(BaseMutableTag):
 
         self.value_ = arr
 
-{{include("amulet_nbt/BaseMutableTag.pyx.in")}}
+{{include("amulet_nbt/BaseMutableTag.pyx.in", cls_name="BaseArrayTag")}}
 
-    cdef void _fix_dtype(self):
+    cdef void _fix_dtype(BaseArrayTag self):
         if self.value_.dtype != self.big_endian_data_type:
             print(f'[Warning] Mismatch array dtype. Expected: {self.big_endian_data_type}, got: {self.value_.dtype}')
             self.value_ = self.value_.astype(self.big_endian_data_type)
 
-    cdef numpy.ndarray _as_endianness(self, bint little_endian = False):
+    cdef numpy.ndarray _as_endianness(BaseArrayTag self, bint little_endian = False):
         self._fix_dtype()
         if little_endian:
             return self.value_.astype(self.little_endian_data_type)
@@ -42,172 +42,172 @@ cdef class BaseArrayTag(BaseMutableTag):
             return self.value_
 
     @property
-    def dtype(self):
+    def dtype(BaseArrayTag self):
         return self.value_.dtype
 
-    def __repr__(self):
+    def __repr__(BaseArrayTag self):
         return f"{self.__class__.__name__}({list(self.value_)})"
 
-    def __eq__(self, other):
+    def __eq__(BaseArrayTag self, other):
         if isinstance(other, (BaseArrayType, numpy.ndarray, list, tuple, TAG_List)):
             return numpy.array_equal(self.value_, other)
         return NotImplemented
 
-    def __getitem__(self, item):
+    def __getitem__(BaseArrayTag self, item):
         return self.value_.__getitem__(item)
 
-    def __setitem__(self, key, value):
+    def __setitem__(BaseArrayTag self, key, value):
         self.value_.__setitem__(key, value)
 
-    def __array__(self):
+    def __array__(BaseArrayTag self):
         return self.value_
 
-    def __len__(self):
+    def __len__(BaseArrayTag self):
         return len(self.value_)
 
-    def __add__(self, other):
+    def __add__(BaseArrayTag self, other):
         return (self.value_ + other).astype(self.big_endian_data_type)
 
-    def __radd__(self, other):
+    def __radd__(BaseArrayTag self, other):
         return (other + self.value_).astype(self.big_endian_data_type)
 
-    def __iadd__(self, other):
+    def __iadd__(BaseArrayTag self, other):
         self.value_ += other
         return self
 
-    def __sub__(self, other):
+    def __sub__(BaseArrayTag self, other):
         return (self.value_ - other).astype(self.big_endian_data_type)
 
-    def __rsub__(self, other):
+    def __rsub__(BaseArrayTag self, other):
         return (other - self.value_).astype(self.big_endian_data_type)
 
-    def __isub__(self, other):
+    def __isub__(BaseArrayTag self, other):
         self.value_ -= other
         return self
 
-    def __mul__(self, other):
+    def __mul__(BaseArrayTag self, other):
         return (self.value_ - other).astype(self.big_endian_data_type)
 
-    def __rmul__(self, other):
+    def __rmul__(BaseArrayTag self, other):
         return (other * self.value_).astype(self.big_endian_data_type)
 
-    def __imul__(self, other):
+    def __imul__(BaseArrayTag self, other):
         self.value_ *= other
         return self
 
-    def __matmul__(self, other):
+    def __matmul__(BaseArrayTag self, other):
         return (self.value_ @ other).astype(self.big_endian_data_type)
 
-    def __rmatmul__(self, other):
+    def __rmatmul__(BaseArrayTag self, other):
         return (other @ self.value_).astype(self.big_endian_data_type)
 
-    def __imatmul__(self, other):
+    def __imatmul__(BaseArrayTag self, other):
         self.value_ @= other
         return self
 
-    def __truediv__(self, other):
+    def __truediv__(BaseArrayTag self, other):
         return (self.value_ / other).astype(self.big_endian_data_type)
 
-    def __rtruediv__(self, other):
+    def __rtruediv__(BaseArrayTag self, other):
         return (other / self.value_).astype(self.big_endian_data_type)
 
-    def __itruediv__(self, other):
+    def __itruediv__(BaseArrayTag self, other):
         self.value_ /= other
         return self
 
-    def __floordiv__(self, other):
+    def __floordiv__(BaseArrayTag self, other):
         return (self.value_ // other).astype(self.big_endian_data_type)
 
-    def __rfloordiv__(self, other):
+    def __rfloordiv__(BaseArrayTag self, other):
         return (other // self.value_).astype(self.big_endian_data_type)
 
-    def __ifloordiv__(self, other):
+    def __ifloordiv__(BaseArrayTag self, other):
         self.value_ //= other
         return self
 
-    def __mod__(self, other):
+    def __mod__(BaseArrayTag self, other):
         return (self.value_ % other).astype(self.big_endian_data_type)
 
-    def __rmod__(self, other):
+    def __rmod__(BaseArrayTag self, other):
         return (other % self.value_).astype(self.big_endian_data_type)
 
-    def __imod__(self, other):
+    def __imod__(BaseArrayTag self, other):
         self.value_ %= other
         return self
 
-    def __divmod__(self, other):
+    def __divmod__(BaseArrayTag self, other):
         return divmod(self.value_, other)
 
-    def __rdivmod__(self, other):
+    def __rdivmod__(BaseArrayTag self, other):
         return divmod(other, self.value_)
 
-    def __pow__(self, power, modulo):
+    def __pow__(BaseArrayTag self, power, modulo):
         return pow(self.value_, power, modulo).astype(self.big_endian_data_type)
 
-    def __rpow__(self, other, modulo):
+    def __rpow__(BaseArrayTag self, other, modulo):
         return pow(other, self.value_, modulo).astype(self.big_endian_data_type)
 
-    def __ipow__(self, other):
+    def __ipow__(BaseArrayTag self, other):
         self.value_ **= other
         return self
 
-    def __lshift__(self, other):
+    def __lshift__(BaseArrayTag self, other):
         return (self.value_ << other).astype(self.big_endian_data_type)
 
-    def __rlshift__(self, other):
+    def __rlshift__(BaseArrayTag self, other):
         return (other << self.value_).astype(self.big_endian_data_type)
 
-    def __ilshift__(self, other):
+    def __ilshift__(BaseArrayTag self, other):
         self.value_ <<= other
         return self
 
-    def __rshift__(self, other):
+    def __rshift__(BaseArrayTag self, other):
         return (self.value_ >> other).astype(self.big_endian_data_type)
 
-    def __rrshift__(self, other):
+    def __rrshift__(BaseArrayTag self, other):
         return (other >> self.value_).astype(self.big_endian_data_type)
 
-    def __irshift__(self, other):
+    def __irshift__(BaseArrayTag self, other):
         self.value_ >>= other
         return self
 
-    def __and__(self, other):
+    def __and__(BaseArrayTag self, other):
         return (self.value_ & other).astype(self.big_endian_data_type)
 
-    def __rand__(self, other):
+    def __rand__(BaseArrayTag self, other):
         return (other & self.value_).astype(self.big_endian_data_type)
 
-    def __iand__(self, other):
+    def __iand__(BaseArrayTag self, other):
         self.value_ &= other
         return self
 
-    def __xor__(self, other):
+    def __xor__(BaseArrayTag self, other):
         return (self.value_ ^ other).astype(self.big_endian_data_type)
 
-    def __rxor__(self, other):
+    def __rxor__(BaseArrayTag self, other):
         return (other ^ self.value_).astype(self.big_endian_data_type)
 
-    def __ixor__(self, other):
+    def __ixor__(BaseArrayTag self, other):
         self.value_ ^= other
         return self
 
-    def __or__(self, other):
+    def __or__(BaseArrayTag self, other):
         return (self.value_ | other).astype(self.big_endian_data_type)
 
-    def __ror__(self, other):
+    def __ror__(BaseArrayTag self, other):
         return (other | self.value_).astype(self.big_endian_data_type)
 
-    def __ior__(self, other):
+    def __ior__(BaseArrayTag self, other):
         self.value_ |= other
         return self
 
-    def __neg__(self):
+    def __neg__(BaseArrayTag self):
         return self.value_.__neg__()
 
-    def __pos__(self):
+    def __pos__(BaseArrayTag self):
         return self.value_.__pos__()
 
-    def __abs__(self):
+    def __abs__(BaseArrayTag self):
         return self.value_.__abs__()
 
 
@@ -218,14 +218,14 @@ cdef class TAG_Byte_Array(BaseArrayTag):
     tag_id = ID_BYTE_ARRAY
     big_endian_data_type = little_endian_data_type = numpy.dtype("int8")
 
-    cdef str _to_snbt(self):
+    cdef str _to_snbt(TAG_Byte_Array self):
         cdef int elem
         cdef list tags = []
         for elem in self.value_:
             tags.append(f"{elem}B")
         return f"[B;{CommaSpace.join(tags)}]"
 
-    cdef void write_payload(self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(TAG_Byte_Array self, object buffer: BytesIO, bint little_endian) except *:
         write_array(self._as_endianness(little_endian), buffer, 1, little_endian)
 
     @staticmethod
@@ -241,14 +241,14 @@ cdef class TAG_Int_Array(BaseArrayTag):
     big_endian_data_type = numpy.dtype(">i4")
     little_endian_data_type = numpy.dtype("<i4")
 
-    cdef str _to_snbt(self):
+    cdef str _to_snbt(TAG_Int_Array self):
         cdef int elem
         cdef list tags = []
         for elem in self.value_:
             tags.append(str(elem))
         return f"[I;{CommaSpace.join(tags)}]"
 
-    cdef void write_payload(self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(TAG_Int_Array self, object buffer: BytesIO, bint little_endian) except *:
         write_array(self._as_endianness(little_endian), buffer, 4, little_endian)
 
     @staticmethod
@@ -265,14 +265,14 @@ cdef class TAG_Long_Array(BaseArrayTag):
     big_endian_data_type = numpy.dtype(">i8")
     little_endian_data_type = numpy.dtype("<i8")
 
-    cdef str _to_snbt(self):
+    cdef str _to_snbt(TAG_Long_Array self):
         cdef long long elem
         cdef list tags = []
         for elem in self.value_:
             tags.append(f"{elem}L")
         return f"[L;{CommaSpace.join(tags)}]"
 
-    cdef void write_payload(self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(TAG_Long_Array self, object buffer: BytesIO, bint little_endian) except *:
         write_array(self._as_endianness(little_endian), buffer, 8, little_endian)
 
     @staticmethod

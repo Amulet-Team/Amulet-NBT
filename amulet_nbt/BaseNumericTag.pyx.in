@@ -1,103 +1,103 @@
 {{py:from tools.tempita import include}}
-{{include("amulet_nbt/BaseImmutableTag.pyx.in")}}
-    def __repr__(self):
+{{include("amulet_nbt/BaseImmutableTag.pyx.in", cls_name=cls_name)}}
+    def __repr__({{cls_name}} self):
         return f"{self.__class__.__name__}({self.value_})"
 
-    def __add__(self, other):
+    def __add__({{cls_name}} self, other):
         return self.value_ + other
 
-    def __radd__(self, other):
+    def __radd__({{cls_name}} self, other):
         return other + self.value_
 
-    def __iadd__(self, other):
+    def __iadd__({{cls_name}} self, other):
         return self.__class__(self + other)
 
-    def __sub__(self, other):
+    def __sub__({{cls_name}} self, other):
         return self.value_ - other
 
-    def __rsub__(self, other):
+    def __rsub__({{cls_name}} self, other):
         return other - self.value_
 
-    def __isub__(self, other):
+    def __isub__({{cls_name}} self, other):
         return self.__class__(self - other)
 
-    def __mul__(self, other):
+    def __mul__({{cls_name}} self, other):
         return self.value_ * other
 
-    def __rmul__(self, other):
+    def __rmul__({{cls_name}} self, other):
         return other * self.value_
 
-    def __imul__(self, other):
+    def __imul__({{cls_name}} self, other):
         return self.__class__(self * other)
 
-    def __truediv__(self, other):
+    def __truediv__({{cls_name}} self, other):
         return self.value_ / other
 
-    def __rtruediv__(self, other):
+    def __rtruediv__({{cls_name}} self, other):
         return other / self.value_
 
-    def __itruediv__(self, other):
+    def __itruediv__({{cls_name}} self, other):
         return self.__class__(self / other)
 
-    def __floordiv__(self, other):
+    def __floordiv__({{cls_name}} self, other):
         return self.value_ // other
 
-    def __rfloordiv__(self, other):
+    def __rfloordiv__({{cls_name}} self, other):
         return other // self.value_
 
-    def __ifloordiv__(self, other):
+    def __ifloordiv__({{cls_name}} self, other):
         return self.__class__(self // other)
 
-    def __mod__(self, other):
+    def __mod__({{cls_name}} self, other):
         return self.value_ % other
 
-    def __rmod__(self, other):
+    def __rmod__({{cls_name}} self, other):
         return other % self.value_
 
-    def __imod__(self, other):
+    def __imod__({{cls_name}} self, other):
         return self.__class__(self % other)
 
-    def __divmod__(self, other):
+    def __divmod__({{cls_name}} self, other):
         return divmod(self.value_, other)
 
-    def __rdivmod__(self, other):
+    def __rdivmod__({{cls_name}} self, other):
         return divmod(other, self.value_)
 
-    def __pow__(self, power, modulo):
+    def __pow__({{cls_name}} self, power, modulo):
         return pow(self.value_, power, modulo)
 
-    def __rpow__(self, other, modulo):
+    def __rpow__({{cls_name}} self, other, modulo):
         return pow(other, self.value_, modulo)
 
-    def __ipow__(self, other):
+    def __ipow__({{cls_name}} self, other):
         return self.__class__(pow(self, other))
 
-    def __neg__(self):
+    def __neg__({{cls_name}} self):
         return self.value_.__neg__()
 
-    def __pos__(self):
+    def __pos__({{cls_name}} self):
         return self.value_.__pos__()
 
-    def __abs__(self):
+    def __abs__({{cls_name}} self):
         return self.value_.__abs__()
 
-    def __int__(self):
+    def __int__({{cls_name}} self):
         return self.value_.__int__()
 
-    def __float__(self):
+    def __float__({{cls_name}} self):
         return self.value_.__float__()
 
-    def __round__(self, n=None):
+    def __round__({{cls_name}} self, n=None):
         return round(self.value_, n)
 
-    def __trunc__(self):
+    def __trunc__({{cls_name}} self):
         return self.value_.__trunc__()
 
-    def __floor__(self):
+    def __floor__({{cls_name}} self):
         return floor(self.value_)
 
-    def __ceil__(self):
+    def __ceil__({{cls_name}} self):
         return ceil(self.value_)
 
-    def __bool__(self):
+    def __bool__({{cls_name}} self):
         return self.value_.__bool__()

@@ -14,162 +14,160 @@ cdef class BaseFloatTag(BaseNumericTag):
 cdef class TAG_Float(BaseFloatTag):
     tag_id = ID_FLOAT
 
-    def __init__(self, value = 0):
+    def __init__(TAG_Float self, value = 0):
         self.value_ = float(value)
 
-    def __getattr__(self, item):
+    def __getattr__(TAG_Float self, item):
         if item == "value_":
             raise Exception
         return getattr(self.value_, item)
 
-    def __str__(self):
+    def __str__(TAG_Float self):
         return str(self.value_)
 
-    def __dir__(self):
+    def __dir__(TAG_Float self):
         return list(set(list(super().__dir__()) + dir(self.value_)))
 
-    def __eq__(self, other):
+    def __eq__(TAG_Float self, other):
         return self.value_ == other
 
-    def __ge__(self, other):
+    def __ge__(TAG_Float self, other):
         return self.value_ >= other
 
-    def __gt__(self, other):
+    def __gt__(TAG_Float self, other):
         return self.value_ > other
 
-    def __le__(self, other):
+    def __le__(TAG_Float self, other):
         return self.value_ <= other
 
-    def __lt__(self, other):
+    def __lt__(TAG_Float self, other):
         return self.value_ < other
 
-    def __reduce__(self):
+    def __reduce__(TAG_Float self):
         return self.__class__, (self.value_,)
 
-    def __deepcopy__(self, memo=None):
+    def __deepcopy__(TAG_Float self, memo=None):
         return self.__class__(deepcopy(self.value_, memo=memo))
 
-    def __copy__(self):
+    def __copy__(TAG_Float self):
         return self.__class__(self.value_)
 
     # https://github.com/cython/cython/issues/3709
-    def __eq__(self, other):
+    def __eq__(TAG_Float self, other):
         return self.value_ == other
 
-    def __hash__(self):
+    def __hash__(TAG_Float self):
         return hash((self.tag_id, self.value_))
 
     @property
-    def value(self):
+    def value(TAG_Float self):
         return self.value_
-
-    def __repr__(self):
+    def __repr__(TAG_Float self):
         return f"{self.__class__.__name__}({self.value_})"
 
-    def __add__(self, other):
+    def __add__(TAG_Float self, other):
         return self.value_ + other
 
-    def __radd__(self, other):
+    def __radd__(TAG_Float self, other):
         return other + self.value_
 
-    def __iadd__(self, other):
+    def __iadd__(TAG_Float self, other):
         return self.__class__(self + other)
 
-    def __sub__(self, other):
+    def __sub__(TAG_Float self, other):
         return self.value_ - other
 
-    def __rsub__(self, other):
+    def __rsub__(TAG_Float self, other):
         return other - self.value_
 
-    def __isub__(self, other):
+    def __isub__(TAG_Float self, other):
         return self.__class__(self - other)
 
-    def __mul__(self, other):
+    def __mul__(TAG_Float self, other):
         return self.value_ * other
 
-    def __rmul__(self, other):
+    def __rmul__(TAG_Float self, other):
         return other * self.value_
 
-    def __imul__(self, other):
+    def __imul__(TAG_Float self, other):
         return self.__class__(self * other)
 
-    def __truediv__(self, other):
+    def __truediv__(TAG_Float self, other):
         return self.value_ / other
 
-    def __rtruediv__(self, other):
+    def __rtruediv__(TAG_Float self, other):
         return other / self.value_
 
-    def __itruediv__(self, other):
+    def __itruediv__(TAG_Float self, other):
         return self.__class__(self / other)
 
-    def __floordiv__(self, other):
+    def __floordiv__(TAG_Float self, other):
         return self.value_ // other
 
-    def __rfloordiv__(self, other):
+    def __rfloordiv__(TAG_Float self, other):
         return other // self.value_
 
-    def __ifloordiv__(self, other):
+    def __ifloordiv__(TAG_Float self, other):
         return self.__class__(self // other)
 
-    def __mod__(self, other):
+    def __mod__(TAG_Float self, other):
         return self.value_ % other
 
-    def __rmod__(self, other):
+    def __rmod__(TAG_Float self, other):
         return other % self.value_
 
-    def __imod__(self, other):
+    def __imod__(TAG_Float self, other):
         return self.__class__(self % other)
 
-    def __divmod__(self, other):
+    def __divmod__(TAG_Float self, other):
         return divmod(self.value_, other)
 
-    def __rdivmod__(self, other):
+    def __rdivmod__(TAG_Float self, other):
         return divmod(other, self.value_)
 
-    def __pow__(self, power, modulo):
+    def __pow__(TAG_Float self, power, modulo):
         return pow(self.value_, power, modulo)
 
-    def __rpow__(self, other, modulo):
+    def __rpow__(TAG_Float self, other, modulo):
         return pow(other, self.value_, modulo)
 
-    def __ipow__(self, other):
+    def __ipow__(TAG_Float self, other):
         return self.__class__(pow(self, other))
 
-    def __neg__(self):
+    def __neg__(TAG_Float self):
         return self.value_.__neg__()
 
-    def __pos__(self):
+    def __pos__(TAG_Float self):
         return self.value_.__pos__()
 
-    def __abs__(self):
+    def __abs__(TAG_Float self):
         return self.value_.__abs__()
 
-    def __int__(self):
+    def __int__(TAG_Float self):
         return self.value_.__int__()
 
-    def __float__(self):
+    def __float__(TAG_Float self):
         return self.value_.__float__()
 
-    def __round__(self, n=None):
+    def __round__(TAG_Float self, n=None):
         return round(self.value_, n)
 
-    def __trunc__(self):
+    def __trunc__(TAG_Float self):
         return self.value_.__trunc__()
 
-    def __floor__(self):
+    def __floor__(TAG_Float self):
         return floor(self.value_)
 
-    def __ceil__(self):
+    def __ceil__(TAG_Float self):
         return ceil(self.value_)
 
-    def __bool__(self):
+    def __bool__(TAG_Float self):
         return self.value_.__bool__()
 
-
-    cdef str _to_snbt(self):
+    cdef str _to_snbt(TAG_Float self):
         return f"{self.value_}f"
 
-    cdef void write_payload(self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(TAG_Float self, object buffer: BytesIO, bint little_endian) except *:
         write_float(self.value_, buffer, little_endian)
 
     @staticmethod
@@ -184,162 +182,160 @@ cdef class TAG_Float(BaseFloatTag):
 cdef class TAG_Double(BaseFloatTag):
     tag_id = ID_DOUBLE
 
-    def __init__(self, value = 0):
+    def __init__(TAG_Double self, value = 0):
         self.value_ = float(value)
 
-    def __getattr__(self, item):
+    def __getattr__(TAG_Double self, item):
         if item == "value_":
             raise Exception
         return getattr(self.value_, item)
 
-    def __str__(self):
+    def __str__(TAG_Double self):
         return str(self.value_)
 
-    def __dir__(self):
+    def __dir__(TAG_Double self):
         return list(set(list(super().__dir__()) + dir(self.value_)))
 
-    def __eq__(self, other):
+    def __eq__(TAG_Double self, other):
         return self.value_ == other
 
-    def __ge__(self, other):
+    def __ge__(TAG_Double self, other):
         return self.value_ >= other
 
-    def __gt__(self, other):
+    def __gt__(TAG_Double self, other):
         return self.value_ > other
 
-    def __le__(self, other):
+    def __le__(TAG_Double self, other):
         return self.value_ <= other
 
-    def __lt__(self, other):
+    def __lt__(TAG_Double self, other):
         return self.value_ < other
 
-    def __reduce__(self):
+    def __reduce__(TAG_Double self):
         return self.__class__, (self.value_,)
 
-    def __deepcopy__(self, memo=None):
+    def __deepcopy__(TAG_Double self, memo=None):
         return self.__class__(deepcopy(self.value_, memo=memo))
 
-    def __copy__(self):
+    def __copy__(TAG_Double self):
         return self.__class__(self.value_)
 
     # https://github.com/cython/cython/issues/3709
-    def __eq__(self, other):
+    def __eq__(TAG_Double self, other):
         return self.value_ == other
 
-    def __hash__(self):
+    def __hash__(TAG_Double self):
         return hash((self.tag_id, self.value_))
 
     @property
-    def value(self):
+    def value(TAG_Double self):
         return self.value_
-
-    def __repr__(self):
+    def __repr__(TAG_Double self):
         return f"{self.__class__.__name__}({self.value_})"
 
-    def __add__(self, other):
+    def __add__(TAG_Double self, other):
         return self.value_ + other
 
-    def __radd__(self, other):
+    def __radd__(TAG_Double self, other):
         return other + self.value_
 
-    def __iadd__(self, other):
+    def __iadd__(TAG_Double self, other):
         return self.__class__(self + other)
 
-    def __sub__(self, other):
+    def __sub__(TAG_Double self, other):
         return self.value_ - other
 
-    def __rsub__(self, other):
+    def __rsub__(TAG_Double self, other):
         return other - self.value_
 
-    def __isub__(self, other):
+    def __isub__(TAG_Double self, other):
         return self.__class__(self - other)
 
-    def __mul__(self, other):
+    def __mul__(TAG_Double self, other):
         return self.value_ * other
 
-    def __rmul__(self, other):
+    def __rmul__(TAG_Double self, other):
         return other * self.value_
 
-    def __imul__(self, other):
+    def __imul__(TAG_Double self, other):
         return self.__class__(self * other)
 
-    def __truediv__(self, other):
+    def __truediv__(TAG_Double self, other):
         return self.value_ / other
 
-    def __rtruediv__(self, other):
+    def __rtruediv__(TAG_Double self, other):
         return other / self.value_
 
-    def __itruediv__(self, other):
+    def __itruediv__(TAG_Double self, other):
         return self.__class__(self / other)
 
-    def __floordiv__(self, other):
+    def __floordiv__(TAG_Double self, other):
         return self.value_ // other
 
-    def __rfloordiv__(self, other):
+    def __rfloordiv__(TAG_Double self, other):
         return other // self.value_
 
-    def __ifloordiv__(self, other):
+    def __ifloordiv__(TAG_Double self, other):
         return self.__class__(self // other)
 
-    def __mod__(self, other):
+    def __mod__(TAG_Double self, other):
         return self.value_ % other
 
-    def __rmod__(self, other):
+    def __rmod__(TAG_Double self, other):
         return other % self.value_
 
-    def __imod__(self, other):
+    def __imod__(TAG_Double self, other):
         return self.__class__(self % other)
 
-    def __divmod__(self, other):
+    def __divmod__(TAG_Double self, other):
         return divmod(self.value_, other)
 
-    def __rdivmod__(self, other):
+    def __rdivmod__(TAG_Double self, other):
         return divmod(other, self.value_)
 
-    def __pow__(self, power, modulo):
+    def __pow__(TAG_Double self, power, modulo):
         return pow(self.value_, power, modulo)
 
-    def __rpow__(self, other, modulo):
+    def __rpow__(TAG_Double self, other, modulo):
         return pow(other, self.value_, modulo)
 
-    def __ipow__(self, other):
+    def __ipow__(TAG_Double self, other):
         return self.__class__(pow(self, other))
 
-    def __neg__(self):
+    def __neg__(TAG_Double self):
         return self.value_.__neg__()
 
-    def __pos__(self):
+    def __pos__(TAG_Double self):
         return self.value_.__pos__()
 
-    def __abs__(self):
+    def __abs__(TAG_Double self):
         return self.value_.__abs__()
 
-    def __int__(self):
+    def __int__(TAG_Double self):
         return self.value_.__int__()
 
-    def __float__(self):
+    def __float__(TAG_Double self):
         return self.value_.__float__()
 
-    def __round__(self, n=None):
+    def __round__(TAG_Double self, n=None):
         return round(self.value_, n)
 
-    def __trunc__(self):
+    def __trunc__(TAG_Double self):
         return self.value_.__trunc__()
 
-    def __floor__(self):
+    def __floor__(TAG_Double self):
         return floor(self.value_)
 
-    def __ceil__(self):
+    def __ceil__(TAG_Double self):
         return ceil(self.value_)
 
-    def __bool__(self):
+    def __bool__(TAG_Double self):
         return self.value_.__bool__()
 
-
-    cdef str _to_snbt(self):
+    cdef str _to_snbt(TAG_Double self):
         return f"{self.value_}d"
 
-    cdef void write_payload(self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(TAG_Double self, object buffer: BytesIO, bint little_endian) except *:
         write_double(self.value_, buffer, little_endian)
 
     @staticmethod

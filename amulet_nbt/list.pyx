@@ -13,7 +13,7 @@ from .array import BaseArrayTag
 cdef class TAG_List(BaseMutableTag):
     tag_id = ID_LIST
 
-    def __init__(self, object value = (), char list_data_type = 1):
+    def __init__(TAG_List self, object value = (), char list_data_type = 1):
         self.list_data_type = list_data_type
         self.value_ = []
         cdef list list_value
@@ -21,49 +21,48 @@ cdef class TAG_List(BaseMutableTag):
         self._check_tag_iterable(list_value)
         self.value_ = list_value
 
-    def __getattr__(self, item):
+    def __getattr__(TAG_List self, item):
         if item == "value_":
             raise Exception
         return getattr(self.value_, item)
 
-    def __str__(self):
+    def __str__(TAG_List self):
         return str(self.value_)
 
-    def __dir__(self):
+    def __dir__(TAG_List self):
         return list(set(list(super().__dir__()) + dir(self.value_)))
 
-    def __eq__(self, other):
+    def __eq__(TAG_List self, other):
         return self.value_ == other
 
-    def __ge__(self, other):
+    def __ge__(TAG_List self, other):
         return self.value_ >= other
 
-    def __gt__(self, other):
+    def __gt__(TAG_List self, other):
         return self.value_ > other
 
-    def __le__(self, other):
+    def __le__(TAG_List self, other):
         return self.value_ <= other
 
-    def __lt__(self, other):
+    def __lt__(TAG_List self, other):
         return self.value_ < other
 
-    def __reduce__(self):
+    def __reduce__(TAG_List self):
         return self.__class__, (self.value_,)
 
-    def __deepcopy__(self, memo=None):
+    def __deepcopy__(TAG_List self, memo=None):
         return self.__class__(deepcopy(self.value_, memo=memo))
 
-    def __copy__(self):
+    def __copy__(TAG_List self):
         return self.__class__(self.value_)
 
     @property
-    def value(self):
+    def value(TAG_List self):
         return copy(self.value_)
 
     __hash__ = None
 
-
-    cdef void _check_tag(self, BaseTag value, bint fix_if_empty=True) except *:
+    cdef void _check_tag(TAG_List self, BaseTag value, bint fix_if_empty=True) except *:
         if value is None:
             raise TypeError("List values must be NBT Tags")
         if fix_if_empty and not self.value_:
@@ -73,13 +72,13 @@ cdef class TAG_List(BaseMutableTag):
                 f"Invalid type {value.__class__.__name__} for TAG_List({self.list_data_type})"
             )
 
-    cdef void _check_tag_iterable(self, list value) except *:
+    cdef void _check_tag_iterable(TAG_List self, list value) except *:
         cdef int i
         cdef BaseTag tag
         for i, tag in enumerate(value):
             self._check_tag(tag, not i)
 
-    cdef void write_payload(self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(TAG_List self, object buffer: BytesIO, bint little_endian) except *:
         cdef char list_type = self.list_data_type
 
         write_byte(list_type, buffer)
@@ -104,14 +103,14 @@ cdef class TAG_List(BaseMutableTag):
             val.append(load_payload(buffer, list_type, little_endian))
         return self
 
-    cdef str _to_snbt(self):
+    cdef str _to_snbt(TAG_List self):
         cdef BaseTag elem
         cdef list tags = []
         for elem in self.value_:
             tags.append(elem._to_snbt())
         return f"[{CommaSpace.join(tags)}]"
 
-    cdef str _pretty_to_snbt(self, str indent_chr, int indent_count=0, bint leading_indent=True):
+    cdef str _pretty_to_snbt(TAG_List self, str indent_chr, int indent_count=0, bint leading_indent=True):
         cdef BaseTag elem
         cdef list tags = []
         for elem in self.value_:
@@ -121,22 +120,22 @@ cdef class TAG_List(BaseMutableTag):
         else:
             return f"{indent_chr * indent_count * leading_indent}[]"
 
-    def __repr__(self):
+    def __repr__(TAG_List self):
         return f"{self.__class__.__name__}({repr(self.value_)}, {self.list_data_type})"
 
-    def __contains__(self, object item) -> bool:
+    def __contains__(TAG_List self, object item) -> bool:
         return isinstance(item, BaseTag) and item.tag_id == self.list_data_type and self.value_.__contains__(item)
 
-    def __iter__(self) -> Iterator[AnyNBT]:
+    def __iter__(TAG_List self) -> Iterator[AnyNBT]:
         return self.value_.__iter__()
 
-    def __len__(self) -> int:
+    def __len__(TAG_List self) -> int:
         return self.value_.__len__()
 
-    def __getitem__(self, index: int) -> AnyNBT:
+    def __getitem__(TAG_List self, index: int) -> AnyNBT:
         return self.value_[index]
 
-    def __setitem__(self, index, value):
+    def __setitem__(TAG_List self, index, value):
         if isinstance(index, slice):
             value = list(value)
             self._check_tag_iterable(value)
@@ -144,23 +143,23 @@ cdef class TAG_List(BaseMutableTag):
             self._check_tag(value)
         self.value_[index] = value
 
-    def __delitem__(self, object index):
+    def __delitem__(TAG_List self, object index):
         del self.value_[index]
 
-    def append(self, BaseTag value not None) -> None:
+    def append(TAG_List self, BaseTag value not None) -> None:
         self._check_tag(value)
         self.value_.append(value)
 
-    def copy(self):
+    def copy(TAG_List self):
         return TAG_List(self.value_.copy(), self.list_data_type)
 
-    def extend(self, object other):
+    def extend(TAG_List self, object other):
         other = list(other)
         self._check_tag_iterable(other)
         self.value_.extend(other)
         return self
 
-    def insert(self, object index, BaseTag value not None):
+    def insert(TAG_List self, object index, BaseTag value not None):
         self._check_tag(value)
         self.value_.insert(index, value)
 
@@ -170,16 +169,16 @@ cdef class TAG_List(BaseMutableTag):
     def __rmul__(TAG_List self, other):
         return other * self.value_
 
-    def __imul__(self, other):
+    def __imul__(TAG_List self, other):
         self.value_ *= other
         return self
 
-    def __eq__(self, other):
+    def __eq__(TAG_List self, other):
         if isinstance(other, BaseArrayTag):
             return NotImplemented
         return self.value_ == other
 
-    cpdef bint strict_equals(self, other):
+    cpdef bint strict_equals(TAG_List self, other):
         cdef BaseTag self_val, other_val
         if (
             isinstance(other, TAG_List)
@@ -201,6 +200,6 @@ cdef class TAG_List(BaseMutableTag):
     def __radd__(TAG_List self, other):
         return other + self.value_
 
-    def __iadd__(self, other):
+    def __iadd__(TAG_List self, other):
         self.extend(other)
         return self

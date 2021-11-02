@@ -18,70 +18,70 @@ from .util cimport (
 
 
 cdef class BaseIntTag(BaseNumericTag):
-    def __lshift__(self, other):
+    def __lshift__(BaseIntTag self, other):
         raise NotImplementedError
 
-    def __rlshift__(self, other):
+    def __rlshift__(BaseIntTag self, other):
         raise NotImplementedError
 
-    def __ilshift__(self, other):
+    def __ilshift__(BaseIntTag self, other):
         raise NotImplementedError
 
-    def __rshift__(self, other):
+    def __rshift__(BaseIntTag self, other):
         raise NotImplementedError
 
-    def __rrshift__(self, other):
+    def __rrshift__(BaseIntTag self, other):
         raise NotImplementedError
 
-    def __irshift__(self, other):
+    def __irshift__(BaseIntTag self, other):
         raise NotImplementedError
 
-    def __and__(self, other):
+    def __and__(BaseIntTag self, other):
         raise NotImplementedError
 
-    def __rand__(self, other):
+    def __rand__(BaseIntTag self, other):
         raise NotImplementedError
 
-    def __iand__(self, other):
+    def __iand__(BaseIntTag self, other):
         raise NotImplementedError
 
-    def __xor__(self, other):
+    def __xor__(BaseIntTag self, other):
         raise NotImplementedError
 
-    def __rxor__(self, other):
+    def __rxor__(BaseIntTag self, other):
         raise NotImplementedError
 
-    def __ixor__(self, other):
+    def __ixor__(BaseIntTag self, other):
         raise NotImplementedError
 
-    def __or__(self, other):
+    def __or__(BaseIntTag self, other):
         raise NotImplementedError
 
-    def __ror__(self, other):
+    def __ror__(BaseIntTag self, other):
         raise NotImplementedError
 
-    def __ior__(self, other):
+    def __ior__(BaseIntTag self, other):
         raise NotImplementedError
 
-    def __invert__(self):
+    def __invert__(BaseIntTag self):
         raise NotImplementedError
 
 
 cdef class TAG_Byte(BaseIntTag):
     tag_id = ID_BYTE
 
-    def __init__(self, value = 0):
+    def __init__(TAG_Byte self, value = 0):
         self.value_ = self._sanitise_value(int(value))
 
-{{include("amulet_nbt/BaseIntTag.pyx.in")}}
+{{include("amulet_nbt/BaseIntTag.pyx.in", cls_name="TAG_Byte")}}
 
-    cdef char _sanitise_value(self, value):
+    cdef char _sanitise_value(TAG_Byte self, value):
         return (value & 0x7F) - (value & 0x80)
 
-    cdef str _to_snbt(self):
+    cdef str _to_snbt(TAG_Byte self):
         return f"{self.value_}b"
 
-    cdef void write_payload(self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(TAG_Byte self, object buffer: BytesIO, bint little_endian) except *:
         write_byte(self.value_, buffer)
 
     @staticmethod
@@ -92,18 +92,18 @@ cdef class TAG_Byte(BaseIntTag):
 cdef class TAG_Short(BaseIntTag):
     tag_id = ID_SHORT
 
-    def __init__(self, value = 0):
+    def __init__(TAG_Short self, value = 0):
         self.value_ = self._sanitise_value(int(value))
 
-{{include("amulet_nbt/BaseIntTag.pyx.in")}}
+{{include("amulet_nbt/BaseIntTag.pyx.in", cls_name="TAG_Short")}}
 
-    cdef short _sanitise_value(self, value):
+    cdef short _sanitise_value(TAG_Short self, value):
         return (value & 0x7FFF) - (value & 0x8000)
 
-    cdef str _to_snbt(self):
+    cdef str _to_snbt(TAG_Short self):
         return f"{self.value_}s"
 
-    cdef void write_payload(self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(TAG_Short self, object buffer: BytesIO, bint little_endian) except *:
         write_short(self.value_, buffer, little_endian)
 
     @staticmethod
@@ -118,18 +118,18 @@ cdef class TAG_Short(BaseIntTag):
 cdef class TAG_Int(BaseIntTag):
     tag_id = ID_INT
 
-    def __init__(self, value = 0):
+    def __init__(TAG_Int self, value = 0):
         self.value_ = self._sanitise_value(int(value))
 
-{{include("amulet_nbt/BaseIntTag.pyx.in")}}
+{{include("amulet_nbt/BaseIntTag.pyx.in", cls_name="TAG_Int")}}
 
-    cdef int _sanitise_value(self, value):
+    cdef int _sanitise_value(TAG_Int self, value):
         return (value & 0x7FFF_FFFF) - (value & 0x8000_0000)
 
-    cdef str _to_snbt(self):
+    cdef str _to_snbt(TAG_Int self):
         return f"{self.value_}"
 
-    cdef void write_payload(self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(TAG_Int self, object buffer: BytesIO, bint little_endian) except *:
         write_int(self.value_, buffer, little_endian)
 
     @staticmethod
@@ -144,18 +144,18 @@ cdef class TAG_Int(BaseIntTag):
 cdef class TAG_Long(BaseIntTag):
     tag_id = ID_LONG
 
-    def __init__(self, value = 0):
+    def __init__(TAG_Long self, value = 0):
         self.value_ = self._sanitise_value(int(value))
 
-{{include("amulet_nbt/BaseIntTag.pyx.in")}}
+{{include("amulet_nbt/BaseIntTag.pyx.in", cls_name="TAG_Long")}}
 
-    cdef long long _sanitise_value(self, value):
+    cdef long long _sanitise_value(TAG_Long self, value):
         return (value & 0x7FFF_FFFF_FFFF_FFFF) - (value & 0x8000_0000_0000_0000)
 
-    cdef str _to_snbt(self):
+    cdef str _to_snbt(TAG_Long self):
         return f"{self.value_}L"
 
-    cdef void write_payload(self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(TAG_Long self, object buffer: BytesIO, bint little_endian) except *:
         write_long(self.value_, buffer, little_endian)
 
     @staticmethod

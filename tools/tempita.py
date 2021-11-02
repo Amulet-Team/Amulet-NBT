@@ -4,7 +4,6 @@ import glob
 import os
 from Cython import Tempita as tempita
 
-
 ROOT_PATH = os.path.dirname(os.path.dirname(__file__))
 
 
@@ -21,13 +20,7 @@ def include(rel_path, **kwargs):
 
 def main():
     for path in glob.glob(
-        os.path.join(
-            ROOT_PATH,
-            "amulet_nbt",
-            "**",
-            "*.pyx.in"
-        ),
-        recursive=True
+        os.path.join(ROOT_PATH, "amulet_nbt", "**", "*.pyx.in"), recursive=True
     ):
         if os.path.basename(path).islower():
             print(f"Baking tempita file {path}")
@@ -41,5 +34,5 @@ def main():
                     cy.write(cy_code)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

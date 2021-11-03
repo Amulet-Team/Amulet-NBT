@@ -22,6 +22,8 @@ cdef class TAG_List(BaseMutableTag):
         self.value_ = list_value
 
     def __getattr__(TAG_List self, item):
+        if item == "value_":
+            raise AttributeError("Python class does not have access to the underlying data.")
         return getattr(self.value_, item)
 
     def __str__(TAG_List self):

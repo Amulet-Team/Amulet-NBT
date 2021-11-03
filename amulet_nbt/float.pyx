@@ -18,6 +18,8 @@ cdef class TAG_Float(BaseFloatTag):
         self.value_ = float(value)
 
     def __getattr__(TAG_Float self, item):
+        if item == "value_":
+            raise AttributeError("Python class does not have access to the underlying data.")
         return getattr(self.value_, item)
 
     def __str__(TAG_Float self):

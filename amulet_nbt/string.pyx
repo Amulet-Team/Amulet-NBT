@@ -17,6 +17,8 @@ cdef class TAG_String(BaseImmutableTag):
         self.value_ = str(value)
 
     def __getattr__(TAG_String self, item):
+        if item == "value_":
+            raise AttributeError("Python class does not have access to the underlying data.")
         return getattr(self.value_, item)
 
     def __str__(TAG_String self):

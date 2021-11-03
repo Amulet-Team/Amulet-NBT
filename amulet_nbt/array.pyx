@@ -16,6 +16,8 @@ cdef class BaseArrayTag(BaseMutableTag):
         self.value_ = numpy.array(value, self.big_endian_data_type).ravel()
 
     def __getattr__(BaseArrayTag self, item):
+        if item == "value_":
+            raise AttributeError("Python class does not have access to the underlying data.")
         return getattr(self.value_, item)
 
     def __str__(BaseArrayTag self):

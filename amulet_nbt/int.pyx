@@ -1,3 +1,4 @@
+from typing import Union, Iterable, SupportsBytes
 from io import BytesIO
 from copy import copy, deepcopy
 from math import floor, ceil
@@ -17,22 +18,14 @@ from .util cimport (
 
 
 cdef class BaseIntTag(BaseNumericTag):
-    def __lshift__(BaseIntTag self, other):
-        raise NotImplementedError
-
-    def __rlshift__(BaseIntTag self, other):
-        raise NotImplementedError
-
-    def __ilshift__(BaseIntTag self, other):
-        raise NotImplementedError
-
-    def __rshift__(BaseIntTag self, other):
-        raise NotImplementedError
-
-    def __rrshift__(BaseIntTag self, other):
-        raise NotImplementedError
-
-    def __irshift__(BaseIntTag self, other):
+    @classmethod
+    def from_bytes(
+        cls,
+        bytes: Union[Iterable[int], SupportsBytes],
+        byteorder: str,
+        *,
+        bint signed = False
+    ) -> BaseIntTag:
         raise NotImplementedError
 
     def __and__(BaseIntTag self, other):
@@ -62,7 +55,28 @@ cdef class BaseIntTag(BaseNumericTag):
     def __ior__(BaseIntTag self, other):
         raise NotImplementedError
 
+    def __lshift__(BaseIntTag self, other):
+        raise NotImplementedError
+
+    def __rlshift__(BaseIntTag self, other):
+        raise NotImplementedError
+
+    def __ilshift__(BaseIntTag self, other):
+        raise NotImplementedError
+
+    def __rshift__(BaseIntTag self, other):
+        raise NotImplementedError
+
+    def __rrshift__(BaseIntTag self, other):
+        raise NotImplementedError
+
+    def __irshift__(BaseIntTag self, other):
+        raise NotImplementedError
+
     def __invert__(BaseIntTag self):
+        raise NotImplementedError
+
+    def __index__(self) -> int:
         raise NotImplementedError
 
 
@@ -113,6 +127,7 @@ cdef class TAG_Byte(BaseIntTag):
     @property
     def value(TAG_Byte self):
         return self.value_
+
     def __repr__(TAG_Byte self):
         return f"{self.__class__.__name__}({self.value_})"
 
@@ -214,23 +229,16 @@ cdef class TAG_Byte(BaseIntTag):
 
     def __bool__(TAG_Byte self):
         return self.value_.__bool__()
-    def __lshift__(TAG_Byte self, other):
-        return self.value_ << other
 
-    def __rlshift__(TAG_Byte self, other):
-        return other << self.value_
-
-    def __ilshift__(TAG_Byte self, other):
-        return self.__class__(self << other)
-
-    def __rshift__(TAG_Byte self, other):
-        return self.value_ >> other
-
-    def __rrshift__(TAG_Byte self, other):
-        return other >> self.value_
-
-    def __irshift__(TAG_Byte self, other):
-        return self.__class__(self >> other)
+    @classmethod
+    def from_bytes(
+        cls,
+        bytes: Union[Iterable[int], SupportsBytes],
+        byteorder: str,
+        *,
+        bint signed = False
+    ) -> TAG_Byte:
+        return TAG_Byte(int.from_bytes(bytes, byteorder, signed))
 
     def __and__(TAG_Byte self, other):
         return self.value_ & other
@@ -259,8 +267,29 @@ cdef class TAG_Byte(BaseIntTag):
     def __ior__(TAG_Byte self, other):
         return self.__class__(self | other)
 
+    def __lshift__(TAG_Byte self, other):
+        return self.value_ << other
+
+    def __rlshift__(TAG_Byte self, other):
+        return other << self.value_
+
+    def __ilshift__(TAG_Byte self, other):
+        return self.__class__(self << other)
+
+    def __rshift__(TAG_Byte self, other):
+        return self.value_ >> other
+
+    def __rrshift__(TAG_Byte self, other):
+        return other >> self.value_
+
+    def __irshift__(TAG_Byte self, other):
+        return self.__class__(self >> other)
+
     def __invert__(TAG_Byte self):
         return self.value_.__invert__()
+
+    def __index__(TAG_Byte self) -> int:
+        return self.value_.__index__()
 
     cdef char _sanitise_value(TAG_Byte self, value):
         return (value & 0x7F) - (value & 0x80)
@@ -323,6 +352,7 @@ cdef class TAG_Short(BaseIntTag):
     @property
     def value(TAG_Short self):
         return self.value_
+
     def __repr__(TAG_Short self):
         return f"{self.__class__.__name__}({self.value_})"
 
@@ -424,23 +454,16 @@ cdef class TAG_Short(BaseIntTag):
 
     def __bool__(TAG_Short self):
         return self.value_.__bool__()
-    def __lshift__(TAG_Short self, other):
-        return self.value_ << other
 
-    def __rlshift__(TAG_Short self, other):
-        return other << self.value_
-
-    def __ilshift__(TAG_Short self, other):
-        return self.__class__(self << other)
-
-    def __rshift__(TAG_Short self, other):
-        return self.value_ >> other
-
-    def __rrshift__(TAG_Short self, other):
-        return other >> self.value_
-
-    def __irshift__(TAG_Short self, other):
-        return self.__class__(self >> other)
+    @classmethod
+    def from_bytes(
+        cls,
+        bytes: Union[Iterable[int], SupportsBytes],
+        byteorder: str,
+        *,
+        bint signed = False
+    ) -> TAG_Short:
+        return TAG_Short(int.from_bytes(bytes, byteorder, signed))
 
     def __and__(TAG_Short self, other):
         return self.value_ & other
@@ -469,8 +492,29 @@ cdef class TAG_Short(BaseIntTag):
     def __ior__(TAG_Short self, other):
         return self.__class__(self | other)
 
+    def __lshift__(TAG_Short self, other):
+        return self.value_ << other
+
+    def __rlshift__(TAG_Short self, other):
+        return other << self.value_
+
+    def __ilshift__(TAG_Short self, other):
+        return self.__class__(self << other)
+
+    def __rshift__(TAG_Short self, other):
+        return self.value_ >> other
+
+    def __rrshift__(TAG_Short self, other):
+        return other >> self.value_
+
+    def __irshift__(TAG_Short self, other):
+        return self.__class__(self >> other)
+
     def __invert__(TAG_Short self):
         return self.value_.__invert__()
+
+    def __index__(TAG_Short self) -> int:
+        return self.value_.__index__()
 
     cdef short _sanitise_value(TAG_Short self, value):
         return (value & 0x7FFF) - (value & 0x8000)
@@ -537,6 +581,7 @@ cdef class TAG_Int(BaseIntTag):
     @property
     def value(TAG_Int self):
         return self.value_
+
     def __repr__(TAG_Int self):
         return f"{self.__class__.__name__}({self.value_})"
 
@@ -638,23 +683,16 @@ cdef class TAG_Int(BaseIntTag):
 
     def __bool__(TAG_Int self):
         return self.value_.__bool__()
-    def __lshift__(TAG_Int self, other):
-        return self.value_ << other
 
-    def __rlshift__(TAG_Int self, other):
-        return other << self.value_
-
-    def __ilshift__(TAG_Int self, other):
-        return self.__class__(self << other)
-
-    def __rshift__(TAG_Int self, other):
-        return self.value_ >> other
-
-    def __rrshift__(TAG_Int self, other):
-        return other >> self.value_
-
-    def __irshift__(TAG_Int self, other):
-        return self.__class__(self >> other)
+    @classmethod
+    def from_bytes(
+        cls,
+        bytes: Union[Iterable[int], SupportsBytes],
+        byteorder: str,
+        *,
+        bint signed = False
+    ) -> TAG_Int:
+        return TAG_Int(int.from_bytes(bytes, byteorder, signed))
 
     def __and__(TAG_Int self, other):
         return self.value_ & other
@@ -683,8 +721,29 @@ cdef class TAG_Int(BaseIntTag):
     def __ior__(TAG_Int self, other):
         return self.__class__(self | other)
 
+    def __lshift__(TAG_Int self, other):
+        return self.value_ << other
+
+    def __rlshift__(TAG_Int self, other):
+        return other << self.value_
+
+    def __ilshift__(TAG_Int self, other):
+        return self.__class__(self << other)
+
+    def __rshift__(TAG_Int self, other):
+        return self.value_ >> other
+
+    def __rrshift__(TAG_Int self, other):
+        return other >> self.value_
+
+    def __irshift__(TAG_Int self, other):
+        return self.__class__(self >> other)
+
     def __invert__(TAG_Int self):
         return self.value_.__invert__()
+
+    def __index__(TAG_Int self) -> int:
+        return self.value_.__index__()
 
     cdef int _sanitise_value(TAG_Int self, value):
         return (value & 0x7FFF_FFFF) - (value & 0x8000_0000)
@@ -751,6 +810,7 @@ cdef class TAG_Long(BaseIntTag):
     @property
     def value(TAG_Long self):
         return self.value_
+
     def __repr__(TAG_Long self):
         return f"{self.__class__.__name__}({self.value_})"
 
@@ -852,23 +912,16 @@ cdef class TAG_Long(BaseIntTag):
 
     def __bool__(TAG_Long self):
         return self.value_.__bool__()
-    def __lshift__(TAG_Long self, other):
-        return self.value_ << other
 
-    def __rlshift__(TAG_Long self, other):
-        return other << self.value_
-
-    def __ilshift__(TAG_Long self, other):
-        return self.__class__(self << other)
-
-    def __rshift__(TAG_Long self, other):
-        return self.value_ >> other
-
-    def __rrshift__(TAG_Long self, other):
-        return other >> self.value_
-
-    def __irshift__(TAG_Long self, other):
-        return self.__class__(self >> other)
+    @classmethod
+    def from_bytes(
+        cls,
+        bytes: Union[Iterable[int], SupportsBytes],
+        byteorder: str,
+        *,
+        bint signed = False
+    ) -> TAG_Long:
+        return TAG_Long(int.from_bytes(bytes, byteorder, signed))
 
     def __and__(TAG_Long self, other):
         return self.value_ & other
@@ -897,8 +950,29 @@ cdef class TAG_Long(BaseIntTag):
     def __ior__(TAG_Long self, other):
         return self.__class__(self | other)
 
+    def __lshift__(TAG_Long self, other):
+        return self.value_ << other
+
+    def __rlshift__(TAG_Long self, other):
+        return other << self.value_
+
+    def __ilshift__(TAG_Long self, other):
+        return self.__class__(self << other)
+
+    def __rshift__(TAG_Long self, other):
+        return self.value_ >> other
+
+    def __rrshift__(TAG_Long self, other):
+        return other >> self.value_
+
+    def __irshift__(TAG_Long self, other):
+        return self.__class__(self >> other)
+
     def __invert__(TAG_Long self):
         return self.value_.__invert__()
+
+    def __index__(TAG_Long self) -> int:
+        return self.value_.__index__()
 
     cdef long long _sanitise_value(TAG_Long self, value):
         return (value & 0x7FFF_FFFF_FFFF_FFFF) - (value & 0x8000_0000_0000_0000)

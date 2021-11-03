@@ -1,5 +1,6 @@
 {{py:from tools.tempita import include}}
 {{include("amulet_nbt/BaseTag.pyx.in", cls_name=cls_name)}}
+
     @property
     def value({{cls_name}} self):
         return copy(self.value_)

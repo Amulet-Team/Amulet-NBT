@@ -174,10 +174,6 @@ cdef class BaseTag:
     def __copy__(self):
         raise NotImplementedError
 
-    @property
-    def value(self):
-        raise NotImplementedError
-
     def __hash__(self):
         raise NotImplementedError
 

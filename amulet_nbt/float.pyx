@@ -58,6 +58,7 @@ cdef class TAG_Float(BaseFloatTag):
     @property
     def value(TAG_Float self):
         return self.value_
+
     def __repr__(TAG_Float self):
         return f"{self.__class__.__name__}({self.value_})"
 
@@ -182,6 +183,8 @@ cdef class TAG_Double(BaseFloatTag):
         self.value_ = float(value)
 
     def __getattr__(TAG_Double self, item):
+        if item == "value_":
+            raise AttributeError("Python class does not have access to the underlying data.")
         return getattr(self.value_, item)
 
     def __str__(TAG_Double self):
@@ -220,6 +223,7 @@ cdef class TAG_Double(BaseFloatTag):
     @property
     def value(TAG_Double self):
         return self.value_
+
     def __repr__(TAG_Double self):
         return f"{self.__class__.__name__}({self.value_})"
 

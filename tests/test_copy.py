@@ -31,6 +31,12 @@ class CopyNBTTests(unittest.TestCase):
             obj_copy2 = obj_copy
         obj_deepcopy = copy.deepcopy(obj)
 
+        tag_cls = NBTFile if isinstance(obj, NBTFile) else BaseTag
+
+        self.assertIsInstance(obj_copy, tag_cls)
+        self.assertIsInstance(obj_copy2, tag_cls)
+        self.assertIsInstance(obj_deepcopy, tag_cls)
+
         # Compare the objects
         self.assertEqual(obj, obj_copy)
         self.assertEqual(obj, obj_copy2)

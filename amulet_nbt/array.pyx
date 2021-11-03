@@ -68,10 +68,6 @@ cdef class BaseArrayTag(BaseMutableTag):
         else:
             return self.value_
 
-    @property
-    def dtype(BaseArrayTag self):
-        return self.value_.dtype
-
     def __repr__(BaseArrayTag self):
         return f"{self.__class__.__name__}({list(self.value_)})"
 

@@ -18,7 +18,10 @@
         return other & self.value_
 
     def __iand__({{cls_name}} self, other):
-        return self.__class__(self & other)
+        res = self & other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __xor__({{cls_name}} self, other):
         return self.value_ ^ other
@@ -27,7 +30,10 @@
         return other ^ self.value_
 
     def __ixor__({{cls_name}} self, other):
-        return self.__class__(self ^ other)
+        res = self ^ other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __or__({{cls_name}} self, other):
         return self.value_ | other
@@ -36,7 +42,10 @@
         return other | self.value_
 
     def __ior__({{cls_name}} self, other):
-        return self.__class__(self | other)
+        res = self | other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __lshift__({{cls_name}} self, other):
         return self.value_ << other
@@ -45,7 +54,10 @@
         return other << self.value_
 
     def __ilshift__({{cls_name}} self, other):
-        return self.__class__(self << other)
+        res = self << other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __rshift__({{cls_name}} self, other):
         return self.value_ >> other
@@ -54,7 +66,10 @@
         return other >> self.value_
 
     def __irshift__({{cls_name}} self, other):
-        return self.__class__(self >> other)
+        res = self >> other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __invert__({{cls_name}} self):
         return self.value_.__invert__()

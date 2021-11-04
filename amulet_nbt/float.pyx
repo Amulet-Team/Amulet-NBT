@@ -69,7 +69,10 @@ cdef class TAG_Float(BaseFloatTag):
         return other + self.value_
 
     def __iadd__(TAG_Float self, other):
-        return self.__class__(self + other)
+        res = self + other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __sub__(TAG_Float self, other):
         return self.value_ - other
@@ -78,7 +81,10 @@ cdef class TAG_Float(BaseFloatTag):
         return other - self.value_
 
     def __isub__(TAG_Float self, other):
-        return self.__class__(self - other)
+        res = self - other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __mul__(TAG_Float self, other):
         return self.value_ * other
@@ -87,7 +93,10 @@ cdef class TAG_Float(BaseFloatTag):
         return other * self.value_
 
     def __imul__(TAG_Float self, other):
-        return self.__class__(self * other)
+        res = self * other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __truediv__(TAG_Float self, other):
         return self.value_ / other
@@ -96,7 +105,10 @@ cdef class TAG_Float(BaseFloatTag):
         return other / self.value_
 
     def __itruediv__(TAG_Float self, other):
-        return self.__class__(self / other)
+        res = self / other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __floordiv__(TAG_Float self, other):
         return self.value_ // other
@@ -105,7 +117,10 @@ cdef class TAG_Float(BaseFloatTag):
         return other // self.value_
 
     def __ifloordiv__(TAG_Float self, other):
-        return self.__class__(self // other)
+        res = self // other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __mod__(TAG_Float self, other):
         return self.value_ % other
@@ -114,7 +129,10 @@ cdef class TAG_Float(BaseFloatTag):
         return other % self.value_
 
     def __imod__(TAG_Float self, other):
-        return self.__class__(self % other)
+        res = self % other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __divmod__(TAG_Float self, other):
         return divmod(self.value_, other)
@@ -129,7 +147,10 @@ cdef class TAG_Float(BaseFloatTag):
         return pow(other, self.value_, modulo)
 
     def __ipow__(TAG_Float self, other):
-        return self.__class__(pow(self, other))
+        res = pow(self, other)
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __neg__(TAG_Float self):
         return self.value_.__neg__()
@@ -234,7 +255,10 @@ cdef class TAG_Double(BaseFloatTag):
         return other + self.value_
 
     def __iadd__(TAG_Double self, other):
-        return self.__class__(self + other)
+        res = self + other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __sub__(TAG_Double self, other):
         return self.value_ - other
@@ -243,7 +267,10 @@ cdef class TAG_Double(BaseFloatTag):
         return other - self.value_
 
     def __isub__(TAG_Double self, other):
-        return self.__class__(self - other)
+        res = self - other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __mul__(TAG_Double self, other):
         return self.value_ * other
@@ -252,7 +279,10 @@ cdef class TAG_Double(BaseFloatTag):
         return other * self.value_
 
     def __imul__(TAG_Double self, other):
-        return self.__class__(self * other)
+        res = self * other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __truediv__(TAG_Double self, other):
         return self.value_ / other
@@ -261,7 +291,10 @@ cdef class TAG_Double(BaseFloatTag):
         return other / self.value_
 
     def __itruediv__(TAG_Double self, other):
-        return self.__class__(self / other)
+        res = self / other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __floordiv__(TAG_Double self, other):
         return self.value_ // other
@@ -270,7 +303,10 @@ cdef class TAG_Double(BaseFloatTag):
         return other // self.value_
 
     def __ifloordiv__(TAG_Double self, other):
-        return self.__class__(self // other)
+        res = self // other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __mod__(TAG_Double self, other):
         return self.value_ % other
@@ -279,7 +315,10 @@ cdef class TAG_Double(BaseFloatTag):
         return other % self.value_
 
     def __imod__(TAG_Double self, other):
-        return self.__class__(self % other)
+        res = self % other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __divmod__(TAG_Double self, other):
         return divmod(self.value_, other)
@@ -294,7 +333,10 @@ cdef class TAG_Double(BaseFloatTag):
         return pow(other, self.value_, modulo)
 
     def __ipow__(TAG_Double self, other):
-        return self.__class__(pow(self, other))
+        res = pow(self, other)
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __neg__(TAG_Double self):
         return self.value_.__neg__()

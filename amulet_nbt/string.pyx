@@ -86,7 +86,10 @@ cdef class TAG_String(BaseImmutableTag):
         return other + self.value_
 
     def __iadd__(TAG_String self, other):
-        self.__class__(self + other)
+        res = self + other
+        if isinstance(res, str):
+            return self.__class__(res)
+        return res
 
     def __mul__(TAG_String self, other):
         return self.value_ * other
@@ -95,4 +98,8 @@ cdef class TAG_String(BaseImmutableTag):
         return other * self.value_
 
     def __imul__(TAG_String self, other):
-        self.__class__(self * other)
+        res = self * other
+        if isinstance(res, str):
+            return self.__class__(res)
+        return res
+

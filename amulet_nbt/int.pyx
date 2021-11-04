@@ -138,7 +138,10 @@ cdef class TAG_Byte(BaseIntTag):
         return other + self.value_
 
     def __iadd__(TAG_Byte self, other):
-        return self.__class__(self + other)
+        res = self + other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __sub__(TAG_Byte self, other):
         return self.value_ - other
@@ -147,7 +150,10 @@ cdef class TAG_Byte(BaseIntTag):
         return other - self.value_
 
     def __isub__(TAG_Byte self, other):
-        return self.__class__(self - other)
+        res = self - other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __mul__(TAG_Byte self, other):
         return self.value_ * other
@@ -156,7 +162,10 @@ cdef class TAG_Byte(BaseIntTag):
         return other * self.value_
 
     def __imul__(TAG_Byte self, other):
-        return self.__class__(self * other)
+        res = self * other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __truediv__(TAG_Byte self, other):
         return self.value_ / other
@@ -165,7 +174,10 @@ cdef class TAG_Byte(BaseIntTag):
         return other / self.value_
 
     def __itruediv__(TAG_Byte self, other):
-        return self.__class__(self / other)
+        res = self / other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __floordiv__(TAG_Byte self, other):
         return self.value_ // other
@@ -174,7 +186,10 @@ cdef class TAG_Byte(BaseIntTag):
         return other // self.value_
 
     def __ifloordiv__(TAG_Byte self, other):
-        return self.__class__(self // other)
+        res = self // other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __mod__(TAG_Byte self, other):
         return self.value_ % other
@@ -183,7 +198,10 @@ cdef class TAG_Byte(BaseIntTag):
         return other % self.value_
 
     def __imod__(TAG_Byte self, other):
-        return self.__class__(self % other)
+        res = self % other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __divmod__(TAG_Byte self, other):
         return divmod(self.value_, other)
@@ -198,7 +216,10 @@ cdef class TAG_Byte(BaseIntTag):
         return pow(other, self.value_, modulo)
 
     def __ipow__(TAG_Byte self, other):
-        return self.__class__(pow(self, other))
+        res = pow(self, other)
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __neg__(TAG_Byte self):
         return self.value_.__neg__()
@@ -247,7 +268,10 @@ cdef class TAG_Byte(BaseIntTag):
         return other & self.value_
 
     def __iand__(TAG_Byte self, other):
-        return self.__class__(self & other)
+        res = self & other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __xor__(TAG_Byte self, other):
         return self.value_ ^ other
@@ -256,7 +280,10 @@ cdef class TAG_Byte(BaseIntTag):
         return other ^ self.value_
 
     def __ixor__(TAG_Byte self, other):
-        return self.__class__(self ^ other)
+        res = self ^ other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __or__(TAG_Byte self, other):
         return self.value_ | other
@@ -265,7 +292,10 @@ cdef class TAG_Byte(BaseIntTag):
         return other | self.value_
 
     def __ior__(TAG_Byte self, other):
-        return self.__class__(self | other)
+        res = self | other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __lshift__(TAG_Byte self, other):
         return self.value_ << other
@@ -274,7 +304,10 @@ cdef class TAG_Byte(BaseIntTag):
         return other << self.value_
 
     def __ilshift__(TAG_Byte self, other):
-        return self.__class__(self << other)
+        res = self << other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __rshift__(TAG_Byte self, other):
         return self.value_ >> other
@@ -283,7 +316,10 @@ cdef class TAG_Byte(BaseIntTag):
         return other >> self.value_
 
     def __irshift__(TAG_Byte self, other):
-        return self.__class__(self >> other)
+        res = self >> other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __invert__(TAG_Byte self):
         return self.value_.__invert__()
@@ -363,7 +399,10 @@ cdef class TAG_Short(BaseIntTag):
         return other + self.value_
 
     def __iadd__(TAG_Short self, other):
-        return self.__class__(self + other)
+        res = self + other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __sub__(TAG_Short self, other):
         return self.value_ - other
@@ -372,7 +411,10 @@ cdef class TAG_Short(BaseIntTag):
         return other - self.value_
 
     def __isub__(TAG_Short self, other):
-        return self.__class__(self - other)
+        res = self - other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __mul__(TAG_Short self, other):
         return self.value_ * other
@@ -381,7 +423,10 @@ cdef class TAG_Short(BaseIntTag):
         return other * self.value_
 
     def __imul__(TAG_Short self, other):
-        return self.__class__(self * other)
+        res = self * other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __truediv__(TAG_Short self, other):
         return self.value_ / other
@@ -390,7 +435,10 @@ cdef class TAG_Short(BaseIntTag):
         return other / self.value_
 
     def __itruediv__(TAG_Short self, other):
-        return self.__class__(self / other)
+        res = self / other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __floordiv__(TAG_Short self, other):
         return self.value_ // other
@@ -399,7 +447,10 @@ cdef class TAG_Short(BaseIntTag):
         return other // self.value_
 
     def __ifloordiv__(TAG_Short self, other):
-        return self.__class__(self // other)
+        res = self // other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __mod__(TAG_Short self, other):
         return self.value_ % other
@@ -408,7 +459,10 @@ cdef class TAG_Short(BaseIntTag):
         return other % self.value_
 
     def __imod__(TAG_Short self, other):
-        return self.__class__(self % other)
+        res = self % other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __divmod__(TAG_Short self, other):
         return divmod(self.value_, other)
@@ -423,7 +477,10 @@ cdef class TAG_Short(BaseIntTag):
         return pow(other, self.value_, modulo)
 
     def __ipow__(TAG_Short self, other):
-        return self.__class__(pow(self, other))
+        res = pow(self, other)
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __neg__(TAG_Short self):
         return self.value_.__neg__()
@@ -472,7 +529,10 @@ cdef class TAG_Short(BaseIntTag):
         return other & self.value_
 
     def __iand__(TAG_Short self, other):
-        return self.__class__(self & other)
+        res = self & other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __xor__(TAG_Short self, other):
         return self.value_ ^ other
@@ -481,7 +541,10 @@ cdef class TAG_Short(BaseIntTag):
         return other ^ self.value_
 
     def __ixor__(TAG_Short self, other):
-        return self.__class__(self ^ other)
+        res = self ^ other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __or__(TAG_Short self, other):
         return self.value_ | other
@@ -490,7 +553,10 @@ cdef class TAG_Short(BaseIntTag):
         return other | self.value_
 
     def __ior__(TAG_Short self, other):
-        return self.__class__(self | other)
+        res = self | other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __lshift__(TAG_Short self, other):
         return self.value_ << other
@@ -499,7 +565,10 @@ cdef class TAG_Short(BaseIntTag):
         return other << self.value_
 
     def __ilshift__(TAG_Short self, other):
-        return self.__class__(self << other)
+        res = self << other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __rshift__(TAG_Short self, other):
         return self.value_ >> other
@@ -508,7 +577,10 @@ cdef class TAG_Short(BaseIntTag):
         return other >> self.value_
 
     def __irshift__(TAG_Short self, other):
-        return self.__class__(self >> other)
+        res = self >> other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __invert__(TAG_Short self):
         return self.value_.__invert__()
@@ -592,7 +664,10 @@ cdef class TAG_Int(BaseIntTag):
         return other + self.value_
 
     def __iadd__(TAG_Int self, other):
-        return self.__class__(self + other)
+        res = self + other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __sub__(TAG_Int self, other):
         return self.value_ - other
@@ -601,7 +676,10 @@ cdef class TAG_Int(BaseIntTag):
         return other - self.value_
 
     def __isub__(TAG_Int self, other):
-        return self.__class__(self - other)
+        res = self - other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __mul__(TAG_Int self, other):
         return self.value_ * other
@@ -610,7 +688,10 @@ cdef class TAG_Int(BaseIntTag):
         return other * self.value_
 
     def __imul__(TAG_Int self, other):
-        return self.__class__(self * other)
+        res = self * other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __truediv__(TAG_Int self, other):
         return self.value_ / other
@@ -619,7 +700,10 @@ cdef class TAG_Int(BaseIntTag):
         return other / self.value_
 
     def __itruediv__(TAG_Int self, other):
-        return self.__class__(self / other)
+        res = self / other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __floordiv__(TAG_Int self, other):
         return self.value_ // other
@@ -628,7 +712,10 @@ cdef class TAG_Int(BaseIntTag):
         return other // self.value_
 
     def __ifloordiv__(TAG_Int self, other):
-        return self.__class__(self // other)
+        res = self // other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __mod__(TAG_Int self, other):
         return self.value_ % other
@@ -637,7 +724,10 @@ cdef class TAG_Int(BaseIntTag):
         return other % self.value_
 
     def __imod__(TAG_Int self, other):
-        return self.__class__(self % other)
+        res = self % other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __divmod__(TAG_Int self, other):
         return divmod(self.value_, other)
@@ -652,7 +742,10 @@ cdef class TAG_Int(BaseIntTag):
         return pow(other, self.value_, modulo)
 
     def __ipow__(TAG_Int self, other):
-        return self.__class__(pow(self, other))
+        res = pow(self, other)
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __neg__(TAG_Int self):
         return self.value_.__neg__()
@@ -701,7 +794,10 @@ cdef class TAG_Int(BaseIntTag):
         return other & self.value_
 
     def __iand__(TAG_Int self, other):
-        return self.__class__(self & other)
+        res = self & other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __xor__(TAG_Int self, other):
         return self.value_ ^ other
@@ -710,7 +806,10 @@ cdef class TAG_Int(BaseIntTag):
         return other ^ self.value_
 
     def __ixor__(TAG_Int self, other):
-        return self.__class__(self ^ other)
+        res = self ^ other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __or__(TAG_Int self, other):
         return self.value_ | other
@@ -719,7 +818,10 @@ cdef class TAG_Int(BaseIntTag):
         return other | self.value_
 
     def __ior__(TAG_Int self, other):
-        return self.__class__(self | other)
+        res = self | other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __lshift__(TAG_Int self, other):
         return self.value_ << other
@@ -728,7 +830,10 @@ cdef class TAG_Int(BaseIntTag):
         return other << self.value_
 
     def __ilshift__(TAG_Int self, other):
-        return self.__class__(self << other)
+        res = self << other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __rshift__(TAG_Int self, other):
         return self.value_ >> other
@@ -737,7 +842,10 @@ cdef class TAG_Int(BaseIntTag):
         return other >> self.value_
 
     def __irshift__(TAG_Int self, other):
-        return self.__class__(self >> other)
+        res = self >> other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __invert__(TAG_Int self):
         return self.value_.__invert__()
@@ -821,7 +929,10 @@ cdef class TAG_Long(BaseIntTag):
         return other + self.value_
 
     def __iadd__(TAG_Long self, other):
-        return self.__class__(self + other)
+        res = self + other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __sub__(TAG_Long self, other):
         return self.value_ - other
@@ -830,7 +941,10 @@ cdef class TAG_Long(BaseIntTag):
         return other - self.value_
 
     def __isub__(TAG_Long self, other):
-        return self.__class__(self - other)
+        res = self - other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __mul__(TAG_Long self, other):
         return self.value_ * other
@@ -839,7 +953,10 @@ cdef class TAG_Long(BaseIntTag):
         return other * self.value_
 
     def __imul__(TAG_Long self, other):
-        return self.__class__(self * other)
+        res = self * other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __truediv__(TAG_Long self, other):
         return self.value_ / other
@@ -848,7 +965,10 @@ cdef class TAG_Long(BaseIntTag):
         return other / self.value_
 
     def __itruediv__(TAG_Long self, other):
-        return self.__class__(self / other)
+        res = self / other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __floordiv__(TAG_Long self, other):
         return self.value_ // other
@@ -857,7 +977,10 @@ cdef class TAG_Long(BaseIntTag):
         return other // self.value_
 
     def __ifloordiv__(TAG_Long self, other):
-        return self.__class__(self // other)
+        res = self // other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __mod__(TAG_Long self, other):
         return self.value_ % other
@@ -866,7 +989,10 @@ cdef class TAG_Long(BaseIntTag):
         return other % self.value_
 
     def __imod__(TAG_Long self, other):
-        return self.__class__(self % other)
+        res = self % other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __divmod__(TAG_Long self, other):
         return divmod(self.value_, other)
@@ -881,7 +1007,10 @@ cdef class TAG_Long(BaseIntTag):
         return pow(other, self.value_, modulo)
 
     def __ipow__(TAG_Long self, other):
-        return self.__class__(pow(self, other))
+        res = pow(self, other)
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __neg__(TAG_Long self):
         return self.value_.__neg__()
@@ -930,7 +1059,10 @@ cdef class TAG_Long(BaseIntTag):
         return other & self.value_
 
     def __iand__(TAG_Long self, other):
-        return self.__class__(self & other)
+        res = self & other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __xor__(TAG_Long self, other):
         return self.value_ ^ other
@@ -939,7 +1071,10 @@ cdef class TAG_Long(BaseIntTag):
         return other ^ self.value_
 
     def __ixor__(TAG_Long self, other):
-        return self.__class__(self ^ other)
+        res = self ^ other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __or__(TAG_Long self, other):
         return self.value_ | other
@@ -948,7 +1083,10 @@ cdef class TAG_Long(BaseIntTag):
         return other | self.value_
 
     def __ior__(TAG_Long self, other):
-        return self.__class__(self | other)
+        res = self | other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __lshift__(TAG_Long self, other):
         return self.value_ << other
@@ -957,7 +1095,10 @@ cdef class TAG_Long(BaseIntTag):
         return other << self.value_
 
     def __ilshift__(TAG_Long self, other):
-        return self.__class__(self << other)
+        res = self << other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __rshift__(TAG_Long self, other):
         return self.value_ >> other
@@ -966,7 +1107,10 @@ cdef class TAG_Long(BaseIntTag):
         return other >> self.value_
 
     def __irshift__(TAG_Long self, other):
-        return self.__class__(self >> other)
+        res = self >> other
+        if isinstance(res, (int, float)):
+            return self.__class__(res)
+        return res
 
     def __invert__(TAG_Long self):
         return self.value_.__invert__()

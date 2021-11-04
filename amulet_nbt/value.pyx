@@ -141,9 +141,6 @@ cdef class BaseTag:
     def __str__(self):
         raise NotImplementedError
 
-    def __dir__(self):
-        raise NotImplementedError
-
     def __eq__(self, other):
         raise NotImplementedError
 

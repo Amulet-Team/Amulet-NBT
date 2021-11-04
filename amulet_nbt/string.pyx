@@ -103,3 +103,11 @@ cdef class TAG_String(BaseImmutableTag):
             return self.__class__(res)
         return res
 
+    def __contains__(self, o: str) -> bool:
+        return o in self.value_
+
+    def __iter__(self) -> Iterator[str]:
+        return self.value_.__iter__()
+
+    def __mod__(self, x: Any) -> str:
+        return self.value_ % x

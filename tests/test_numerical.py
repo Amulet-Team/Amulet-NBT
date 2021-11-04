@@ -16,7 +16,6 @@ from amulet_nbt import (
     TAG_Long,
 )
 
-Num = Union[int, float, BaseNumericTag]
 AnyNum = Union[int, float, BaseNumericTag]
 
 
@@ -184,6 +183,10 @@ class TestNumerical(base_type_test.BaseTypeTest):
             self._test_iop(val1, val2, operator.imod, "%=")
             self._test_op(val1, val2, operator.pow, "**")
             self._test_iop(val1, val2, operator.ipow, "**=")
+            self._test_op(val1, val2, operator.lt, "<")
+            self._test_op(val1, val2, operator.le, "<=")
+            self._test_op(val1, val2, operator.gt, ">")
+            self._test_op(val1, val2, operator.ge, ">=")
         for val1 in self.values:
             self._test_single_op(val1, operator.neg, "-")
             self._test_single_op(val1, operator.pos, "+")

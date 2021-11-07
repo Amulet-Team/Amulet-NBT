@@ -149,7 +149,7 @@ cdef class TAG_Compound(BaseMutableTag):
         self.value_[key] = value
 
     def setdefault(TAG_Compound self, str key not None, BaseTag value not None):
-        self.value_.setdefault(key, value)
+        return self.value_.setdefault(key, value)
 
     def update(TAG_Compound self, object other=(), **others):
         cdef dict dict_other = dict(other)

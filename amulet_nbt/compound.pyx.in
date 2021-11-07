@@ -44,7 +44,7 @@ cdef class TAG_Compound(BaseMutableTag):
         cdef str name
         cdef BaseTag elem
         cdef list tags = []
-        for name in sorted(self.value_):
+        for name in sorted(self.value_, key=lambda k: (k.lower(), k.swapcase())):
             elem = self.value_[name]
             if NON_QUOTED_KEY.fullmatch(name) is None:
                 tags.append(f'"{name}": {elem.to_snbt()}')
@@ -56,7 +56,7 @@ cdef class TAG_Compound(BaseMutableTag):
         cdef str name
         cdef BaseTag elem
         cdef list tags = []
-        for name in sorted(self.value_):
+        for name in sorted(self.value_, key=lambda k: (k.lower(), k.swapcase())):
             elem = self.value_[name]
             tags.append(f'{indent_chr * (indent_count + 1)}"{name}": {elem._pretty_to_snbt(indent_chr, indent_count + 1, False)}')
         if tags:

@@ -1,5 +1,5 @@
 ########################################
- Welcome to Amulet NBT's documentation!
+ Getting Started Guide
 ########################################
 
 .. code-block:: python

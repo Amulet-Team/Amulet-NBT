@@ -52,6 +52,10 @@ cdef class BaseArrayTag(BaseMutableTag):
 
     @property
     def value(BaseArrayTag self):
+        """
+        A copy of the data stored in the class.
+        Use the public API to modify the data within the class.
+        """
         return copy(self.value_)
 
     __hash__ = None
@@ -238,6 +242,7 @@ BaseArrayType = BaseArrayTag
 
 
 cdef class TAG_Byte_Array(BaseArrayTag):
+    """This class behaves like an 1D Numpy signed integer array with each value stored in a byte."""
     tag_id = ID_BYTE_ARRAY
     big_endian_data_type = little_endian_data_type = numpy.dtype("int8")
 
@@ -260,6 +265,7 @@ cdef class TAG_Byte_Array(BaseArrayTag):
 
 
 cdef class TAG_Int_Array(BaseArrayTag):
+    """This class behaves like an 1D Numpy signed integer array with each value stored in a 4 bytes."""
     tag_id = ID_INT_ARRAY
     big_endian_data_type = numpy.dtype(">i4")
     little_endian_data_type = numpy.dtype("<i4")
@@ -284,6 +290,7 @@ cdef class TAG_Int_Array(BaseArrayTag):
 
 
 cdef class TAG_Long_Array(BaseArrayTag):
+    """This class behaves like an 1D Numpy signed integer array with each value stored in a 8 bytes."""
     tag_id = ID_LONG_ARRAY
     big_endian_data_type = numpy.dtype(">i8")
     little_endian_data_type = numpy.dtype("<i8")

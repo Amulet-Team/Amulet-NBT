@@ -81,6 +81,10 @@ cdef class BaseIntTag(BaseNumericTag):
 
 
 cdef class TAG_Byte(BaseIntTag):
+    """
+    A class that behaves like an int but is stored in 1 byte.
+    Can Store numbers between -(2^7) and (2^7 - 1)
+    """
     tag_id = ID_BYTE
 
     def __init__(TAG_Byte self, value = 0):
@@ -126,6 +130,10 @@ cdef class TAG_Byte(BaseIntTag):
 
     @property
     def value(TAG_Byte self):
+        """
+        A copy of the data stored in the class.
+        Use the public API to modify the data within the class.
+        """
         return self.value_
 
     def __repr__(TAG_Byte self):
@@ -342,6 +350,10 @@ cdef class TAG_Byte(BaseIntTag):
 
 
 cdef class TAG_Short(BaseIntTag):
+    """
+    A class that behaves like an int but is stored in 2 bytes.
+    Can Store numbers between -(2^15) and (2^15 - 1)
+    """
     tag_id = ID_SHORT
 
     def __init__(TAG_Short self, value = 0):
@@ -387,6 +399,10 @@ cdef class TAG_Short(BaseIntTag):
 
     @property
     def value(TAG_Short self):
+        """
+        A copy of the data stored in the class.
+        Use the public API to modify the data within the class.
+        """
         return self.value_
 
     def __repr__(TAG_Short self):
@@ -607,6 +623,10 @@ cdef class TAG_Short(BaseIntTag):
 
 
 cdef class TAG_Int(BaseIntTag):
+    """
+    A class that behaves like an int but is stored in 4 bytes.
+    Can Store numbers between -(2^31) and (2^31 - 1)
+    """
     tag_id = ID_INT
 
     def __init__(TAG_Int self, value = 0):
@@ -652,6 +672,10 @@ cdef class TAG_Int(BaseIntTag):
 
     @property
     def value(TAG_Int self):
+        """
+        A copy of the data stored in the class.
+        Use the public API to modify the data within the class.
+        """
         return self.value_
 
     def __repr__(TAG_Int self):
@@ -872,6 +896,10 @@ cdef class TAG_Int(BaseIntTag):
 
 
 cdef class TAG_Long(BaseIntTag):
+    """
+    A class that behaves like an int but is stored in 8 bytes.
+    Can Store numbers between -(2^63) and (2^63 - 1)
+    """
     tag_id = ID_LONG
 
     def __init__(TAG_Long self, value = 0):
@@ -917,6 +945,10 @@ cdef class TAG_Long(BaseIntTag):
 
     @property
     def value(TAG_Long self):
+        """
+        A copy of the data stored in the class.
+        Use the public API to modify the data within the class.
+        """
         return self.value_
 
     def __repr__(TAG_Long self):

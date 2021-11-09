@@ -12,6 +12,10 @@ from .array import BaseArrayTag
 
 
 cdef class TAG_List(BaseMutableTag):
+    """
+    This class behaves like a python list.
+    All contained data must be of the same NBT data type.
+    """
     tag_id = ID_LIST
 
     def __init__(TAG_List self, object value = (), char list_data_type = 1):
@@ -113,6 +117,7 @@ cdef class TAG_List(BaseMutableTag):
         self.value_.append(value)
 
     def copy(TAG_List self):
+        """Return a shallow copy of the class"""
         return TAG_List(self.value_.copy(), self.list_data_type)
 
     def extend(TAG_List self, object other):
@@ -141,6 +146,12 @@ cdef class TAG_List(BaseMutableTag):
         return self.value_ == other
 
     cpdef bint strict_equals(TAG_List self, other):
+        """
+        Does the data and data type match the other object.
+        
+        :param other: The other object to compare with
+        :return: True if the classes are identical, False otherwise.
+        """
         cdef BaseTag self_val, other_val
         if (
             isinstance(other, TAG_List)

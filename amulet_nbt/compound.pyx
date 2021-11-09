@@ -13,6 +13,10 @@ NON_QUOTED_KEY = re.compile('[A-Za-z0-9._+-]+')
 
 
 cdef class TAG_Compound(BaseMutableTag):
+    """
+    This class behaves like a python dictionary.
+    All keys must be strings and all values must be NBT data types.
+    """
     tag_id = ID_COMPOUND
 
     def __init__(TAG_Compound self, object value = (), **kwvals):
@@ -58,6 +62,10 @@ cdef class TAG_Compound(BaseMutableTag):
 
     @property
     def value(TAG_Compound self):
+        """
+        A copy of the data stored in the class.
+        Use the public API to modify the data within the class.
+        """
         return copy(self.value_)
 
     __hash__ = None
@@ -128,6 +136,7 @@ cdef class TAG_Compound(BaseMutableTag):
         return tag
 
     cpdef bint strict_equals(TAG_Compound self, other):
+        """Does the data and data type match the other object."""
         cdef str self_key, other_key
         if (
                 isinstance(other, TAG_Compound)

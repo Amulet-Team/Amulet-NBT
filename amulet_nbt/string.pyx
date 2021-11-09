@@ -11,6 +11,7 @@ cdef inline escape(str string):
 
 
 cdef class TAG_String(BaseImmutableTag):
+    """A class that behaves like a string."""
     tag_id = ID_STRING
 
     def __init__(TAG_String self, value = ""):
@@ -56,6 +57,10 @@ cdef class TAG_String(BaseImmutableTag):
 
     @property
     def value(TAG_String self):
+        """
+        A copy of the data stored in the class.
+        Use the public API to modify the data within the class.
+        """
         return self.value_
 
     def __len__(TAG_String self) -> int:

@@ -12,6 +12,7 @@ cdef class BaseFloatTag(BaseNumericTag):
 
 
 cdef class TAG_Float(BaseFloatTag):
+    """A class that behaves like a float but is stored as a single precision float."""
     tag_id = ID_FLOAT
 
     def __init__(TAG_Float self, value = 0):
@@ -57,6 +58,10 @@ cdef class TAG_Float(BaseFloatTag):
 
     @property
     def value(TAG_Float self):
+        """
+        A copy of the data stored in the class.
+        Use the public API to modify the data within the class.
+        """
         return self.value_
 
     def __repr__(TAG_Float self):
@@ -198,6 +203,7 @@ cdef class TAG_Float(BaseFloatTag):
 
 
 cdef class TAG_Double(BaseFloatTag):
+    """A class that behaves like a float but is stored as a double precision float."""
     tag_id = ID_DOUBLE
 
     def __init__(TAG_Double self, value = 0):
@@ -243,6 +249,10 @@ cdef class TAG_Double(BaseFloatTag):
 
     @property
     def value(TAG_Double self):
+        """
+        A copy of the data stored in the class.
+        Use the public API to modify the data within the class.
+        """
         return self.value_
 
     def __repr__(TAG_Double self):

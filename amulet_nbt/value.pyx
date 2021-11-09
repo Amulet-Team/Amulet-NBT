@@ -78,7 +78,9 @@ cdef class BaseTag:
     ):
         """
         Convert the data to the binary NBT format. Optionally write to a file.
+        
         If filepath_or_buffer is a valid file path in string form the data will be written to that file.
+        
         If filepath_or_buffer is a file like object the bytes will be written to it using `write`.
 
         :param filepath_or_buffer: A path or `write`able object to write the data to.
@@ -145,6 +147,12 @@ cdef class BaseTag:
         raise NotImplementedError
 
     cpdef bint strict_equals(self, other):
+        """
+        Does the data and data type match the other object.
+        
+        :param other: The other object to compare with
+        :return: True if the classes are identical, False otherwise.
+        """
         return isinstance(other, self.__class__) and self.tag_id == other.tag_id and self == other
 
     def __ge__(self, other):
@@ -163,6 +171,7 @@ cdef class BaseTag:
         raise NotImplementedError
 
     def copy(self):
+        """Return a shallow copy of the class"""
         return copy(self)
 
     def __deepcopy__(self, memo=None):

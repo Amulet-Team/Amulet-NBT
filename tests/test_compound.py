@@ -187,9 +187,9 @@ class TestCompound(base_type_test.BaseTypeTest):
             c.setdefault("key1", None)
         with self.assertRaises(TypeError):
             c.setdefault("key1", "val1")
-        c.setdefault("key1", TAG_String("val2"))
+        self.assertEqual(c.setdefault("key1", TAG_String("val2")), "val1")
         self.assertEqual(c["key1"], "val1")
-        c.setdefault("key2", TAG_String("val2"))
+        self.assertEqual(c.setdefault("key2", TAG_String("val2")), "val2")
         self.assertEqual(c["key2"], "val2")
 
     def test_update(self):

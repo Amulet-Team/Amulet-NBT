@@ -12,6 +12,7 @@ on:
 jobs:
   unittests:
     runs-on: ${{ matrix.os }}
+    continue-on-error: true
     strategy:
       matrix:
         python-version: [3.7, 3.8, 3.9]

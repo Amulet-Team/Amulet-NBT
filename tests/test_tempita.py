@@ -1,6 +1,7 @@
 import unittest
 import glob
 import os
+import difflib
 from Cython import Tempita as tempita
 
 ROOT_PATH = os.path.dirname(os.path.dirname(__file__))
@@ -16,9 +17,16 @@ class TestString(unittest.TestCase):
                 with open(path) as template:
                     cy_code = tempita.sub(template.read())
                 cy_path = path[:-3]
+
                 with open(cy_path) as cy:
+                    file_source = cy.read()
+                    if file_source != cy_code:
+                        for line in difflib.unified_diff(
+                            file_source.splitlines(), cy_code.splitlines()
+                        ):
+                            print(line)
                     self.assertTrue(
-                        cy.read() == cy_code,
+                        file_source == cy_code,
                         msg=f"Tempita file {path} has not been compiled.",
                     )
 

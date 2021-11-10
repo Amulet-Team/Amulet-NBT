@@ -2,12 +2,17 @@ import unittest
 import glob
 import os
 import difflib
+import sys
 from Cython import Tempita as tempita
 
 ROOT_PATH = os.path.dirname(os.path.dirname(__file__))
 
 
 class TestString(unittest.TestCase):
+    @unittest.skipUnless(
+        sys.version_info[:2] == (3, 9),
+        "Different python versions produce different outputs.",
+    )
     def test_is_compiled(self):
         """Check if the files have been baked out."""
         for path in glob.glob(

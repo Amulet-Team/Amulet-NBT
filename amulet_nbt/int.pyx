@@ -1,6 +1,6 @@
 from typing import Union, Iterable, SupportsBytes
 from io import BytesIO
-from copy import copy, deepcopy
+from copy import deepcopy
 from math import floor, ceil
 
 from .numeric cimport BaseNumericTag
@@ -90,10 +90,76 @@ cdef class TAG_Byte(BaseIntTag):
     def __init__(TAG_Byte self, value = 0):
         self.value_ = self._sanitise_value(int(value))
 
-    def __getattr__(TAG_Byte self, item):
-        if item == "value_":
-            raise AttributeError("Python class does not have access to the underlying data.")
-        return getattr(self.value_, item)
+    def as_integer_ratio(self):
+        """
+        Return integer ratio.
+        
+        Return a pair of integers, whose ratio is exactly equal to the original int
+        and with a positive denominator.
+        
+        >>> (10).as_integer_ratio()
+        (10, 1)
+        >>> (-10).as_integer_ratio()
+        (-10, 1)
+        >>> (0).as_integer_ratio()
+        (0, 1)
+        """
+        return self.value_.as_integer_ratio()
+    
+    def bit_length(self):
+        """
+        Number of bits necessary to represent self in binary.
+        
+        >>> bin(37)
+        '0b100101'
+        >>> (37).bit_length()
+        6
+        """
+        return self.value_.bit_length()
+    
+    @property
+    def denominator(self):
+        """the denominator of a rational number in lowest terms"""
+        return self.value_.denominator
+    
+    @property
+    def imag(self):
+        """the imaginary part of a complex number"""
+        return self.value_.imag
+    
+    @property
+    def numerator(self):
+        """the numerator of a rational number in lowest terms"""
+        return self.value_.numerator
+    
+    @property
+    def real(self):
+        """the real part of a complex number"""
+        return self.value_.real
+    
+    def to_bytes(self, length, byteorder, *, object signed=False):
+        """
+        Return an array of bytes representing an integer.
+        
+        length
+          Length of bytes object to use.  An OverflowError is raised if the
+          integer is not representable with the given number of bytes.
+        byteorder
+          The byte order used to represent the integer.  If byteorder is 'big',
+          the most significant byte is at the beginning of the byte array.  If
+          byteorder is 'little', the most significant byte is at the end of the
+          byte array.  To request the native byte order of the host system, use
+          `sys.byteorder' as the byte order value.
+        signed
+          Determines whether two's complement is used to represent the integer.
+          If signed is False and a negative integer is given, an OverflowError
+          is raised.
+        """
+        return self.value_.to_bytes(length, byteorder, signed=signed)
+    
+    def conjugate(self):
+        """Returns self, the complex conjugate of any int."""
+        return self.value_.conjugate()
 
     def __str__(TAG_Byte self):
         return str(self.value_)
@@ -359,10 +425,76 @@ cdef class TAG_Short(BaseIntTag):
     def __init__(TAG_Short self, value = 0):
         self.value_ = self._sanitise_value(int(value))
 
-    def __getattr__(TAG_Short self, item):
-        if item == "value_":
-            raise AttributeError("Python class does not have access to the underlying data.")
-        return getattr(self.value_, item)
+    def as_integer_ratio(self):
+        """
+        Return integer ratio.
+        
+        Return a pair of integers, whose ratio is exactly equal to the original int
+        and with a positive denominator.
+        
+        >>> (10).as_integer_ratio()
+        (10, 1)
+        >>> (-10).as_integer_ratio()
+        (-10, 1)
+        >>> (0).as_integer_ratio()
+        (0, 1)
+        """
+        return self.value_.as_integer_ratio()
+    
+    def bit_length(self):
+        """
+        Number of bits necessary to represent self in binary.
+        
+        >>> bin(37)
+        '0b100101'
+        >>> (37).bit_length()
+        6
+        """
+        return self.value_.bit_length()
+    
+    @property
+    def denominator(self):
+        """the denominator of a rational number in lowest terms"""
+        return self.value_.denominator
+    
+    @property
+    def imag(self):
+        """the imaginary part of a complex number"""
+        return self.value_.imag
+    
+    @property
+    def numerator(self):
+        """the numerator of a rational number in lowest terms"""
+        return self.value_.numerator
+    
+    @property
+    def real(self):
+        """the real part of a complex number"""
+        return self.value_.real
+    
+    def to_bytes(self, length, byteorder, *, object signed=False):
+        """
+        Return an array of bytes representing an integer.
+        
+        length
+          Length of bytes object to use.  An OverflowError is raised if the
+          integer is not representable with the given number of bytes.
+        byteorder
+          The byte order used to represent the integer.  If byteorder is 'big',
+          the most significant byte is at the beginning of the byte array.  If
+          byteorder is 'little', the most significant byte is at the end of the
+          byte array.  To request the native byte order of the host system, use
+          `sys.byteorder' as the byte order value.
+        signed
+          Determines whether two's complement is used to represent the integer.
+          If signed is False and a negative integer is given, an OverflowError
+          is raised.
+        """
+        return self.value_.to_bytes(length, byteorder, signed=signed)
+    
+    def conjugate(self):
+        """Returns self, the complex conjugate of any int."""
+        return self.value_.conjugate()
 
     def __str__(TAG_Short self):
         return str(self.value_)
@@ -632,10 +764,76 @@ cdef class TAG_Int(BaseIntTag):
     def __init__(TAG_Int self, value = 0):
         self.value_ = self._sanitise_value(int(value))
 
-    def __getattr__(TAG_Int self, item):
-        if item == "value_":
-            raise AttributeError("Python class does not have access to the underlying data.")
-        return getattr(self.value_, item)
+    def as_integer_ratio(self):
+        """
+        Return integer ratio.
+        
+        Return a pair of integers, whose ratio is exactly equal to the original int
+        and with a positive denominator.
+        
+        >>> (10).as_integer_ratio()
+        (10, 1)
+        >>> (-10).as_integer_ratio()
+        (-10, 1)
+        >>> (0).as_integer_ratio()
+        (0, 1)
+        """
+        return self.value_.as_integer_ratio()
+    
+    def bit_length(self):
+        """
+        Number of bits necessary to represent self in binary.
+        
+        >>> bin(37)
+        '0b100101'
+        >>> (37).bit_length()
+        6
+        """
+        return self.value_.bit_length()
+    
+    @property
+    def denominator(self):
+        """the denominator of a rational number in lowest terms"""
+        return self.value_.denominator
+    
+    @property
+    def imag(self):
+        """the imaginary part of a complex number"""
+        return self.value_.imag
+    
+    @property
+    def numerator(self):
+        """the numerator of a rational number in lowest terms"""
+        return self.value_.numerator
+    
+    @property
+    def real(self):
+        """the real part of a complex number"""
+        return self.value_.real
+    
+    def to_bytes(self, length, byteorder, *, object signed=False):
+        """
+        Return an array of bytes representing an integer.
+        
+        length
+          Length of bytes object to use.  An OverflowError is raised if the
+          integer is not representable with the given number of bytes.
+        byteorder
+          The byte order used to represent the integer.  If byteorder is 'big',
+          the most significant byte is at the beginning of the byte array.  If
+          byteorder is 'little', the most significant byte is at the end of the
+          byte array.  To request the native byte order of the host system, use
+          `sys.byteorder' as the byte order value.
+        signed
+          Determines whether two's complement is used to represent the integer.
+          If signed is False and a negative integer is given, an OverflowError
+          is raised.
+        """
+        return self.value_.to_bytes(length, byteorder, signed=signed)
+    
+    def conjugate(self):
+        """Returns self, the complex conjugate of any int."""
+        return self.value_.conjugate()
 
     def __str__(TAG_Int self):
         return str(self.value_)
@@ -905,10 +1103,76 @@ cdef class TAG_Long(BaseIntTag):
     def __init__(TAG_Long self, value = 0):
         self.value_ = self._sanitise_value(int(value))
 
-    def __getattr__(TAG_Long self, item):
-        if item == "value_":
-            raise AttributeError("Python class does not have access to the underlying data.")
-        return getattr(self.value_, item)
+    def as_integer_ratio(self):
+        """
+        Return integer ratio.
+        
+        Return a pair of integers, whose ratio is exactly equal to the original int
+        and with a positive denominator.
+        
+        >>> (10).as_integer_ratio()
+        (10, 1)
+        >>> (-10).as_integer_ratio()
+        (-10, 1)
+        >>> (0).as_integer_ratio()
+        (0, 1)
+        """
+        return self.value_.as_integer_ratio()
+    
+    def bit_length(self):
+        """
+        Number of bits necessary to represent self in binary.
+        
+        >>> bin(37)
+        '0b100101'
+        >>> (37).bit_length()
+        6
+        """
+        return self.value_.bit_length()
+    
+    @property
+    def denominator(self):
+        """the denominator of a rational number in lowest terms"""
+        return self.value_.denominator
+    
+    @property
+    def imag(self):
+        """the imaginary part of a complex number"""
+        return self.value_.imag
+    
+    @property
+    def numerator(self):
+        """the numerator of a rational number in lowest terms"""
+        return self.value_.numerator
+    
+    @property
+    def real(self):
+        """the real part of a complex number"""
+        return self.value_.real
+    
+    def to_bytes(self, length, byteorder, *, object signed=False):
+        """
+        Return an array of bytes representing an integer.
+        
+        length
+          Length of bytes object to use.  An OverflowError is raised if the
+          integer is not representable with the given number of bytes.
+        byteorder
+          The byte order used to represent the integer.  If byteorder is 'big',
+          the most significant byte is at the beginning of the byte array.  If
+          byteorder is 'little', the most significant byte is at the end of the
+          byte array.  To request the native byte order of the host system, use
+          `sys.byteorder' as the byte order value.
+        signed
+          Determines whether two's complement is used to represent the integer.
+          If signed is False and a negative integer is given, an OverflowError
+          is raised.
+        """
+        return self.value_.to_bytes(length, byteorder, signed=signed)
+    
+    def conjugate(self):
+        """Returns self, the complex conjugate of any int."""
+        return self.value_.conjugate()
 
     def __str__(TAG_Long self):
         return str(self.value_)

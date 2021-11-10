@@ -1,4 +1,21 @@
-{{py:from tools.tempita import include}}
+{{py:from tools.tempita import include, gen_wrapper, get_clean_docstring}}
+{{gen_wrapper(
+    "value_",
+    int,
+    [
+        "as_integer_ratio",
+        "bit_length",
+        "denominator",
+        "imag",
+        "numerator",
+        "real",
+        "to_bytes",
+    ]
+)}}
+    def conjugate(self):
+{{get_clean_docstring(int.conjugate)}}
+        return self.value_.conjugate()
+
 {{include("amulet_nbt/BaseNumericTag.pyx.in", cls_name=cls_name)}}
 
     @classmethod

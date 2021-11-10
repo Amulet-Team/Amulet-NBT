@@ -1,5 +1,5 @@
 from io import BytesIO
-from copy import copy, deepcopy
+from copy import deepcopy
 from math import floor, ceil
 
 from .numeric cimport BaseNumericTag
@@ -19,7 +19,7 @@ cdef class TAG_Float(BaseFloatTag):
     def __init__(TAG_Float self, value = 0):
         self.value_ = float(value)
 
-{{include("amulet_nbt/BaseNumericTag.pyx.in", cls_name="TAG_Float")}}
+{{include("amulet_nbt/BaseFloatTag.pyx.in", cls_name="TAG_Float")}}
 
     cdef str _to_snbt(TAG_Float self):
         return f"{self.value_}f"

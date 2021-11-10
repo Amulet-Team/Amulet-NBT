@@ -1,5 +1,5 @@
 from io import BytesIO
-from copy import copy, deepcopy
+from copy import deepcopy
 from math import floor, ceil
 
 from .numeric cimport BaseNumericTag
@@ -18,11 +18,53 @@ cdef class TAG_Float(BaseFloatTag):
     def __init__(TAG_Float self, value = 0):
         self.value_ = float(value)
 
-    def __getattr__(TAG_Float self, item):
-        if item == "value_":
-            raise AttributeError("Python class does not have access to the underlying data.")
-        return getattr(self.value_, item)
-
+    def as_integer_ratio(self):
+        """
+        Return integer ratio.
+        
+        Return a pair of integers, whose ratio is exactly equal to the original float
+        and with a positive denominator.
+        
+        Raise OverflowError on infinities and a ValueError on NaNs.
+        
+        >>> (10.0).as_integer_ratio()
+        (10, 1)
+        >>> (0.0).as_integer_ratio()
+        (0, 1)
+        >>> (-.25).as_integer_ratio()
+        (-1, 4)
+        """
+        return self.value_.as_integer_ratio()
+    
+    def conjugate(self):
+        """Return self, the complex conjugate of any float."""
+        return self.value_.conjugate()
+    
+    def hex(self):
+        """
+        Return a hexadecimal representation of a floating-point number.
+        
+        >>> (-0.1).hex()
+        '-0x1.999999999999ap-4'
+        >>> 3.14159.hex()
+        '0x1.921f9f01b866ep+1'
+        """
+        return self.value_.hex()
+    
+    @property
+    def imag(self):
+        """the imaginary part of a complex number"""
+        return self.value_.imag
+    
+    def is_integer(self):
+        """Return True if the float is an integer."""
+        return self.value_.is_integer()
+    
+    @property
+    def real(self):
+        """the real part of a complex number"""
+        return self.value_.real
+    
     def __str__(TAG_Float self):
         return str(self.value_)
 
@@ -208,11 +250,6 @@ cdef class TAG_Double(BaseFloatTag):
 
     def __init__(TAG_Double self, value = 0):
         self.value_ = float(value)
-
-    def __getattr__(TAG_Double self, item):
-        if item == "value_":
-            raise AttributeError("Python class does not have access to the underlying data.")
-        return getattr(self.value_, item)
 
     def __str__(TAG_Double self):
         return str(self.value_)

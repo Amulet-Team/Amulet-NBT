@@ -1,6 +1,6 @@
 from typing import Union, Iterable, SupportsBytes
 from io import BytesIO
-from copy import copy, deepcopy
+from copy import deepcopy
 from math import floor, ceil
 
 from .numeric cimport BaseNumericTag

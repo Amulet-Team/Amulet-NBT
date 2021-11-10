@@ -25,11 +25,56 @@ cdef class TAG_List(BaseMutableTag):
         self._check_tag_iterable(list_value)
         self.value_ = list_value
 
-    def __getattr__(TAG_List self, item):
-        if item == "value_":
-            raise AttributeError("Python class does not have access to the underlying data.")
-        return getattr(self.value_, item)
-
+    def clear(self):
+        """Remove all items from list."""
+        return self.value_.clear()
+    
+    def count(self, value):
+        """Return number of occurrences of value."""
+        return self.value_.count(value)
+    
+    def index(self, value, start=0, stop=9223372036854775807):
+        """
+        Return first index of value.
+        
+        Raises ValueError if the value is not present.
+        """
+        return self.value_.index(value, start, stop)
+    
+    def pop(self, index=-1):
+        """
+        Remove and return item at index (default last).
+        
+        Raises IndexError if list is empty or index is out of range.
+        """
+        return self.value_.pop(index)
+    
+    def remove(self, value):
+        """
+        Remove first occurrence of value.
+        
+        Raises ValueError if the value is not present.
+        """
+        return self.value_.remove(value)
+    
+    def reverse(self):
+        """Reverse *IN PLACE*."""
+        return self.value_.reverse()
+    
+    def sort(self, *, key=None, reverse=False):
+        """
+        Sort the list in ascending order and return None.
+        
+        The sort is in-place (i.e. the list itself is modified) and stable (i.e. the
+        order of two equal elements is maintained).
+        
+        If a key function is given, apply it once to each list item and sort them,
+        ascending or descending, according to their function values.
+        
+        The reverse flag can be set to sort in descending order.
+        """
+        return self.value_.sort(key=key, reverse=reverse)
+    
     def __str__(TAG_List self):
         return str(self.value_)
 
@@ -155,6 +200,7 @@ cdef class TAG_List(BaseMutableTag):
         del self.value_[index]
 
     def append(TAG_List self, BaseTag value not None) -> None:
+        """Append object to the end of the list."""
         self._check_tag(value)
         self.value_.append(value)
 
@@ -163,12 +209,14 @@ cdef class TAG_List(BaseMutableTag):
         return TAG_List(self.value_.copy(), self.list_data_type)
 
     def extend(TAG_List self, object other):
+        """Extend list by appending elements from the iterable."""
         other = list(other)
         self._check_tag_iterable(other)
         self.value_.extend(other)
         return self
 
     def insert(TAG_List self, object index, BaseTag value not None):
+        """Insert object before index."""
         self._check_tag(value)
         self.value_.insert(index, value)
 
@@ -206,9 +254,6 @@ cdef class TAG_List(BaseMutableTag):
             return True
         return False
 
-    # TODO: https://github.com/cython/cython/issues/4434
-    #  These methods get the Python object not the cython object.
-    #  As such they cannot access value_. This may be a cython bug.
     def __add__(TAG_List self, other):
         return self.value_ + other
 

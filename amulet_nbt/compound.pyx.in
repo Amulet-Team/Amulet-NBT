@@ -8,7 +8,7 @@ from .const cimport ID_END, ID_COMPOUND, CommaSpace, CommaNewline
 from .util cimport write_byte, BufferContext, read_byte, read_string
 from .load_nbt cimport load_payload
 from .dtype import AnyNBT
-{{py:from tools.tempita import include}}
+{{py:from tools.tempita import include, gen_wrapper, get_clean_docstring}}
 
 NON_QUOTED_KEY = re.compile('[A-Za-z0-9._+-]+')
 
@@ -26,10 +26,24 @@ cdef class TAG_Compound(BaseMutableTag):
         TAG_Compound._check_dict(dict_value)
         self.value_ = dict_value
 
+{{gen_wrapper(
+    "value_",
+    dict,
+    [
+        "get",
+        "pop",
+        "popitem",
+        "clear",
+        "keys",
+        "values",
+        "items",
+    ]
+)}}
 {{include("amulet_nbt/BaseMutableTag.pyx.in", cls_name="TAG_Compound")}}
 
     @staticmethod
     def fromkeys(object keys, BaseTag value=None):
+{{get_clean_docstring(dict.fromkeys)}}
         cdef dict dict_value = dict.fromkeys(keys, value)
         TAG_Compound._check_dict(dict_value)
         cdef TAG_Compound compound = TAG_Compound.__new__(TAG_Compound)
@@ -116,9 +130,11 @@ cdef class TAG_Compound(BaseMutableTag):
         self.value_[key] = value
 
     def setdefault(TAG_Compound self, str key not None, BaseTag value not None):
+{{get_clean_docstring(dict.setdefault)}}
         return self.value_.setdefault(key, value)
 
     def update(TAG_Compound self, object other=(), **others):
+{{get_clean_docstring(dict.update)}}
         cdef dict dict_other = dict(other)
         dict_other.update(others)
         TAG_Compound._check_dict(dict_other)

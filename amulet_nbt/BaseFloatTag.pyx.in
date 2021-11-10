@@ -1,0 +1,14 @@
+{{py:from tools.tempita import include, gen_wrapper}}
+{{gen_wrapper(
+    "value_",
+    float,
+    [
+        "as_integer_ratio",
+        "conjugate",
+        "hex",
+        "imag",
+        "is_integer",
+        "real",
+    ]
+)}}
+{{include("amulet_nbt/BaseNumericTag.pyx.in", cls_name=cls_name)}}

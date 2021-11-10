@@ -1,10 +1,11 @@
+from typing import Iterator, Any
 from io import BytesIO
-from copy import copy, deepcopy
+from copy import deepcopy
 
 from .value cimport BaseImmutableTag
 from .const cimport ID_STRING
 from .util cimport write_string, BufferContext, read_string
-{{py:from tools.tempita import include}}
+{{py:from tools.tempita import include,gen_wrapper}}
 
 
 cdef inline escape(str string):
@@ -18,6 +19,58 @@ cdef class TAG_String(BaseImmutableTag):
     def __init__(TAG_String self, value = ""):
         self.value_ = str(value)
 
+{{gen_wrapper(
+    "value_",
+    str,
+    [
+        "capitalize",
+        "casefold",
+        "center",
+        "encode",
+        "expandtabs",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill",
+        "count",
+        "endswith",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "rfind",
+        "rindex",
+        "startswith",
+    ]
+)}}
 {{include("amulet_nbt/BaseImmutableTag.pyx.in", cls_name="TAG_String")}}
 
     def __len__(TAG_String self) -> int:

@@ -7,7 +7,10 @@ from .value cimport BaseMutableTag
 from .const cimport CommaSpace, ID_BYTE_ARRAY, ID_INT_ARRAY, ID_LONG_ARRAY
 from .util cimport write_array, BufferContext, read_int, read_data
 from .list cimport TAG_List
-{{py:from tools.tempita import include}}
+{{py:
+import numpy
+from tools.tempita import include, gen_wrapper, get_clean_docstring
+}}
 
 
 cdef class BaseArrayTag(BaseMutableTag):
@@ -16,7 +19,89 @@ cdef class BaseArrayTag(BaseMutableTag):
     def __init__(BaseArrayTag self, object value = ()):
         self.value_ = numpy.array(value, self.big_endian_data_type).ravel()
 
+{{gen_wrapper(
+    "value_",
+    numpy.ndarray,
+    [
+        "T",
+        "dtype",
+        "flags",
+        "flat",
+        "imag",
+        "itemsize",
+        "nbytes",
+        "ndim",
+        "real",
+        "size",
+        "all",
+        "any",
+        "argmax",
+        "argmin",
+        "argpartition",
+        "argsort",
+        "astype",
+        "byteswap",
+        "choose",
+        "clip",
+        "compress",
+        "conj",
+        "conjugate",
+        "cumprod",
+        "cumsum",
+        "diagonal",
+        "dot",
+        "dump",
+        "dumps",
+        "fill",
+        "flatten",
+        "getfield",
+        "item",
+        "itemset",
+        "max",
+        "mean",
+        "min",
+        "newbyteorder",
+        "nonzero",
+        "partition",
+        "prod",
+        "ptp",
+        "put",
+        "ravel",
+        "repeat",
+        "reshape",
+        "round",
+        "searchsorted",
+        "setfield",
+        "setflags",
+        "sort",
+        "squeeze",
+        "std",
+        "sum",
+        "swapaxes",
+        "take",
+        "tobytes",
+        "tofile",
+        "tolist",
+        "tostring",
+        "trace",
+        "transpose",
+        "var",
+        "view"
+    ]
+)}}
 {{include("amulet_nbt/BaseMutableTag.pyx.in", cls_name="BaseArrayTag")}}
+    @property
+    def shape(self):
+{{get_clean_docstring(numpy.ndarray.shape)}}
+        return tuple(self.value_.shape[i] for i in range(self.value_.ndim))\
+
+    @property
+    def strides(self):
+{{get_clean_docstring(numpy.ndarray.strides)}}
+        return tuple(self.value_.strides[i] for i in range(self.value_.ndim))
+
+    def resize(*args, **kwargs):
+        raise Exception("The TAG_Array classes are 1D arrays and cannot be resized in place. Try reshape to get a copy.")
 
     cdef void _fix_dtype(BaseArrayTag self):
         if self.value_.dtype != self.big_endian_data_type:
@@ -44,8 +129,8 @@ cdef class BaseArrayTag(BaseMutableTag):
     def __setitem__(BaseArrayTag self, key, value):
         self.value_.__setitem__(key, value)
 
-    def __array__(BaseArrayTag self):
-        return self.value_
+    def __array__(BaseArrayTag self, dtype=None):
+        return numpy.array(self.value_, dtype=dtype)
 
     def __len__(BaseArrayTag self):
         return len(self.value_)

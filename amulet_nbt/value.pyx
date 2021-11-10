@@ -134,9 +134,6 @@ cdef class BaseTag:
         """
         raise NotImplementedError
 
-    def __getattr__(self, item):
-        raise NotImplementedError
-
     def __repr__(self):
         raise NotImplementedError
 

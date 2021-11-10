@@ -8,7 +8,7 @@ from .util cimport write_byte, write_int, BufferContext, read_byte, read_int
 from .load_nbt cimport load_payload
 from .dtype import AnyNBT
 from .array import BaseArrayTag
-{{py:from tools.tempita import include}}
+{{py:from tools.tempita import include, gen_wrapper, get_clean_docstring}}
 
 
 cdef class TAG_List(BaseMutableTag):
@@ -26,6 +26,19 @@ cdef class TAG_List(BaseMutableTag):
         self._check_tag_iterable(list_value)
         self.value_ = list_value
 
+{{gen_wrapper(
+    "value_",
+    list,
+    [
+        "clear",
+        "count",
+        "index",
+        "pop",
+        "remove",
+        "reverse",
+        "sort",
+    ]
+)}}
 {{include("amulet_nbt/BaseMutableTag.pyx.in", cls_name="TAG_List")}}
 
     cdef void _check_tag(TAG_List self, BaseTag value, bint fix_if_empty=True) except *:
@@ -113,6 +126,7 @@ cdef class TAG_List(BaseMutableTag):
         del self.value_[index]
 
     def append(TAG_List self, BaseTag value not None) -> None:
+{{get_clean_docstring(list.append)}}
         self._check_tag(value)
         self.value_.append(value)
 
@@ -121,12 +135,14 @@ cdef class TAG_List(BaseMutableTag):
         return TAG_List(self.value_.copy(), self.list_data_type)
 
     def extend(TAG_List self, object other):
+{{get_clean_docstring(list.extend)}}
         other = list(other)
         self._check_tag_iterable(other)
         self.value_.extend(other)
         return self
 
     def insert(TAG_List self, object index, BaseTag value not None):
+{{get_clean_docstring(list.insert)}}
         self._check_tag(value)
         self.value_.insert(index, value)
 
@@ -164,9 +180,6 @@ cdef class TAG_List(BaseMutableTag):
             return True
         return False
 
-    # TODO: https://github.com/cython/cython/issues/4434
-    #  These methods get the Python object not the cython object.
-    #  As such they cannot access value_. This may be a cython bug.
     def __add__(TAG_List self, other):
         return self.value_ + other
 

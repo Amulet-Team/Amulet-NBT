@@ -3,7 +3,7 @@
     "value_",
     int,
     [
-        "as_integer_ratio",
+        # "as_integer_ratio",  # added in 3.8
         "bit_length",
         "denominator",
         "imag",

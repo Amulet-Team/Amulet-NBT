@@ -37,15 +37,6 @@ cdef class TAG_Compound(BaseMutableTag):
         """
         return self.value_.pop(*args, **kwargs)
     
-    def popitem(self):
-        """
-        Remove and return a (key, value) pair as a 2-tuple.
-        
-        Pairs are returned in LIFO (last-in, first-out) order.
-        Raises KeyError if the dict is empty.
-        """
-        return self.value_.popitem()
-    
     def clear(self, *args, **kwargs):
         """D.clear() -> None.  Remove all items from D."""
         return self.value_.clear(*args, **kwargs)

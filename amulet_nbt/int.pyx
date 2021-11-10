@@ -90,22 +90,6 @@ cdef class TAG_Byte(BaseIntTag):
     def __init__(TAG_Byte self, value = 0):
         self.value_ = self._sanitise_value(int(value))
 
-    def as_integer_ratio(self):
-        """
-        Return integer ratio.
-        
-        Return a pair of integers, whose ratio is exactly equal to the original int
-        and with a positive denominator.
-        
-        >>> (10).as_integer_ratio()
-        (10, 1)
-        >>> (-10).as_integer_ratio()
-        (-10, 1)
-        >>> (0).as_integer_ratio()
-        (0, 1)
-        """
-        return self.value_.as_integer_ratio()
-    
     def bit_length(self):
         """
         Number of bits necessary to represent self in binary.
@@ -425,22 +409,6 @@ cdef class TAG_Short(BaseIntTag):
     def __init__(TAG_Short self, value = 0):
         self.value_ = self._sanitise_value(int(value))
 
-    def as_integer_ratio(self):
-        """
-        Return integer ratio.
-        
-        Return a pair of integers, whose ratio is exactly equal to the original int
-        and with a positive denominator.
-        
-        >>> (10).as_integer_ratio()
-        (10, 1)
-        >>> (-10).as_integer_ratio()
-        (-10, 1)
-        >>> (0).as_integer_ratio()
-        (0, 1)
-        """
-        return self.value_.as_integer_ratio()
-    
     def bit_length(self):
         """
         Number of bits necessary to represent self in binary.
@@ -764,22 +732,6 @@ cdef class TAG_Int(BaseIntTag):
     def __init__(TAG_Int self, value = 0):
         self.value_ = self._sanitise_value(int(value))
 
-    def as_integer_ratio(self):
-        """
-        Return integer ratio.
-        
-        Return a pair of integers, whose ratio is exactly equal to the original int
-        and with a positive denominator.
-        
-        >>> (10).as_integer_ratio()
-        (10, 1)
-        >>> (-10).as_integer_ratio()
-        (-10, 1)
-        >>> (0).as_integer_ratio()
-        (0, 1)
-        """
-        return self.value_.as_integer_ratio()
-    
     def bit_length(self):
         """
         Number of bits necessary to represent self in binary.
@@ -1103,22 +1055,6 @@ cdef class TAG_Long(BaseIntTag):
     def __init__(TAG_Long self, value = 0):
         self.value_ = self._sanitise_value(int(value))
 
-    def as_integer_ratio(self):
-        """
-        Return integer ratio.
-        
-        Return a pair of integers, whose ratio is exactly equal to the original int
-        and with a positive denominator.
-        
-        >>> (10).as_integer_ratio()
-        (10, 1)
-        >>> (-10).as_integer_ratio()
-        (-10, 1)
-        >>> (0).as_integer_ratio()
-        (0, 1)
-        """
-        return self.value_.as_integer_ratio()
-    
     def bit_length(self):
         """
         Number of bits necessary to represent self in binary.

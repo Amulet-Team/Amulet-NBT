@@ -45,8 +45,6 @@ cdef class TAG_String(BaseImmutableTag):
         "lower",
         "lstrip",
         "partition",
-        "removeprefix",
-        "removesuffix",
         "replace",
         "rjust",
         "rpartition",
@@ -72,6 +70,15 @@ cdef class TAG_String(BaseImmutableTag):
     ]
 )}}
 {{include("amulet_nbt/BaseImmutableTag.pyx.in", cls_name="TAG_String")}}
+
+    if sys.version_info >= (3, 9):
+        def removeprefix(self, prefix: str) -> str:
+            return self.value_.removeprefix(prefix)
+        removeprefix.__doc__ = str.removeprefix.__doc__
+
+        def removesuffix(self, suffix: str) -> str:
+            return self.value_.removesuffix(suffix)
+        removesuffix.__doc__ = str.removesuffix.__doc__
 
     def __len__(TAG_String self) -> int:
         return len(self.value_)

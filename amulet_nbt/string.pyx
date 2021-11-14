@@ -106,14 +106,6 @@ cdef class TAG_String(BaseImmutableTag):
         return self.value_.partition(sep)
     partition.__doc__ = str.partition.__doc__
     
-    def removeprefix(self, prefix):
-        return self.value_.removeprefix(prefix)
-    removeprefix.__doc__ = str.removeprefix.__doc__
-    
-    def removesuffix(self, suffix):
-        return self.value_.removesuffix(suffix)
-    removesuffix.__doc__ = str.removesuffix.__doc__
-    
     def replace(self, old, new, count=-1):
         return self.value_.replace(old, new, count)
     replace.__doc__ = str.replace.__doc__
@@ -242,6 +234,15 @@ cdef class TAG_String(BaseImmutableTag):
         Use the public API to modify the data within the class.
         """
         return self.value_
+
+    if sys.version_info >= (3, 9):
+        def removeprefix(self, prefix: str) -> str:
+            return self.value_.removeprefix(prefix)
+        removeprefix.__doc__ = str.removeprefix.__doc__
+
+        def removesuffix(self, suffix: str) -> str:
+            return self.value_.removesuffix(suffix)
+        removesuffix.__doc__ = str.removesuffix.__doc__
 
     def __len__(TAG_String self) -> int:
         return len(self.value_)

@@ -2,6 +2,7 @@ from typing import Union, Iterable, SupportsBytes
 from io import BytesIO
 from copy import deepcopy
 from math import floor, ceil
+import sys
 
 from .numeric cimport BaseNumericTag
 from .const cimport ID_BYTE, ID_SHORT, ID_INT, ID_LONG
@@ -118,6 +119,11 @@ cdef class TAG_Byte(BaseIntTag):
         return self.value_.to_bytes(length, byteorder, signed=signed)
     to_bytes.__doc__ = int.to_bytes.__doc__
     
+    if sys.version_info >= (3, 8):
+        def as_integer_ratio(self):
+            return self.value_.as_integer_ratio()
+        as_integer_ratio.__doc__ = int.as_integer_ratio.__doc__
+
     def conjugate(self):
         return self.value_.conjugate()
     conjugate.__doc__ = int.conjugate.__doc__
@@ -414,6 +420,11 @@ cdef class TAG_Short(BaseIntTag):
         return self.value_.to_bytes(length, byteorder, signed=signed)
     to_bytes.__doc__ = int.to_bytes.__doc__
     
+    if sys.version_info >= (3, 8):
+        def as_integer_ratio(self):
+            return self.value_.as_integer_ratio()
+        as_integer_ratio.__doc__ = int.as_integer_ratio.__doc__
+
     def conjugate(self):
         return self.value_.conjugate()
     conjugate.__doc__ = int.conjugate.__doc__
@@ -714,6 +725,11 @@ cdef class TAG_Int(BaseIntTag):
         return self.value_.to_bytes(length, byteorder, signed=signed)
     to_bytes.__doc__ = int.to_bytes.__doc__
     
+    if sys.version_info >= (3, 8):
+        def as_integer_ratio(self):
+            return self.value_.as_integer_ratio()
+        as_integer_ratio.__doc__ = int.as_integer_ratio.__doc__
+
     def conjugate(self):
         return self.value_.conjugate()
     conjugate.__doc__ = int.conjugate.__doc__
@@ -1014,6 +1030,11 @@ cdef class TAG_Long(BaseIntTag):
         return self.value_.to_bytes(length, byteorder, signed=signed)
     to_bytes.__doc__ = int.to_bytes.__doc__
     
+    if sys.version_info >= (3, 8):
+        def as_integer_ratio(self):
+            return self.value_.as_integer_ratio()
+        as_integer_ratio.__doc__ = int.as_integer_ratio.__doc__
+
     def conjugate(self):
         return self.value_.conjugate()
     conjugate.__doc__ = int.conjugate.__doc__

@@ -138,8 +138,10 @@ def gen_wrapper(
                     f"",
                 )
             )
-        elif isinstance(attr, (str, Type, BuiltInFunctionOrMethod)):
+        elif isinstance(attr, (str, Type)):
             pass
+        elif isinstance(attr, BuiltInFunctionOrMethod):
+            print(f"Built in method {attr_name} is not inspectable")
         else:
             print(f"skipped {attr_name} {attr}")
     return indent * " " + f'\n{indent*" "}'.join(code)

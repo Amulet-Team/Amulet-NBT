@@ -2,6 +2,7 @@ from typing import Union, Iterable, SupportsBytes
 from io import BytesIO
 from copy import deepcopy
 from math import floor, ceil
+import sys
 
 from .numeric cimport BaseNumericTag
 from .const cimport ID_BYTE, ID_SHORT, ID_INT, ID_LONG

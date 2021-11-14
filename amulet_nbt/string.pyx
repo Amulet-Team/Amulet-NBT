@@ -31,13 +31,37 @@ cdef class TAG_String(BaseImmutableTag):
         return self.value_.center(width, fillchar)
     center.__doc__ = str.center.__doc__
     
+    def count(self, *args, **kwargs):
+        return self.value_.count(*args, **kwargs)
+    count.__doc__ = str.count.__doc__
+    
     def encode(self, encoding='utf-8', errors='strict'):
         return self.value_.encode(encoding, errors)
     encode.__doc__ = str.encode.__doc__
     
+    def endswith(self, *args, **kwargs):
+        return self.value_.endswith(*args, **kwargs)
+    endswith.__doc__ = str.endswith.__doc__
+    
     def expandtabs(self, tabsize=8):
         return self.value_.expandtabs(tabsize)
     expandtabs.__doc__ = str.expandtabs.__doc__
+    
+    def find(self, *args, **kwargs):
+        return self.value_.find(*args, **kwargs)
+    find.__doc__ = str.find.__doc__
+    
+    def format(self, *args, **kwargs):
+        return self.value_.format(*args, **kwargs)
+    format.__doc__ = str.format.__doc__
+    
+    def format_map(self, *args, **kwargs):
+        return self.value_.format_map(*args, **kwargs)
+    format_map.__doc__ = str.format_map.__doc__
+    
+    def index(self, *args, **kwargs):
+        return self.value_.index(*args, **kwargs)
+    index.__doc__ = str.index.__doc__
     
     def isalnum(self):
         return self.value_.isalnum()
@@ -111,6 +135,14 @@ cdef class TAG_String(BaseImmutableTag):
         return self.value_.replace(old, new, count)
     replace.__doc__ = str.replace.__doc__
     
+    def rfind(self, *args, **kwargs):
+        return self.value_.rfind(*args, **kwargs)
+    rfind.__doc__ = str.rfind.__doc__
+    
+    def rindex(self, *args, **kwargs):
+        return self.value_.rindex(*args, **kwargs)
+    rindex.__doc__ = str.rindex.__doc__
+    
     def rjust(self, width, fillchar=' '):
         return self.value_.rjust(width, fillchar)
     rjust.__doc__ = str.rjust.__doc__
@@ -135,6 +167,10 @@ cdef class TAG_String(BaseImmutableTag):
         return self.value_.splitlines(keepends)
     splitlines.__doc__ = str.splitlines.__doc__
     
+    def startswith(self, *args, **kwargs):
+        return self.value_.startswith(*args, **kwargs)
+    startswith.__doc__ = str.startswith.__doc__
+    
     def strip(self, chars=None):
         return self.value_.strip(chars)
     strip.__doc__ = str.strip.__doc__
@@ -158,42 +194,6 @@ cdef class TAG_String(BaseImmutableTag):
     def zfill(self, width):
         return self.value_.zfill(width)
     zfill.__doc__ = str.zfill.__doc__
-    
-    def count(self, *args, **kwargs):
-        return self.value_.count(*args, **kwargs)
-    count.__doc__ = str.count.__doc__
-    
-    def endswith(self, *args, **kwargs):
-        return self.value_.endswith(*args, **kwargs)
-    endswith.__doc__ = str.endswith.__doc__
-    
-    def find(self, *args, **kwargs):
-        return self.value_.find(*args, **kwargs)
-    find.__doc__ = str.find.__doc__
-    
-    def format(self, *args, **kwargs):
-        return self.value_.format(*args, **kwargs)
-    format.__doc__ = str.format.__doc__
-    
-    def format_map(self, *args, **kwargs):
-        return self.value_.format_map(*args, **kwargs)
-    format_map.__doc__ = str.format_map.__doc__
-    
-    def index(self, *args, **kwargs):
-        return self.value_.index(*args, **kwargs)
-    index.__doc__ = str.index.__doc__
-    
-    def rfind(self, *args, **kwargs):
-        return self.value_.rfind(*args, **kwargs)
-    rfind.__doc__ = str.rfind.__doc__
-    
-    def rindex(self, *args, **kwargs):
-        return self.value_.rindex(*args, **kwargs)
-    rindex.__doc__ = str.rindex.__doc__
-    
-    def startswith(self, *args, **kwargs):
-        return self.value_.startswith(*args, **kwargs)
-    startswith.__doc__ = str.startswith.__doc__
     
     def __str__(TAG_String self):
         return str(self.value_)
@@ -244,6 +244,10 @@ cdef class TAG_String(BaseImmutableTag):
         def removesuffix(self, suffix: str) -> str:
             return self.value_.removesuffix(suffix)
         removesuffix.__doc__ = str.removesuffix.__doc__
+
+    @staticmethod
+    def maketrans(self, *args, **kwargs):
+        return self.value_.maketrans(*args, **kwargs)
 
     def __len__(TAG_String self) -> int:
         return len(self.value_)

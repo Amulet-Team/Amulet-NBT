@@ -33,6 +33,10 @@ cdef class TAG_Compound(BaseMutableTag):
         return self.value_.pop(*args, **kwargs)
     pop.__doc__ = dict.pop.__doc__
     
+    def popitem(self):
+        return self.value_.popitem()
+    popitem.__doc__ = dict.popitem.__doc__
+    
     def clear(self, *args, **kwargs):
         return self.value_.clear(*args, **kwargs)
     clear.__doc__ = dict.clear.__doc__

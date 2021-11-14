@@ -32,7 +32,7 @@ cdef class TAG_Compound(BaseMutableTag):
     [
         "get",
         "pop",
-        # "popitem",  # added in python 3.9
+        "popitem",
         "clear",
         "keys",
         "values",

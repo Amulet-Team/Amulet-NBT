@@ -12,6 +12,11 @@
         "to_bytes",
     ]
 )}}
+    if sys.version_info >= (3, 8):
+        def as_integer_ratio(self):
+            return self.value_.as_integer_ratio()
+        as_integer_ratio.__doc__ = int.as_integer_ratio.__doc__
+
     def conjugate(self):
         return self.value_.conjugate()
     conjugate.__doc__ = int.conjugate.__doc__

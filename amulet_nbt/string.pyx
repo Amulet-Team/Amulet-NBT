@@ -1,6 +1,7 @@
 from typing import Iterator, Any
 from io import BytesIO
 from copy import deepcopy
+import sys
 
 from .value cimport BaseImmutableTag
 from .const cimport ID_STRING

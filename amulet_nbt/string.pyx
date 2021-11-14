@@ -19,445 +19,188 @@ cdef class TAG_String(BaseImmutableTag):
         self.value_ = str(value)
 
     def capitalize(self):
-        """
-        Return a capitalized version of the string.
-        
-        More specifically, make the first character have upper case and the rest lower
-        case.
-        """
         return self.value_.capitalize()
+    capitalize.__doc__ = str.capitalize.__doc__
     
     def casefold(self):
-        """Return a version of the string suitable for caseless comparisons."""
         return self.value_.casefold()
+    casefold.__doc__ = str.casefold.__doc__
     
     def center(self, width, fillchar=' '):
-        """
-        Return a centered string of length width.
-        
-        Padding is done using the specified fill character (default is a space).
-        """
         return self.value_.center(width, fillchar)
+    center.__doc__ = str.center.__doc__
     
     def encode(self, encoding='utf-8', errors='strict'):
-        """
-        Encode the string using the codec registered for encoding.
-        
-        encoding
-          The encoding in which to encode the string.
-        errors
-          The error handling scheme to use for encoding errors.
-          The default is 'strict' meaning that encoding errors raise a
-          UnicodeEncodeError.  Other possible values are 'ignore', 'replace' and
-          'xmlcharrefreplace' as well as any other name registered with
-          codecs.register_error that can handle UnicodeEncodeErrors.
-        """
         return self.value_.encode(encoding, errors)
+    encode.__doc__ = str.encode.__doc__
     
     def expandtabs(self, tabsize=8):
-        """
-        Return a copy where all tab characters are expanded using spaces.
-        
-        If tabsize is not given, a tab size of 8 characters is assumed.
-        """
         return self.value_.expandtabs(tabsize)
+    expandtabs.__doc__ = str.expandtabs.__doc__
     
     def isalnum(self):
-        """
-        Return True if the string is an alpha-numeric string, False otherwise.
-        
-        A string is alpha-numeric if all characters in the string are alpha-numeric and
-        there is at least one character in the string.
-        """
         return self.value_.isalnum()
+    isalnum.__doc__ = str.isalnum.__doc__
     
     def isalpha(self):
-        """
-        Return True if the string is an alphabetic string, False otherwise.
-        
-        A string is alphabetic if all characters in the string are alphabetic and there
-        is at least one character in the string.
-        """
         return self.value_.isalpha()
+    isalpha.__doc__ = str.isalpha.__doc__
     
     def isascii(self):
-        """
-        Return True if all characters in the string are ASCII, False otherwise.
-        
-        ASCII characters have code points in the range U+0000-U+007F.
-        Empty string is ASCII too.
-        """
         return self.value_.isascii()
+    isascii.__doc__ = str.isascii.__doc__
     
     def isdecimal(self):
-        """
-        Return True if the string is a decimal string, False otherwise.
-        
-        A string is a decimal string if all characters in the string are decimal and
-        there is at least one character in the string.
-        """
         return self.value_.isdecimal()
+    isdecimal.__doc__ = str.isdecimal.__doc__
     
     def isdigit(self):
-        """
-        Return True if the string is a digit string, False otherwise.
-        
-        A string is a digit string if all characters in the string are digits and there
-        is at least one character in the string.
-        """
         return self.value_.isdigit()
+    isdigit.__doc__ = str.isdigit.__doc__
     
     def isidentifier(self):
-        """
-        Return True if the string is a valid Python identifier, False otherwise.
-        
-        Call keyword.iskeyword(s) to test whether string s is a reserved identifier,
-        such as "def" or "class".
-        """
         return self.value_.isidentifier()
+    isidentifier.__doc__ = str.isidentifier.__doc__
     
     def islower(self):
-        """
-        Return True if the string is a lowercase string, False otherwise.
-        
-        A string is lowercase if all cased characters in the string are lowercase and
-        there is at least one cased character in the string.
-        """
         return self.value_.islower()
+    islower.__doc__ = str.islower.__doc__
     
     def isnumeric(self):
-        """
-        Return True if the string is a numeric string, False otherwise.
-        
-        A string is numeric if all characters in the string are numeric and there is at
-        least one character in the string.
-        """
         return self.value_.isnumeric()
+    isnumeric.__doc__ = str.isnumeric.__doc__
     
     def isprintable(self):
-        """
-        Return True if the string is printable, False otherwise.
-        
-        A string is printable if all of its characters are considered printable in
-        repr() or if it is empty.
-        """
         return self.value_.isprintable()
+    isprintable.__doc__ = str.isprintable.__doc__
     
     def isspace(self):
-        """
-        Return True if the string is a whitespace string, False otherwise.
-        
-        A string is whitespace if all characters in the string are whitespace and there
-        is at least one character in the string.
-        """
         return self.value_.isspace()
+    isspace.__doc__ = str.isspace.__doc__
     
     def istitle(self):
-        """
-        Return True if the string is a title-cased string, False otherwise.
-        
-        In a title-cased string, upper- and title-case characters may only
-        follow uncased characters and lowercase characters only cased ones.
-        """
         return self.value_.istitle()
+    istitle.__doc__ = str.istitle.__doc__
     
     def isupper(self):
-        """
-        Return True if the string is an uppercase string, False otherwise.
-        
-        A string is uppercase if all cased characters in the string are uppercase and
-        there is at least one cased character in the string.
-        """
         return self.value_.isupper()
+    isupper.__doc__ = str.isupper.__doc__
     
     def join(self, iterable):
-        """
-        Concatenate any number of strings.
-        
-        The string whose method is called is inserted in between each given string.
-        The result is returned as a new string.
-        
-        Example: '.'.join(['ab', 'pq', 'rs']) -> 'ab.pq.rs'
-        """
         return self.value_.join(iterable)
+    join.__doc__ = str.join.__doc__
     
     def ljust(self, width, fillchar=' '):
-        """
-        Return a left-justified string of length width.
-        
-        Padding is done using the specified fill character (default is a space).
-        """
         return self.value_.ljust(width, fillchar)
+    ljust.__doc__ = str.ljust.__doc__
     
     def lower(self):
-        """Return a copy of the string converted to lowercase."""
         return self.value_.lower()
+    lower.__doc__ = str.lower.__doc__
     
     def lstrip(self, chars=None):
-        """
-        Return a copy of the string with leading whitespace removed.
-        
-        If chars is given and not None, remove characters in chars instead.
-        """
         return self.value_.lstrip(chars)
+    lstrip.__doc__ = str.lstrip.__doc__
     
     def partition(self, sep):
-        """
-        Partition the string into three parts using the given separator.
-        
-        This will search for the separator in the string.  If the separator is found,
-        returns a 3-tuple containing the part before the separator, the separator
-        itself, and the part after it.
-        
-        If the separator is not found, returns a 3-tuple containing the original string
-        and two empty strings.
-        """
         return self.value_.partition(sep)
+    partition.__doc__ = str.partition.__doc__
     
     def removeprefix(self, prefix):
-        """
-        Return a str with the given prefix string removed if present.
-        
-        If the string starts with the prefix string, return string[len(prefix):].
-        Otherwise, return a copy of the original string.
-        """
         return self.value_.removeprefix(prefix)
+    removeprefix.__doc__ = str.removeprefix.__doc__
     
     def removesuffix(self, suffix):
-        """
-        Return a str with the given suffix string removed if present.
-        
-        If the string ends with the suffix string and that suffix is not empty,
-        return string[:-len(suffix)]. Otherwise, return a copy of the original
-        string.
-        """
         return self.value_.removesuffix(suffix)
+    removesuffix.__doc__ = str.removesuffix.__doc__
     
     def replace(self, old, new, count=-1):
-        """
-        Return a copy with all occurrences of substring old replaced by new.
-        
-          count
-            Maximum number of occurrences to replace.
-            -1 (the default value) means replace all occurrences.
-        
-        If the optional argument count is given, only the first count occurrences are
-        replaced.
-        """
         return self.value_.replace(old, new, count)
+    replace.__doc__ = str.replace.__doc__
     
     def rjust(self, width, fillchar=' '):
-        """
-        Return a right-justified string of length width.
-        
-        Padding is done using the specified fill character (default is a space).
-        """
         return self.value_.rjust(width, fillchar)
+    rjust.__doc__ = str.rjust.__doc__
     
     def rpartition(self, sep):
-        """
-        Partition the string into three parts using the given separator.
-        
-        This will search for the separator in the string, starting at the end. If
-        the separator is found, returns a 3-tuple containing the part before the
-        separator, the separator itself, and the part after it.
-        
-        If the separator is not found, returns a 3-tuple containing two empty strings
-        and the original string.
-        """
         return self.value_.rpartition(sep)
+    rpartition.__doc__ = str.rpartition.__doc__
     
     def rsplit(self, sep=None, maxsplit=-1):
-        """
-        Return a list of the words in the string, using sep as the delimiter string.
-        
-          sep
-            The delimiter according which to split the string.
-            None (the default value) means split according to any whitespace,
-            and discard empty strings from the result.
-          maxsplit
-            Maximum number of splits to do.
-            -1 (the default value) means no limit.
-        
-        Splits are done starting at the end of the string and working to the front.
-        """
         return self.value_.rsplit(sep, maxsplit)
+    rsplit.__doc__ = str.rsplit.__doc__
     
     def rstrip(self, chars=None):
-        """
-        Return a copy of the string with trailing whitespace removed.
-        
-        If chars is given and not None, remove characters in chars instead.
-        """
         return self.value_.rstrip(chars)
+    rstrip.__doc__ = str.rstrip.__doc__
     
     def split(self, sep=None, maxsplit=-1):
-        """
-        Return a list of the words in the string, using sep as the delimiter string.
-        
-        sep
-          The delimiter according which to split the string.
-          None (the default value) means split according to any whitespace,
-          and discard empty strings from the result.
-        maxsplit
-          Maximum number of splits to do.
-          -1 (the default value) means no limit.
-        """
         return self.value_.split(sep, maxsplit)
+    split.__doc__ = str.split.__doc__
     
     def splitlines(self, keepends=False):
-        """
-        Return a list of the lines in the string, breaking at line boundaries.
-        
-        Line breaks are not included in the resulting list unless keepends is given and
-        true.
-        """
         return self.value_.splitlines(keepends)
+    splitlines.__doc__ = str.splitlines.__doc__
     
     def strip(self, chars=None):
-        """
-        Return a copy of the string with leading and trailing whitespace removed.
-        
-        If chars is given and not None, remove characters in chars instead.
-        """
         return self.value_.strip(chars)
+    strip.__doc__ = str.strip.__doc__
     
     def swapcase(self):
-        """Convert uppercase characters to lowercase and lowercase characters to uppercase."""
         return self.value_.swapcase()
+    swapcase.__doc__ = str.swapcase.__doc__
     
     def title(self):
-        """
-        Return a version of the string where each word is titlecased.
-        
-        More specifically, words start with uppercased characters and all remaining
-        cased characters have lower case.
-        """
         return self.value_.title()
+    title.__doc__ = str.title.__doc__
     
     def translate(self, table):
-        """
-        Replace each character in the string using the given translation table.
-        
-          table
-            Translation table, which must be a mapping of Unicode ordinals to
-            Unicode ordinals, strings, or None.
-        
-        The table must implement lookup/indexing via __getitem__, for instance a
-        dictionary or list.  If this operation raises LookupError, the character is
-        left untouched.  Characters mapped to None are deleted.
-        """
         return self.value_.translate(table)
+    translate.__doc__ = str.translate.__doc__
     
     def upper(self):
-        """Return a copy of the string converted to uppercase."""
         return self.value_.upper()
+    upper.__doc__ = str.upper.__doc__
     
     def zfill(self, width):
-        """
-        Pad a numeric string with zeros on the left, to fill a field of the given width.
-        
-        The string is never truncated.
-        """
         return self.value_.zfill(width)
+    zfill.__doc__ = str.zfill.__doc__
     
     def count(self, *args, **kwargs):
-        """
-        S.count(sub[, start[, end]]) -> int
-        
-        Return the number of non-overlapping occurrences of substring sub in
-        string S[start:end].  Optional arguments start and end are
-        interpreted as in slice notation.
-        """
         return self.value_.count(*args, **kwargs)
+    count.__doc__ = str.count.__doc__
     
     def endswith(self, *args, **kwargs):
-        """
-        S.endswith(suffix[, start[, end]]) -> bool
-        
-        Return True if S ends with the specified suffix, False otherwise.
-        With optional start, test S beginning at that position.
-        With optional end, stop comparing S at that position.
-        suffix can also be a tuple of strings to try.
-        """
         return self.value_.endswith(*args, **kwargs)
+    endswith.__doc__ = str.endswith.__doc__
     
     def find(self, *args, **kwargs):
-        """
-        S.find(sub[, start[, end]]) -> int
-        
-        Return the lowest index in S where substring sub is found,
-        such that sub is contained within S[start:end].  Optional
-        arguments start and end are interpreted as in slice notation.
-        
-        Return -1 on failure.
-        """
         return self.value_.find(*args, **kwargs)
+    find.__doc__ = str.find.__doc__
     
     def format(self, *args, **kwargs):
-        """
-        S.format(*args, **kwargs) -> str
-        
-        Return a formatted version of S, using substitutions from args and kwargs.
-        The substitutions are identified by braces ('{' and '}').
-        """
         return self.value_.format(*args, **kwargs)
+    format.__doc__ = str.format.__doc__
     
     def format_map(self, *args, **kwargs):
-        """
-        S.format_map(mapping) -> str
-        
-        Return a formatted version of S, using substitutions from mapping.
-        The substitutions are identified by braces ('{' and '}').
-        """
         return self.value_.format_map(*args, **kwargs)
+    format_map.__doc__ = str.format_map.__doc__
     
     def index(self, *args, **kwargs):
-        """
-        S.index(sub[, start[, end]]) -> int
-        
-        Return the lowest index in S where substring sub is found,
-        such that sub is contained within S[start:end].  Optional
-        arguments start and end are interpreted as in slice notation.
-        
-        Raises ValueError when the substring is not found.
-        """
         return self.value_.index(*args, **kwargs)
+    index.__doc__ = str.index.__doc__
     
     def rfind(self, *args, **kwargs):
-        """
-        S.rfind(sub[, start[, end]]) -> int
-        
-        Return the highest index in S where substring sub is found,
-        such that sub is contained within S[start:end].  Optional
-        arguments start and end are interpreted as in slice notation.
-        
-        Return -1 on failure.
-        """
         return self.value_.rfind(*args, **kwargs)
+    rfind.__doc__ = str.rfind.__doc__
     
     def rindex(self, *args, **kwargs):
-        """
-        S.rindex(sub[, start[, end]]) -> int
-        
-        Return the highest index in S where substring sub is found,
-        such that sub is contained within S[start:end].  Optional
-        arguments start and end are interpreted as in slice notation.
-        
-        Raises ValueError when the substring is not found.
-        """
         return self.value_.rindex(*args, **kwargs)
+    rindex.__doc__ = str.rindex.__doc__
     
     def startswith(self, *args, **kwargs):
-        """
-        S.startswith(prefix[, start[, end]]) -> bool
-        
-        Return True if S starts with the specified prefix, False otherwise.
-        With optional start, test S beginning at that position.
-        With optional end, stop comparing S at that position.
-        prefix can also be a tuple of strings to try.
-        """
         return self.value_.startswith(*args, **kwargs)
+    startswith.__doc__ = str.startswith.__doc__
     
     def __str__(TAG_String self):
         return str(self.value_)

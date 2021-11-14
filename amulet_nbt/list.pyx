@@ -26,54 +26,32 @@ cdef class TAG_List(BaseMutableTag):
         self.value_ = list_value
 
     def clear(self):
-        """Remove all items from list."""
         return self.value_.clear()
+    clear.__doc__ = list.clear.__doc__
     
     def count(self, value):
-        """Return number of occurrences of value."""
         return self.value_.count(value)
+    count.__doc__ = list.count.__doc__
     
     def index(self, value, start=0, stop=9223372036854775807):
-        """
-        Return first index of value.
-        
-        Raises ValueError if the value is not present.
-        """
         return self.value_.index(value, start, stop)
+    index.__doc__ = list.index.__doc__
     
     def pop(self, index=-1):
-        """
-        Remove and return item at index (default last).
-        
-        Raises IndexError if list is empty or index is out of range.
-        """
         return self.value_.pop(index)
+    pop.__doc__ = list.pop.__doc__
     
     def remove(self, value):
-        """
-        Remove first occurrence of value.
-        
-        Raises ValueError if the value is not present.
-        """
         return self.value_.remove(value)
+    remove.__doc__ = list.remove.__doc__
     
     def reverse(self):
-        """Reverse *IN PLACE*."""
         return self.value_.reverse()
+    reverse.__doc__ = list.reverse.__doc__
     
     def sort(self, *, key=None, reverse=False):
-        """
-        Sort the list in ascending order and return None.
-        
-        The sort is in-place (i.e. the list itself is modified) and stable (i.e. the
-        order of two equal elements is maintained).
-        
-        If a key function is given, apply it once to each list item and sort them,
-        ascending or descending, according to their function values.
-        
-        The reverse flag can be set to sort in descending order.
-        """
         return self.value_.sort(key=key, reverse=reverse)
+    sort.__doc__ = list.sort.__doc__
     
     def __str__(TAG_List self):
         return str(self.value_)
@@ -200,25 +178,25 @@ cdef class TAG_List(BaseMutableTag):
         del self.value_[index]
 
     def append(TAG_List self, BaseTag value not None) -> None:
-        """Append object to the end of the list."""
         self._check_tag(value)
         self.value_.append(value)
+    append.__doc__ = list.append.__doc__
 
     def copy(TAG_List self):
         """Return a shallow copy of the class"""
         return TAG_List(self.value_.copy(), self.list_data_type)
 
     def extend(TAG_List self, object other):
-        """Extend list by appending elements from the iterable."""
         other = list(other)
         self._check_tag_iterable(other)
         self.value_.extend(other)
         return self
+    extend.__doc__ = list.extend.__doc__
 
     def insert(TAG_List self, object index, BaseTag value not None):
-        """Insert object before index."""
         self._check_tag(value)
         self.value_.insert(index, value)
+    insert.__doc__ = list.insert.__doc__
 
     def __mul__(TAG_List self, other):
         return self.value_ * other

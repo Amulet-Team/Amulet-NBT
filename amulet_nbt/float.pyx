@@ -19,37 +19,16 @@ cdef class TAG_Float(BaseFloatTag):
         self.value_ = float(value)
 
     def as_integer_ratio(self):
-        """
-        Return integer ratio.
-        
-        Return a pair of integers, whose ratio is exactly equal to the original float
-        and with a positive denominator.
-        
-        Raise OverflowError on infinities and a ValueError on NaNs.
-        
-        >>> (10.0).as_integer_ratio()
-        (10, 1)
-        >>> (0.0).as_integer_ratio()
-        (0, 1)
-        >>> (-.25).as_integer_ratio()
-        (-1, 4)
-        """
         return self.value_.as_integer_ratio()
+    as_integer_ratio.__doc__ = float.as_integer_ratio.__doc__
     
     def conjugate(self):
-        """Return self, the complex conjugate of any float."""
         return self.value_.conjugate()
+    conjugate.__doc__ = float.conjugate.__doc__
     
     def hex(self):
-        """
-        Return a hexadecimal representation of a floating-point number.
-        
-        >>> (-0.1).hex()
-        '-0x1.999999999999ap-4'
-        >>> 3.14159.hex()
-        '0x1.921f9f01b866ep+1'
-        """
         return self.value_.hex()
+    hex.__doc__ = float.hex.__doc__
     
     @property
     def imag(self):
@@ -57,8 +36,8 @@ cdef class TAG_Float(BaseFloatTag):
         return self.value_.imag
     
     def is_integer(self):
-        """Return True if the float is an integer."""
         return self.value_.is_integer()
+    is_integer.__doc__ = float.is_integer.__doc__
     
     @property
     def real(self):

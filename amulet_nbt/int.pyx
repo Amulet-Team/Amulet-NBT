@@ -91,15 +91,8 @@ cdef class TAG_Byte(BaseIntTag):
         self.value_ = self._sanitise_value(int(value))
 
     def bit_length(self):
-        """
-        Number of bits necessary to represent self in binary.
-        
-        >>> bin(37)
-        '0b100101'
-        >>> (37).bit_length()
-        6
-        """
         return self.value_.bit_length()
+    bit_length.__doc__ = int.bit_length.__doc__
     
     @property
     def denominator(self):
@@ -122,28 +115,12 @@ cdef class TAG_Byte(BaseIntTag):
         return self.value_.real
     
     def to_bytes(self, length, byteorder, *, object signed=False):
-        """
-        Return an array of bytes representing an integer.
-        
-        length
-          Length of bytes object to use.  An OverflowError is raised if the
-          integer is not representable with the given number of bytes.
-        byteorder
-          The byte order used to represent the integer.  If byteorder is 'big',
-          the most significant byte is at the beginning of the byte array.  If
-          byteorder is 'little', the most significant byte is at the end of the
-          byte array.  To request the native byte order of the host system, use
-          `sys.byteorder' as the byte order value.
-        signed
-          Determines whether two's complement is used to represent the integer.
-          If signed is False and a negative integer is given, an OverflowError
-          is raised.
-        """
         return self.value_.to_bytes(length, byteorder, signed=signed)
+    to_bytes.__doc__ = int.to_bytes.__doc__
     
     def conjugate(self):
-        """Returns self, the complex conjugate of any int."""
         return self.value_.conjugate()
+    conjugate.__doc__ = int.conjugate.__doc__
 
     def __str__(TAG_Byte self):
         return str(self.value_)
@@ -410,15 +387,8 @@ cdef class TAG_Short(BaseIntTag):
         self.value_ = self._sanitise_value(int(value))
 
     def bit_length(self):
-        """
-        Number of bits necessary to represent self in binary.
-        
-        >>> bin(37)
-        '0b100101'
-        >>> (37).bit_length()
-        6
-        """
         return self.value_.bit_length()
+    bit_length.__doc__ = int.bit_length.__doc__
     
     @property
     def denominator(self):
@@ -441,28 +411,12 @@ cdef class TAG_Short(BaseIntTag):
         return self.value_.real
     
     def to_bytes(self, length, byteorder, *, object signed=False):
-        """
-        Return an array of bytes representing an integer.
-        
-        length
-          Length of bytes object to use.  An OverflowError is raised if the
-          integer is not representable with the given number of bytes.
-        byteorder
-          The byte order used to represent the integer.  If byteorder is 'big',
-          the most significant byte is at the beginning of the byte array.  If
-          byteorder is 'little', the most significant byte is at the end of the
-          byte array.  To request the native byte order of the host system, use
-          `sys.byteorder' as the byte order value.
-        signed
-          Determines whether two's complement is used to represent the integer.
-          If signed is False and a negative integer is given, an OverflowError
-          is raised.
-        """
         return self.value_.to_bytes(length, byteorder, signed=signed)
+    to_bytes.__doc__ = int.to_bytes.__doc__
     
     def conjugate(self):
-        """Returns self, the complex conjugate of any int."""
         return self.value_.conjugate()
+    conjugate.__doc__ = int.conjugate.__doc__
 
     def __str__(TAG_Short self):
         return str(self.value_)
@@ -733,15 +687,8 @@ cdef class TAG_Int(BaseIntTag):
         self.value_ = self._sanitise_value(int(value))
 
     def bit_length(self):
-        """
-        Number of bits necessary to represent self in binary.
-        
-        >>> bin(37)
-        '0b100101'
-        >>> (37).bit_length()
-        6
-        """
         return self.value_.bit_length()
+    bit_length.__doc__ = int.bit_length.__doc__
     
     @property
     def denominator(self):
@@ -764,28 +711,12 @@ cdef class TAG_Int(BaseIntTag):
         return self.value_.real
     
     def to_bytes(self, length, byteorder, *, object signed=False):
-        """
-        Return an array of bytes representing an integer.
-        
-        length
-          Length of bytes object to use.  An OverflowError is raised if the
-          integer is not representable with the given number of bytes.
-        byteorder
-          The byte order used to represent the integer.  If byteorder is 'big',
-          the most significant byte is at the beginning of the byte array.  If
-          byteorder is 'little', the most significant byte is at the end of the
-          byte array.  To request the native byte order of the host system, use
-          `sys.byteorder' as the byte order value.
-        signed
-          Determines whether two's complement is used to represent the integer.
-          If signed is False and a negative integer is given, an OverflowError
-          is raised.
-        """
         return self.value_.to_bytes(length, byteorder, signed=signed)
+    to_bytes.__doc__ = int.to_bytes.__doc__
     
     def conjugate(self):
-        """Returns self, the complex conjugate of any int."""
         return self.value_.conjugate()
+    conjugate.__doc__ = int.conjugate.__doc__
 
     def __str__(TAG_Int self):
         return str(self.value_)
@@ -1056,15 +987,8 @@ cdef class TAG_Long(BaseIntTag):
         self.value_ = self._sanitise_value(int(value))
 
     def bit_length(self):
-        """
-        Number of bits necessary to represent self in binary.
-        
-        >>> bin(37)
-        '0b100101'
-        >>> (37).bit_length()
-        6
-        """
         return self.value_.bit_length()
+    bit_length.__doc__ = int.bit_length.__doc__
     
     @property
     def denominator(self):
@@ -1087,28 +1011,12 @@ cdef class TAG_Long(BaseIntTag):
         return self.value_.real
     
     def to_bytes(self, length, byteorder, *, object signed=False):
-        """
-        Return an array of bytes representing an integer.
-        
-        length
-          Length of bytes object to use.  An OverflowError is raised if the
-          integer is not representable with the given number of bytes.
-        byteorder
-          The byte order used to represent the integer.  If byteorder is 'big',
-          the most significant byte is at the beginning of the byte array.  If
-          byteorder is 'little', the most significant byte is at the end of the
-          byte array.  To request the native byte order of the host system, use
-          `sys.byteorder' as the byte order value.
-        signed
-          Determines whether two's complement is used to represent the integer.
-          If signed is False and a negative integer is given, an OverflowError
-          is raised.
-        """
         return self.value_.to_bytes(length, byteorder, signed=signed)
+    to_bytes.__doc__ = int.to_bytes.__doc__
     
     def conjugate(self):
-        """Returns self, the complex conjugate of any int."""
         return self.value_.conjugate()
+    conjugate.__doc__ = int.conjugate.__doc__
 
     def __str__(TAG_Long self):
         return str(self.value_)

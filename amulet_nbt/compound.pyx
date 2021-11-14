@@ -26,32 +26,28 @@ cdef class TAG_Compound(BaseMutableTag):
         self.value_ = dict_value
 
     def get(self, key, default=None):
-        """Return the value for key if key is in the dictionary, else default."""
         return self.value_.get(key, default)
+    get.__doc__ = dict.get.__doc__
     
     def pop(self, *args, **kwargs):
-        """
-        D.pop(k[,d]) -> v, remove specified key and return the corresponding value.
-        
-        If key is not found, default is returned if given, otherwise KeyError is raised
-        """
         return self.value_.pop(*args, **kwargs)
+    pop.__doc__ = dict.pop.__doc__
     
     def clear(self, *args, **kwargs):
-        """D.clear() -> None.  Remove all items from D."""
         return self.value_.clear(*args, **kwargs)
+    clear.__doc__ = dict.clear.__doc__
     
     def keys(self, *args, **kwargs):
-        """D.keys() -> a set-like object providing a view on D's keys"""
         return self.value_.keys(*args, **kwargs)
+    keys.__doc__ = dict.keys.__doc__
     
     def values(self, *args, **kwargs):
-        """D.values() -> an object providing a view on D's values"""
         return self.value_.values(*args, **kwargs)
+    values.__doc__ = dict.values.__doc__
     
     def items(self, *args, **kwargs):
-        """D.items() -> a set-like object providing a view on D's items"""
         return self.value_.items(*args, **kwargs)
+    items.__doc__ = dict.items.__doc__
     
     def __str__(TAG_Compound self):
         return str(self.value_)
@@ -95,12 +91,12 @@ cdef class TAG_Compound(BaseMutableTag):
 
     @staticmethod
     def fromkeys(object keys, BaseTag value=None):
-        """Create a new dictionary with keys from iterable and values set to value."""
         cdef dict dict_value = dict.fromkeys(keys, value)
         TAG_Compound._check_dict(dict_value)
         cdef TAG_Compound compound = TAG_Compound.__new__(TAG_Compound)
         compound.value_ = dict_value
         return compound
+    fromkeys.__func__.__doc__ = dict.fromkeys.__doc__
 
     @staticmethod
     cdef _check_dict(dict value):
@@ -182,24 +178,15 @@ cdef class TAG_Compound(BaseMutableTag):
         self.value_[key] = value
 
     def setdefault(TAG_Compound self, str key not None, BaseTag value not None):
-        """
-        Insert key with a value of default if key is not in the dictionary.
-        
-        Return the value for key if key is in the dictionary, else default.
-        """
         return self.value_.setdefault(key, value)
+    setdefault.__doc__ = dict.setdefault.__doc__
 
     def update(TAG_Compound self, object other=(), **others):
-        """
-        D.update([E, ]**F) -> None.  Update D from dict/iterable E and F.
-        If E is present and has a .keys() method, then does:  for k in E: D[k] = E[k]
-        If E is present and lacks a .keys() method, then does:  for k, v in E: D[k] = v
-        In either case, this is followed by: for k in F:  D[k] = F[k]
-        """
         cdef dict dict_other = dict(other)
         dict_other.update(others)
         TAG_Compound._check_dict(dict_other)
         self.value_.update(dict_other)
+    update.__doc__ = dict.update.__doc__
 
     def __delitem__(TAG_Compound self, str key not None):
         del self.value_[key]

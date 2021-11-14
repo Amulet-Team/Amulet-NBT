@@ -5,6 +5,7 @@ import glob
 import os
 from Cython import Tempita as tempita
 from inspect import signature, ismethod, Parameter
+import warnings
 
 ROOT_PATH = os.path.dirname(os.path.dirname(__file__))
 
@@ -28,6 +29,7 @@ BuiltInFunctionOrMethod = type(int.from_bytes)
 
 
 def get_clean_docstring(obj, indent=1):
+    warnings.warn("get_clean_docstring is depreciated", DeprecationWarning)
     indent_chr = "    " * indent
     return "\n".join(f"{indent_chr}{line}" for line in get_docstring(obj))
 
@@ -120,8 +122,8 @@ def gen_wrapper(
             code.extend(
                 (
                     f"def {attr_name}({function_inputs}):",
-                    *get_docstring(attr),
                     f"    return self.{wrapped_name}.{attr_name}({args})",
+                    f"{attr_name}.__doc__ = {wrapped_dtype.__name__}.{attr_name}.__doc__",
                     f"",
                 )
             )
@@ -132,6 +134,7 @@ def gen_wrapper(
                     f"def {attr_name}(self):",
                     *get_docstring(attr),
                     f"    return self.{wrapped_name}.{attr_name}",
+                    # f"{attr_name}.__doc__ = {wrapped_dtype.__name__}.{attr_name}.__doc__",  # https://github.com/cython/cython/issues/4466
                     f"",
                 )
             )

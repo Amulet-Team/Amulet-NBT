@@ -8,7 +8,7 @@ from .util cimport write_byte, write_int, BufferContext, read_byte, read_int
 from .load_nbt cimport load_payload
 from .dtype import AnyNBT
 from .array import BaseArrayTag
-{{py:from tools.tempita import include, gen_wrapper, get_clean_docstring}}
+{{py:from tools.tempita import include, gen_wrapper}}
 
 
 cdef class TAG_List(BaseMutableTag):
@@ -126,25 +126,25 @@ cdef class TAG_List(BaseMutableTag):
         del self.value_[index]
 
     def append(TAG_List self, BaseTag value not None) -> None:
-{{get_clean_docstring(list.append)}}
         self._check_tag(value)
         self.value_.append(value)
+    append.__doc__ = list.append.__doc__
 
     def copy(TAG_List self):
         """Return a shallow copy of the class"""
         return TAG_List(self.value_.copy(), self.list_data_type)
 
     def extend(TAG_List self, object other):
-{{get_clean_docstring(list.extend)}}
         other = list(other)
         self._check_tag_iterable(other)
         self.value_.extend(other)
         return self
+    extend.__doc__ = list.extend.__doc__
 
     def insert(TAG_List self, object index, BaseTag value not None):
-{{get_clean_docstring(list.insert)}}
         self._check_tag(value)
         self.value_.insert(index, value)
+    insert.__doc__ = list.insert.__doc__
 
     def __mul__(TAG_List self, other):
         return self.value_ * other

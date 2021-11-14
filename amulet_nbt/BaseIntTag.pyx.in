@@ -1,4 +1,4 @@
-{{py:from tools.tempita import include, gen_wrapper, get_clean_docstring}}
+{{py:from tools.tempita import include, gen_wrapper}}
 {{gen_wrapper(
     "value_",
     int,
@@ -13,8 +13,8 @@
     ]
 )}}
     def conjugate(self):
-{{get_clean_docstring(int.conjugate)}}
         return self.value_.conjugate()
+    conjugate.__doc__ = int.conjugate.__doc__
 
 {{include("amulet_nbt/BaseNumericTag.pyx.in", cls_name=cls_name)}}
 

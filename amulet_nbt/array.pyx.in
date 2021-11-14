@@ -1,5 +1,7 @@
 import numpy
 cimport numpy
+from numpy import ndarray
+from numpy cimport ndarray
 from io import BytesIO
 from copy import copy, deepcopy
 
@@ -93,12 +95,14 @@ cdef class BaseArrayTag(BaseMutableTag):
     @property
     def shape(self):
 {{get_clean_docstring(numpy.ndarray.shape)}}
-        return tuple(self.value_.shape[i] for i in range(self.value_.ndim))\
+        return tuple(self.value_.shape[i] for i in range(self.value_.ndim))
+    # shape.__doc__ = numpy.ndarray.shape.__doc__
 
     @property
     def strides(self):
 {{get_clean_docstring(numpy.ndarray.strides)}}
         return tuple(self.value_.strides[i] for i in range(self.value_.ndim))
+    # strides.__doc__ = numpy.ndarray.strides.__doc__
 
     def resize(*args, **kwargs):
         raise Exception("The TAG_Array classes are 1D arrays and cannot be resized in place. Try reshape to get a copy.")

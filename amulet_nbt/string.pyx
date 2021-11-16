@@ -111,10 +111,6 @@ cdef class TAG_String(BaseImmutableTag):
         return self.value_.isupper()
     isupper.__doc__ = str.isupper.__doc__
     
-    def join(self, iterable):
-        return self.value_.join(iterable)
-    join.__doc__ = str.join.__doc__
-    
     def ljust(self, width, fillchar=' '):
         return self.value_.ljust(width, fillchar)
     ljust.__doc__ = str.ljust.__doc__
@@ -126,10 +122,6 @@ cdef class TAG_String(BaseImmutableTag):
     def lstrip(self, chars=None):
         return self.value_.lstrip(chars)
     lstrip.__doc__ = str.lstrip.__doc__
-    
-    def partition(self, sep):
-        return self.value_.partition(sep)
-    partition.__doc__ = str.partition.__doc__
     
     def replace(self, old, new, count=-1):
         return self.value_.replace(old, new, count)
@@ -146,10 +138,6 @@ cdef class TAG_String(BaseImmutableTag):
     def rjust(self, width, fillchar=' '):
         return self.value_.rjust(width, fillchar)
     rjust.__doc__ = str.rjust.__doc__
-    
-    def rpartition(self, sep):
-        return self.value_.rpartition(sep)
-    rpartition.__doc__ = str.rpartition.__doc__
     
     def rsplit(self, sep=None, maxsplit=-1):
         return self.value_.rsplit(sep, maxsplit)
@@ -236,18 +224,28 @@ cdef class TAG_String(BaseImmutableTag):
         """
         return self.value_
 
+    def join(TAG_String self, iterable: Iterable[str]) -> str:
+        return self.value_.join([str(s) for s in iterable])
+    join.__doc__ = str.join.__doc__
+
+    def partition(TAG_String self, sep):
+        return self.value_.partition(str(sep))
+    partition.__doc__ = str.partition.__doc__
+
+    def rpartition(TAG_String self, sep):
+        return self.value_.rpartition(str(sep))
+    rpartition.__doc__ = str.rpartition.__doc__
+
     if sys.version_info >= (3, 9):
-        def removeprefix(self, prefix: str) -> str:
+        def removeprefix(TAG_String self, prefix: str) -> str:
             return self.value_.removeprefix(prefix)
         removeprefix.__doc__ = str.removeprefix.__doc__
 
-        def removesuffix(self, suffix: str) -> str:
+        def removesuffix(TAG_String self, suffix: str) -> str:
             return self.value_.removesuffix(suffix)
         removesuffix.__doc__ = str.removesuffix.__doc__
 
-    @staticmethod
-    def maketrans(self, *args, **kwargs):
-        return self.value_.maketrans(*args, **kwargs)
+    maketrans = str.maketrans
 
     def __len__(TAG_String self) -> int:
         return len(self.value_)
@@ -294,11 +292,14 @@ cdef class TAG_String(BaseImmutableTag):
             return self.__class__(res)
         return res
 
-    def __contains__(self, o: str) -> bool:
+    def __contains__(TAG_String self, o: str) -> bool:
         return o in self.value_
 
-    def __iter__(self) -> Iterator[str]:
+    def __iter__(TAG_String self) -> Iterator[str]:
         return self.value_.__iter__()
 
-    def __mod__(self, x: Any) -> str:
+    def __mod__(TAG_String self, x: Any) -> str:
         return self.value_ % x
+
+    def __int__(TAG_String self) -> int:
+        return int(self.value_)

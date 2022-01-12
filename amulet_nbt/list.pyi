@@ -6,6 +6,7 @@ from .dtype import AnyNBT
 
 class TAG_List(BaseMutableTag, list):
     tag_id: int
+    list_data_type: int
     @overload
     def __init__(self, value: Iterable[AnyNBT] = ()) -> None: ...
     @overload

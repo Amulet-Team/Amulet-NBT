@@ -6,3 +6,6 @@ cdef class TAG_List(BaseMutableTag):
 
     cdef void _check_tag(self, BaseTag value, bint fix_if_empty=*) except *
     cdef void _check_tag_iterable(self, list value) except *
+
+cdef class Named_TAG_List(TAG_List):
+    cdef public str name

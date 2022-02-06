@@ -1,4 +1,4 @@
-from typing import Iterator
+from typing import Iterator, List
 from io import BytesIO
 from copy import copy, deepcopy
 
@@ -189,3 +189,6 @@ cdef class TAG_List(BaseMutableTag):
     def __iadd__(TAG_List self, other):
         self.extend(other)
         return self
+
+
+{{include("amulet_nbt/BaseNamedTag.pyx.in", TAG_Name="TAG_List", default_type="()")}}

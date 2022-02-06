@@ -305,7 +305,7 @@ cdef class StringTag(BaseImmutableTag):
         return int(self.value_)
 
 
-cdef class Named_StringTag(StringTag):
+cdef class NamedStringTag(StringTag):
     def __init__(self, object value="", str name=""):
         super().__init__(value)
         self.name = name
@@ -340,7 +340,7 @@ cdef class Named_StringTag(StringTag):
 
     def __eq__(self, other):
         if isinstance(other, StringTag) and super().__eq__(other):
-            if isinstance(other, Named_StringTag):
+            if isinstance(other, NamedStringTag):
                 return self.name == other.name
             return True
         return False
@@ -352,13 +352,13 @@ cdef class Named_StringTag(StringTag):
         return list(set(list(super().__dir__()) + dir(self.value_)))
 
     def __copy__(self):
-        return Named_StringTag(self.value_, self.name)
+        return NamedStringTag(self.value_, self.name)
 
     def __deepcopy__(self, memodict=None):
-        return Named_StringTag(
+        return NamedStringTag(
             deepcopy(self.value),
             self.name
         )
 
     def __reduce__(self):
-        return Named_StringTag, (self.value, self.name)
+        return NamedStringTag, (self.value, self.name)

@@ -925,7 +925,7 @@ cdef class LongArrayTag(BaseArrayTag):
         return LongArrayTag(numpy.frombuffer(arr[:byte_length], dtype=data_type, count=length))
 
 
-cdef class Named_ByteArrayTag(ByteArrayTag):
+cdef class NamedByteArrayTag(ByteArrayTag):
     def __init__(self, object value=(), str name=""):
         super().__init__(value)
         self.name = name
@@ -960,7 +960,7 @@ cdef class Named_ByteArrayTag(ByteArrayTag):
 
     def __eq__(self, other):
         if isinstance(other, ByteArrayTag) and super().__eq__(other):
-            if isinstance(other, Named_ByteArrayTag):
+            if isinstance(other, NamedByteArrayTag):
                 return self.name == other.name
             return True
         return False
@@ -972,19 +972,19 @@ cdef class Named_ByteArrayTag(ByteArrayTag):
         return list(set(list(super().__dir__()) + dir(self.value_)))
 
     def __copy__(self):
-        return Named_ByteArrayTag(self.value_, self.name)
+        return NamedByteArrayTag(self.value_, self.name)
 
     def __deepcopy__(self, memodict=None):
-        return Named_ByteArrayTag(
+        return NamedByteArrayTag(
             deepcopy(self.value),
             self.name
         )
 
     def __reduce__(self):
-        return Named_ByteArrayTag, (self.value, self.name)
+        return NamedByteArrayTag, (self.value, self.name)
 
 
-cdef class Named_IntArrayTag(IntArrayTag):
+cdef class NamedIntArrayTag(IntArrayTag):
     def __init__(self, object value=(), str name=""):
         super().__init__(value)
         self.name = name
@@ -1019,7 +1019,7 @@ cdef class Named_IntArrayTag(IntArrayTag):
 
     def __eq__(self, other):
         if isinstance(other, IntArrayTag) and super().__eq__(other):
-            if isinstance(other, Named_IntArrayTag):
+            if isinstance(other, NamedIntArrayTag):
                 return self.name == other.name
             return True
         return False
@@ -1031,19 +1031,19 @@ cdef class Named_IntArrayTag(IntArrayTag):
         return list(set(list(super().__dir__()) + dir(self.value_)))
 
     def __copy__(self):
-        return Named_IntArrayTag(self.value_, self.name)
+        return NamedIntArrayTag(self.value_, self.name)
 
     def __deepcopy__(self, memodict=None):
-        return Named_IntArrayTag(
+        return NamedIntArrayTag(
             deepcopy(self.value),
             self.name
         )
 
     def __reduce__(self):
-        return Named_IntArrayTag, (self.value, self.name)
+        return NamedIntArrayTag, (self.value, self.name)
 
 
-cdef class Named_LongArrayTag(LongArrayTag):
+cdef class NamedLongArrayTag(LongArrayTag):
     def __init__(self, object value=(), str name=""):
         super().__init__(value)
         self.name = name
@@ -1078,7 +1078,7 @@ cdef class Named_LongArrayTag(LongArrayTag):
 
     def __eq__(self, other):
         if isinstance(other, LongArrayTag) and super().__eq__(other):
-            if isinstance(other, Named_LongArrayTag):
+            if isinstance(other, NamedLongArrayTag):
                 return self.name == other.name
             return True
         return False
@@ -1090,13 +1090,13 @@ cdef class Named_LongArrayTag(LongArrayTag):
         return list(set(list(super().__dir__()) + dir(self.value_)))
 
     def __copy__(self):
-        return Named_LongArrayTag(self.value_, self.name)
+        return NamedLongArrayTag(self.value_, self.name)
 
     def __deepcopy__(self, memodict=None):
-        return Named_LongArrayTag(
+        return NamedLongArrayTag(
             deepcopy(self.value),
             self.name
         )
 
     def __reduce__(self):
-        return Named_LongArrayTag, (self.value, self.name)
+        return NamedLongArrayTag, (self.value, self.name)

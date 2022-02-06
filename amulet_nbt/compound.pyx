@@ -207,7 +207,7 @@ cdef class CompoundTag(BaseMutableTag):
         return reversed(self.value_)
 
 
-cdef class Named_CompoundTag(CompoundTag):
+cdef class NamedCompoundTag(CompoundTag):
     def __init__(self, object value=(), str name=""):
         super().__init__(value)
         self.name = name
@@ -242,7 +242,7 @@ cdef class Named_CompoundTag(CompoundTag):
 
     def __eq__(self, other):
         if isinstance(other, CompoundTag) and super().__eq__(other):
-            if isinstance(other, Named_CompoundTag):
+            if isinstance(other, NamedCompoundTag):
                 return self.name == other.name
             return True
         return False
@@ -254,13 +254,13 @@ cdef class Named_CompoundTag(CompoundTag):
         return list(set(list(super().__dir__()) + dir(self.value_)))
 
     def __copy__(self):
-        return Named_CompoundTag(self.value_, self.name)
+        return NamedCompoundTag(self.value_, self.name)
 
     def __deepcopy__(self, memodict=None):
-        return Named_CompoundTag(
+        return NamedCompoundTag(
             deepcopy(self.value),
             self.name
         )
 
     def __reduce__(self):
-        return Named_CompoundTag, (self.value, self.name)
+        return NamedCompoundTag, (self.value, self.name)

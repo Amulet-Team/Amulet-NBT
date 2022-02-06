@@ -410,7 +410,7 @@ cdef class DoubleTag(BaseFloatTag):
         return tag
 
 
-cdef class Named_FloatTag(FloatTag):
+cdef class NamedFloatTag(FloatTag):
     def __init__(self, object value=0, str name=""):
         super().__init__(value)
         self.name = name
@@ -445,7 +445,7 @@ cdef class Named_FloatTag(FloatTag):
 
     def __eq__(self, other):
         if isinstance(other, FloatTag) and super().__eq__(other):
-            if isinstance(other, Named_FloatTag):
+            if isinstance(other, NamedFloatTag):
                 return self.name == other.name
             return True
         return False
@@ -457,19 +457,19 @@ cdef class Named_FloatTag(FloatTag):
         return list(set(list(super().__dir__()) + dir(self.value_)))
 
     def __copy__(self):
-        return Named_FloatTag(self.value_, self.name)
+        return NamedFloatTag(self.value_, self.name)
 
     def __deepcopy__(self, memodict=None):
-        return Named_FloatTag(
+        return NamedFloatTag(
             deepcopy(self.value),
             self.name
         )
 
     def __reduce__(self):
-        return Named_FloatTag, (self.value, self.name)
+        return NamedFloatTag, (self.value, self.name)
 
 
-cdef class Named_DoubleTag(DoubleTag):
+cdef class NamedDoubleTag(DoubleTag):
     def __init__(self, object value=0, str name=""):
         super().__init__(value)
         self.name = name
@@ -504,7 +504,7 @@ cdef class Named_DoubleTag(DoubleTag):
 
     def __eq__(self, other):
         if isinstance(other, DoubleTag) and super().__eq__(other):
-            if isinstance(other, Named_DoubleTag):
+            if isinstance(other, NamedDoubleTag):
                 return self.name == other.name
             return True
         return False
@@ -516,13 +516,13 @@ cdef class Named_DoubleTag(DoubleTag):
         return list(set(list(super().__dir__()) + dir(self.value_)))
 
     def __copy__(self):
-        return Named_DoubleTag(self.value_, self.name)
+        return NamedDoubleTag(self.value_, self.name)
 
     def __deepcopy__(self, memodict=None):
-        return Named_DoubleTag(
+        return NamedDoubleTag(
             deepcopy(self.value),
             self.name
         )
 
     def __reduce__(self):
-        return Named_DoubleTag, (self.value, self.name)
+        return NamedDoubleTag, (self.value, self.name)

@@ -1297,7 +1297,7 @@ cdef class LongTag(BaseIntTag):
         return tag
 
 
-cdef class Named_ByteTag(ByteTag):
+cdef class NamedByteTag(ByteTag):
     def __init__(self, object value=0, str name=""):
         super().__init__(value)
         self.name = name
@@ -1332,7 +1332,7 @@ cdef class Named_ByteTag(ByteTag):
 
     def __eq__(self, other):
         if isinstance(other, ByteTag) and super().__eq__(other):
-            if isinstance(other, Named_ByteTag):
+            if isinstance(other, NamedByteTag):
                 return self.name == other.name
             return True
         return False
@@ -1344,19 +1344,19 @@ cdef class Named_ByteTag(ByteTag):
         return list(set(list(super().__dir__()) + dir(self.value_)))
 
     def __copy__(self):
-        return Named_ByteTag(self.value_, self.name)
+        return NamedByteTag(self.value_, self.name)
 
     def __deepcopy__(self, memodict=None):
-        return Named_ByteTag(
+        return NamedByteTag(
             deepcopy(self.value),
             self.name
         )
 
     def __reduce__(self):
-        return Named_ByteTag, (self.value, self.name)
+        return NamedByteTag, (self.value, self.name)
 
 
-cdef class Named_ShortTag(ShortTag):
+cdef class NamedShortTag(ShortTag):
     def __init__(self, object value=0, str name=""):
         super().__init__(value)
         self.name = name
@@ -1391,7 +1391,7 @@ cdef class Named_ShortTag(ShortTag):
 
     def __eq__(self, other):
         if isinstance(other, ShortTag) and super().__eq__(other):
-            if isinstance(other, Named_ShortTag):
+            if isinstance(other, NamedShortTag):
                 return self.name == other.name
             return True
         return False
@@ -1403,19 +1403,19 @@ cdef class Named_ShortTag(ShortTag):
         return list(set(list(super().__dir__()) + dir(self.value_)))
 
     def __copy__(self):
-        return Named_ShortTag(self.value_, self.name)
+        return NamedShortTag(self.value_, self.name)
 
     def __deepcopy__(self, memodict=None):
-        return Named_ShortTag(
+        return NamedShortTag(
             deepcopy(self.value),
             self.name
         )
 
     def __reduce__(self):
-        return Named_ShortTag, (self.value, self.name)
+        return NamedShortTag, (self.value, self.name)
 
 
-cdef class Named_IntTag(IntTag):
+cdef class NamedIntTag(IntTag):
     def __init__(self, object value=0, str name=""):
         super().__init__(value)
         self.name = name
@@ -1450,7 +1450,7 @@ cdef class Named_IntTag(IntTag):
 
     def __eq__(self, other):
         if isinstance(other, IntTag) and super().__eq__(other):
-            if isinstance(other, Named_IntTag):
+            if isinstance(other, NamedIntTag):
                 return self.name == other.name
             return True
         return False
@@ -1462,19 +1462,19 @@ cdef class Named_IntTag(IntTag):
         return list(set(list(super().__dir__()) + dir(self.value_)))
 
     def __copy__(self):
-        return Named_IntTag(self.value_, self.name)
+        return NamedIntTag(self.value_, self.name)
 
     def __deepcopy__(self, memodict=None):
-        return Named_IntTag(
+        return NamedIntTag(
             deepcopy(self.value),
             self.name
         )
 
     def __reduce__(self):
-        return Named_IntTag, (self.value, self.name)
+        return NamedIntTag, (self.value, self.name)
 
 
-cdef class Named_LongTag(LongTag):
+cdef class NamedLongTag(LongTag):
     def __init__(self, object value=0, str name=""):
         super().__init__(value)
         self.name = name
@@ -1509,7 +1509,7 @@ cdef class Named_LongTag(LongTag):
 
     def __eq__(self, other):
         if isinstance(other, LongTag) and super().__eq__(other):
-            if isinstance(other, Named_LongTag):
+            if isinstance(other, NamedLongTag):
                 return self.name == other.name
             return True
         return False
@@ -1521,13 +1521,13 @@ cdef class Named_LongTag(LongTag):
         return list(set(list(super().__dir__()) + dir(self.value_)))
 
     def __copy__(self):
-        return Named_LongTag(self.value_, self.name)
+        return NamedLongTag(self.value_, self.name)
 
     def __deepcopy__(self, memodict=None):
-        return Named_LongTag(
+        return NamedLongTag(
             deepcopy(self.value),
             self.name
         )
 
     def __reduce__(self):
-        return Named_LongTag, (self.value, self.name)
+        return NamedLongTag, (self.value, self.name)

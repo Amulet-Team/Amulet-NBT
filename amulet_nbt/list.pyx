@@ -243,7 +243,7 @@ cdef class ListTag(BaseMutableTag):
         return self
 
 
-cdef class Named_ListTag(ListTag):
+cdef class NamedListTag(ListTag):
     def __init__(self, object value=(), str name=""):
         super().__init__(value)
         self.name = name
@@ -278,7 +278,7 @@ cdef class Named_ListTag(ListTag):
 
     def __eq__(self, other):
         if isinstance(other, ListTag) and super().__eq__(other):
-            if isinstance(other, Named_ListTag):
+            if isinstance(other, NamedListTag):
                 return self.name == other.name
             return True
         return False
@@ -290,13 +290,13 @@ cdef class Named_ListTag(ListTag):
         return list(set(list(super().__dir__()) + dir(self.value_)))
 
     def __copy__(self):
-        return Named_ListTag(self.value_, self.name)
+        return NamedListTag(self.value_, self.name)
 
     def __deepcopy__(self, memodict=None):
-        return Named_ListTag(
+        return NamedListTag(
             deepcopy(self.value),
             self.name
         )
 
     def __reduce__(self):
-        return Named_ListTag, (self.value, self.name)
+        return NamedListTag, (self.value, self.name)

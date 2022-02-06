@@ -1,5 +1,11 @@
 # Base Types
-from .value import BaseTag, BaseImmutableTag, BaseMutableTag, BaseValueType
+from .value import (
+    BaseTag,
+    BaseNamedTag,
+    BaseImmutableTag,
+    BaseMutableTag,
+    BaseValueType,
+)
 from .numeric import BaseNumericTag
 
 # Types

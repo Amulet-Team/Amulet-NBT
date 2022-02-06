@@ -59,7 +59,7 @@ class FileNBTTests(unittest.TestCase):
                     print(group1, path1)
                     raise e_
                 self.assertIsInstance(data, amulet_nbt.NBTFile)
-                self.assertIsInstance(data.value, amulet_nbt.TAG_Compound)
+                self.assertIsInstance(data.value, amulet_nbt.CompoundTag)
                 group_data.setdefault(name, {})[group1] = data
 
         # compare to all the other loaded data

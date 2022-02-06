@@ -5,87 +5,87 @@ from amulet_nbt import (
     BaseImmutableTag,
     BaseNumericTag,
     BaseIntTag,
-    TAG_Byte,
-    TAG_Short,
-    TAG_Int,
-    TAG_Long,
+    ByteTag,
+    ShortTag,
+    IntTag,
+    LongTag,
     BaseFloatTag,
-    TAG_Float,
-    TAG_Double,
-    TAG_String,
-    TAG_List,
-    TAG_Compound,
+    FloatTag,
+    DoubleTag,
+    StringTag,
+    ListTag,
+    CompoundTag,
     BaseArrayTag,
-    TAG_Byte_Array,
-    TAG_Int_Array,
-    TAG_Long_Array,
+    ByteArrayTag,
+    IntArrayTag,
+    LongArrayTag,
 )
 
 
 class TestIsInstance(unittest.TestCase):
     def test_is_instance(self):
-        self.assertIsInstance(TAG_Byte(), BaseTag)
-        self.assertIsInstance(TAG_Byte(), BaseImmutableTag)
-        self.assertIsInstance(TAG_Byte(), BaseNumericTag)
-        self.assertIsInstance(TAG_Byte(), BaseIntTag)
-        self.assertIsInstance(TAG_Byte(), TAG_Byte)
+        self.assertIsInstance(ByteTag(), BaseTag)
+        self.assertIsInstance(ByteTag(), BaseImmutableTag)
+        self.assertIsInstance(ByteTag(), BaseNumericTag)
+        self.assertIsInstance(ByteTag(), BaseIntTag)
+        self.assertIsInstance(ByteTag(), ByteTag)
 
-        self.assertIsInstance(TAG_Short(), BaseTag)
-        self.assertIsInstance(TAG_Short(), BaseImmutableTag)
-        self.assertIsInstance(TAG_Short(), BaseNumericTag)
-        self.assertIsInstance(TAG_Short(), BaseIntTag)
-        self.assertIsInstance(TAG_Short(), TAG_Short)
+        self.assertIsInstance(ShortTag(), BaseTag)
+        self.assertIsInstance(ShortTag(), BaseImmutableTag)
+        self.assertIsInstance(ShortTag(), BaseNumericTag)
+        self.assertIsInstance(ShortTag(), BaseIntTag)
+        self.assertIsInstance(ShortTag(), ShortTag)
 
-        self.assertIsInstance(TAG_Int(), BaseTag)
-        self.assertIsInstance(TAG_Int(), BaseImmutableTag)
-        self.assertIsInstance(TAG_Int(), BaseNumericTag)
-        self.assertIsInstance(TAG_Int(), BaseIntTag)
-        self.assertIsInstance(TAG_Int(), TAG_Int)
+        self.assertIsInstance(IntTag(), BaseTag)
+        self.assertIsInstance(IntTag(), BaseImmutableTag)
+        self.assertIsInstance(IntTag(), BaseNumericTag)
+        self.assertIsInstance(IntTag(), BaseIntTag)
+        self.assertIsInstance(IntTag(), IntTag)
 
-        self.assertIsInstance(TAG_Long(), BaseTag)
-        self.assertIsInstance(TAG_Long(), BaseImmutableTag)
-        self.assertIsInstance(TAG_Long(), BaseNumericTag)
-        self.assertIsInstance(TAG_Long(), BaseIntTag)
-        self.assertIsInstance(TAG_Long(), TAG_Long)
+        self.assertIsInstance(LongTag(), BaseTag)
+        self.assertIsInstance(LongTag(), BaseImmutableTag)
+        self.assertIsInstance(LongTag(), BaseNumericTag)
+        self.assertIsInstance(LongTag(), BaseIntTag)
+        self.assertIsInstance(LongTag(), LongTag)
 
-        self.assertIsInstance(TAG_Float(), BaseTag)
-        self.assertIsInstance(TAG_Float(), BaseImmutableTag)
-        self.assertIsInstance(TAG_Float(), BaseNumericTag)
-        self.assertIsInstance(TAG_Float(), BaseFloatTag)
-        self.assertIsInstance(TAG_Float(), TAG_Float)
+        self.assertIsInstance(FloatTag(), BaseTag)
+        self.assertIsInstance(FloatTag(), BaseImmutableTag)
+        self.assertIsInstance(FloatTag(), BaseNumericTag)
+        self.assertIsInstance(FloatTag(), BaseFloatTag)
+        self.assertIsInstance(FloatTag(), FloatTag)
 
-        self.assertIsInstance(TAG_Double(), BaseTag)
-        self.assertIsInstance(TAG_Double(), BaseImmutableTag)
-        self.assertIsInstance(TAG_Double(), BaseNumericTag)
-        self.assertIsInstance(TAG_Double(), BaseFloatTag)
-        self.assertIsInstance(TAG_Double(), TAG_Double)
+        self.assertIsInstance(DoubleTag(), BaseTag)
+        self.assertIsInstance(DoubleTag(), BaseImmutableTag)
+        self.assertIsInstance(DoubleTag(), BaseNumericTag)
+        self.assertIsInstance(DoubleTag(), BaseFloatTag)
+        self.assertIsInstance(DoubleTag(), DoubleTag)
 
-        self.assertIsInstance(TAG_String(), BaseTag)
-        self.assertIsInstance(TAG_String(), BaseImmutableTag)
-        self.assertIsInstance(TAG_String(), TAG_String)
+        self.assertIsInstance(StringTag(), BaseTag)
+        self.assertIsInstance(StringTag(), BaseImmutableTag)
+        self.assertIsInstance(StringTag(), StringTag)
 
-        self.assertIsInstance(TAG_List(), BaseTag)
-        self.assertIsInstance(TAG_List(), BaseMutableTag)
-        self.assertIsInstance(TAG_List(), TAG_List)
+        self.assertIsInstance(ListTag(), BaseTag)
+        self.assertIsInstance(ListTag(), BaseMutableTag)
+        self.assertIsInstance(ListTag(), ListTag)
 
-        self.assertIsInstance(TAG_Compound(), BaseTag)
-        self.assertIsInstance(TAG_Compound(), BaseMutableTag)
-        self.assertIsInstance(TAG_Compound(), TAG_Compound)
+        self.assertIsInstance(CompoundTag(), BaseTag)
+        self.assertIsInstance(CompoundTag(), BaseMutableTag)
+        self.assertIsInstance(CompoundTag(), CompoundTag)
 
-        self.assertIsInstance(TAG_Byte_Array(), BaseTag)
-        self.assertIsInstance(TAG_Byte_Array(), BaseMutableTag)
-        self.assertIsInstance(TAG_Byte_Array(), BaseArrayTag)
-        self.assertIsInstance(TAG_Byte_Array(), TAG_Byte_Array)
+        self.assertIsInstance(ByteArrayTag(), BaseTag)
+        self.assertIsInstance(ByteArrayTag(), BaseMutableTag)
+        self.assertIsInstance(ByteArrayTag(), BaseArrayTag)
+        self.assertIsInstance(ByteArrayTag(), ByteArrayTag)
 
-        self.assertIsInstance(TAG_Int_Array(), BaseTag)
-        self.assertIsInstance(TAG_Int_Array(), BaseMutableTag)
-        self.assertIsInstance(TAG_Int_Array(), BaseArrayTag)
-        self.assertIsInstance(TAG_Int_Array(), TAG_Int_Array)
+        self.assertIsInstance(IntArrayTag(), BaseTag)
+        self.assertIsInstance(IntArrayTag(), BaseMutableTag)
+        self.assertIsInstance(IntArrayTag(), BaseArrayTag)
+        self.assertIsInstance(IntArrayTag(), IntArrayTag)
 
-        self.assertIsInstance(TAG_Long_Array(), BaseTag)
-        self.assertIsInstance(TAG_Long_Array(), BaseMutableTag)
-        self.assertIsInstance(TAG_Long_Array(), BaseArrayTag)
-        self.assertIsInstance(TAG_Long_Array(), TAG_Long_Array)
+        self.assertIsInstance(LongArrayTag(), BaseTag)
+        self.assertIsInstance(LongArrayTag(), BaseMutableTag)
+        self.assertIsInstance(LongArrayTag(), BaseArrayTag)
+        self.assertIsInstance(LongArrayTag(), LongArrayTag)
 
 
 if __name__ == "__main__":

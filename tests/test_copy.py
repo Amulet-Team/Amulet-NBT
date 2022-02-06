@@ -4,20 +4,20 @@ import numpy
 from amulet_nbt import (
     BaseTag,
     BaseIntTag,
-    TAG_Byte,
-    TAG_Short,
-    TAG_Int,
+    ByteTag,
+    ShortTag,
+    IntTag,
     BaseFloatTag,
-    TAG_Long,
-    TAG_Float,
-    TAG_Double,
+    LongTag,
+    FloatTag,
+    DoubleTag,
     BaseArrayTag,
-    TAG_Byte_Array,
-    TAG_Int_Array,
-    TAG_Long_Array,
-    TAG_String,
-    TAG_List,
-    TAG_Compound,
+    ByteArrayTag,
+    IntArrayTag,
+    LongArrayTag,
+    StringTag,
+    ListTag,
+    CompoundTag,
     NBTFile,
 )
 
@@ -65,12 +65,12 @@ class CopyNBTTests(unittest.TestCase):
             self.assertEqual(obj.value, obj_deepcopy.value)
 
         # Check if the values are the same
-        if isinstance(obj, (BaseFloatTag, BaseArrayTag, TAG_List, TAG_Compound)):
+        if isinstance(obj, (BaseFloatTag, BaseArrayTag, ListTag, CompoundTag)):
             # some tags always create copies
             self.assertIsNot(obj.value, obj_copy.value)
             self.assertIsNot(obj.value, obj_copy2.value)
             self.assertIsNot(obj.value, obj_deepcopy.value)
-        elif isinstance(obj, (BaseIntTag, TAG_String)):
+        elif isinstance(obj, (BaseIntTag, StringTag)):
             # python does some caching
             self.assertIs(obj.value, obj_copy.value)
             self.assertIs(obj.value, obj_copy2.value)
@@ -81,18 +81,18 @@ class CopyNBTTests(unittest.TestCase):
             self.assertIsNot(obj.value, obj_deepcopy.value)
 
     def test_copy(self):
-        self._test_copy(TAG_Byte(10))
-        self._test_copy(TAG_Short(10))
-        self._test_copy(TAG_Int(10))
-        self._test_copy(TAG_Long(10))
-        self._test_copy(TAG_Float(10))
-        self._test_copy(TAG_Double(10))
-        self._test_copy(TAG_Byte_Array([1, 2, 3]))
-        self._test_copy(TAG_String())
-        self._test_copy(TAG_List())
-        self._test_copy(TAG_Compound())
-        self._test_copy(TAG_Int_Array([1, 2, 3]))
-        self._test_copy(TAG_Long_Array([1, 2, 3]))
+        self._test_copy(ByteTag(10))
+        self._test_copy(ShortTag(10))
+        self._test_copy(IntTag(10))
+        self._test_copy(LongTag(10))
+        self._test_copy(FloatTag(10))
+        self._test_copy(DoubleTag(10))
+        self._test_copy(ByteArrayTag([1, 2, 3]))
+        self._test_copy(StringTag())
+        self._test_copy(ListTag())
+        self._test_copy(CompoundTag())
+        self._test_copy(IntArrayTag([1, 2, 3]))
+        self._test_copy(LongArrayTag([1, 2, 3]))
         self._test_copy(NBTFile())
 
 

@@ -6,28 +6,28 @@ This is here in case that data needs to be recreated in the future.
 from typing import Tuple, Type, Any, Iterable
 from amulet_nbt import (
     BaseTag,
-    TAG_Byte,
-    TAG_Short,
-    TAG_Int,
-    TAG_Long,
-    TAG_Float,
-    TAG_Double,
-    TAG_Byte_Array,
-    TAG_Int_Array,
-    TAG_Long_Array,
-    TAG_String,
-    TAG_List,
-    TAG_Compound,
+    ByteTag,
+    ShortTag,
+    IntTag,
+    LongTag,
+    FloatTag,
+    DoubleTag,
+    ByteArrayTag,
+    IntArrayTag,
+    LongArrayTag,
+    StringTag,
+    ListTag,
+    CompoundTag,
     NBTFile,
 )
 
 names = ("", "name")
 tags: Tuple[Tuple[Tuple[Type[BaseTag], ...], Tuple[Any, ...]], ...] = (
-    ((TAG_Byte, TAG_Short, TAG_Int, TAG_Long, TAG_Float, TAG_Double), (5, -5)),
-    ((TAG_Byte_Array, TAG_Int_Array, TAG_Long_Array), ([], [5, 6, 7], [-5, -6, -7])),
-    ((TAG_String,), ("value",)),
-    ((TAG_List,), ([],)),
-    ((TAG_Compound,), ({},)),
+    ((ByteTag, ShortTag, IntTag, LongTag, FloatTag, DoubleTag), (5, -5)),
+    ((ByteArrayTag, IntArrayTag, LongArrayTag), ([], [5, 6, 7], [-5, -6, -7])),
+    ((StringTag,), ("value",)),
+    ((ListTag,), ([],)),
+    ((CompoundTag,), ({},)),
 )
 
 
@@ -55,9 +55,9 @@ def gen_data() -> Iterable[BaseTag]:
 def gen_data_all() -> Iterable[BaseTag]:
     yield from gen_data()
     for data in gen_data():
-        yield TAG_List([data])
+        yield ListTag([data])
     for data in gen_data():
-        yield TAG_Compound({"key": data})
+        yield CompoundTag({"key": data})
 
 
 def main():

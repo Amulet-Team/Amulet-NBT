@@ -2,18 +2,18 @@ from typing import List, Tuple
 from dataclasses import dataclass
 
 from amulet_nbt import (
-    TAG_Byte,
-    TAG_Short,
-    TAG_Int,
-    TAG_Long,
-    TAG_Float,
-    TAG_Double,
-    TAG_Byte_Array,
-    TAG_Int_Array,
-    TAG_Long_Array,
-    TAG_String,
-    TAG_List,
-    TAG_Compound,
+    ByteTag,
+    ShortTag,
+    IntTag,
+    LongTag,
+    FloatTag,
+    DoubleTag,
+    ByteArrayTag,
+    IntArrayTag,
+    LongArrayTag,
+    StringTag,
+    ListTag,
+    CompoundTag,
     NBTFile,
 )
 
@@ -30,7 +30,7 @@ class Bin:
 
 binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
     (
-        NBTFile(TAG_Byte(5), ""),
+        NBTFile(ByteTag(5), ""),
         b"\x01\x00\x00\x05",
         b"\x01\x00\x00\x05",
         b"\x1f\x8b\x08\x00)\x83va\x02\xffcd``\x05\x00\xf6L\x92\xe9\x04\x00\x00\x00",
@@ -38,7 +38,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "5b",
     ),
     (
-        NBTFile(TAG_Byte(-5), ""),
+        NBTFile(ByteTag(-5), ""),
         b"\x01\x00\x00\xfb",
         b"\x01\x00\x00\xfb",
         b"\x1f\x8b\x08\x00)\x83va\x02\xffcd`\xf8\r\x00\xed\x93\x97\xb3\x04\x00\x00\x00",
@@ -46,7 +46,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "-5b",
     ),
     (
-        NBTFile(TAG_Short(5), ""),
+        NBTFile(ShortTag(5), ""),
         b"\x02\x00\x00\x00\x05",
         b"\x02\x00\x00\x05\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xffcb```\x05\x00\xf2P\x88\xcc\x05\x00\x00\x00",
@@ -54,7 +54,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "5s",
     ),
     (
-        NBTFile(TAG_Short(-5), ""),
+        NBTFile(ShortTag(-5), ""),
         b"\x02\x00\x00\xff\xfb",
         b"\x02\x00\x00\xfb\xff",
         b"\x1f\x8b\x08\x00)\x83va\x02\xffcb`\xf8\xff\x1b\x00\x9br\xa9\x05\x05\x00\x00\x00",
@@ -62,7 +62,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "-5s",
     ),
     (
-        NBTFile(TAG_Int(5), ""),
+        NBTFile(IntTag(5), ""),
         b"\x03\x00\x00\x00\x00\x00\x05",
         b"\x03\x00\x00\x05\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xffcf\x00\x01V\x00l1\xee\xdc\x07\x00\x00\x00",
@@ -70,7 +70,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "5",
     ),
     (
-        NBTFile(TAG_Int(-5), ""),
+        NBTFile(IntTag(-5), ""),
         b"\x03\x00\x00\xff\xff\xff\xfb",
         b"\x03\x00\x00\xfb\xff\xff\xff",
         b"\x1f\x8b\x08\x00)\x83va\x02\xffcf`\xf8\xff\xff\xffo\x00\x19!Ru\x07\x00\x00\x00",
@@ -78,7 +78,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "-5",
     ),
     (
-        NBTFile(TAG_Long(5), ""),
+        NBTFile(LongTag(5), ""),
         b"\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x05",
         b"\x04\x00\x00\x05\x00\x00\x00\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xffca\x80\x01V\x00\xe164\xab\x0b\x00\x00\x00",
@@ -86,7 +86,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "5L",
     ),
     (
-        NBTFile(TAG_Long(-5), ""),
+        NBTFile(LongTag(-5), ""),
         b"\x04\x00\x00\xff\xff\xff\xff\xff\xff\xff\xfb",
         b"\x04\x00\x00\xfb\xff\xff\xff\xff\xff\xff\xff",
         b"\x1f\x8b\x08\x00)\x83va\x02\xffca`\xf8\x0f\x01\xbf\x01\x02\x06U\x98\x0b\x00\x00\x00",
@@ -94,7 +94,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "-5L",
     ),
     (
-        NBTFile(TAG_Float(5.0), ""),
+        NBTFile(FloatTag(5.0), ""),
         b"\x05\x00\x00@\xa0\x00\x00",
         b"\x05\x00\x00\x00\x00\xa0@",
         b"\x1f\x8b\x08\x00)\x83va\x02\xffce`pX\xc0\xc0\x00\x00\x84\xf58\x8d\x07\x00\x00\x00",
@@ -102,7 +102,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "5.0f",
     ),
     (
-        NBTFile(TAG_Float(-5.0), ""),
+        NBTFile(FloatTag(-5.0), ""),
         b"\x05\x00\x00\xc0\xa0\x00\x00",
         b"\x05\x00\x00\x00\x00\xa0\xc0",
         b"\x1f\x8b\x08\x00)\x83va\x02\xffce`8\xb0\x80\x81\x01\x00\xbfCa`\x07\x00\x00\x00",
@@ -110,7 +110,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "-5.0f",
     ),
     (
-        NBTFile(TAG_Double(5.0), ""),
+        NBTFile(DoubleTag(5.0), ""),
         b"\x06\x00\x00@\x14\x00\x00\x00\x00\x00\x00",
         b"\x06\x00\x00\x00\x00\x00\x00\x00\x00\x14@",
         b"\x1f\x8b\x08\x00)\x83va\x02\xffcc`p\x10a\x00\x03\x00\x9f\x01>9\x0b\x00\x00\x00",
@@ -118,7 +118,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "5.0d",
     ),
     (
-        NBTFile(TAG_Double(-5.0), ""),
+        NBTFile(DoubleTag(-5.0), ""),
         b"\x06\x00\x00\xc0\x14\x00\x00\x00\x00\x00\x00",
         b"\x06\x00\x00\x00\x00\x00\x00\x00\x00\x14\xc0",
         b"\x1f\x8b\x08\x00)\x83va\x02\xffcc`8 \xc2\x00\x06\x00E\x84\x05j\x0b\x00\x00\x00",
@@ -126,7 +126,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "-5.0d",
     ),
     (
-        NBTFile(TAG_Byte_Array([]), ""),
+        NBTFile(ByteArrayTag([]), ""),
         b"\x07\x00\x00\x00\x00\x00\x00",
         b"\x07\x00\x00\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xffcg\x00\x03\x00\xf0\xe1\xcbX\x07\x00\x00\x00",
@@ -134,7 +134,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[B;]",
     ),
     (
-        NBTFile(TAG_Byte_Array([5, 6, 7]), ""),
+        NBTFile(ByteArrayTag([5, 6, 7]), ""),
         b"\x07\x00\x00\x00\x00\x00\x03\x05\x06\x07",
         b"\x07\x00\x00\x03\x00\x00\x00\x05\x06\x07",
         b"\x1f\x8b\x08\x00)\x83va\x02\xffcg\x00\x01fV6v\x00/,\x16\xdd\n\x00\x00\x00",
@@ -142,7 +142,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[B;5B, 6B, 7B]",
     ),
     (
-        NBTFile(TAG_Byte_Array([-5, -6, -7]), ""),
+        NBTFile(ByteArrayTag([-5, -6, -7]), ""),
         b"\x07\x00\x00\x00\x00\x00\x03\xfb\xfa\xf9",
         b"\x07\x00\x00\x03\x00\x00\x00\xfb\xfa\xf9",
         b"\x1f\x8b\x08\x00)\x83va\x02\xffcg\x00\x01\xe6\xdf\xbf~\x02\x00_\x03@\x80\n\x00\x00\x00",
@@ -150,7 +150,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[B;-5B, -6B, -7B]",
     ),
     (
-        NBTFile(TAG_Int_Array([]), ""),
+        NBTFile(IntArrayTag([]), ""),
         b"\x0b\x00\x00\x00\x00\x00\x00",
         b"\x0b\x00\x00\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3f\x00\x03\x00\x84\x8bk\x9f\x07\x00\x00\x00",
@@ -158,7 +158,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[I;]",
     ),
     (
-        NBTFile(TAG_Int_Array([5, 6, 7]), ""),
+        NBTFile(IntArrayTag([5, 6, 7]), ""),
         b"\x0b\x00\x00\x00\x00\x00\x03\x00\x00\x00\x05\x00\x00\x00\x06\x00\x00\x00\x07",
         b"\x0b\x00\x00\x03\x00\x00\x00\x05\x00\x00\x00\x06\x00\x00\x00\x07\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3f\x00\x01f f\x05b6 f\x07\x00\xc1\x1b\x86\x96\x13\x00\x00\x00",
@@ -166,7 +166,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[I;5, 6, 7]",
     ),
     (
-        NBTFile(TAG_Int_Array([-5, -6, -7]), ""),
+        NBTFile(IntArrayTag([-5, -6, -7]), ""),
         b"\x0b\x00\x00\x00\x00\x00\x03\xff\xff\xff\xfb\xff\xff\xff\xfa\xff\xff\xff\xf9",
         b"\x0b\x00\x00\x03\x00\x00\x00\xfb\xff\xff\xff\xfa\xff\xff\xff\xf9\xff\xff\xff",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3f\x00\x01\xe6\xff\xff\xff\xff\x06\xe2_@\xfc\x13\x00!|\x16q\x13\x00\x00\x00",
@@ -174,7 +174,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[I;-5, -6, -7]",
     ),
     (
-        NBTFile(TAG_Long_Array([]), ""),
+        NBTFile(LongArrayTag([]), ""),
         b"\x0c\x00\x00\x00\x00\x00\x00",
         b"\x0c\x00\x00\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3a\x00\x03\x00\n\xb5\xccZ\x07\x00\x00\x00",
@@ -182,7 +182,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[L;]",
     ),
     (
-        NBTFile(TAG_Long_Array([5, 6, 7]), ""),
+        NBTFile(LongArrayTag([5, 6, 7]), ""),
         b"\x0c\x00\x00\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00\x05\x00\x00\x00\x00\x00\x00\x00\x06\x00\x00\x00\x00\x00\x00\x00\x07",
         b"\x0c\x00\x00\x03\x00\x00\x00\x05\x00\x00\x00\x00\x00\x00\x00\x06\x00\x00\x00\x00\x00\x00\x00\x07\x00\x00\x00\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3a\x00\x01f\x06\x08`\x85\xd2lP\x9a\x1d\x00\x8a\xff\x94\t\x1f\x00\x00\x00",
@@ -190,7 +190,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[L;5L, 6L, 7L]",
     ),
     (
-        NBTFile(TAG_Long_Array([-5, -6, -7]), ""),
+        NBTFile(LongArrayTag([-5, -6, -7]), ""),
         b"\x0c\x00\x00\x00\x00\x00\x03\xff\xff\xff\xff\xff\xff\xff\xfb\xff\xff\xff\xff\xff\xff\xff\xfa\xff\xff\xff\xff\xff\xff\xff\xf9",
         b"\x0c\x00\x00\x03\x00\x00\x00\xfb\xff\xff\xff\xff\xff\xff\xff\xfa\xff\xff\xff\xff\xff\xff\xff\xf9\xff\xff\xff\xff\xff\xff\xff",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3a\x00\x01\xe6\xff\x10\xf0\x1bJ\xff\x82\xd2?\x01x\xe4\xa4\xbf\x1f\x00\x00\x00",
@@ -198,7 +198,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[L;-5L, -6L, -7L]",
     ),
     (
-        NBTFile(TAG_String("value"), ""),
+        NBTFile(StringTag("value"), ""),
         b"\x08\x00\x00\x00\x05value",
         b"\x08\x00\x00\x05\x00value",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3````-K\xcc)M\x05\x00\x18\x16\xc5{\n\x00\x00\x00",
@@ -206,7 +206,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         '"value"',
     ),
     (
-        NBTFile(TAG_List([], 1), ""),
+        NBTFile(ListTag([], 1), ""),
         b"\t\x00\x00\x01\x00\x00\x00\x00",
         b"\t\x00\x00\x01\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d``d\x00\x02\x00\xf2\xed\rG\x08\x00\x00\x00",
@@ -214,7 +214,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[]",
     ),
     (
-        NBTFile(TAG_Compound({}), ""),
+        NBTFile(CompoundTag({}), ""),
         b"\n\x00\x00\x00",
         b"\n\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b``\x00\x00x?\xf9N\x04\x00\x00\x00",
@@ -222,7 +222,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{}",
     ),
     (
-        NBTFile(TAG_List([TAG_Byte(5)], 1), ""),
+        NBTFile(ListTag([ByteTag(5)], 1), ""),
         b"\t\x00\x00\x01\x00\x00\x00\x01\x05",
         b"\t\x00\x00\x01\x01\x00\x00\x00\x05",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d``d\x00bV\x00\x9e\xb4\x87\xe8\t\x00\x00\x00",
@@ -230,7 +230,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[5b]",
     ),
     (
-        NBTFile(TAG_List([TAG_Byte(-5)], 1), ""),
+        NBTFile(ListTag([ByteTag(-5)], 1), ""),
         b"\t\x00\x00\x01\x00\x00\x00\x01\xfb",
         b"\t\x00\x00\x01\x01\x00\x00\x00\xfb",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d``d\x00\xe2\xdf\x00\x85k\x82\xb2\t\x00\x00\x00",
@@ -238,7 +238,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[-5b]",
     ),
     (
-        NBTFile(TAG_List([TAG_Short(5)], 2), ""),
+        NBTFile(ListTag([ShortTag(5)], 2), ""),
         b"\t\x00\x00\x02\x00\x00\x00\x01\x00\x05",
         b"\t\x00\x00\x02\x01\x00\x00\x00\x05\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d``b```d`\x05\x00-\xcc\xa8\xf9\n\x00\x00\x00",
@@ -246,7 +246,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[5s]",
     ),
     (
-        NBTFile(TAG_List([TAG_Short(-5)], 2), ""),
+        NBTFile(ListTag([ShortTag(-5)], 2), ""),
         b"\t\x00\x00\x02\x00\x00\x00\x01\xff\xfb",
         b"\t\x00\x00\x02\x01\x00\x00\x00\xfb\xff",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d``b```\xfc\xff\x1b\x00D\xee\x890\n\x00\x00\x00",
@@ -254,7 +254,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[-5s]",
     ),
     (
-        NBTFile(TAG_List([TAG_Int(5)], 3), ""),
+        NBTFile(ListTag([IntTag(5)], 3), ""),
         b"\t\x00\x00\x03\x00\x00\x00\x01\x00\x00\x00\x05",
         b"\t\x00\x00\x03\x01\x00\x00\x00\x05\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d``f```\x04bV\x00\x04\x1d\xfb\x92\x0c\x00\x00\x00",
@@ -262,7 +262,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[5]",
     ),
     (
-        NBTFile(TAG_List([TAG_Int(-5)], 3), ""),
+        NBTFile(ListTag([IntTag(-5)], 3), ""),
         b"\t\x00\x00\x03\x00\x00\x00\x01\xff\xff\xff\xfb",
         b"\t\x00\x00\x03\x01\x00\x00\x00\xfb\xff\xff\xff",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d``f```\xfc\xff\xff\xffo\x00q\rG;\x0c\x00\x00\x00",
@@ -270,7 +270,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[-5]",
     ),
     (
-        NBTFile(TAG_List([TAG_Long(5)], 4), ""),
+        NBTFile(ListTag([LongTag(5)], 4), ""),
         b"\t\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x05",
         b"\t\x00\x00\x04\x01\x00\x00\x00\x05\x00\x00\x00\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d``a```d\x80\x00V\x00\xd1\xcfh\x96\x10\x00\x00\x00",
@@ -278,7 +278,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[5L]",
     ),
     (
-        NBTFile(TAG_List([TAG_Long(-5)], 4), ""),
+        NBTFile(ListTag([LongTag(-5)], 4), ""),
         b"\t\x00\x00\x04\x00\x00\x00\x01\xff\xff\xff\xff\xff\xff\xff\xfb",
         b"\t\x00\x00\x04\x01\x00\x00\x00\xfb\xff\xff\xff\xff\xff\xff\xff",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d``a```\xfc\x0f\x01\xbf\x012\xff\t\xa5\x10\x00\x00\x00",
@@ -286,7 +286,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[-5L]",
     ),
     (
-        NBTFile(TAG_List([TAG_Float(5.0)], 5), ""),
+        NBTFile(ListTag([FloatTag(5.0)], 5), ""),
         b"\t\x00\x00\x05\x00\x00\x00\x01@\xa0\x00\x00",
         b"\t\x00\x00\x05\x01\x00\x00\x00\x00\x00\xa0@",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d``e```tX\xc0\xc0\x00\x00\\\x95\xe7\xd3\x0c\x00\x00\x00",
@@ -294,7 +294,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[5.0f]",
     ),
     (
-        NBTFile(TAG_List([TAG_Float(-5.0)], 5), ""),
+        NBTFile(ListTag([FloatTag(-5.0)], 5), ""),
         b"\t\x00\x00\x05\x00\x00\x00\x01\xc0\xa0\x00\x00",
         b"\t\x00\x00\x05\x01\x00\x00\x00\x00\x00\xa0\xc0",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d``e```<\xb0\x80\x81\x01\x00g#\xbe>\x0c\x00\x00\x00",
@@ -302,7 +302,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[-5.0f]",
     ),
     (
-        NBTFile(TAG_List([TAG_Double(5.0)], 6), ""),
+        NBTFile(ListTag([DoubleTag(5.0)], 6), ""),
         b"\t\x00\x00\x06\x00\x00\x00\x01@\x14\x00\x00\x00\x00\x00\x00",
         b"\t\x00\x00\x06\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x14@",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d``c```t\x10a\x00\x03\x00%\xf4R<\x10\x00\x00\x00",
@@ -310,7 +310,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[5.0d]",
     ),
     (
-        NBTFile(TAG_List([TAG_Double(-5.0)], 6), ""),
+        NBTFile(ListTag([DoubleTag(-5.0)], 6), ""),
         b"\t\x00\x00\x06\x00\x00\x00\x01\xc0\x14\x00\x00\x00\x00\x00\x00",
         b"\t\x00\x00\x06\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x14\xc0",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d``c```< \xc2\x00\x06\x00\xffqio\x10\x00\x00\x00",
@@ -318,7 +318,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[-5.0d]",
     ),
     (
-        NBTFile(TAG_List([TAG_Byte_Array([])], 7), ""),
+        NBTFile(ListTag([ByteArrayTag([])], 7), ""),
         b"\t\x00\x00\x07\x00\x00\x00\x01\x00\x00\x00\x00",
         b"\t\x00\x00\x07\x01\x00\x00\x00\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d``g```\x04b\x06\x00\x87\xb8}\xbf\x0c\x00\x00\x00",
@@ -326,7 +326,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[[B;]]",
     ),
     (
-        NBTFile(TAG_List([TAG_Byte_Array([5, 6, 7])], 7), ""),
+        NBTFile(ListTag([ByteArrayTag([5, 6, 7])], 7), ""),
         b"\t\x00\x00\x07\x00\x00\x00\x01\x00\x00\x00\x03\x05\x06\x07",
         b"\t\x00\x00\x07\x01\x00\x00\x00\x03\x00\x00\x00\x05\x06\x07",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d``g```\x04bfV6v\x00\xb9\xa2\xd3\xc5\x0f\x00\x00\x00",
@@ -334,7 +334,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[[B;5B, 6B, 7B]]",
     ),
     (
-        NBTFile(TAG_List([TAG_Byte_Array([-5, -6, -7])], 7), ""),
+        NBTFile(ListTag([ByteArrayTag([-5, -6, -7])], 7), ""),
         b"\t\x00\x00\x07\x00\x00\x00\x01\x00\x00\x00\x03\xfb\xfa\xf9",
         b"\t\x00\x00\x07\x01\x00\x00\x00\x03\x00\x00\x00\xfb\xfa\xf9",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d``g```\x04b\xe6\xdf\xbf~\x02\x00\xc9\x8d\x85\x98\x0f\x00\x00\x00",
@@ -342,7 +342,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[[B;-5B, -6B, -7B]]",
     ),
     (
-        NBTFile(TAG_List([TAG_Int_Array([])], 11), ""),
+        NBTFile(ListTag([IntArrayTag([])], 11), ""),
         b"\t\x00\x00\x0b\x00\x00\x00\x01\x00\x00\x00\x00",
         b"\t\x00\x00\x0b\x01\x00\x00\x00\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d`\xe0f```\x04b\x06\x00\x93KIY\x0c\x00\x00\x00",
@@ -350,7 +350,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[[I;]]",
     ),
     (
-        NBTFile(TAG_List([TAG_Int_Array([5, 6, 7])], 11), ""),
+        NBTFile(ListTag([IntArrayTag([5, 6, 7])], 11), ""),
         b"\t\x00\x00\x0b\x00\x00\x00\x01\x00\x00\x00\x03\x00\x00\x00\x05\x00\x00\x00\x06\x00\x00\x00\x07",
         b"\t\x00\x00\x0b\x01\x00\x00\x00\x03\x00\x00\x00\x05\x00\x00\x00\x06\x00\x00\x00\x07\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d`\xe0f```\x04bf f\x05b6 f\x07\x00\xed\x9a\xda\xcf\x18\x00\x00\x00",
@@ -358,7 +358,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[[I;5, 6, 7]]",
     ),
     (
-        NBTFile(TAG_List([TAG_Int_Array([-5, -6, -7])], 11), ""),
+        NBTFile(ListTag([IntArrayTag([-5, -6, -7])], 11), ""),
         b"\t\x00\x00\x0b\x00\x00\x00\x01\x00\x00\x00\x03\xff\xff\xff\xfb\xff\xff\xff\xfa\xff\xff\xff\xf9",
         b"\t\x00\x00\x0b\x01\x00\x00\x00\x03\x00\x00\x00\xfb\xff\xff\xff\xfa\xff\xff\xff\xf9\xff\xff\xff",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d`\xe0f```\x04b\xe6\xff\xff\xff\xff\x06\xe2_@\xfc\x13\x00\r\xfdJ(\x18\x00\x00\x00",
@@ -366,7 +366,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[[I;-5, -6, -7]]",
     ),
     (
-        NBTFile(TAG_List([TAG_Long_Array([])], 12), ""),
+        NBTFile(ListTag([LongArrayTag([])], 12), ""),
         b"\t\x00\x00\x0c\x00\x00\x00\x01\x00\x00\x00\x00",
         b"\t\x00\x00\x0c\x01\x00\x00\x00\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d`\xe0a```\x04b\x06\x00Z&(=\x0c\x00\x00\x00",
@@ -374,7 +374,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[[L;]]",
     ),
     (
-        NBTFile(TAG_List([TAG_Long_Array([5, 6, 7])], 12), ""),
+        NBTFile(ListTag([LongArrayTag([5, 6, 7])], 12), ""),
         b"\t\x00\x00\x0c\x00\x00\x00\x01\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00\x05\x00\x00\x00\x00\x00\x00\x00\x06\x00\x00\x00\x00\x00\x00\x00\x07",
         b"\t\x00\x00\x0c\x01\x00\x00\x00\x03\x00\x00\x00\x05\x00\x00\x00\x00\x00\x00\x00\x06\x00\x00\x00\x00\x00\x00\x00\x07\x00\x00\x00\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d`\xe0a```\x04bf\x06\x08`\x85\xd2lP\x9a\x1d\x00\xa9zsw$\x00\x00\x00",
@@ -382,7 +382,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[[L;5L, 6L, 7L]]",
     ),
     (
-        NBTFile(TAG_List([TAG_Long_Array([-5, -6, -7])], 12), ""),
+        NBTFile(ListTag([LongArrayTag([-5, -6, -7])], 12), ""),
         b"\t\x00\x00\x0c\x00\x00\x00\x01\x00\x00\x00\x03\xff\xff\xff\xff\xff\xff\xff\xfb\xff\xff\xff\xff\xff\xff\xff\xfa\xff\xff\xff\xff\xff\xff\xff\xf9",
         b"\t\x00\x00\x0c\x01\x00\x00\x00\x03\x00\x00\x00\xfb\xff\xff\xff\xff\xff\xff\xff\xfa\xff\xff\xff\xff\xff\xff\xff\xf9\xff\xff\xff\xff\xff\xff\xff",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d`\xe0a```\x04b\xe6\xff\x10\xf0\x1bJ\xff\x82\xd2?\x01[aC\xc1$\x00\x00\x00",
@@ -390,7 +390,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[[L;-5L, -6L, -7L]]",
     ),
     (
-        NBTFile(TAG_List([TAG_String("value")], 8), ""),
+        NBTFile(ListTag([StringTag("value")], 8), ""),
         b"\t\x00\x00\x08\x00\x00\x00\x01\x00\x05value",
         b"\t\x00\x00\x08\x01\x00\x00\x00\x05\x00value",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d`\xe0````d`-K\xcc)M\x05\x00r\\\x9f\xe0\x0f\x00\x00\x00",
@@ -398,7 +398,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         '["value"]',
     ),
     (
-        NBTFile(TAG_List([TAG_List([], 1)], 9), ""),
+        NBTFile(ListTag([ListTag([], 1)], 9), ""),
         b"\t\x00\x00\t\x00\x00\x00\x01\x01\x00\x00\x00\x00",
         b"\t\x00\x00\t\x01\x00\x00\x00\x01\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d`\xe0d```d\x04\x12\x0c\x00\xb5\x9d\xc8\x82\r\x00\x00\x00",
@@ -406,7 +406,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[[]]",
     ),
     (
-        NBTFile(TAG_List([TAG_Compound({})], 10), ""),
+        NBTFile(ListTag([CompoundTag({})], 10), ""),
         b"\t\x00\x00\n\x00\x00\x00\x01\x00",
         b"\t\x00\x00\n\x01\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d`\xe0b```d\x00\x00\xd2\xb0*\xf2\t\x00\x00\x00",
@@ -414,7 +414,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[{}]",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Byte(5)}), ""),
+        NBTFile(CompoundTag({"key": ByteTag(5)}), ""),
         b"\n\x00\x00\x01\x00\x03key\x05\x00",
         b"\n\x00\x00\x01\x03\x00key\x05\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b``d`\xceN\xadde\x00\x00\xaf}[\x07\x0b\x00\x00\x00",
@@ -422,7 +422,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: 5b}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Byte(-5)}), ""),
+        NBTFile(CompoundTag({"key": ByteTag(-5)}), ""),
         b"\n\x00\x00\x01\x00\x03key\xfb\x00",
         b"\n\x00\x00\x01\x03\x00key\xfb\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b``d`\xceN\xad\xfc\xcd\x00\x00\x9c\xb1d\x8d\x0b\x00\x00\x00",
@@ -430,7 +430,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: -5b}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Short(5)}), ""),
+        NBTFile(CompoundTag({"key": ShortTag(5)}), ""),
         b"\n\x00\x00\x02\x00\x03key\x00\x05\x00",
         b"\n\x00\x00\x02\x03\x00key\x05\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b``b`\xceN\xadd`e\x00\x00\xe2\x00]\xd6\x0c\x00\x00\x00",
@@ -438,7 +438,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: 5s}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Short(-5)}), ""),
+        NBTFile(CompoundTag({"key": ShortTag(-5)}), ""),
         b"\n\x00\x00\x02\x00\x03key\xff\xfb\x00",
         b"\n\x00\x00\x02\x03\x00key\xfb\xff\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b``b`\xceN\xad\xfc\xff\x9b\x01\x00<\xf8\xfa\xe2\x0c\x00\x00\x00",
@@ -446,7 +446,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: -5s}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Int(5)}), ""),
+        NBTFile(CompoundTag({"key": IntTag(5)}), ""),
         b"\n\x00\x00\x03\x00\x03key\x00\x00\x00\x05\x00",
         b"\n\x00\x00\x03\x03\x00key\x05\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b``f`\xceN\xadd```e\x00\x00{\x8e\xb6\xa6\x0e\x00\x00\x00",
@@ -454,7 +454,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: 5}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Int(-5)}), ""),
+        NBTFile(CompoundTag({"key": IntTag(-5)}), ""),
         b"\n\x00\x00\x03\x00\x03key\xff\xff\xff\xfb\x00",
         b"\n\x00\x00\x03\x03\x00key\xfb\xff\xff\xff\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b``f`\xceN\xad\xfc\xff\xff\xffo\x06\x00\xd8\xb7p\x86\x0e\x00\x00\x00",
@@ -462,7 +462,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: -5}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Long(5)}), ""),
+        NBTFile(CompoundTag({"key": LongTag(5)}), ""),
         b"\n\x00\x00\x04\x00\x03key\x00\x00\x00\x00\x00\x00\x00\x05\x00",
         b"\n\x00\x00\x04\x03\x00key\x05\x00\x00\x00\x00\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b``a`\xceN\xadd\x80\x00V\x06\x00\x04\xab@M\x12\x00\x00\x00",
@@ -470,7 +470,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: 5L}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Long(-5)}), ""),
+        NBTFile(CompoundTag({"key": LongTag(-5)}), ""),
         b"\n\x00\x00\x04\x00\x03key\xff\xff\xff\xff\xff\xff\xff\xfb\x00",
         b"\n\x00\x00\x04\x03\x00key\xfb\xff\xff\xff\xff\xff\xff\xff\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b``a`\xceN\xad\xfc\x0f\x01\xbf\x19\x00\xf6ypt\x12\x00\x00\x00",
@@ -478,7 +478,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: -5L}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Float(5.0)}), ""),
+        NBTFile(CompoundTag({"key": FloatTag(5.0)}), ""),
         b"\n\x00\x00\x05\x00\x03key@\xa0\x00\x00\x00",
         b"\n\x00\x00\x05\x03\x00key\x00\x00\xa0@\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b``e`\xceN\xadtX\xc0\xc0\xc0\x00\x001\xf1\xec&\x0e\x00\x00\x00",
@@ -486,7 +486,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: 5.0f}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Float(-5.0)}), ""),
+        NBTFile(CompoundTag({"key": FloatTag(-5.0)}), ""),
         b"\n\x00\x00\x05\x00\x03key\xc0\xa0\x00\x00\x00",
         b"\n\x00\x00\x05\x03\x00key\x00\x00\xa0\xc0\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b``e`\xceN\xad<\xb0\x80\x81\x81\x01\x00\xa3A\n\x97\x0e\x00\x00\x00",
@@ -494,7 +494,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: -5.0f}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Double(5.0)}), ""),
+        NBTFile(CompoundTag({"key": DoubleTag(5.0)}), ""),
         b"\n\x00\x00\x06\x00\x03key@\x14\x00\x00\x00\x00\x00\x00\x00",
         b"\n\x00\x00\x06\x03\x00key\x00\x00\x00\x00\x00\x00\x14@\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b``c`\xceN\xadt\x10a\x80\x00\x00\x06\xd2\xd2\xbe\x12\x00\x00\x00",
@@ -502,7 +502,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: 5.0d}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Double(-5.0)}), ""),
+        NBTFile(CompoundTag({"key": DoubleTag(-5.0)}), ""),
         b"\n\x00\x00\x06\x00\x03key\xc0\x14\x00\x00\x00\x00\x00\x00\x00",
         b"\n\x00\x00\x06\x03\x00key\x00\x00\x00\x00\x00\x00\x14\xc0\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b``c`\xceN\xad< \xc2\x00\x01\x00I\xd2\x87\xd8\x12\x00\x00\x00",
@@ -510,7 +510,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: -5.0d}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Byte_Array([])}), ""),
+        NBTFile(CompoundTag({"key": ByteArrayTag([])}), ""),
         b"\n\x00\x00\x07\x00\x03key\x00\x00\x00\x00\x00",
         b"\n\x00\x00\x07\x03\x00key\x00\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b``g`\xceN\xadd\x00\x01\x00\xbc\t\x18k\x0e\x00\x00\x00",
@@ -518,7 +518,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: [B;]}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Byte_Array([5, 6, 7])}), ""),
+        NBTFile(CompoundTag({"key": ByteArrayTag([5, 6, 7])}), ""),
         b"\n\x00\x00\x07\x00\x03key\x00\x00\x00\x03\x05\x06\x07\x00",
         b"\n\x00\x00\x07\x03\x00key\x03\x00\x00\x00\x05\x06\x07\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b``g`\xceN\xadd```fecg\x00\x00\x85\x9d\x19\xca\x11\x00\x00\x00",
@@ -526,7 +526,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: [B;5B, 6B, 7B]}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Byte_Array([-5, -6, -7])}), ""),
+        NBTFile(CompoundTag({"key": ByteArrayTag([-5, -6, -7])}), ""),
         b"\n\x00\x00\x07\x00\x03key\x00\x00\x00\x03\xfb\xfa\xf9\x00",
         b"\n\x00\x00\x07\x03\x00key\x03\x00\x00\x00\xfb\xfa\xf9\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b``g`\xceN\xadd```\xfe\xfd\xeb'\x03\x00\x96\xbaA\x9a\x11\x00\x00\x00",
@@ -534,7 +534,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: [B;-5B, -6B, -7B]}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Int_Array([])}), ""),
+        NBTFile(CompoundTag({"key": IntArrayTag([])}), ""),
         b"\n\x00\x00\x0b\x00\x03key\x00\x00\x00\x00\x00",
         b"\n\x00\x00\x0b\x03\x00key\x00\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b`\xe0f`\xceN\xadd\x00\x01\x00{\x9b\x02a\x0e\x00\x00\x00",
@@ -542,7 +542,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: [I;]}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Int_Array([5, 6, 7])}), ""),
+        NBTFile(CompoundTag({"key": IntArrayTag([5, 6, 7])}), ""),
         b"\n\x00\x00\x0b\x00\x03key\x00\x00\x00\x03\x00\x00\x00\x05\x00\x00\x00\x06\x00\x00\x00\x07\x00",
         b"\n\x00\x00\x0b\x03\x00key\x03\x00\x00\x00\x05\x00\x00\x00\x06\x00\x00\x00\x07\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b`\xe0f`\xceN\xadd```\x06bV f\x03bv\x06\x00\x1aK\x86\x98\x1a\x00\x00\x00",
@@ -550,7 +550,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: [I;5, 6, 7]}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Int_Array([-5, -6, -7])}), ""),
+        NBTFile(CompoundTag({"key": IntArrayTag([-5, -6, -7])}), ""),
         b"\n\x00\x00\x0b\x00\x03key\x00\x00\x00\x03\xff\xff\xff\xfb\xff\xff\xff\xfa\xff\xff\xff\xf9\x00",
         b"\n\x00\x00\x0b\x03\x00key\x03\x00\x00\x00\xfb\xff\xff\xff\xfa\xff\xff\xff\xf9\xff\xff\xff\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b`\xe0f`\xceN\xadd```\xfe\xff\xff\xffo \xfe\x05\xc4?\x19\x00\x059k8\x1a\x00\x00\x00",
@@ -558,7 +558,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: [I;-5, -6, -7]}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Long_Array([])}), ""),
+        NBTFile(CompoundTag({"key": LongArrayTag([])}), ""),
         b"\n\x00\x00\x0c\x00\x03key\x00\x00\x00\x00\x00",
         b"\n\x00\x00\x0c\x03\x00key\x00\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b`\xe0a`\xceN\xadd\x00\x01\x00\xf8\x8e9H\x0e\x00\x00\x00",
@@ -566,7 +566,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: [L;]}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Long_Array([5, 6, 7])}), ""),
+        NBTFile(CompoundTag({"key": LongArrayTag([5, 6, 7])}), ""),
         b"\n\x00\x00\x0c\x00\x03key\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00\x05\x00\x00\x00\x00\x00\x00\x00\x06\x00\x00\x00\x00\x00\x00\x00\x07\x00",
         b"\n\x00\x00\x0c\x03\x00key\x03\x00\x00\x00\x05\x00\x00\x00\x00\x00\x00\x00\x06\x00\x00\x00\x00\x00\x00\x00\x07\x00\x00\x00\x00\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b`\xe0a`\xceN\xadd```f\x80\x00V(\xcd\x06\xa5\xd9\x19\x00`\xcf\x11w&\x00\x00\x00",
@@ -574,7 +574,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: [L;5L, 6L, 7L]}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Long_Array([-5, -6, -7])}), ""),
+        NBTFile(CompoundTag({"key": LongArrayTag([-5, -6, -7])}), ""),
         b"\n\x00\x00\x0c\x00\x03key\x00\x00\x00\x03\xff\xff\xff\xff\xff\xff\xff\xfb\xff\xff\xff\xff\xff\xff\xff\xfa\xff\xff\xff\xff\xff\xff\xff\xf9\x00",
         b"\n\x00\x00\x0c\x03\x00key\x03\x00\x00\x00\xfb\xff\xff\xff\xff\xff\xff\xff\xfa\xff\xff\xff\xff\xff\xff\xff\xf9\xff\xff\xff\xff\xff\xff\xff\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b`\xe0a`\xceN\xadd```\xfe\x0f\x01\xbf\xa1\xf4/(\xfd\x93\x01\x00Kl\x14$&\x00\x00\x00",
@@ -582,7 +582,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: [L;-5L, -6L, -7L]}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_String("value")}), ""),
+        NBTFile(CompoundTag({"key": StringTag("value")}), ""),
         b"\n\x00\x00\x08\x00\x03key\x00\x05value\x00",
         b"\n\x00\x00\x08\x03\x00key\x05\x00value\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b`\xe0``\xceN\xadd`-K\xcc)Me\x00\x00\x80\xabn\xb7\x11\x00\x00\x00",
@@ -590,7 +590,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         '{key: "value"}',
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_List([], 1)}), ""),
+        NBTFile(CompoundTag({"key": ListTag([], 1)}), ""),
         b"\n\x00\x00\t\x00\x03key\x01\x00\x00\x00\x00\x00",
         b"\n\x00\x00\t\x03\x00key\x01\x00\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b`\xe0d`\xceN\xaddd\x00\x01\x00\x98\x08\xd32\x0f\x00\x00\x00",
@@ -598,7 +598,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: []}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Compound({})}), ""),
+        NBTFile(CompoundTag({"key": CompoundTag({})}), ""),
         b"\n\x00\x00\n\x00\x03key\x00\x00",
         b"\n\x00\x00\n\x03\x00key\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b`\xe0b`\xceN\xadd`\x00\x00\xbc\x95F'\x0b\x00\x00\x00",
@@ -606,7 +606,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: {}}",
     ),
     (
-        NBTFile(TAG_Byte(5), "name"),
+        NBTFile(ByteTag(5), "name"),
         b"\x01\x00\x04name\x05",
         b"\x01\x04\x00name\x05",
         b"\x1f\x8b\x08\x00)\x83va\x02\xffcd`\xc9K\xccMe\x05\x00\xb5\xf7n\xbf\x08\x00\x00\x00",
@@ -614,7 +614,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "5b",
     ),
     (
-        NBTFile(TAG_Byte(-5), "name"),
+        NBTFile(ByteTag(-5), "name"),
         b"\x01\x00\x04name\xfb",
         b"\x01\x04\x00name\xfb",
         b"\x1f\x8b\x08\x00)\x83va\x02\xffcd`\xc9K\xccM\xfd\r\x00\xae(k\xe5\x08\x00\x00\x00",
@@ -622,7 +622,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "-5b",
     ),
     (
-        NBTFile(TAG_Short(5), "name"),
+        NBTFile(ShortTag(5), "name"),
         b"\x02\x00\x04name\x00\x05",
         b"\x02\x04\x00name\x05\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xffcb`\xc9K\xccMe`\x05\x00v\xfa&]\t\x00\x00\x00",
@@ -630,7 +630,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "5s",
     ),
     (
-        NBTFile(TAG_Short(-5), "name"),
+        NBTFile(ShortTag(-5), "name"),
         b"\x02\x00\x04name\xff\xfb",
         b"\x02\x04\x00name\xfb\xff",
         b"\x1f\x8b\x08\x00)\x83va\x02\xffcb`\xc9K\xccM\xfd\xff\x1b\x00\x1f\xd8\x07\x94\t\x00\x00\x00",
@@ -638,7 +638,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "-5s",
     ),
     (
-        NBTFile(TAG_Int(5), "name"),
+        NBTFile(IntTag(5), "name"),
         b"\x03\x00\x04name\x00\x00\x00\x05",
         b"\x03\x04\x00name\x05\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xffcf`\xc9K\xccMe```\x05\x00\x0fc\xfb\xd2\x0b\x00\x00\x00",
@@ -646,7 +646,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "5",
     ),
     (
-        NBTFile(TAG_Int(-5), "name"),
+        NBTFile(IntTag(-5), "name"),
         b"\x03\x00\x04name\xff\xff\xff\xfb",
         b"\x03\x04\x00name\xfb\xff\xff\xff",
         b"\x1f\x8b\x08\x00)\x83va\x02\xffcf`\xc9K\xccM\xfd\xff\xff\xffo\x00zsG{\x0b\x00\x00\x00",
@@ -654,7 +654,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "-5",
     ),
     (
-        NBTFile(TAG_Long(5), "name"),
+        NBTFile(LongTag(5), "name"),
         b"\x04\x00\x04name\x00\x00\x00\x00\x00\x00\x00\x05",
         b"\x04\x04\x00name\x05\x00\x00\x00\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xffca`\xc9K\xccMe\x80\x00V\x00XE\xa8\x8f\x0f\x00\x00\x00",
@@ -662,7 +662,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "5L",
     ),
     (
-        NBTFile(TAG_Long(-5), "name"),
+        NBTFile(LongTag(-5), "name"),
         b"\x04\x00\x04name\xff\xff\xff\xff\xff\xff\xff\xfb",
         b"\x04\x04\x00name\xfb\xff\xff\xff\xff\xff\xff\xff",
         b"\x1f\x8b\x08\x00)\x83va\x02\xffca`\xc9K\xccM\xfd\x0f\x01\xbf\x01\xbbu\xc9\xbc\x0f\x00\x00\x00",
@@ -670,7 +670,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "-5L",
     ),
     (
-        NBTFile(TAG_Float(5.0), "name"),
+        NBTFile(FloatTag(5.0), "name"),
         b"\x05\x00\x04name@\xa0\x00\x00",
         b"\x05\x04\x00name\x00\x00\xa0@",
         b"\x1f\x8b\x08\x00)\x83va\x02\xffce`\xc9K\xccMuX\xc0\xc0\x00\x00\x9eXH\x08\x0b\x00\x00\x00",
@@ -678,7 +678,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "5.0f",
     ),
     (
-        NBTFile(TAG_Float(-5.0), "name"),
+        NBTFile(FloatTag(-5.0), "name"),
         b"\x05\x00\x04name\xc0\xa0\x00\x00",
         b"\x05\x04\x00name\x00\x00\xa0\xc0",
         b"\x1f\x8b\x08\x00)\x83va\x02\xffce`\xc9K\xccM=\xb0\x80\x81\x01\x00\xa5\xee\x11\xe5\x0b\x00\x00\x00",
@@ -686,7 +686,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "-5.0f",
     ),
     (
-        NBTFile(TAG_Double(5.0), "name"),
+        NBTFile(DoubleTag(5.0), "name"),
         b"\x06\x00\x04name@\x14\x00\x00\x00\x00\x00\x00",
         b"\x06\x04\x00name\x00\x00\x00\x00\x00\x00\x14@",
         b"\x1f\x8b\x08\x00)\x83va\x02\xffcc`\xc9K\xccMu\x10a\x00\x03\x00vzH\xed\x0f\x00\x00\x00",
@@ -694,7 +694,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "5.0d",
     ),
     (
-        NBTFile(TAG_Double(-5.0), "name"),
+        NBTFile(DoubleTag(-5.0), "name"),
         b"\x06\x00\x04name\xc0\x14\x00\x00\x00\x00\x00\x00",
         b"\x06\x04\x00name\x00\x00\x00\x00\x00\x00\x14\xc0",
         b"\x1f\x8b\x08\x00)\x83va\x02\xffcc`\xc9K\xccM= \xc2\x00\x06\x00\xac\xffs\xbe\x0f\x00\x00\x00",
@@ -702,7 +702,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "-5.0d",
     ),
     (
-        NBTFile(TAG_Byte_Array([]), "name"),
+        NBTFile(ByteArrayTag([]), "name"),
         b"\x07\x00\x04name\x00\x00\x00\x00",
         b"\x07\x04\x00name\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xffcg`\xc9K\xccMe\x00\x02\x00\x02\xe4H\x12\x0b\x00\x00\x00",
@@ -710,7 +710,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[B;]",
     ),
     (
-        NBTFile(TAG_Byte_Array([5, 6, 7]), "name"),
+        NBTFile(ByteArrayTag([5, 6, 7]), "name"),
         b"\x07\x00\x04name\x00\x00\x00\x03\x05\x06\x07",
         b"\x07\x04\x00name\x03\x00\x00\x00\x05\x06\x07",
         b"\x1f\x8b\x08\x00)\x83va\x02\xffcg`\xc9K\xccMe```fec\x07\x00\x04\xad\x90b\x0e\x00\x00\x00",
@@ -718,7 +718,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[B;5B, 6B, 7B]",
     ),
     (
-        NBTFile(TAG_Byte_Array([-5, -6, -7]), "name"),
+        NBTFile(ByteArrayTag([-5, -6, -7]), "name"),
         b"\x07\x00\x04name\x00\x00\x00\x03\xfb\xfa\xf9",
         b"\x07\x04\x00name\x03\x00\x00\x00\xfb\xfa\xf9",
         b"\x1f\x8b\x08\x00)\x83va\x02\xffcg`\xc9K\xccMe```\xfe\xfd\xeb'\x00t\x82\xc6?\x0e\x00\x00\x00",
@@ -726,7 +726,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[B;-5B, -6B, -7B]",
     ),
     (
-        NBTFile(TAG_Int_Array([]), "name"),
+        NBTFile(IntArrayTag([]), "name"),
         b"\x0b\x00\x04name\x00\x00\x00\x00",
         b"\x0b\x04\x00name\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3f`\xc9K\xccMe\x00\x02\x00\xc5vR\x18\x0b\x00\x00\x00",
@@ -734,7 +734,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[I;]",
     ),
     (
-        NBTFile(TAG_Int_Array([5, 6, 7]), "name"),
+        NBTFile(IntArrayTag([5, 6, 7]), "name"),
         b"\x0b\x00\x04name\x00\x00\x00\x03\x00\x00\x00\x05\x00\x00\x00\x06\x00\x00\x00\x07",
         b"\x0b\x04\x00name\x03\x00\x00\x00\x05\x00\x00\x00\x06\x00\x00\x00\x07\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3f`\xc9K\xccMe```\x06bV f\x03bv\x00A\x0e\xc5\xe9\x17\x00\x00\x00",
@@ -742,7 +742,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[I;5, 6, 7]",
     ),
     (
-        NBTFile(TAG_Int_Array([-5, -6, -7]), "name"),
+        NBTFile(IntArrayTag([-5, -6, -7]), "name"),
         b"\x0b\x00\x04name\x00\x00\x00\x03\xff\xff\xff\xfb\xff\xff\xff\xfa\xff\xff\xff\xf9",
         b"\x0b\x04\x00name\x03\x00\x00\x00\xfb\xff\xff\xff\xfa\xff\xff\xff\xf9\xff\xff\xff",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3f`\xc9K\xccMe```\xfe\xff\xff\xffo \xfe\x05\xc4?\x01\xa1iU\x0e\x17\x00\x00\x00",
@@ -750,7 +750,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[I;-5, -6, -7]",
     ),
     (
-        NBTFile(TAG_Long_Array([]), "name"),
+        NBTFile(LongArrayTag([]), "name"),
         b"\x0c\x00\x04name\x00\x00\x00\x00",
         b"\x0c\x04\x00name\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3a`\xc9K\xccMe\x00\x02\x00Fci1\x0b\x00\x00\x00",
@@ -758,7 +758,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[L;]",
     ),
     (
-        NBTFile(TAG_Long_Array([5, 6, 7]), "name"),
+        NBTFile(LongArrayTag([5, 6, 7]), "name"),
         b"\x0c\x00\x04name\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00\x05\x00\x00\x00\x00\x00\x00\x00\x06\x00\x00\x00\x00\x00\x00\x00\x07",
         b"\x0c\x04\x00name\x03\x00\x00\x00\x05\x00\x00\x00\x00\x00\x00\x00\x06\x00\x00\x00\x00\x00\x00\x00\x07\x00\x00\x00\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3a`\xc9K\xccMe```f\x80\x00V(\xcd\x06\xa5\xd9\x01\xc8\xbf\x9b\xc7#\x00\x00\x00",
@@ -766,7 +766,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[L;5L, 6L, 7L]",
     ),
     (
-        NBTFile(TAG_Long_Array([-5, -6, -7]), "name"),
+        NBTFile(LongArrayTag([-5, -6, -7]), "name"),
         b"\x0c\x00\x04name\x00\x00\x00\x03\xff\xff\xff\xff\xff\xff\xff\xfb\xff\xff\xff\xff\xff\xff\xff\xfa\xff\xff\xff\xff\xff\xff\xff\xf9",
         b"\x0c\x04\x00name\x03\x00\x00\x00\xfb\xff\xff\xff\xff\xff\xff\xff\xfa\xff\xff\xff\xff\xff\xff\xff\xf9\xff\xff\xff\xff\xff\xff\xff",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3a`\xc9K\xccMe```\xfe\x0f\x01\xbf\xa1\xf4/(\xfd\x13\x00:\xa4\xabq#\x00\x00\x00",
@@ -774,7 +774,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[L;-5L, -6L, -7L]",
     ),
     (
-        NBTFile(TAG_String("value"), "name"),
+        NBTFile(StringTag("value"), "name"),
         b"\x08\x00\x04name\x00\x05value",
         b"\x08\x04\x00name\x05\x00value",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3``\xc9K\xccMe`-K\xcc)M\x05\x00Hx\xdcc\x0e\x00\x00\x00",
@@ -782,7 +782,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         '"value"',
     ),
     (
-        NBTFile(TAG_List([], 1), "name"),
+        NBTFile(ListTag([], 1), "name"),
         b"\t\x00\x04name\x01\x00\x00\x00\x00",
         b"\t\x04\x00name\x01\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d`\xc9K\xccMed\x00\x02\x00\xeb<O\xe8\x0c\x00\x00\x00",
@@ -790,7 +790,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[]",
     ),
     (
-        NBTFile(TAG_Compound({}), "name"),
+        NBTFile(CompoundTag({}), "name"),
         b"\n\x00\x04name\x00",
         b"\n\x04\x00name\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b`\xc9K\xccMe\x00\x00l\x1fn\x92\x08\x00\x00\x00",
@@ -798,7 +798,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{}",
     ),
     (
-        NBTFile(TAG_List([TAG_Byte(5)], 1), "name"),
+        NBTFile(ListTag([ByteTag(5)], 1), "name"),
         b"\t\x00\x04name\x01\x00\x00\x00\x01\x05",
         b"\t\x04\x00name\x01\x01\x00\x00\x00\x05",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d`\xc9K\xccMed```d\x05\x00\x8f^C\x8c\r\x00\x00\x00",
@@ -806,7 +806,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[5b]",
     ),
     (
-        NBTFile(TAG_List([TAG_Byte(-5)], 1), "name"),
+        NBTFile(ListTag([ByteTag(-5)], 1), "name"),
         b"\t\x00\x04name\x01\x00\x00\x00\x01\xfb",
         b"\t\x04\x00name\x01\x01\x00\x00\x00\xfb",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d`\xc9K\xccMed```\xfc\r\x00\x94\x81F\xd6\r\x00\x00\x00",
@@ -814,7 +814,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[-5b]",
     ),
     (
-        NBTFile(TAG_List([TAG_Short(5)], 2), "name"),
+        NBTFile(ListTag([ShortTag(5)], 2), "name"),
         b"\t\x00\x04name\x02\x00\x00\x00\x01\x00\x05",
         b"\t\x04\x00name\x02\x01\x00\x00\x00\x05\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d`\xc9K\xccMeb```d`\x05\x005(|\x93\x0e\x00\x00\x00",
@@ -822,7 +822,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[5s]",
     ),
     (
-        NBTFile(TAG_List([TAG_Short(-5)], 2), "name"),
+        NBTFile(ListTag([ShortTag(-5)], 2), "name"),
         b"\t\x00\x04name\x02\x00\x00\x00\x01\xff\xfb",
         b"\t\x04\x00name\x02\x01\x00\x00\x00\xfb\xff",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d`\xc9K\xccMeb```\xfc\xff\x1b\x00\\\n]Z\x0e\x00\x00\x00",
@@ -830,7 +830,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[-5s]",
     ),
     (
-        NBTFile(TAG_List([TAG_Int(5)], 3), "name"),
+        NBTFile(ListTag([IntTag(5)], 3), "name"),
         b"\t\x00\x04name\x03\x00\x00\x00\x01\x00\x00\x00\x05",
         b"\t\x04\x00name\x03\x01\x00\x00\x00\x05\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d`\xc9K\xccMef```\x04bV\x00\xe8\xc9\x87\xb7\x10\x00\x00\x00",
@@ -838,7 +838,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[5]",
     ),
     (
-        NBTFile(TAG_List([TAG_Int(-5)], 3), "name"),
+        NBTFile(ListTag([IntTag(-5)], 3), "name"),
         b"\t\x00\x04name\x03\x00\x00\x00\x01\xff\xff\xff\xfb",
         b"\t\x04\x00name\x03\x01\x00\x00\x00\xfb\xff\xff\xff",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d`\xc9K\xccMef```\xfc\xff\xff\xffo\x00\x9d\xd9;\x1e\x10\x00\x00\x00",
@@ -846,7 +846,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[-5]",
     ),
     (
-        NBTFile(TAG_List([TAG_Long(5)], 4), "name"),
+        NBTFile(ListTag([LongTag(5)], 4), "name"),
         b"\t\x00\x04name\x04\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x05",
         b"\t\x04\x00name\x04\x01\x00\x00\x00\x05\x00\x00\x00\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d`\xc9K\xccMea```d\x80\x00V\x00\x00N\xcfH\x14\x00\x00\x00",
@@ -854,7 +854,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[5L]",
     ),
     (
-        NBTFile(TAG_List([TAG_Long(-5)], 4), "name"),
+        NBTFile(ListTag([LongTag(-5)], 4), "name"),
         b"\t\x00\x04name\x04\x00\x00\x00\x01\xff\xff\xff\xff\xff\xff\xff\xfb",
         b"\t\x04\x00name\x04\x01\x00\x00\x00\xfb\xff\xff\xff\xff\xff\xff\xff",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d`\xc9K\xccMea```\xfc\x0f\x01\xbf\x01\xe3~\xae{\x14\x00\x00\x00",
@@ -862,7 +862,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[-5L]",
     ),
     (
-        NBTFile(TAG_List([TAG_Float(5.0)], 5), "name"),
+        NBTFile(ListTag([FloatTag(5.0)], 5), "name"),
         b"\t\x00\x04name\x05\x00\x00\x00\x01@\xa0\x00\x00",
         b"\t\x04\x00name\x05\x01\x00\x00\x00\x00\x00\xa0@",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d`\xc9K\xccMee```tX\xc0\xc0\x00\x00\xb0A\x9b\xf6\x10\x00\x00\x00",
@@ -870,7 +870,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[5.0f]",
     ),
     (
-        NBTFile(TAG_List([TAG_Float(-5.0)], 5), "name"),
+        NBTFile(ListTag([FloatTag(-5.0)], 5), "name"),
         b"\t\x00\x04name\x05\x00\x00\x00\x01\xc0\xa0\x00\x00",
         b"\t\x04\x00name\x05\x01\x00\x00\x00\x00\x00\xa0\xc0",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d`\xc9K\xccMee```<\xb0\x80\x81\x01\x00\x8b\xf7\xc2\x1b\x10\x00\x00\x00",
@@ -878,7 +878,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[-5.0f]",
     ),
     (
-        NBTFile(TAG_List([TAG_Double(5.0)], 6), "name"),
+        NBTFile(ListTag([DoubleTag(5.0)], 6), "name"),
         b"\t\x00\x04name\x06\x00\x00\x00\x01@\x14\x00\x00\x00\x00\x00\x00",
         b"\t\x04\x00name\x06\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x14@",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d`\xc9K\xccMec```t\x10a\x00\x03\x00\xf4u\xf5\xe2\x14\x00\x00\x00",
@@ -886,7 +886,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[5.0d]",
     ),
     (
-        NBTFile(TAG_List([TAG_Double(-5.0)], 6), "name"),
+        NBTFile(ListTag([DoubleTag(-5.0)], 6), "name"),
         b"\t\x00\x04name\x06\x00\x00\x00\x01\xc0\x14\x00\x00\x00\x00\x00\x00",
         b"\t\x04\x00name\x06\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x14\xc0",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d`\xc9K\xccMec```< \xc2\x00\x06\x00.\xf0\xce\xb1\x14\x00\x00\x00",
@@ -894,7 +894,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[-5.0d]",
     ),
     (
-        NBTFile(TAG_List([TAG_Byte_Array([])], 7), "name"),
+        NBTFile(ListTag([ByteArrayTag([])], 7), "name"),
         b"\t\x00\x04name\x07\x00\x00\x00\x01\x00\x00\x00\x00",
         b"\t\x04\x00name\x07\x01\x00\x00\x00\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d`\xc9K\xccMeg```\x04b\x06\x00kl\x01\x9a\x10\x00\x00\x00",
@@ -902,7 +902,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[[B;]]",
     ),
     (
-        NBTFile(TAG_List([TAG_Byte_Array([5, 6, 7])], 7), "name"),
+        NBTFile(ListTag([ByteArrayTag([5, 6, 7])], 7), "name"),
         b"\t\x00\x04name\x07\x00\x00\x00\x01\x00\x00\x00\x03\x05\x06\x07",
         b"\t\x04\x00name\x07\x01\x00\x00\x00\x03\x00\x00\x00\x05\x06\x07",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d`\xc9K\xccMeg```\x04bfV6v\x00T\xb6\xcc\xd9\x13\x00\x00\x00",
@@ -910,7 +910,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[[B;5B, 6B, 7B]]",
     ),
     (
-        NBTFile(TAG_List([TAG_Byte_Array([-5, -6, -7])], 7), "name"),
+        NBTFile(ListTag([ByteArrayTag([-5, -6, -7])], 7), "name"),
         b"\t\x00\x04name\x07\x00\x00\x00\x01\x00\x00\x00\x03\xfb\xfa\xf9",
         b"\t\x04\x00name\x07\x01\x00\x00\x00\x03\x00\x00\x00\xfb\xfa\xf9",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d`\xc9K\xccMeg```\x04b\xe6\xdf\xbf~\x02\x00$\x99\x9a\x84\x13\x00\x00\x00",
@@ -918,7 +918,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[[B;-5B, -6B, -7B]]",
     ),
     (
-        NBTFile(TAG_List([TAG_Int_Array([])], 11), "name"),
+        NBTFile(ListTag([IntArrayTag([])], 11), "name"),
         b"\t\x00\x04name\x0b\x00\x00\x00\x01\x00\x00\x00\x00",
         b"\t\x04\x00name\x0b\x01\x00\x00\x00\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d`\xc9K\xccM\xe5f```\x04b\x06\x00\x7f\x9f5|\x10\x00\x00\x00",
@@ -926,7 +926,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[[I;]]",
     ),
     (
-        NBTFile(TAG_List([TAG_Int_Array([5, 6, 7])], 11), "name"),
+        NBTFile(ListTag([IntArrayTag([5, 6, 7])], 11), "name"),
         b"\t\x00\x04name\x0b\x00\x00\x00\x01\x00\x00\x00\x03\x00\x00\x00\x05\x00\x00\x00\x06\x00\x00\x00\x07",
         b"\t\x04\x00name\x0b\x01\x00\x00\x00\x03\x00\x00\x00\x05\x00\x00\x00\x06\x00\x00\x00\x07\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d`\xc9K\xccM\xe5f```\x04bf f\x05b6 f\x07\x00G\xed\xd0\x19\x1c\x00\x00\x00",
@@ -934,7 +934,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[[I;5, 6, 7]]",
     ),
     (
-        NBTFile(TAG_List([TAG_Int_Array([-5, -6, -7])], 11), "name"),
+        NBTFile(ListTag([IntArrayTag([-5, -6, -7])], 11), "name"),
         b"\t\x00\x04name\x0b\x00\x00\x00\x01\x00\x00\x00\x03\xff\xff\xff\xfb\xff\xff\xff\xfa\xff\xff\xff\xf9",
         b"\t\x04\x00name\x0b\x01\x00\x00\x00\x03\x00\x00\x00\xfb\xff\xff\xff\xfa\xff\xff\xff\xf9\xff\xff\xff",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d`\xc9K\xccM\xe5f```\x04b\xe6\xff\xff\xff\xff\x06\xe2_@\xfc\x13\x00\xa7\x8a@\xfe\x1c\x00\x00\x00",
@@ -942,7 +942,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[[I;-5, -6, -7]]",
     ),
     (
-        NBTFile(TAG_List([TAG_Long_Array([])], 12), "name"),
+        NBTFile(ListTag([LongArrayTag([])], 12), "name"),
         b"\t\x00\x04name\x0c\x00\x00\x00\x01\x00\x00\x00\x00",
         b"\t\x04\x00name\x0c\x01\x00\x00\x00\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d`\xc9K\xccM\xe5a```\x04b\x06\x00\xb6\xf2T\x18\x10\x00\x00\x00",
@@ -950,7 +950,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[[L;]]",
     ),
     (
-        NBTFile(TAG_List([TAG_Long_Array([5, 6, 7])], 12), "name"),
+        NBTFile(ListTag([LongArrayTag([5, 6, 7])], 12), "name"),
         b"\t\x00\x04name\x0c\x00\x00\x00\x01\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00\x05\x00\x00\x00\x00\x00\x00\x00\x06\x00\x00\x00\x00\x00\x00\x00\x07",
         b"\t\x04\x00name\x0c\x01\x00\x00\x00\x03\x00\x00\x00\x05\x00\x00\x00\x00\x00\x00\x00\x06\x00\x00\x00\x00\x00\x00\x00\x07\x00\x00\x00\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d`\xc9K\xccM\xe5a```\x04bf\x06\x08`\x85\xd2lP\x9a\x1d\x00\xda\xc9\x94B(\x00\x00\x00",
@@ -958,7 +958,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[[L;5L, 6L, 7L]]",
     ),
     (
-        NBTFile(TAG_List([TAG_Long_Array([-5, -6, -7])], 12), "name"),
+        NBTFile(ListTag([LongArrayTag([-5, -6, -7])], 12), "name"),
         b"\t\x00\x04name\x0c\x00\x00\x00\x01\x00\x00\x00\x03\xff\xff\xff\xff\xff\xff\xff\xfb\xff\xff\xff\xff\xff\xff\xff\xfa\xff\xff\xff\xff\xff\xff\xff\xf9",
         b"\t\x04\x00name\x0c\x01\x00\x00\x00\x03\x00\x00\x00\xfb\xff\xff\xff\xff\xff\xff\xff\xfa\xff\xff\xff\xff\xff\xff\xff\xf9\xff\xff\xff\xff\xff\xff\xff",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d`\xc9K\xccM\xe5a```\x04b\xe6\xff\x10\xf0\x1bJ\xff\x82\xd2?\x01(\xd2\xa4\xf4(\x00\x00\x00",
@@ -966,7 +966,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[[L;-5L, -6L, -7L]]",
     ),
     (
-        NBTFile(TAG_List([TAG_String("value")], 8), "name"),
+        NBTFile(ListTag([StringTag("value")], 8), "name"),
         b"\t\x00\x04name\x08\x00\x00\x00\x01\x00\x05value",
         b"\t\x04\x00name\x08\x01\x00\x00\x00\x05\x00value",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d`\xc9K\xccM\xe5````d`-K\xcc)M\x05\x00\x9fH\x80\xfc\x13\x00\x00\x00",
@@ -974,7 +974,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         '["value"]',
     ),
     (
-        NBTFile(TAG_List([TAG_List([], 1)], 9), "name"),
+        NBTFile(ListTag([ListTag([], 1)], 9), "name"),
         b"\t\x00\x04name\t\x00\x00\x00\x01\x01\x00\x00\x00\x00",
         b"\t\x04\x00name\t\x01\x00\x00\x00\x01\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d`\xc9K\xccM\xe5d```d\x04\x12\x0c\x002OQ+\x11\x00\x00\x00",
@@ -982,7 +982,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[[]]",
     ),
     (
-        NBTFile(TAG_List([TAG_Compound({})], 10), "name"),
+        NBTFile(ListTag([CompoundTag({})], 10), "name"),
         b"\t\x00\x04name\n\x00\x00\x00\x01\x00",
         b"\t\x04\x00name\n\x01\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3d`\xc9K\xccM\xe5b```d\x00\x00\xc3Z\xee\x96\r\x00\x00\x00",
@@ -990,7 +990,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "[{}]",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Byte(5)}), "name"),
+        NBTFile(CompoundTag({"key": ByteTag(5)}), "name"),
         b"\n\x00\x04name\x01\x00\x03key\x05\x00",
         b"\n\x04\x00name\x01\x03\x00key\x05\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b`\xc9K\xccMed`\xceN\xadde\x00\x00e=\xc2\x9c\x0f\x00\x00\x00",
@@ -998,7 +998,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: 5b}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Byte(-5)}), "name"),
+        NBTFile(CompoundTag({"key": ByteTag(-5)}), "name"),
         b"\n\x00\x04name\x01\x00\x03key\xfb\x00",
         b"\n\x04\x00name\x01\x03\x00key\xfb\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b`\xc9K\xccMed`\xceN\xad\xfc\xcd\x00\x00V\xf1\xfd\x16\x0f\x00\x00\x00",
@@ -1006,7 +1006,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: -5b}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Short(5)}), "name"),
+        NBTFile(CompoundTag({"key": ShortTag(5)}), "name"),
         b"\n\x00\x04name\x02\x00\x03key\x00\x05\x00",
         b"\n\x04\x00name\x02\x03\x00key\x05\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b`\xc9K\xccMeb`\xceN\xadd`e\x00\x00\x0c\xb2w\xad\x10\x00\x00\x00",
@@ -1014,7 +1014,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: 5s}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Short(-5)}), "name"),
+        NBTFile(CompoundTag({"key": ShortTag(-5)}), "name"),
         b"\n\x00\x04name\x02\x00\x03key\xff\xfb\x00",
         b"\n\x04\x00name\x02\x03\x00key\xfb\xff\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b`\xc9K\xccMeb`\xceN\xad\xfc\xff\x9b\x01\x00\xd2J\xd0\x99\x10\x00\x00\x00",
@@ -1022,7 +1022,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: -5s}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Int(5)}), "name"),
+        NBTFile(CompoundTag({"key": IntTag(5)}), "name"),
         b"\n\x00\x04name\x03\x00\x03key\x00\x00\x00\x05\x00",
         b"\n\x04\x00name\x03\x03\x00key\x05\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b`\xc9K\xccMef`\xceN\xadd```e\x00\x00\x93\xf9$C\x12\x00\x00\x00",
@@ -1030,7 +1030,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: 5}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Int(-5)}), "name"),
+        NBTFile(CompoundTag({"key": IntTag(-5)}), "name"),
         b"\n\x00\x04name\x03\x00\x03key\xff\xff\xff\xfb\x00",
         b"\n\x04\x00name\x03\x03\x00key\xfb\xff\xff\xff\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b`\xc9K\xccMef`\xceN\xad\xfc\xff\xff\xffo\x06\x000\xc0\xe2c\x12\x00\x00\x00",
@@ -1038,7 +1038,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: -5}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Long(5)}), "name"),
+        NBTFile(CompoundTag({"key": LongTag(5)}), "name"),
         b"\n\x00\x04name\x04\x00\x03key\x00\x00\x00\x00\x00\x00\x00\x05\x00",
         b"\n\x04\x00name\x04\x03\x00key\x05\x00\x00\x00\x00\x00\x00\x00\x00",
         b'\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b`\xc9K\xccMea`\xceN\xadd\x80\x00V\x06\x00iB"\x9c\x16\x00\x00\x00',
@@ -1046,7 +1046,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: 5L}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Long(-5)}), "name"),
+        NBTFile(CompoundTag({"key": LongTag(-5)}), "name"),
         b"\n\x00\x04name\x04\x00\x03key\xff\xff\xff\xff\xff\xff\xff\xfb\x00",
         b"\n\x04\x00name\x04\x03\x00key\xfb\xff\xff\xff\xff\xff\xff\xff\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b`\xc9K\xccMea`\xceN\xad\xfc\x0f\x01\xbf\x19\x00\x9b\x90\x12\xa5\x16\x00\x00\x00",
@@ -1054,7 +1054,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: -5L}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Float(5.0)}), "name"),
+        NBTFile(CompoundTag({"key": FloatTag(5.0)}), "name"),
         b"\n\x00\x04name\x05\x00\x03key@\xa0\x00\x00\x00",
         b"\n\x04\x00name\x05\x03\x00key\x00\x00\xa0@\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b`\xc9K\xccMee`\xceN\xadtX\xc0\xc0\xc0\x00\x00\xd9\x86~\xc3\x12\x00\x00\x00",
@@ -1062,7 +1062,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: 5.0f}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Float(-5.0)}), "name"),
+        NBTFile(CompoundTag({"key": FloatTag(-5.0)}), "name"),
         b"\n\x00\x04name\x05\x00\x03key\xc0\xa0\x00\x00\x00",
         b"\n\x04\x00name\x05\x03\x00key\x00\x00\xa0\xc0\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b`\xc9K\xccMee`\xceN\xad<\xb0\x80\x81\x81\x01\x00K6\x98r\x12\x00\x00\x00",
@@ -1070,7 +1070,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: -5.0f}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Double(5.0)}), "name"),
+        NBTFile(CompoundTag({"key": DoubleTag(5.0)}), "name"),
         b"\n\x00\x04name\x06\x00\x03key@\x14\x00\x00\x00\x00\x00\x00\x00",
         b"\n\x04\x00name\x06\x03\x00key\x00\x00\x00\x00\x00\x00\x14@\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b`\xc9K\xccMec`\xceN\xadt\x10a\x80\x00\x00k;\xb0o\x16\x00\x00\x00",
@@ -1078,7 +1078,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: 5.0d}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Double(-5.0)}), "name"),
+        NBTFile(CompoundTag({"key": DoubleTag(-5.0)}), "name"),
         b"\n\x00\x04name\x06\x00\x03key\xc0\x14\x00\x00\x00\x00\x00\x00\x00",
         b"\n\x04\x00name\x06\x03\x00key\x00\x00\x00\x00\x00\x00\x14\xc0\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b`\xc9K\xccMec`\xceN\xad< \xc2\x00\x01\x00$;\xe5\t\x16\x00\x00\x00",
@@ -1086,7 +1086,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: -5.0d}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Byte_Array([])}), "name"),
+        NBTFile(CompoundTag({"key": ByteArrayTag([])}), "name"),
         b"\n\x00\x04name\x07\x00\x03key\x00\x00\x00\x00\x00",
         b"\n\x04\x00name\x07\x03\x00key\x00\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b`\xc9K\xccMeg`\xceN\xadd\x00\x01\x00T~\x8a\x8e\x12\x00\x00\x00",
@@ -1094,7 +1094,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: [B;]}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Byte_Array([5, 6, 7])}), "name"),
+        NBTFile(CompoundTag({"key": ByteArrayTag([5, 6, 7])}), "name"),
         b"\n\x00\x04name\x07\x00\x03key\x00\x00\x00\x03\x05\x06\x07\x00",
         b"\n\x04\x00name\x07\x03\x00key\x03\x00\x00\x00\x05\x06\x07\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b`\xc9K\xccMeg`\xceN\xadd```fecg\x00\x00!\x01\x97\x13\x15\x00\x00\x00",
@@ -1102,7 +1102,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: [B;5B, 6B, 7B]}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Byte_Array([-5, -6, -7])}), "name"),
+        NBTFile(CompoundTag({"key": ByteArrayTag([-5, -6, -7])}), "name"),
         b"\n\x00\x04name\x07\x00\x03key\x00\x00\x00\x03\xfb\xfa\xf9\x00",
         b"\n\x04\x00name\x07\x03\x00key\x03\x00\x00\x00\xfb\xfa\xf9\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b`\xc9K\xccMeg`\xceN\xadd```\xfe\xfd\xeb'\x03\x002&\xcfC\x15\x00\x00\x00",
@@ -1110,7 +1110,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: [B;-5B, -6B, -7B]}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Int_Array([])}), "name"),
+        NBTFile(CompoundTag({"key": IntArrayTag([])}), "name"),
         b"\n\x00\x04name\x0b\x00\x03key\x00\x00\x00\x00\x00",
         b"\n\x04\x00name\x0b\x03\x00key\x00\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b`\xc9K\xccM\xe5f`\xceN\xadd\x00\x01\x00\x93\xec\x90\x84\x12\x00\x00\x00",
@@ -1118,7 +1118,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: [I;]}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Int_Array([5, 6, 7])}), "name"),
+        NBTFile(CompoundTag({"key": IntArrayTag([5, 6, 7])}), "name"),
         b"\n\x00\x04name\x0b\x00\x03key\x00\x00\x00\x03\x00\x00\x00\x05\x00\x00\x00\x06\x00\x00\x00\x07\x00",
         b"\n\x04\x00name\x0b\x03\x00key\x03\x00\x00\x00\x05\x00\x00\x00\x06\x00\x00\x00\x07\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b`\xc9K\xccM\xe5f`\xceN\xadd```\x06bV f\x03bv\x06\x00\x0c\xe5\xf9\xb4\x1e\x00\x00\x00",
@@ -1126,7 +1126,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: [I;5, 6, 7]}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Int_Array([-5, -6, -7])}), "name"),
+        NBTFile(CompoundTag({"key": IntArrayTag([-5, -6, -7])}), "name"),
         b"\n\x00\x04name\x0b\x00\x03key\x00\x00\x00\x03\xff\xff\xff\xfb\xff\xff\xff\xfa\xff\xff\xff\xf9\x00",
         b"\n\x04\x00name\x0b\x03\x00key\x03\x00\x00\x00\xfb\xff\xff\xff\xfa\xff\xff\xff\xf9\xff\xff\xff\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b`\xc9K\xccM\xe5f`\xceN\xadd```\xfe\xff\xff\xffo \xfe\x05\xc4?\x19\x00\x13\x97\x14\x14\x1e\x00\x00\x00",
@@ -1134,7 +1134,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: [I;-5, -6, -7]}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Long_Array([])}), "name"),
+        NBTFile(CompoundTag({"key": LongArrayTag([])}), "name"),
         b"\n\x00\x04name\x0c\x00\x03key\x00\x00\x00\x00\x00",
         b"\n\x04\x00name\x0c\x03\x00key\x00\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b`\xc9K\xccM\xe5a`\xceN\xadd\x00\x01\x00\x10\xf9\xab\xad\x12\x00\x00\x00",
@@ -1142,7 +1142,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: [L;]}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Long_Array([5, 6, 7])}), "name"),
+        NBTFile(CompoundTag({"key": LongArrayTag([5, 6, 7])}), "name"),
         b"\n\x00\x04name\x0c\x00\x03key\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00\x05\x00\x00\x00\x00\x00\x00\x00\x06\x00\x00\x00\x00\x00\x00\x00\x07\x00",
         b"\n\x04\x00name\x0c\x03\x00key\x03\x00\x00\x00\x05\x00\x00\x00\x00\x00\x00\x00\x06\x00\x00\x00\x00\x00\x00\x00\x07\x00\x00\x00\x00\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b`\xc9K\xccM\xe5a`\xceN\xadd```f\x80\x00V(\xcd\x06\xa5\xd9\x19\x00\x90\xb9\xb8T*\x00\x00\x00",
@@ -1150,7 +1150,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: [L;5L, 6L, 7L]}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Long_Array([-5, -6, -7])}), "name"),
+        NBTFile(CompoundTag({"key": LongArrayTag([-5, -6, -7])}), "name"),
         b"\n\x00\x04name\x0c\x00\x03key\x00\x00\x00\x03\xff\xff\xff\xff\xff\xff\xff\xfb\xff\xff\xff\xff\xff\xff\xff\xfa\xff\xff\xff\xff\xff\xff\xff\xf9\x00",
         b"\n\x04\x00name\x0c\x03\x00key\x03\x00\x00\x00\xfb\xff\xff\xff\xff\xff\xff\xff\xfa\xff\xff\xff\xff\xff\xff\xff\xf9\xff\xff\xff\xff\xff\xff\xff\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b`\xc9K\xccM\xe5a`\xceN\xadd```\xfe\x0f\x01\xbf\xa1\xf4/(\xfd\x93\x01\x00\xbb\x1a\xbd\x07*\x00\x00\x00",
@@ -1158,7 +1158,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: [L;-5L, -6L, -7L]}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_String("value")}), "name"),
+        NBTFile(CompoundTag({"key": StringTag("value")}), "name"),
         b"\n\x00\x04name\x08\x00\x03key\x00\x05value\x00",
         b"\n\x04\x00name\x08\x03\x00key\x05\x00value\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b`\xc9K\xccM\xe5``\xceN\xadd`-K\xcc)Me\x00\x00$7\xe0n\x15\x00\x00\x00",
@@ -1166,7 +1166,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         '{key: "value"}',
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_List([], 1)}), "name"),
+        NBTFile(CompoundTag({"key": ListTag([], 1)}), "name"),
         b"\n\x00\x04name\t\x00\x03key\x01\x00\x00\x00\x00\x00",
         b"\n\x04\x00name\t\x03\x00key\x01\x00\x00\x00\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b`\xc9K\xccM\xe5d`\xceN\xaddd\x00\x01\x00\xa5\xf0\xe7\x9c\x13\x00\x00\x00",
@@ -1174,7 +1174,7 @@ binary_data: List[Tuple[NBTFile, bytes, bytes]] = [
         "{key: []}",
     ),
     (
-        NBTFile(TAG_Compound({"key": TAG_Compound({})}), "name"),
+        NBTFile(CompoundTag({"key": CompoundTag({})}), "name"),
         b"\n\x00\x04name\n\x00\x03key\x00\x00",
         b"\n\x04\x00name\n\x03\x00key\x00\x00",
         b"\x1f\x8b\x08\x00)\x83va\x02\xff\xe3b`\xc9K\xccM\xe5b`\xceN\xadd`\x00\x00v\xd5\xdf\xbc\x0f\x00\x00\x00",

@@ -9,12 +9,12 @@ from typing import (
 )
 from .numeric import BaseNumericTag
 from .float import BaseFloatTag
-from .string import TAG_String
+from .string import StringTag
 
 Num = Union[int, float, BaseNumericTag]
 Int = Union[int, "BaseIntTag"]
 Float = Union[float, BaseFloatTag]
-Str = Union[str, TAG_String]
+Str = Union[str, StringTag]
 
 class BaseIntTag(BaseNumericTag, int):
     # type modifications from numeric
@@ -145,19 +145,19 @@ class BaseIntTag(BaseNumericTag, int):
     def __index__(self) -> int:
         raise NotImplementedError
 
-class TAG_Byte(BaseIntTag): ...
-class TAG_Short(BaseIntTag): ...
-class TAG_Int(BaseIntTag): ...
-class TAG_Long(BaseIntTag): ...
+class ByteTag(BaseIntTag): ...
+class ShortTag(BaseIntTag): ...
+class IntTag(BaseIntTag): ...
+class LongTag(BaseIntTag): ...
 
-class Named_TAG_Byte(TAG_Byte):
+class NamedByteTag(ByteTag):
     name: str
 
-class Named_TAG_Short(TAG_Short):
+class NamedShortTag(ShortTag):
     name: str
 
-class Named_TAG_Int(TAG_Int):
+class NamedIntTag(IntTag):
     name: str
 
-class Named_TAG_Long(TAG_Long):
+class NamedLongTag(LongTag):
     name: str

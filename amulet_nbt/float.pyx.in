@@ -13,55 +13,55 @@ cdef class BaseFloatTag(BaseNumericTag):
     pass
 
 
-cdef class TAG_Float(BaseFloatTag):
+cdef class FloatTag(BaseFloatTag):
     """A class that behaves like a float but is stored as a single precision float."""
     tag_id = ID_FLOAT
 
-    def __init__(TAG_Float self, value = 0):
+    def __init__(FloatTag self, value = 0):
         self.value_ = float(value)
 
-{{include("amulet_nbt/BaseFloatTag.pyx.in", cls_name="TAG_Float")}}
+{{include("amulet_nbt/BaseFloatTag.pyx.in", cls_name="FloatTag")}}
 
-    cdef str _to_snbt(TAG_Float self):
+    cdef str _to_snbt(FloatTag self):
         return f"{self.value_}f"
 
-    cdef void write_payload(TAG_Float self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(FloatTag self, object buffer: BytesIO, bint little_endian) except *:
         write_float(self.value_, buffer, little_endian)
 
     @staticmethod
-    cdef TAG_Float read_payload(BufferContext buffer, bint little_endian):
+    cdef FloatTag read_payload(BufferContext buffer, bint little_endian):
         cdef float*pointer = <float*> read_data(buffer, 4)
-        cdef TAG_Float tag = TAG_Float.__new__(TAG_Float)
+        cdef FloatTag tag = FloatTag.__new__(FloatTag)
         tag.value_ = pointer[0]
         to_little_endian(&tag.value_, 4, little_endian)
         return tag
 
 
-cdef class TAG_Double(BaseFloatTag):
+cdef class DoubleTag(BaseFloatTag):
     """A class that behaves like a float but is stored as a double precision float."""
     tag_id = ID_DOUBLE
 
-    def __init__(TAG_Double self, value = 0):
+    def __init__(DoubleTag self, value = 0):
         self.value_ = float(value)
 
-{{include("amulet_nbt/BaseNumericTag.pyx.in", cls_name="TAG_Double")}}
+{{include("amulet_nbt/BaseNumericTag.pyx.in", cls_name="DoubleTag")}}
 
-    cdef str _to_snbt(TAG_Double self):
+    cdef str _to_snbt(DoubleTag self):
         return f"{self.value_}d"
 
-    cdef void write_payload(TAG_Double self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(DoubleTag self, object buffer: BytesIO, bint little_endian) except *:
         write_double(self.value_, buffer, little_endian)
 
     @staticmethod
-    cdef TAG_Double read_payload(BufferContext buffer, bint little_endian):
+    cdef DoubleTag read_payload(BufferContext buffer, bint little_endian):
         cdef double *pointer = <double *> read_data(buffer, 8)
-        cdef TAG_Double tag = TAG_Double.__new__(TAG_Double)
+        cdef DoubleTag tag = DoubleTag.__new__(DoubleTag)
         tag.value_ = pointer[0]
         to_little_endian(&tag.value_, 8, little_endian)
         return tag
 
 
-{{include("amulet_nbt/BaseNamedTag.pyx.in", TAG_Name="TAG_Float", default_type="0")}}
+{{include("amulet_nbt/BaseNamedTag.pyx.in", TAG_Name="FloatTag", default_type="0")}}
 
 
-{{include("amulet_nbt/BaseNamedTag.pyx.in", TAG_Name="TAG_Double", default_type="0")}}
+{{include("amulet_nbt/BaseNamedTag.pyx.in", TAG_Name="DoubleTag", default_type="0")}}

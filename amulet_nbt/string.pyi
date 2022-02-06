@@ -1,7 +1,7 @@
 from typing import Union, Iterator, Any
 from .value import BaseImmutableTag
 
-class TAG_String(BaseImmutableTag, str):
+class StringTag(BaseImmutableTag, str):
     def __add__(self, s: str) -> str:
         raise NotImplementedError
     def __contains__(self, o: str) -> bool:
@@ -33,5 +33,5 @@ class TAG_String(BaseImmutableTag, str):
     def __rmul__(self, n: int) -> str:
         raise NotImplementedError
 
-class Named_TAG_String(TAG_String):
+class NamedStringTag(StringTag):
     name: str

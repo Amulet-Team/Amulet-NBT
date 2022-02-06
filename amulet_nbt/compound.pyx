@@ -11,17 +11,17 @@ from .load_nbt cimport load_payload
 NON_QUOTED_KEY = re.compile('[A-Za-z0-9._+-]+')
 
 
-cdef class TAG_Compound(BaseMutableTag):
+cdef class CompoundTag(BaseMutableTag):
     """
     This class behaves like a python dictionary.
     All keys must be strings and all values must be NBT data types.
     """
     tag_id = ID_COMPOUND
 
-    def __init__(TAG_Compound self, object value = (), **kwvals):
+    def __init__(CompoundTag self, object value = (), **kwvals):
         cdef dict dict_value = dict(value)
         dict_value.update(kwvals)
-        TAG_Compound._check_dict(dict_value)
+        CompoundTag._check_dict(dict_value)
         self.value_ = dict_value
 
     def get(self, key, default=None):
@@ -52,38 +52,38 @@ cdef class TAG_Compound(BaseMutableTag):
         return self.value_.items(*args, **kwargs)
     items.__doc__ = dict.items.__doc__
     
-    def __str__(TAG_Compound self):
+    def __str__(CompoundTag self):
         return str(self.value_)
 
-    def __dir__(TAG_Compound self):
+    def __dir__(CompoundTag self):
         return list(set(list(super().__dir__()) + dir(self.value_)))
 
-    def __eq__(TAG_Compound self, other):
+    def __eq__(CompoundTag self, other):
         return self.value_ == other
 
-    def __ge__(TAG_Compound self, other):
+    def __ge__(CompoundTag self, other):
         return self.value_ >= other
 
-    def __gt__(TAG_Compound self, other):
+    def __gt__(CompoundTag self, other):
         return self.value_ > other
 
-    def __le__(TAG_Compound self, other):
+    def __le__(CompoundTag self, other):
         return self.value_ <= other
 
-    def __lt__(TAG_Compound self, other):
+    def __lt__(CompoundTag self, other):
         return self.value_ < other
 
-    def __reduce__(TAG_Compound self):
+    def __reduce__(CompoundTag self):
         return self.__class__, (self.value_,)
 
-    def __deepcopy__(TAG_Compound self, memo=None):
+    def __deepcopy__(CompoundTag self, memo=None):
         return self.__class__(deepcopy(self.value_, memo=memo))
 
-    def __copy__(TAG_Compound self):
+    def __copy__(CompoundTag self):
         return self.__class__(self.value_)
 
     @property
-    def value(TAG_Compound self):
+    def value(CompoundTag self):
         """
         A copy of the data stored in the class.
         Use the public API to modify the data within the class.
@@ -95,8 +95,8 @@ cdef class TAG_Compound(BaseMutableTag):
     @staticmethod
     def fromkeys(object keys, BaseTag value=None):
         cdef dict dict_value = dict.fromkeys(keys, value)
-        TAG_Compound._check_dict(dict_value)
-        cdef TAG_Compound compound = TAG_Compound.__new__(TAG_Compound)
+        CompoundTag._check_dict(dict_value)
+        cdef CompoundTag compound = CompoundTag.__new__(CompoundTag)
         compound.value_ = dict_value
         return compound
     fromkeys.__func__.__doc__ = dict.fromkeys.__doc__
@@ -109,7 +109,7 @@ cdef class TAG_Compound(BaseMutableTag):
             if key is None or val is None:
                 raise TypeError()
 
-    cdef str _to_snbt(TAG_Compound self):
+    cdef str _to_snbt(CompoundTag self):
         cdef str name
         cdef BaseTag elem
         cdef list tags = []
@@ -121,7 +121,7 @@ cdef class TAG_Compound(BaseMutableTag):
                 tags.append(f'{name}: {elem.to_snbt()}')
         return f"{{{CommaSpace.join(tags)}}}"
 
-    cdef str _pretty_to_snbt(TAG_Compound self, str indent_chr, int indent_count=0, bint leading_indent=True):
+    cdef str _pretty_to_snbt(CompoundTag self, str indent_chr, int indent_count=0, bint leading_indent=True):
         cdef str name
         cdef BaseTag elem
         cdef list tags = []
@@ -133,7 +133,7 @@ cdef class TAG_Compound(BaseMutableTag):
         else:
             return f"{indent_chr * indent_count * leading_indent}{{}}"
 
-    cdef void write_payload(TAG_Compound self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(CompoundTag self, object buffer: BytesIO, bint little_endian) except *:
         cdef str key
         cdef BaseTag tag
 
@@ -142,9 +142,9 @@ cdef class TAG_Compound(BaseMutableTag):
         write_byte(ID_END, buffer)
 
     @staticmethod
-    cdef TAG_Compound read_payload(BufferContext buffer, bint little_endian):
+    cdef CompoundTag read_payload(BufferContext buffer, bint little_endian):
         cdef char tag_type
-        cdef TAG_Compound tag = TAG_Compound()
+        cdef CompoundTag tag = CompoundTag()
         cdef str name
         cdef BaseTag child_tag
 
@@ -158,11 +158,11 @@ cdef class TAG_Compound(BaseMutableTag):
                 tag[name] = child_tag
         return tag
 
-    cpdef bint strict_equals(TAG_Compound self, other):
+    cpdef bint strict_equals(CompoundTag self, other):
         """Does the data and data type match the other object."""
         cdef str self_key, other_key
         if (
-                isinstance(other, TAG_Compound)
+                isinstance(other, CompoundTag)
                 and self.keys() == other.keys()
         ):
             for self_key, other_key in zip(self, other):
@@ -171,43 +171,43 @@ cdef class TAG_Compound(BaseMutableTag):
             return True
         return False
 
-    def __repr__(TAG_Compound self):
+    def __repr__(CompoundTag self):
         return f"{self.__class__.__name__}({repr(self.value_)})"
 
-    def __getitem__(TAG_Compound self, str key not None) -> BaseTag:
+    def __getitem__(CompoundTag self, str key not None) -> BaseTag:
         return self.value_[key]
 
-    def __setitem__(TAG_Compound self, str key not None, BaseTag value not None):
+    def __setitem__(CompoundTag self, str key not None, BaseTag value not None):
         self.value_[key] = value
 
-    def setdefault(TAG_Compound self, str key not None, BaseTag value not None):
+    def setdefault(CompoundTag self, str key not None, BaseTag value not None):
         return self.value_.setdefault(key, value)
     setdefault.__doc__ = dict.setdefault.__doc__
 
-    def update(TAG_Compound self, object other=(), **others):
+    def update(CompoundTag self, object other=(), **others):
         cdef dict dict_other = dict(other)
         dict_other.update(others)
-        TAG_Compound._check_dict(dict_other)
+        CompoundTag._check_dict(dict_other)
         self.value_.update(dict_other)
     update.__doc__ = dict.update.__doc__
 
-    def __delitem__(TAG_Compound self, str key not None):
+    def __delitem__(CompoundTag self, str key not None):
         del self.value_[key]
 
-    def __iter__(TAG_Compound self) -> Iterator[str]:
+    def __iter__(CompoundTag self) -> Iterator[str]:
         yield from self.value_
 
-    def __contains__(TAG_Compound self, object key) -> bool:
+    def __contains__(CompoundTag self, object key) -> bool:
         return key in self.value_
 
-    def __len__(TAG_Compound self) -> int:
+    def __len__(CompoundTag self) -> int:
         return self.value_.__len__()
 
-    def __reversed__(TAG_Compound self):
+    def __reversed__(CompoundTag self):
         return reversed(self.value_)
 
 
-cdef class Named_TAG_Compound(TAG_Compound):
+cdef class Named_CompoundTag(CompoundTag):
     def __init__(self, object value=(), str name=""):
         super().__init__(value)
         self.name = name
@@ -241,8 +241,8 @@ cdef class Named_TAG_Compound(TAG_Compound):
         )
 
     def __eq__(self, other):
-        if isinstance(other, TAG_Compound) and super().__eq__(other):
-            if isinstance(other, Named_TAG_Compound):
+        if isinstance(other, CompoundTag) and super().__eq__(other):
+            if isinstance(other, Named_CompoundTag):
                 return self.name == other.name
             return True
         return False
@@ -254,13 +254,13 @@ cdef class Named_TAG_Compound(TAG_Compound):
         return list(set(list(super().__dir__()) + dir(self.value_)))
 
     def __copy__(self):
-        return Named_TAG_Compound(self.value_, self.name)
+        return Named_CompoundTag(self.value_, self.name)
 
     def __deepcopy__(self, memodict=None):
-        return Named_TAG_Compound(
+        return Named_CompoundTag(
             deepcopy(self.value),
             self.name
         )
 
     def __reduce__(self):
-        return Named_TAG_Compound, (self.value, self.name)
+        return Named_CompoundTag, (self.value, self.name)

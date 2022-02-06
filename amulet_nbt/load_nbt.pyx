@@ -8,12 +8,12 @@ from .errors import NBTLoadError
 from .nbtfile cimport NBTFile
 from .util cimport BufferContext, read_string, read_byte
 from .value cimport BaseTag
-from .int cimport TAG_Byte, TAG_Short, TAG_Int, TAG_Long
-from .float cimport TAG_Float, TAG_Double
-from .array cimport TAG_Byte_Array, TAG_Int_Array, TAG_Long_Array
-from .string cimport TAG_String
-from .list cimport TAG_List
-from .compound cimport TAG_Compound
+from .int cimport ByteTag, ShortTag, IntTag, LongTag
+from .float cimport FloatTag, DoubleTag
+from .array cimport ByteArrayTag, IntArrayTag, LongArrayTag
+from .string cimport StringTag
+from .list cimport ListTag
+from .compound cimport CompoundTag
 
 
 cpdef inline bytes safe_gunzip(bytes data):
@@ -59,29 +59,29 @@ cdef BufferContext get_buffer(
 
 cdef BaseTag load_payload(BufferContext buffer, char tag_type, bint little_endian):
     if tag_type == 1:
-        return TAG_Byte.read_payload(buffer, little_endian)
+        return ByteTag.read_payload(buffer, little_endian)
     elif tag_type == 2:
-        return TAG_Short.read_payload(buffer, little_endian)
+        return ShortTag.read_payload(buffer, little_endian)
     elif tag_type == 3:
-        return TAG_Int.read_payload(buffer, little_endian)
+        return IntTag.read_payload(buffer, little_endian)
     elif tag_type == 4:
-        return TAG_Long.read_payload(buffer, little_endian)
+        return LongTag.read_payload(buffer, little_endian)
     elif tag_type == 5:
-        return TAG_Float.read_payload(buffer, little_endian)
+        return FloatTag.read_payload(buffer, little_endian)
     elif tag_type == 6:
-        return TAG_Double.read_payload(buffer, little_endian)
+        return DoubleTag.read_payload(buffer, little_endian)
     elif tag_type == 7:
-        return TAG_Byte_Array.read_payload(buffer, little_endian)
+        return ByteArrayTag.read_payload(buffer, little_endian)
     elif tag_type == 8:
-        return TAG_String.read_payload(buffer, little_endian)
+        return StringTag.read_payload(buffer, little_endian)
     elif tag_type == 9:
-        return TAG_List.read_payload(buffer, little_endian)
+        return ListTag.read_payload(buffer, little_endian)
     elif tag_type == 10:
-        return TAG_Compound.read_payload(buffer, little_endian)
+        return CompoundTag.read_payload(buffer, little_endian)
     elif tag_type == 11:
-        return TAG_Int_Array.read_payload(buffer, little_endian)
+        return IntArrayTag.read_payload(buffer, little_endian)
     elif tag_type == 12:
-        return TAG_Long_Array.read_payload(buffer, little_endian)
+        return LongArrayTag.read_payload(buffer, little_endian)
     else:
         raise NBTLoadError(f"Tag {tag_type} does not exist.")
 

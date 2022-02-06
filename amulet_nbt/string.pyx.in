@@ -13,11 +13,11 @@ cdef inline escape(str string):
     return string.replace('\\', '\\\\').replace('"', '\\"')
 
 
-cdef class TAG_String(BaseImmutableTag):
+cdef class StringTag(BaseImmutableTag):
     """A class that behaves like a string."""
     tag_id = ID_STRING
 
-    def __init__(TAG_String self, value = ""):
+    def __init__(StringTag self, value = ""):
         self.value_ = str(value)
 
 {{gen_wrapper(
@@ -67,87 +67,87 @@ cdef class TAG_String(BaseImmutableTag):
         "zfill",
     ]
 )}}
-{{include("amulet_nbt/BaseImmutableTag.pyx.in", cls_name="TAG_String")}}
+{{include("amulet_nbt/BaseImmutableTag.pyx.in", cls_name="StringTag")}}
 
-    def join(TAG_String self, iterable: Iterable[str]) -> str:
+    def join(StringTag self, iterable: Iterable[str]) -> str:
         return self.value_.join([str(s) for s in iterable])
     join.__doc__ = str.join.__doc__
 
-    def partition(TAG_String self, sep):
+    def partition(StringTag self, sep):
         return self.value_.partition(str(sep))
     partition.__doc__ = str.partition.__doc__
 
-    def rpartition(TAG_String self, sep):
+    def rpartition(StringTag self, sep):
         return self.value_.rpartition(str(sep))
     rpartition.__doc__ = str.rpartition.__doc__
 
     if sys.version_info >= (3, 9):
-        def removeprefix(TAG_String self, prefix: str) -> str:
+        def removeprefix(StringTag self, prefix: str) -> str:
             return self.value_.removeprefix(prefix)
         removeprefix.__doc__ = str.removeprefix.__doc__
 
-        def removesuffix(TAG_String self, suffix: str) -> str:
+        def removesuffix(StringTag self, suffix: str) -> str:
             return self.value_.removesuffix(suffix)
         removesuffix.__doc__ = str.removesuffix.__doc__
 
     maketrans = str.maketrans
 
-    def __len__(TAG_String self) -> int:
+    def __len__(StringTag self) -> int:
         return len(self.value_)
 
-    def __repr__(TAG_String self):
+    def __repr__(StringTag self):
         return f"{self.__class__.__name__}(\"{self.value_}\")"
 
-    cdef str _to_snbt(TAG_String self):
+    cdef str _to_snbt(StringTag self):
         return f"\"{escape(self.value_)}\""
 
-    cdef void write_payload(TAG_String self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(StringTag self, object buffer: BytesIO, bint little_endian) except *:
         write_string(self.value_, buffer, little_endian)
 
     @staticmethod
-    cdef TAG_String read_payload(BufferContext buffer, bint little_endian):
-        cdef TAG_String tag = TAG_String.__new__(TAG_String)
+    cdef StringTag read_payload(BufferContext buffer, bint little_endian):
+        cdef StringTag tag = StringTag.__new__(StringTag)
         tag.value_ = read_string(buffer, little_endian)
         return tag
 
-    def __getitem__(TAG_String self, item):
+    def __getitem__(StringTag self, item):
         return self.value_.__getitem__(item)
 
-    def __add__(TAG_String self, other):
+    def __add__(StringTag self, other):
         return self.value_ + other
 
-    def __radd__(TAG_String self, other):
+    def __radd__(StringTag self, other):
         return other + self.value_
 
-    def __iadd__(TAG_String self, other):
+    def __iadd__(StringTag self, other):
         res = self + other
         if isinstance(res, str):
             return self.__class__(res)
         return res
 
-    def __mul__(TAG_String self, other):
+    def __mul__(StringTag self, other):
         return self.value_ * other
 
-    def __rmul__(TAG_String self, other):
+    def __rmul__(StringTag self, other):
         return other * self.value_
 
-    def __imul__(TAG_String self, other):
+    def __imul__(StringTag self, other):
         res = self * other
         if isinstance(res, str):
             return self.__class__(res)
         return res
 
-    def __contains__(TAG_String self, o: str) -> bool:
+    def __contains__(StringTag self, o: str) -> bool:
         return o in self.value_
 
-    def __iter__(TAG_String self) -> Iterator[str]:
+    def __iter__(StringTag self) -> Iterator[str]:
         return self.value_.__iter__()
 
-    def __mod__(TAG_String self, x: Any) -> str:
+    def __mod__(StringTag self, x: Any) -> str:
         return self.value_ % x
 
-    def __int__(TAG_String self) -> int:
+    def __int__(StringTag self) -> int:
         return int(self.value_)
 
 
-{{include("amulet_nbt/BaseNamedTag.pyx.in", TAG_Name="TAG_String", default_type='""')}}
+{{include("amulet_nbt/BaseNamedTag.pyx.in", TAG_Name="StringTag", default_type='""')}}

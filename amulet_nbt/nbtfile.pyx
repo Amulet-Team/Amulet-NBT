@@ -3,13 +3,13 @@ from typing import Iterable
 from copy import deepcopy
 
 from .value cimport BaseTag
-from .compound cimport TAG_Compound
+from .compound cimport CompoundTag
 
 
 cdef class NBTFile:
     def __init__(self, BaseTag value=None, str name=""):
         if value is None:
-            value = TAG_Compound()
+            value = CompoundTag()
         self.value = value
         self.name = name
 

@@ -3,14 +3,14 @@ from .numeric cimport BaseNumericTag
 cdef class BaseFloatTag(BaseNumericTag):
     pass
 
-cdef class TAG_Float(BaseFloatTag):
+cdef class FloatTag(BaseFloatTag):
     cdef float value_
 
-cdef class TAG_Double(BaseFloatTag):
+cdef class DoubleTag(BaseFloatTag):
     cdef double value_
 
-cdef class Named_TAG_Float(TAG_Float):
+cdef class NamedFloatTag(FloatTag):
     cdef public str name
 
-cdef class Named_TAG_Double(TAG_Double):
+cdef class NamedDoubleTag(DoubleTag):
     cdef public str name

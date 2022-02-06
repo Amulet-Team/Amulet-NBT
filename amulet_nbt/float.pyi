@@ -49,11 +49,11 @@ class BaseFloatTag(BaseNumericTag, float):
     def __abs__(self) -> float:
         raise NotImplementedError
 
-class TAG_Float(BaseFloatTag): ...
-class TAG_Double(BaseFloatTag): ...
+class FloatTag(BaseFloatTag): ...
+class DoubleTag(BaseFloatTag): ...
 
-class Named_TAG_Float(TAG_Float):
+class NamedFloatTag(FloatTag):
     name: str
 
-class Named_TAG_Double(TAG_Double):
+class NamedDoubleTag(DoubleTag):
     name: str

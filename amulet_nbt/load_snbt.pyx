@@ -4,12 +4,12 @@ cimport numpy
 
 from .errors import SNBTParseError
 from .value cimport BaseTag
-from .int cimport TAG_Byte, TAG_Short, TAG_Int, TAG_Long
-from .float cimport TAG_Float, TAG_Double
-from .array cimport TAG_Byte_Array, TAG_Int_Array, TAG_Long_Array
-from .string cimport TAG_String
-from .list cimport TAG_List
-from .compound cimport TAG_Compound
+from .int cimport ByteTag, ShortTag, IntTag, LongTag
+from .float cimport FloatTag, DoubleTag
+from .array cimport ByteArrayTag, IntArrayTag, LongArrayTag
+from .string cimport StringTag
+from .list cimport ListTag
+from .compound cimport CompoundTag
 
 whitespace = re.compile('[ \t\r\n]*')
 int_numeric = re.compile('-?[0-9]+[bBsSlL]?')
@@ -17,7 +17,7 @@ float_numeric = re.compile('-?[0-9]+\.?[0-9]*[fFdD]?')
 alnumplus = re.compile('[A-Za-z0-9._+-]+')
 comma = re.compile('[ \t\r\n]*,[ \t\r\n]*')
 colon = re.compile('[ \t\r\n]*:[ \t\r\n]*')
-array_lookup = {'B': TAG_Byte_Array, 'I': TAG_Int_Array, 'L': TAG_Long_Array}
+array_lookup = {'B': ByteArrayTag, 'I': IntArrayTag, 'L': LongArrayTag}
 
 cdef int _strip_whitespace(unicode snbt, int index):
     cdef object match
@@ -105,7 +105,7 @@ cdef tuple _parse_snbt_recursive(unicode snbt, int index=0):
             data_[key] = nested_data
 
             index = _strip_comma(snbt, index, '}')
-        data = TAG_Compound(data_)
+        data = CompoundTag(data_)
         # skip the }
         index += 1
 
@@ -156,9 +156,9 @@ cdef tuple _parse_snbt_recursive(unicode snbt, int index=0):
                 index = _strip_comma(snbt, index, ']')
 
             if first_data_type is None:
-                data = TAG_List()
+                data = ListTag()
             else:
-                data = TAG_List(array, first_data_type().tag_id)
+                data = ListTag(array, first_data_type().tag_id)
 
         # skip the ]
         index += 1
@@ -166,33 +166,33 @@ cdef tuple _parse_snbt_recursive(unicode snbt, int index=0):
     else:
         val, strict_str, index = _capture_string(snbt, index)
         if strict_str:
-            data = TAG_String(val)
+            data = StringTag(val)
         else:
             if int_numeric.fullmatch(val) is not None:
                 # we have an int type
                 if val[-1] in {'b', 'B'}:
-                    data = TAG_Byte(int(val[:-1]))
+                    data = ByteTag(int(val[:-1]))
                 elif val[-1] in {'s', 'S'}:
-                    data = TAG_Short(int(val[:-1]))
+                    data = ShortTag(int(val[:-1]))
                 elif val[-1] in {'l', 'L'}:
-                    data = TAG_Long(int(val[:-1]))
+                    data = LongTag(int(val[:-1]))
                 else:
-                    data = TAG_Int(int(val))
+                    data = IntTag(int(val))
             elif float_numeric.fullmatch(val) is not None:
                 # we have a float type
                 if val[-1] in {'f', 'F'}:
-                    data = TAG_Float(float(val[:-1]))
+                    data = FloatTag(float(val[:-1]))
                 elif val[-1] in {'d', 'D'}:
-                    data = TAG_Double(float(val[:-1]))
+                    data = DoubleTag(float(val[:-1]))
                 else:
-                    data = TAG_Double(float(val))
+                    data = DoubleTag(float(val))
             elif val.lower() == "false":
-                data = TAG_Byte(0)
+                data = ByteTag(0)
             elif val.lower() == "true":
-                data = TAG_Byte(1)
+                data = ByteTag(1)
             else:
                 # we just have a string type
-                data = TAG_String(val)
+                data = StringTag(val)
 
     return data, index
 

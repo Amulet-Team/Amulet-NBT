@@ -1,56 +1,56 @@
 from typing import Union
 
-from .int cimport TAG_Byte, TAG_Short, TAG_Int, TAG_Long
-from .float cimport TAG_Float, TAG_Double
+from .int cimport ByteTag, ShortTag, IntTag, LongTag
+from .float cimport FloatTag, DoubleTag
 from .array cimport (
-    TAG_Byte_Array,
-    TAG_Int_Array,
-    TAG_Long_Array,
+    ByteArrayTag,
+    IntArrayTag,
+    LongArrayTag,
 )
-from .string cimport TAG_String
-from .list cimport TAG_List
-from .compound cimport TAG_Compound
+from .string cimport StringTag
+from .list cimport ListTag
+from .compound cimport CompoundTag
 
 SNBTType = str
 
 IntType = Union[
-    TAG_Byte,
-    TAG_Short,
-    TAG_Int,
-    TAG_Long
+    ByteTag,
+    ShortTag,
+    IntTag,
+    LongTag
 ]
 
 FloatType = Union[
-    TAG_Float,
-    TAG_Double
+    FloatTag,
+    DoubleTag
 ]
 
 NumberType = Union[
-    TAG_Byte,
-    TAG_Short,
-    TAG_Int,
-    TAG_Long,
-    TAG_Float,
-    TAG_Double
+    ByteTag,
+    ShortTag,
+    IntTag,
+    LongTag,
+    FloatTag,
+    DoubleTag
 ]
 
 ArrayType = Union[
-    TAG_Byte_Array,
-    TAG_Int_Array,
-    TAG_Long_Array
+    ByteArrayTag,
+    IntArrayTag,
+    LongArrayTag
 ]
 
 AnyNBT = Union[
-    TAG_Byte,
-    TAG_Short,
-    TAG_Int,
-    TAG_Long,
-    TAG_Float,
-    TAG_Double,
-    TAG_Byte_Array,
-    TAG_String,
-    TAG_List,
-    TAG_Compound,
-    TAG_Int_Array,
-    TAG_Long_Array
+    ByteTag,
+    ShortTag,
+    IntTag,
+    LongTag,
+    FloatTag,
+    DoubleTag,
+    ByteArrayTag,
+    StringTag,
+    ListTag,
+    CompoundTag,
+    IntArrayTag,
+    LongArrayTag
 ]

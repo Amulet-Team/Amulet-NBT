@@ -9,7 +9,7 @@ from copy import copy, deepcopy
 from .value cimport BaseMutableTag
 from .const cimport CommaSpace, ID_BYTE_ARRAY, ID_INT_ARRAY, ID_LONG_ARRAY
 from .util cimport write_array, BufferContext, read_int, read_data
-from .list cimport TAG_List
+from .list cimport ListTag
 
 
 cdef class BaseArrayTag(BaseMutableTag):
@@ -687,7 +687,7 @@ cdef class BaseArrayTag(BaseMutableTag):
         return f"{self.__class__.__name__}({list(self.value_)})"
 
     def __eq__(BaseArrayTag self, other):
-        if isinstance(other, (BaseArrayType, numpy.ndarray, list, tuple, TAG_List)):
+        if isinstance(other, (BaseArrayType, numpy.ndarray, list, tuple, ListTag)):
             return numpy.array_equal(self.value_, other)
         return NotImplemented
 
@@ -852,80 +852,80 @@ cdef class BaseArrayTag(BaseMutableTag):
 BaseArrayType = BaseArrayTag
 
 
-cdef class TAG_Byte_Array(BaseArrayTag):
+cdef class ByteArrayTag(BaseArrayTag):
     """This class behaves like an 1D Numpy signed integer array with each value stored in a byte."""
     tag_id = ID_BYTE_ARRAY
     big_endian_data_type = little_endian_data_type = numpy.dtype("int8")
 
-    cdef str _to_snbt(TAG_Byte_Array self):
+    cdef str _to_snbt(ByteArrayTag self):
         cdef int elem
         cdef list tags = []
         for elem in self.value_:
             tags.append(f"{elem}B")
         return f"[B;{CommaSpace.join(tags)}]"
 
-    cdef void write_payload(TAG_Byte_Array self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(ByteArrayTag self, object buffer: BytesIO, bint little_endian) except *:
         write_array(self._as_endianness(little_endian), buffer, 1, little_endian)
 
     @staticmethod
-    cdef TAG_Byte_Array read_payload(BufferContext buffer, bint little_endian):
+    cdef ByteArrayTag read_payload(BufferContext buffer, bint little_endian):
         cdef int length = read_int(buffer, little_endian)
         cdef char*arr = read_data(buffer, length)
-        data_type = TAG_Byte_Array.little_endian_data_type if little_endian else TAG_Byte_Array.big_endian_data_type
-        return TAG_Byte_Array(numpy.frombuffer(arr[:length], dtype=data_type, count=length))
+        data_type = ByteArrayTag.little_endian_data_type if little_endian else ByteArrayTag.big_endian_data_type
+        return ByteArrayTag(numpy.frombuffer(arr[:length], dtype=data_type, count=length))
 
 
-cdef class TAG_Int_Array(BaseArrayTag):
+cdef class IntArrayTag(BaseArrayTag):
     """This class behaves like an 1D Numpy signed integer array with each value stored in a 4 bytes."""
     tag_id = ID_INT_ARRAY
     big_endian_data_type = numpy.dtype(">i4")
     little_endian_data_type = numpy.dtype("<i4")
 
-    cdef str _to_snbt(TAG_Int_Array self):
+    cdef str _to_snbt(IntArrayTag self):
         cdef int elem
         cdef list tags = []
         for elem in self.value_:
             tags.append(str(elem))
         return f"[I;{CommaSpace.join(tags)}]"
 
-    cdef void write_payload(TAG_Int_Array self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(IntArrayTag self, object buffer: BytesIO, bint little_endian) except *:
         write_array(self._as_endianness(little_endian), buffer, 4, little_endian)
 
     @staticmethod
-    cdef TAG_Int_Array read_payload(BufferContext buffer, bint little_endian):
+    cdef IntArrayTag read_payload(BufferContext buffer, bint little_endian):
         cdef int length = read_int(buffer, little_endian)
         cdef int byte_length = length * 4
         cdef char*arr = read_data(buffer, byte_length)
-        cdef object data_type = TAG_Int_Array.little_endian_data_type if little_endian else TAG_Int_Array.big_endian_data_type
-        return TAG_Int_Array(numpy.frombuffer(arr[:byte_length], dtype=data_type, count=length))
+        cdef object data_type = IntArrayTag.little_endian_data_type if little_endian else IntArrayTag.big_endian_data_type
+        return IntArrayTag(numpy.frombuffer(arr[:byte_length], dtype=data_type, count=length))
 
 
-cdef class TAG_Long_Array(BaseArrayTag):
+cdef class LongArrayTag(BaseArrayTag):
     """This class behaves like an 1D Numpy signed integer array with each value stored in a 8 bytes."""
     tag_id = ID_LONG_ARRAY
     big_endian_data_type = numpy.dtype(">i8")
     little_endian_data_type = numpy.dtype("<i8")
 
-    cdef str _to_snbt(TAG_Long_Array self):
+    cdef str _to_snbt(LongArrayTag self):
         cdef long long elem
         cdef list tags = []
         for elem in self.value_:
             tags.append(f"{elem}L")
         return f"[L;{CommaSpace.join(tags)}]"
 
-    cdef void write_payload(TAG_Long_Array self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(LongArrayTag self, object buffer: BytesIO, bint little_endian) except *:
         write_array(self._as_endianness(little_endian), buffer, 8, little_endian)
 
     @staticmethod
-    cdef TAG_Long_Array read_payload(BufferContext buffer, bint little_endian):
+    cdef LongArrayTag read_payload(BufferContext buffer, bint little_endian):
         cdef int length = read_int(buffer, little_endian)
         cdef int byte_length = length * 8
         cdef char*arr = read_data(buffer, byte_length)
-        cdef object data_type = TAG_Long_Array.little_endian_data_type if little_endian else TAG_Long_Array.big_endian_data_type
-        return TAG_Long_Array(numpy.frombuffer(arr[:byte_length], dtype=data_type, count=length))
+        cdef object data_type = LongArrayTag.little_endian_data_type if little_endian else LongArrayTag.big_endian_data_type
+        return LongArrayTag(numpy.frombuffer(arr[:byte_length], dtype=data_type, count=length))
 
 
-cdef class Named_TAG_Byte_Array(TAG_Byte_Array):
+cdef class Named_ByteArrayTag(ByteArrayTag):
     def __init__(self, object value=(), str name=""):
         super().__init__(value)
         self.name = name
@@ -959,8 +959,8 @@ cdef class Named_TAG_Byte_Array(TAG_Byte_Array):
         )
 
     def __eq__(self, other):
-        if isinstance(other, TAG_Byte_Array) and super().__eq__(other):
-            if isinstance(other, Named_TAG_Byte_Array):
+        if isinstance(other, ByteArrayTag) and super().__eq__(other):
+            if isinstance(other, Named_ByteArrayTag):
                 return self.name == other.name
             return True
         return False
@@ -972,19 +972,19 @@ cdef class Named_TAG_Byte_Array(TAG_Byte_Array):
         return list(set(list(super().__dir__()) + dir(self.value_)))
 
     def __copy__(self):
-        return Named_TAG_Byte_Array(self.value_, self.name)
+        return Named_ByteArrayTag(self.value_, self.name)
 
     def __deepcopy__(self, memodict=None):
-        return Named_TAG_Byte_Array(
+        return Named_ByteArrayTag(
             deepcopy(self.value),
             self.name
         )
 
     def __reduce__(self):
-        return Named_TAG_Byte_Array, (self.value, self.name)
+        return Named_ByteArrayTag, (self.value, self.name)
 
 
-cdef class Named_TAG_Int_Array(TAG_Int_Array):
+cdef class Named_IntArrayTag(IntArrayTag):
     def __init__(self, object value=(), str name=""):
         super().__init__(value)
         self.name = name
@@ -1018,8 +1018,8 @@ cdef class Named_TAG_Int_Array(TAG_Int_Array):
         )
 
     def __eq__(self, other):
-        if isinstance(other, TAG_Int_Array) and super().__eq__(other):
-            if isinstance(other, Named_TAG_Int_Array):
+        if isinstance(other, IntArrayTag) and super().__eq__(other):
+            if isinstance(other, Named_IntArrayTag):
                 return self.name == other.name
             return True
         return False
@@ -1031,19 +1031,19 @@ cdef class Named_TAG_Int_Array(TAG_Int_Array):
         return list(set(list(super().__dir__()) + dir(self.value_)))
 
     def __copy__(self):
-        return Named_TAG_Int_Array(self.value_, self.name)
+        return Named_IntArrayTag(self.value_, self.name)
 
     def __deepcopy__(self, memodict=None):
-        return Named_TAG_Int_Array(
+        return Named_IntArrayTag(
             deepcopy(self.value),
             self.name
         )
 
     def __reduce__(self):
-        return Named_TAG_Int_Array, (self.value, self.name)
+        return Named_IntArrayTag, (self.value, self.name)
 
 
-cdef class Named_TAG_Long_Array(TAG_Long_Array):
+cdef class Named_LongArrayTag(LongArrayTag):
     def __init__(self, object value=(), str name=""):
         super().__init__(value)
         self.name = name
@@ -1077,8 +1077,8 @@ cdef class Named_TAG_Long_Array(TAG_Long_Array):
         )
 
     def __eq__(self, other):
-        if isinstance(other, TAG_Long_Array) and super().__eq__(other):
-            if isinstance(other, Named_TAG_Long_Array):
+        if isinstance(other, LongArrayTag) and super().__eq__(other):
+            if isinstance(other, Named_LongArrayTag):
                 return self.name == other.name
             return True
         return False
@@ -1090,13 +1090,13 @@ cdef class Named_TAG_Long_Array(TAG_Long_Array):
         return list(set(list(super().__dir__()) + dir(self.value_)))
 
     def __copy__(self):
-        return Named_TAG_Long_Array(self.value_, self.name)
+        return Named_LongArrayTag(self.value_, self.name)
 
     def __deepcopy__(self, memodict=None):
-        return Named_TAG_Long_Array(
+        return Named_LongArrayTag(
             deepcopy(self.value),
             self.name
         )
 
     def __reduce__(self):
-        return Named_TAG_Long_Array, (self.value, self.name)
+        return Named_LongArrayTag, (self.value, self.name)

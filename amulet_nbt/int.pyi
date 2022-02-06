@@ -149,3 +149,15 @@ class TAG_Byte(BaseIntTag): ...
 class TAG_Short(BaseIntTag): ...
 class TAG_Int(BaseIntTag): ...
 class TAG_Long(BaseIntTag): ...
+
+class Named_TAG_Byte(TAG_Byte):
+    name: str
+
+class Named_TAG_Short(TAG_Short):
+    name: str
+
+class Named_TAG_Int(TAG_Int):
+    name: str
+
+class Named_TAG_Long(TAG_Long):
+    name: str

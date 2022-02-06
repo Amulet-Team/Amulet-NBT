@@ -18,3 +18,15 @@ cdef class TAG_Int(BaseIntTag):
 cdef class TAG_Long(BaseIntTag):
     cdef long long value_
     cdef long long _sanitise_value(self, value)
+
+cdef class Named_TAG_Byte(TAG_Byte):
+    cdef public str name
+
+cdef class Named_TAG_Short(TAG_Short):
+    cdef public str name
+
+cdef class Named_TAG_Int(TAG_Int):
+    cdef public str name
+
+cdef class Named_TAG_Long(TAG_Long):
+    cdef public str name

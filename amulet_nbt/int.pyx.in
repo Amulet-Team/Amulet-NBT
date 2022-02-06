@@ -1,4 +1,4 @@
-from typing import Union, Iterable, SupportsBytes
+from typing import Union, Iterable, SupportsBytes, List
 from io import BytesIO
 from copy import deepcopy
 from math import floor, ceil
@@ -196,3 +196,15 @@ cdef class TAG_Long(BaseIntTag):
         tag.value_ = pointer[0]
         to_little_endian(&tag.value_, 8, little_endian)
         return tag
+
+
+{{include("amulet_nbt/BaseNamedTag.pyx.in", TAG_Name="TAG_Byte", default_type="0")}}
+
+
+{{include("amulet_nbt/BaseNamedTag.pyx.in", TAG_Name="TAG_Short", default_type="0")}}
+
+
+{{include("amulet_nbt/BaseNamedTag.pyx.in", TAG_Name="TAG_Int", default_type="0")}}
+
+
+{{include("amulet_nbt/BaseNamedTag.pyx.in", TAG_Name="TAG_Long", default_type="0")}}

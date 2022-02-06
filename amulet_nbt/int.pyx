@@ -1,4 +1,4 @@
-from typing import Union, Iterable, SupportsBytes
+from typing import Union, Iterable, SupportsBytes, List
 from io import BytesIO
 from copy import deepcopy
 from math import floor, ceil
@@ -1295,3 +1295,239 @@ cdef class TAG_Long(BaseIntTag):
         tag.value_ = pointer[0]
         to_little_endian(&tag.value_, 8, little_endian)
         return tag
+
+
+cdef class Named_TAG_Byte(TAG_Byte):
+    def __init__(self, object value=0, str name=""):
+        super().__init__(value)
+        self.name = name
+
+    def to_nbt(
+        self,
+        *,
+        bint compressed=True,
+        bint little_endian=False,
+        str name="",
+    ):
+        return super().to_nbt(
+            compressed=compressed,
+            little_endian=little_endian,
+            name=name or self.name
+        )
+
+    def save_to(
+        self,
+        object filepath_or_buffer=None,
+        *,
+        bint compressed=True,
+        bint little_endian=False,
+        str name="",
+    ):
+        return super().save_to(
+            filepath_or_buffer,
+            compressed=compressed,
+            little_endian=little_endian,
+            name=name or self.name
+        )
+
+    def __eq__(self, other):
+        if isinstance(other, TAG_Byte) and super().__eq__(other):
+            if isinstance(other, Named_TAG_Byte):
+                return self.name == other.name
+            return True
+        return False
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}({super().__repr__()}, "{self.name}")'
+
+    def __dir__(self) -> List[str]:
+        return list(set(list(super().__dir__()) + dir(self.value_)))
+
+    def __copy__(self):
+        return Named_TAG_Byte(self.value_, self.name)
+
+    def __deepcopy__(self, memodict=None):
+        return Named_TAG_Byte(
+            deepcopy(self.value),
+            self.name
+        )
+
+    def __reduce__(self):
+        return Named_TAG_Byte, (self.value, self.name)
+
+
+cdef class Named_TAG_Short(TAG_Short):
+    def __init__(self, object value=0, str name=""):
+        super().__init__(value)
+        self.name = name
+
+    def to_nbt(
+        self,
+        *,
+        bint compressed=True,
+        bint little_endian=False,
+        str name="",
+    ):
+        return super().to_nbt(
+            compressed=compressed,
+            little_endian=little_endian,
+            name=name or self.name
+        )
+
+    def save_to(
+        self,
+        object filepath_or_buffer=None,
+        *,
+        bint compressed=True,
+        bint little_endian=False,
+        str name="",
+    ):
+        return super().save_to(
+            filepath_or_buffer,
+            compressed=compressed,
+            little_endian=little_endian,
+            name=name or self.name
+        )
+
+    def __eq__(self, other):
+        if isinstance(other, TAG_Short) and super().__eq__(other):
+            if isinstance(other, Named_TAG_Short):
+                return self.name == other.name
+            return True
+        return False
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}({super().__repr__()}, "{self.name}")'
+
+    def __dir__(self) -> List[str]:
+        return list(set(list(super().__dir__()) + dir(self.value_)))
+
+    def __copy__(self):
+        return Named_TAG_Short(self.value_, self.name)
+
+    def __deepcopy__(self, memodict=None):
+        return Named_TAG_Short(
+            deepcopy(self.value),
+            self.name
+        )
+
+    def __reduce__(self):
+        return Named_TAG_Short, (self.value, self.name)
+
+
+cdef class Named_TAG_Int(TAG_Int):
+    def __init__(self, object value=0, str name=""):
+        super().__init__(value)
+        self.name = name
+
+    def to_nbt(
+        self,
+        *,
+        bint compressed=True,
+        bint little_endian=False,
+        str name="",
+    ):
+        return super().to_nbt(
+            compressed=compressed,
+            little_endian=little_endian,
+            name=name or self.name
+        )
+
+    def save_to(
+        self,
+        object filepath_or_buffer=None,
+        *,
+        bint compressed=True,
+        bint little_endian=False,
+        str name="",
+    ):
+        return super().save_to(
+            filepath_or_buffer,
+            compressed=compressed,
+            little_endian=little_endian,
+            name=name or self.name
+        )
+
+    def __eq__(self, other):
+        if isinstance(other, TAG_Int) and super().__eq__(other):
+            if isinstance(other, Named_TAG_Int):
+                return self.name == other.name
+            return True
+        return False
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}({super().__repr__()}, "{self.name}")'
+
+    def __dir__(self) -> List[str]:
+        return list(set(list(super().__dir__()) + dir(self.value_)))
+
+    def __copy__(self):
+        return Named_TAG_Int(self.value_, self.name)
+
+    def __deepcopy__(self, memodict=None):
+        return Named_TAG_Int(
+            deepcopy(self.value),
+            self.name
+        )
+
+    def __reduce__(self):
+        return Named_TAG_Int, (self.value, self.name)
+
+
+cdef class Named_TAG_Long(TAG_Long):
+    def __init__(self, object value=0, str name=""):
+        super().__init__(value)
+        self.name = name
+
+    def to_nbt(
+        self,
+        *,
+        bint compressed=True,
+        bint little_endian=False,
+        str name="",
+    ):
+        return super().to_nbt(
+            compressed=compressed,
+            little_endian=little_endian,
+            name=name or self.name
+        )
+
+    def save_to(
+        self,
+        object filepath_or_buffer=None,
+        *,
+        bint compressed=True,
+        bint little_endian=False,
+        str name="",
+    ):
+        return super().save_to(
+            filepath_or_buffer,
+            compressed=compressed,
+            little_endian=little_endian,
+            name=name or self.name
+        )
+
+    def __eq__(self, other):
+        if isinstance(other, TAG_Long) and super().__eq__(other):
+            if isinstance(other, Named_TAG_Long):
+                return self.name == other.name
+            return True
+        return False
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}({super().__repr__()}, "{self.name}")'
+
+    def __dir__(self) -> List[str]:
+        return list(set(list(super().__dir__()) + dir(self.value_)))
+
+    def __copy__(self):
+        return Named_TAG_Long(self.value_, self.name)
+
+    def __deepcopy__(self, memodict=None):
+        return Named_TAG_Long(
+            deepcopy(self.value),
+            self.name
+        )
+
+    def __reduce__(self):
+        return Named_TAG_Long, (self.value, self.name)

@@ -1,3 +1,4 @@
+from typing import List
 import numpy
 cimport numpy
 from numpy import ndarray
@@ -359,3 +360,12 @@ cdef class TAG_Long_Array(BaseArrayTag):
         cdef char*arr = read_data(buffer, byte_length)
         cdef object data_type = TAG_Long_Array.little_endian_data_type if little_endian else TAG_Long_Array.big_endian_data_type
         return TAG_Long_Array(numpy.frombuffer(arr[:byte_length], dtype=data_type, count=length))
+
+
+{{include("amulet_nbt/BaseNamedTag.pyx.in", TAG_Name="TAG_Byte_Array", default_type="()")}}
+
+
+{{include("amulet_nbt/BaseNamedTag.pyx.in", TAG_Name="TAG_Int_Array", default_type="()")}}
+
+
+{{include("amulet_nbt/BaseNamedTag.pyx.in", TAG_Name="TAG_Long_Array", default_type="()")}}

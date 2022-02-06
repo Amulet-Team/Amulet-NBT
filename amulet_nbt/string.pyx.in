@@ -1,4 +1,4 @@
-from typing import Iterator, Any
+from typing import Iterator, Any, List
 from io import BytesIO
 from copy import deepcopy
 import sys
@@ -148,3 +148,6 @@ cdef class TAG_String(BaseImmutableTag):
 
     def __int__(TAG_String self) -> int:
         return int(self.value_)
+
+
+{{include("amulet_nbt/BaseNamedTag.pyx.in", TAG_Name="TAG_String", default_type='""')}}

@@ -1,3 +1,4 @@
+from typing import List
 from io import BytesIO
 from copy import deepcopy
 from math import floor, ceil
@@ -58,3 +59,9 @@ cdef class TAG_Double(BaseFloatTag):
         tag.value_ = pointer[0]
         to_little_endian(&tag.value_, 8, little_endian)
         return tag
+
+
+{{include("amulet_nbt/BaseNamedTag.pyx.in", TAG_Name="TAG_Float", default_type="0")}}
+
+
+{{include("amulet_nbt/BaseNamedTag.pyx.in", TAG_Name="TAG_Double", default_type="0")}}

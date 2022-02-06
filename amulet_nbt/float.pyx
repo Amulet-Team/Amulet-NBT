@@ -1,3 +1,4 @@
+from typing import List
 from io import BytesIO
 from copy import deepcopy
 from math import floor, ceil
@@ -407,3 +408,121 @@ cdef class TAG_Double(BaseFloatTag):
         tag.value_ = pointer[0]
         to_little_endian(&tag.value_, 8, little_endian)
         return tag
+
+
+cdef class Named_TAG_Float(TAG_Float):
+    def __init__(self, object value=0, str name=""):
+        super().__init__(value)
+        self.name = name
+
+    def to_nbt(
+        self,
+        *,
+        bint compressed=True,
+        bint little_endian=False,
+        str name="",
+    ):
+        return super().to_nbt(
+            compressed=compressed,
+            little_endian=little_endian,
+            name=name or self.name
+        )
+
+    def save_to(
+        self,
+        object filepath_or_buffer=None,
+        *,
+        bint compressed=True,
+        bint little_endian=False,
+        str name="",
+    ):
+        return super().save_to(
+            filepath_or_buffer,
+            compressed=compressed,
+            little_endian=little_endian,
+            name=name or self.name
+        )
+
+    def __eq__(self, other):
+        if isinstance(other, TAG_Float) and super().__eq__(other):
+            if isinstance(other, Named_TAG_Float):
+                return self.name == other.name
+            return True
+        return False
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}({super().__repr__()}, "{self.name}")'
+
+    def __dir__(self) -> List[str]:
+        return list(set(list(super().__dir__()) + dir(self.value_)))
+
+    def __copy__(self):
+        return Named_TAG_Float(self.value_, self.name)
+
+    def __deepcopy__(self, memodict=None):
+        return Named_TAG_Float(
+            deepcopy(self.value),
+            self.name
+        )
+
+    def __reduce__(self):
+        return Named_TAG_Float, (self.value, self.name)
+
+
+cdef class Named_TAG_Double(TAG_Double):
+    def __init__(self, object value=0, str name=""):
+        super().__init__(value)
+        self.name = name
+
+    def to_nbt(
+        self,
+        *,
+        bint compressed=True,
+        bint little_endian=False,
+        str name="",
+    ):
+        return super().to_nbt(
+            compressed=compressed,
+            little_endian=little_endian,
+            name=name or self.name
+        )
+
+    def save_to(
+        self,
+        object filepath_or_buffer=None,
+        *,
+        bint compressed=True,
+        bint little_endian=False,
+        str name="",
+    ):
+        return super().save_to(
+            filepath_or_buffer,
+            compressed=compressed,
+            little_endian=little_endian,
+            name=name or self.name
+        )
+
+    def __eq__(self, other):
+        if isinstance(other, TAG_Double) and super().__eq__(other):
+            if isinstance(other, Named_TAG_Double):
+                return self.name == other.name
+            return True
+        return False
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}({super().__repr__()}, "{self.name}")'
+
+    def __dir__(self) -> List[str]:
+        return list(set(list(super().__dir__()) + dir(self.value_)))
+
+    def __copy__(self):
+        return Named_TAG_Double(self.value_, self.name)
+
+    def __deepcopy__(self, memodict=None):
+        return Named_TAG_Double(
+            deepcopy(self.value),
+            self.name
+        )
+
+    def __reduce__(self):
+        return Named_TAG_Double, (self.value, self.name)

@@ -51,3 +51,9 @@ class BaseFloatTag(BaseNumericTag, float):
 
 class TAG_Float(BaseFloatTag): ...
 class TAG_Double(BaseFloatTag): ...
+
+class Named_TAG_Float(TAG_Float):
+    name: str
+
+class Named_TAG_Double(TAG_Double):
+    name: str

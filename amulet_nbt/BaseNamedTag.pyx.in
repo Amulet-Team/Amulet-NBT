@@ -41,7 +41,7 @@ cdef class Named_{{TAG_Name}}({{TAG_Name}}):
     def __repr__(self):
         return f'{self.__class__.__name__}({super().__repr__()}, "{self.name}")'
 
-    def __dir__(self) -> Iterable[str]:
+    def __dir__(self) -> List[str]:
         return list(set(list(super().__dir__()) + dir(self.value_)))
 
     def __copy__(self):

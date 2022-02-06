@@ -1,13 +1,12 @@
 from io import BytesIO
 import re
-from typing import Iterator
+from typing import Iterator, List
 from copy import copy, deepcopy
 
 from .value cimport BaseTag, BaseMutableTag
 from .const cimport ID_END, ID_COMPOUND, CommaSpace, CommaNewline
 from .util cimport write_byte, BufferContext, read_byte, read_string
 from .load_nbt cimport load_payload
-from .dtype import AnyNBT
 {{py:from tools.tempita import include, gen_wrapper}}
 
 NON_QUOTED_KEY = re.compile('[A-Za-z0-9._+-]+')
@@ -143,7 +142,7 @@ cdef class TAG_Compound(BaseMutableTag):
     def __delitem__(TAG_Compound self, str key not None):
         del self.value_[key]
 
-    def __iter__(TAG_Compound self) -> Iterator[AnyNBT]:
+    def __iter__(TAG_Compound self) -> Iterator[str]:
         yield from self.value_
 
     def __contains__(TAG_Compound self, object key) -> bool:
@@ -154,3 +153,6 @@ cdef class TAG_Compound(BaseMutableTag):
 
     def __reversed__(TAG_Compound self):
         return reversed(self.value_)
+
+
+{{include("amulet_nbt/BaseNamedTag.pyx.in", TAG_Name="TAG_Compound", default_type="()")}}

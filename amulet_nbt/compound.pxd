@@ -6,3 +6,7 @@ cdef class TAG_Compound(BaseMutableTag):
 
     @staticmethod
     cdef _check_dict(dict value)
+
+
+cdef class Named_TAG_Compound(TAG_Compound):
+    cdef public str name

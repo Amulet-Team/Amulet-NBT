@@ -50,13 +50,15 @@ class NBTTests(unittest.TestCase):
     def test_write_big_endian(self):
         for data in binary_data_tuple:
             self.assertEqual(
-                data.nbt_file.to_nbt(False), data.big_endian, msg=str(data.nbt_file)
+                data.nbt_file.to_nbt(compressed=False),
+                data.big_endian,
+                msg=str(data.nbt_file),
             )
 
     def test_write_little_endian(self):
         for data in binary_data_tuple:
             self.assertEqual(
-                data.nbt_file.to_nbt(False, True),
+                data.nbt_file.to_nbt(compressed=False, little_endian=True),
                 data.little_endian,
                 msg=str(data.nbt_file),
             )

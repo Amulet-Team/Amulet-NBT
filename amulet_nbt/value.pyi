@@ -9,12 +9,13 @@ class BaseTag:
     def to_snbt(self, indent: Union[int, str] = None) -> str: ...
     def to_nbt(
         self,
-        name="",
+        *,
         compressed=True,
         little_endian=False,
+        name="",
     ) -> bytes: ...
     def save_to(
-        self, filepath_or_buffer=None, compressed=True, little_endian=False, name=""
+        self, filepath_or_buffer=None, *, compressed=True, little_endian=False, name=""
     ) -> bytes: ...
     def __repr__(self) -> str:
         raise NotImplementedError

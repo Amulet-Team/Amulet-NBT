@@ -13,16 +13,17 @@ cdef class NBTFile:
         self.value = value
         self.name = name
 
-    cpdef bytes to_nbt(self, bint compressed=True, bint little_endian=False):
-        return self.value.to_nbt(self.name, compressed, little_endian)
+    def to_nbt(self, *, bint compressed=True, bint little_endian=False):
+        return self.value.to_nbt(compressed=compressed, little_endian=little_endian, name=self.name)
 
-    cpdef bytes save_to(
+    def save_to(
         self,
         object filepath_or_buffer=None,
+        *,
         bint compressed=True,
         bint little_endian=False
     ):
-        return self.value.save_to(filepath_or_buffer, compressed, little_endian, self.name)
+        return self.value.save_to(filepath_or_buffer, compressed=compressed, little_endian=little_endian, name=self.name)
 
     def __eq__(self, other):
         if isinstance(other, NBTFile):

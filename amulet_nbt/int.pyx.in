@@ -15,6 +15,7 @@ from .util cimport (
     read_data,
     to_little_endian,
     read_byte,
+    read_string,
 )
 {{py:from tools.tempita import include}}
 
@@ -82,6 +83,10 @@ cdef class BaseIntTag(BaseNumericTag):
         raise NotImplementedError
 
 
+cdef inline void _read_byte_tag_payload(ByteTag tag, BufferContext buffer, bint little_endian):
+    tag.value_ = read_byte(buffer)
+
+
 cdef class ByteTag(BaseIntTag):
     """
     A class that behaves like an int but is stored in 1 byte.
@@ -105,7 +110,15 @@ cdef class ByteTag(BaseIntTag):
 
     @staticmethod
     cdef ByteTag read_payload(BufferContext buffer, bint little_endian):
-        return ByteTag(read_byte(buffer))
+        cdef ByteTag tag = ByteTag.__new__(ByteTag)
+        _read_byte_tag_payload(tag, buffer, little_endian)
+        return tag
+
+
+cdef inline void _read_short_tag_payload(ShortTag tag, BufferContext buffer, bint little_endian):
+    cdef short *pointer = <short*> read_data(buffer, 2)
+    tag.value_ = pointer[0]
+    to_little_endian(&tag.value_, 2, little_endian)
 
 
 cdef class ShortTag(BaseIntTag):
@@ -131,11 +144,15 @@ cdef class ShortTag(BaseIntTag):
 
     @staticmethod
     cdef ShortTag read_payload(BufferContext buffer, bint little_endian):
-        cdef short *pointer = <short*> read_data(buffer, 2)
         cdef ShortTag tag = ShortTag.__new__(ShortTag)
-        tag.value_ = pointer[0]
-        to_little_endian(&tag.value_, 2, little_endian)
+        _read_short_tag_payload(tag, buffer, little_endian)
         return tag
+
+
+cdef inline void _read_int_tag_payload(IntTag tag, BufferContext buffer, bint little_endian):
+    cdef int*pointer = <int*> read_data(buffer, 4)
+    tag.value_ = pointer[0]
+    to_little_endian(&tag.value_, 4, little_endian)
 
 
 cdef class IntTag(BaseIntTag):
@@ -161,11 +178,15 @@ cdef class IntTag(BaseIntTag):
 
     @staticmethod
     cdef IntTag read_payload(BufferContext buffer, bint little_endian):
-        cdef int*pointer = <int*> read_data(buffer, 4)
         cdef IntTag tag = IntTag.__new__(IntTag)
-        tag.value_ = pointer[0]
-        to_little_endian(&tag.value_, 4, little_endian)
+        _read_int_tag_payload(tag, buffer, little_endian)
         return tag
+
+
+cdef inline void _read_long_tag_payload(LongTag tag, BufferContext buffer, bint little_endian):
+    cdef long long *pointer = <long long *> read_data(buffer, 8)
+    tag.value_ = pointer[0]
+    to_little_endian(&tag.value_, 8, little_endian)
 
 
 cdef class LongTag(BaseIntTag):
@@ -191,10 +212,8 @@ cdef class LongTag(BaseIntTag):
 
     @staticmethod
     cdef LongTag read_payload(BufferContext buffer, bint little_endian):
-        cdef long long *pointer = <long long *> read_data(buffer, 8)
         cdef LongTag tag = LongTag.__new__(LongTag)
-        tag.value_ = pointer[0]
-        to_little_endian(&tag.value_, 8, little_endian)
+        _read_long_tag_payload(tag, buffer, little_endian)
         return tag
 
 

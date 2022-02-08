@@ -1,4 +1,5 @@
 from .value cimport BaseMutableTag
+from .util cimport BufferContext
 
 
 cdef class CompoundTag(BaseMutableTag):
@@ -10,3 +11,6 @@ cdef class CompoundTag(BaseMutableTag):
 
 cdef class NamedCompoundTag(CompoundTag):
     cdef public str name
+
+    @staticmethod
+    cdef NamedCompoundTag read_named_payload(BufferContext buffer, bint little_endian)

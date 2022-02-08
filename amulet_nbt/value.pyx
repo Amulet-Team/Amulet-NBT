@@ -204,4 +204,4 @@ class BaseNamedTagMetaclass(type):
 
 
 class BaseNamedTag(BaseTag, metaclass=BaseNamedTagMetaclass):
-    pass
+    name: str

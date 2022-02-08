@@ -11,6 +11,21 @@ from .load_nbt cimport load_payload
 NON_QUOTED_KEY = re.compile('[A-Za-z0-9._+-]+')
 
 
+cdef inline void _read_compound_tag_payload(CompoundTag tag, BufferContext buffer, bint little_endian):
+    cdef char tag_type
+    cdef str name
+    cdef BaseTag child_tag
+
+    while True:
+        tag_type = read_byte(buffer)
+        if tag_type == ID_END:
+            break
+        else:
+            name = read_string(buffer, little_endian)
+            child_tag = load_payload(buffer, tag_type, little_endian)
+            tag[name] = child_tag
+
+
 cdef class CompoundTag(BaseMutableTag):
     """
     This class behaves like a python dictionary.
@@ -143,19 +158,8 @@ cdef class CompoundTag(BaseMutableTag):
 
     @staticmethod
     cdef CompoundTag read_payload(BufferContext buffer, bint little_endian):
-        cdef char tag_type
         cdef CompoundTag tag = CompoundTag()
-        cdef str name
-        cdef BaseTag child_tag
-
-        while True:
-            tag_type = read_byte(buffer)
-            if tag_type == ID_END:
-                break
-            else:
-                name = read_string(buffer, little_endian)
-                child_tag = load_payload(buffer, tag_type, little_endian)
-                tag[name] = child_tag
+        _read_compound_tag_payload(tag, buffer, little_endian)
         return tag
 
     cpdef bint strict_equals(CompoundTag self, other):
@@ -239,6 +243,13 @@ cdef class NamedCompoundTag(CompoundTag):
             little_endian=little_endian,
             name=name or self.name
         )
+
+    @staticmethod
+    cdef NamedCompoundTag read_named_payload(BufferContext buffer, bint little_endian):
+        cdef NamedCompoundTag tag = NamedCompoundTag.__new__(NamedCompoundTag)
+        tag.name = read_string(buffer, little_endian)
+        _read_compound_tag_payload(tag, buffer, little_endian)
+        return tag
 
     def __eq__(self, other):
         if isinstance(other, CompoundTag) and super().__eq__(other):

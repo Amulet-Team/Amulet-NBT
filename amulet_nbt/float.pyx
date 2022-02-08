@@ -5,11 +5,17 @@ from math import floor, ceil
 
 from .numeric cimport BaseNumericTag
 from .const cimport ID_FLOAT, ID_DOUBLE
-from .util cimport write_float, write_double, BufferContext, read_data, to_little_endian
+from .util cimport write_float, write_double, BufferContext, read_data, to_little_endian, read_string
 
 
 cdef class BaseFloatTag(BaseNumericTag):
     pass
+
+
+cdef inline void _read_float_tag_payload(FloatTag tag, BufferContext buffer, bint little_endian):
+    cdef float*pointer = <float*> read_data(buffer, 4)
+    tag.value_ = pointer[0]
+    to_little_endian(&tag.value_, 4, little_endian)
 
 
 cdef class FloatTag(BaseFloatTag):
@@ -217,11 +223,15 @@ cdef class FloatTag(BaseFloatTag):
 
     @staticmethod
     cdef FloatTag read_payload(BufferContext buffer, bint little_endian):
-        cdef float*pointer = <float*> read_data(buffer, 4)
         cdef FloatTag tag = FloatTag.__new__(FloatTag)
-        tag.value_ = pointer[0]
-        to_little_endian(&tag.value_, 4, little_endian)
+        _read_float_tag_payload(tag, buffer, little_endian)
         return tag
+
+
+cdef inline void _read_double_tag_payload(DoubleTag tag, BufferContext buffer, bint little_endian):
+    cdef double *pointer = <double *> read_data(buffer, 8)
+    tag.value_ = pointer[0]
+    to_little_endian(&tag.value_, 8, little_endian)
 
 
 cdef class DoubleTag(BaseFloatTag):
@@ -403,10 +413,8 @@ cdef class DoubleTag(BaseFloatTag):
 
     @staticmethod
     cdef DoubleTag read_payload(BufferContext buffer, bint little_endian):
-        cdef double *pointer = <double *> read_data(buffer, 8)
         cdef DoubleTag tag = DoubleTag.__new__(DoubleTag)
-        tag.value_ = pointer[0]
-        to_little_endian(&tag.value_, 8, little_endian)
+        _read_double_tag_payload(tag, buffer, little_endian)
         return tag
 
 
@@ -442,6 +450,13 @@ cdef class NamedFloatTag(FloatTag):
             little_endian=little_endian,
             name=name or self.name
         )
+
+    @staticmethod
+    cdef NamedFloatTag read_named_payload(BufferContext buffer, bint little_endian):
+        cdef NamedFloatTag tag = NamedFloatTag.__new__(NamedFloatTag)
+        tag.name = read_string(buffer, little_endian)
+        _read_float_tag_payload(tag, buffer, little_endian)
+        return tag
 
     def __eq__(self, other):
         if isinstance(other, FloatTag) and super().__eq__(other):
@@ -501,6 +516,13 @@ cdef class NamedDoubleTag(DoubleTag):
             little_endian=little_endian,
             name=name or self.name
         )
+
+    @staticmethod
+    cdef NamedDoubleTag read_named_payload(BufferContext buffer, bint little_endian):
+        cdef NamedDoubleTag tag = NamedDoubleTag.__new__(NamedDoubleTag)
+        tag.name = read_string(buffer, little_endian)
+        _read_double_tag_payload(tag, buffer, little_endian)
+        return tag
 
     def __eq__(self, other):
         if isinstance(other, DoubleTag) and super().__eq__(other):

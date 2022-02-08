@@ -1,4 +1,5 @@
 from .value cimport BaseTag, BaseMutableTag
+from .util cimport BufferContext
 
 cdef class ListTag(BaseMutableTag):
     cdef list value_
@@ -9,3 +10,6 @@ cdef class ListTag(BaseMutableTag):
 
 cdef class NamedListTag(ListTag):
     cdef public str name
+
+    @staticmethod
+    cdef NamedListTag read_named_payload(BufferContext buffer, bint little_endian)

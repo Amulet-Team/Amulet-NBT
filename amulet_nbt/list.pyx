@@ -4,10 +4,20 @@ from copy import copy, deepcopy
 
 from .value cimport BaseTag, BaseMutableTag
 from .const cimport ID_LIST, CommaSpace, CommaNewline
-from .util cimport write_byte, write_int, BufferContext, read_byte, read_int
+from .util cimport write_byte, write_int, BufferContext, read_byte, read_int, read_string
 from .load_nbt cimport load_payload
 from .dtype import AnyNBT
 from .array import BaseArrayTag
+
+
+cdef inline void _read_list_tag_payload(ListTag tag, BufferContext buffer, bint little_endian):
+    cdef char list_type = read_byte(buffer)
+    tag.list_data_type = list_type
+    cdef int length = read_int(buffer, little_endian)
+    cdef list val = tag.value_
+    cdef int i
+    for i in range(length):
+        val.append(load_payload(buffer, list_type, little_endian))
 
 
 cdef class ListTag(BaseMutableTag):
@@ -125,14 +135,9 @@ cdef class ListTag(BaseMutableTag):
 
     @staticmethod
     cdef ListTag read_payload(BufferContext buffer, bint little_endian):
-        cdef char list_type = read_byte(buffer)
-        cdef int length = read_int(buffer, little_endian)
-        cdef ListTag self = ListTag(list_data_type=list_type)
-        cdef list val = self.value_
-        cdef int i
-        for i in range(length):
-            val.append(load_payload(buffer, list_type, little_endian))
-        return self
+        cdef ListTag tag = ListTag()
+        _read_list_tag_payload(tag, buffer, little_endian)
+        return tag
 
     cdef str _to_snbt(ListTag self):
         cdef BaseTag elem
@@ -275,6 +280,13 @@ cdef class NamedListTag(ListTag):
             little_endian=little_endian,
             name=name or self.name
         )
+
+    @staticmethod
+    cdef NamedListTag read_named_payload(BufferContext buffer, bint little_endian):
+        cdef NamedListTag tag = NamedListTag.__new__(NamedListTag)
+        tag.name = read_string(buffer, little_endian)
+        _read_list_tag_payload(tag, buffer, little_endian)
+        return tag
 
     def __eq__(self, other):
         if isinstance(other, ListTag) and super().__eq__(other):

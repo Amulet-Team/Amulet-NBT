@@ -1,3 +1,7 @@
+{{py:
+import re
+CamelCaseMatch = re.compile(r"(?<!^)(?=[A-Z])")
+}}
 cdef class Named{{TAG_Name}}({{TAG_Name}}):
     def __init__(self, object value={{default_type}}, str name=""):
         super().__init__(value)
@@ -30,6 +34,13 @@ cdef class Named{{TAG_Name}}({{TAG_Name}}):
             little_endian=little_endian,
             name=name or self.name
         )
+
+    @staticmethod
+    cdef Named{{TAG_Name}} read_named_payload(BufferContext buffer, bint little_endian):
+        cdef Named{{TAG_Name}} tag = Named{{TAG_Name}}.__new__(Named{{TAG_Name}})
+        tag.name = read_string(buffer, little_endian)
+        _read_{{CamelCaseMatch.sub("_", TAG_Name).lower()}}_payload(tag, buffer, little_endian)
+        return tag
 
     def __eq__(self, other):
         if isinstance(other, {{TAG_Name}}) and super().__eq__(other):

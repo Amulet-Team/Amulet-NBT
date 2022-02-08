@@ -1,4 +1,5 @@
 from .numeric cimport BaseNumericTag
+from .util cimport BufferContext
 
 cdef class BaseIntTag(BaseNumericTag):
     pass
@@ -22,11 +23,23 @@ cdef class LongTag(BaseIntTag):
 cdef class NamedByteTag(ByteTag):
     cdef public str name
 
+    @staticmethod
+    cdef NamedByteTag read_named_payload(BufferContext buffer, bint little_endian)
+
 cdef class NamedShortTag(ShortTag):
     cdef public str name
+
+    @staticmethod
+    cdef NamedShortTag read_named_payload(BufferContext buffer, bint little_endian)
 
 cdef class NamedIntTag(IntTag):
     cdef public str name
 
+    @staticmethod
+    cdef NamedIntTag read_named_payload(BufferContext buffer, bint little_endian)
+
 cdef class NamedLongTag(LongTag):
     cdef public str name
+
+    @staticmethod
+    cdef NamedLongTag read_named_payload(BufferContext buffer, bint little_endian)

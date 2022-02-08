@@ -11,6 +11,9 @@ from .util cimport write_string, BufferContext, read_string
 cdef inline escape(str string):
     return string.replace('\\', '\\\\').replace('"', '\\"')
 
+cdef inline void _read_string_tag_payload(StringTag tag, BufferContext buffer, bint little_endian):
+    tag.value_ = read_string(buffer, little_endian)
+
 
 cdef class StringTag(BaseImmutableTag):
     """A class that behaves like a string."""
@@ -262,7 +265,7 @@ cdef class StringTag(BaseImmutableTag):
     @staticmethod
     cdef StringTag read_payload(BufferContext buffer, bint little_endian):
         cdef StringTag tag = StringTag.__new__(StringTag)
-        tag.value_ = read_string(buffer, little_endian)
+        _read_string_tag_payload(tag, buffer, little_endian)
         return tag
 
     def __getitem__(StringTag self, item):
@@ -337,6 +340,13 @@ cdef class NamedStringTag(StringTag):
             little_endian=little_endian,
             name=name or self.name
         )
+
+    @staticmethod
+    cdef NamedStringTag read_named_payload(BufferContext buffer, bint little_endian):
+        cdef NamedStringTag tag = NamedStringTag.__new__(NamedStringTag)
+        tag.name = read_string(buffer, little_endian)
+        _read_string_tag_payload(tag, buffer, little_endian)
+        return tag
 
     def __eq__(self, other):
         if isinstance(other, StringTag) and super().__eq__(other):

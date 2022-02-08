@@ -8,7 +8,7 @@ from copy import copy, deepcopy
 
 from .value cimport BaseMutableTag
 from .const cimport CommaSpace, ID_BYTE_ARRAY, ID_INT_ARRAY, ID_LONG_ARRAY
-from .util cimport write_array, BufferContext, read_int, read_data
+from .util cimport write_array, BufferContext, read_int, read_data, read_string
 from .list cimport ListTag
 
 
@@ -852,6 +852,13 @@ cdef class BaseArrayTag(BaseMutableTag):
 BaseArrayType = BaseArrayTag
 
 
+cdef inline void _read_byte_array_tag_payload(ByteArrayTag tag, BufferContext buffer, bint little_endian):
+    cdef int length = read_int(buffer, little_endian)
+    cdef char*arr = read_data(buffer, length)
+    data_type = ByteArrayTag.little_endian_data_type if little_endian else ByteArrayTag.big_endian_data_type
+    tag.value_ = numpy.array(numpy.frombuffer(arr[:length], dtype=data_type, count=length), ByteArrayTag.big_endian_data_type).ravel()
+
+
 cdef class ByteArrayTag(BaseArrayTag):
     """This class behaves like an 1D Numpy signed integer array with each value stored in a byte."""
     tag_id = ID_BYTE_ARRAY
@@ -869,10 +876,17 @@ cdef class ByteArrayTag(BaseArrayTag):
 
     @staticmethod
     cdef ByteArrayTag read_payload(BufferContext buffer, bint little_endian):
-        cdef int length = read_int(buffer, little_endian)
-        cdef char*arr = read_data(buffer, length)
-        data_type = ByteArrayTag.little_endian_data_type if little_endian else ByteArrayTag.big_endian_data_type
-        return ByteArrayTag(numpy.frombuffer(arr[:length], dtype=data_type, count=length))
+        cdef ByteArrayTag tag = ByteArrayTag.__new__(ByteArrayTag)
+        _read_byte_array_tag_payload(tag, buffer, little_endian)
+        return tag
+
+
+cdef inline void _read_int_array_tag_payload(IntArrayTag tag, BufferContext buffer, bint little_endian):
+    cdef int length = read_int(buffer, little_endian)
+    cdef int byte_length = length * 4
+    cdef char*arr = read_data(buffer, byte_length)
+    cdef object data_type = IntArrayTag.little_endian_data_type if little_endian else IntArrayTag.big_endian_data_type
+    tag.value_ = numpy.array(numpy.frombuffer(arr[:byte_length], dtype=data_type, count=length), IntArrayTag.big_endian_data_type).ravel()
 
 
 cdef class IntArrayTag(BaseArrayTag):
@@ -893,11 +907,17 @@ cdef class IntArrayTag(BaseArrayTag):
 
     @staticmethod
     cdef IntArrayTag read_payload(BufferContext buffer, bint little_endian):
-        cdef int length = read_int(buffer, little_endian)
-        cdef int byte_length = length * 4
-        cdef char*arr = read_data(buffer, byte_length)
-        cdef object data_type = IntArrayTag.little_endian_data_type if little_endian else IntArrayTag.big_endian_data_type
-        return IntArrayTag(numpy.frombuffer(arr[:byte_length], dtype=data_type, count=length))
+        cdef IntArrayTag tag = IntArrayTag.__new__(IntArrayTag)
+        _read_int_array_tag_payload(tag, buffer, little_endian)
+        return tag
+
+
+cdef inline void _read_long_array_tag_payload(LongArrayTag tag, BufferContext buffer, bint little_endian):
+    cdef int length = read_int(buffer, little_endian)
+    cdef int byte_length = length * 8
+    cdef char*arr = read_data(buffer, byte_length)
+    cdef object data_type = LongArrayTag.little_endian_data_type if little_endian else LongArrayTag.big_endian_data_type
+    tag.value_ = numpy.array(numpy.frombuffer(arr[:byte_length], dtype=data_type, count=length), LongArrayTag.big_endian_data_type).ravel()
 
 
 cdef class LongArrayTag(BaseArrayTag):
@@ -918,11 +938,9 @@ cdef class LongArrayTag(BaseArrayTag):
 
     @staticmethod
     cdef LongArrayTag read_payload(BufferContext buffer, bint little_endian):
-        cdef int length = read_int(buffer, little_endian)
-        cdef int byte_length = length * 8
-        cdef char*arr = read_data(buffer, byte_length)
-        cdef object data_type = LongArrayTag.little_endian_data_type if little_endian else LongArrayTag.big_endian_data_type
-        return LongArrayTag(numpy.frombuffer(arr[:byte_length], dtype=data_type, count=length))
+        cdef LongArrayTag tag = LongArrayTag.__new__(LongArrayTag)
+        _read_long_array_tag_payload(tag, buffer, little_endian)
+        return tag
 
 
 cdef class NamedByteArrayTag(ByteArrayTag):
@@ -957,6 +975,13 @@ cdef class NamedByteArrayTag(ByteArrayTag):
             little_endian=little_endian,
             name=name or self.name
         )
+
+    @staticmethod
+    cdef NamedByteArrayTag read_named_payload(BufferContext buffer, bint little_endian):
+        cdef NamedByteArrayTag tag = NamedByteArrayTag.__new__(NamedByteArrayTag)
+        tag.name = read_string(buffer, little_endian)
+        _read_byte_array_tag_payload(tag, buffer, little_endian)
+        return tag
 
     def __eq__(self, other):
         if isinstance(other, ByteArrayTag) and super().__eq__(other):
@@ -1017,6 +1042,13 @@ cdef class NamedIntArrayTag(IntArrayTag):
             name=name or self.name
         )
 
+    @staticmethod
+    cdef NamedIntArrayTag read_named_payload(BufferContext buffer, bint little_endian):
+        cdef NamedIntArrayTag tag = NamedIntArrayTag.__new__(NamedIntArrayTag)
+        tag.name = read_string(buffer, little_endian)
+        _read_int_array_tag_payload(tag, buffer, little_endian)
+        return tag
+
     def __eq__(self, other):
         if isinstance(other, IntArrayTag) and super().__eq__(other):
             if isinstance(other, NamedIntArrayTag):
@@ -1075,6 +1107,13 @@ cdef class NamedLongArrayTag(LongArrayTag):
             little_endian=little_endian,
             name=name or self.name
         )
+
+    @staticmethod
+    cdef NamedLongArrayTag read_named_payload(BufferContext buffer, bint little_endian):
+        cdef NamedLongArrayTag tag = NamedLongArrayTag.__new__(NamedLongArrayTag)
+        tag.name = read_string(buffer, little_endian)
+        _read_long_array_tag_payload(tag, buffer, little_endian)
+        return tag
 
     def __eq__(self, other):
         if isinstance(other, LongArrayTag) and super().__eq__(other):

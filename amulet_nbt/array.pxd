@@ -1,5 +1,6 @@
 cimport numpy
 from .value cimport BaseMutableTag
+from .util cimport BufferContext
 
 cdef class BaseArrayTag(BaseMutableTag):
     cdef numpy.ndarray value_
@@ -18,8 +19,17 @@ cdef class LongArrayTag(BaseArrayTag):
 cdef class NamedByteArrayTag(ByteArrayTag):
     cdef public str name
 
+    @staticmethod
+    cdef NamedByteArrayTag read_named_payload(BufferContext buffer, bint little_endian)
+
 cdef class NamedIntArrayTag(IntArrayTag):
     cdef public str name
 
+    @staticmethod
+    cdef NamedIntArrayTag read_named_payload(BufferContext buffer, bint little_endian)
+
 cdef class NamedLongArrayTag(LongArrayTag):
     cdef public str name
+
+    @staticmethod
+    cdef NamedLongArrayTag read_named_payload(BufferContext buffer, bint little_endian)

@@ -15,6 +15,7 @@ from .util cimport (
     read_data,
     to_little_endian,
     read_byte,
+    read_string,
 )
 
 
@@ -79,6 +80,10 @@ cdef class BaseIntTag(BaseNumericTag):
 
     def __index__(self) -> int:
         raise NotImplementedError
+
+
+cdef inline void _read_byte_tag_payload(ByteTag tag, BufferContext buffer, bint little_endian):
+    tag.value_ = read_byte(buffer)
 
 
 cdef class ByteTag(BaseIntTag):
@@ -379,7 +384,15 @@ cdef class ByteTag(BaseIntTag):
 
     @staticmethod
     cdef ByteTag read_payload(BufferContext buffer, bint little_endian):
-        return ByteTag(read_byte(buffer))
+        cdef ByteTag tag = ByteTag.__new__(ByteTag)
+        _read_byte_tag_payload(tag, buffer, little_endian)
+        return tag
+
+
+cdef inline void _read_short_tag_payload(ShortTag tag, BufferContext buffer, bint little_endian):
+    cdef short *pointer = <short*> read_data(buffer, 2)
+    tag.value_ = pointer[0]
+    to_little_endian(&tag.value_, 2, little_endian)
 
 
 cdef class ShortTag(BaseIntTag):
@@ -680,11 +693,15 @@ cdef class ShortTag(BaseIntTag):
 
     @staticmethod
     cdef ShortTag read_payload(BufferContext buffer, bint little_endian):
-        cdef short *pointer = <short*> read_data(buffer, 2)
         cdef ShortTag tag = ShortTag.__new__(ShortTag)
-        tag.value_ = pointer[0]
-        to_little_endian(&tag.value_, 2, little_endian)
+        _read_short_tag_payload(tag, buffer, little_endian)
         return tag
+
+
+cdef inline void _read_int_tag_payload(IntTag tag, BufferContext buffer, bint little_endian):
+    cdef int*pointer = <int*> read_data(buffer, 4)
+    tag.value_ = pointer[0]
+    to_little_endian(&tag.value_, 4, little_endian)
 
 
 cdef class IntTag(BaseIntTag):
@@ -985,11 +1002,15 @@ cdef class IntTag(BaseIntTag):
 
     @staticmethod
     cdef IntTag read_payload(BufferContext buffer, bint little_endian):
-        cdef int*pointer = <int*> read_data(buffer, 4)
         cdef IntTag tag = IntTag.__new__(IntTag)
-        tag.value_ = pointer[0]
-        to_little_endian(&tag.value_, 4, little_endian)
+        _read_int_tag_payload(tag, buffer, little_endian)
         return tag
+
+
+cdef inline void _read_long_tag_payload(LongTag tag, BufferContext buffer, bint little_endian):
+    cdef long long *pointer = <long long *> read_data(buffer, 8)
+    tag.value_ = pointer[0]
+    to_little_endian(&tag.value_, 8, little_endian)
 
 
 cdef class LongTag(BaseIntTag):
@@ -1290,10 +1311,8 @@ cdef class LongTag(BaseIntTag):
 
     @staticmethod
     cdef LongTag read_payload(BufferContext buffer, bint little_endian):
-        cdef long long *pointer = <long long *> read_data(buffer, 8)
         cdef LongTag tag = LongTag.__new__(LongTag)
-        tag.value_ = pointer[0]
-        to_little_endian(&tag.value_, 8, little_endian)
+        _read_long_tag_payload(tag, buffer, little_endian)
         return tag
 
 
@@ -1329,6 +1348,13 @@ cdef class NamedByteTag(ByteTag):
             little_endian=little_endian,
             name=name or self.name
         )
+
+    @staticmethod
+    cdef NamedByteTag read_named_payload(BufferContext buffer, bint little_endian):
+        cdef NamedByteTag tag = NamedByteTag.__new__(NamedByteTag)
+        tag.name = read_string(buffer, little_endian)
+        _read_byte_tag_payload(tag, buffer, little_endian)
+        return tag
 
     def __eq__(self, other):
         if isinstance(other, ByteTag) and super().__eq__(other):
@@ -1389,6 +1415,13 @@ cdef class NamedShortTag(ShortTag):
             name=name or self.name
         )
 
+    @staticmethod
+    cdef NamedShortTag read_named_payload(BufferContext buffer, bint little_endian):
+        cdef NamedShortTag tag = NamedShortTag.__new__(NamedShortTag)
+        tag.name = read_string(buffer, little_endian)
+        _read_short_tag_payload(tag, buffer, little_endian)
+        return tag
+
     def __eq__(self, other):
         if isinstance(other, ShortTag) and super().__eq__(other):
             if isinstance(other, NamedShortTag):
@@ -1448,6 +1481,13 @@ cdef class NamedIntTag(IntTag):
             name=name or self.name
         )
 
+    @staticmethod
+    cdef NamedIntTag read_named_payload(BufferContext buffer, bint little_endian):
+        cdef NamedIntTag tag = NamedIntTag.__new__(NamedIntTag)
+        tag.name = read_string(buffer, little_endian)
+        _read_int_tag_payload(tag, buffer, little_endian)
+        return tag
+
     def __eq__(self, other):
         if isinstance(other, IntTag) and super().__eq__(other):
             if isinstance(other, NamedIntTag):
@@ -1506,6 +1546,13 @@ cdef class NamedLongTag(LongTag):
             little_endian=little_endian,
             name=name or self.name
         )
+
+    @staticmethod
+    cdef NamedLongTag read_named_payload(BufferContext buffer, bint little_endian):
+        cdef NamedLongTag tag = NamedLongTag.__new__(NamedLongTag)
+        tag.name = read_string(buffer, little_endian)
+        _read_long_tag_payload(tag, buffer, little_endian)
+        return tag
 
     def __eq__(self, other):
         if isinstance(other, LongTag) and super().__eq__(other):

@@ -98,7 +98,7 @@ cdef class CompoundTag(BaseMutableTag):
         return self.__class__(self.value_)
 
     @property
-    def value(CompoundTag self):
+    def py_data(CompoundTag self):
         """
         A copy of the data stored in the class.
         Use the public API to modify the data within the class.
@@ -269,9 +269,9 @@ cdef class NamedCompoundTag(CompoundTag):
 
     def __deepcopy__(self, memodict=None):
         return NamedCompoundTag(
-            deepcopy(self.value),
+            deepcopy(self.value_),
             self.name
         )
 
     def __reduce__(self):
-        return NamedCompoundTag, (self.value, self.name)
+        return NamedCompoundTag, (self.value_, self.name)

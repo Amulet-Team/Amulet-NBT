@@ -554,7 +554,7 @@ cdef class BaseArrayTag(BaseMutableTag):
         return self.__class__(self.value_)
 
     @property
-    def value(BaseArrayTag self):
+    def py_data(BaseArrayTag self):
         """
         A copy of the data stored in the class.
         Use the public API to modify the data within the class.
@@ -1001,12 +1001,12 @@ cdef class NamedByteArrayTag(ByteArrayTag):
 
     def __deepcopy__(self, memodict=None):
         return NamedByteArrayTag(
-            deepcopy(self.value),
+            deepcopy(self.value_),
             self.name
         )
 
     def __reduce__(self):
-        return NamedByteArrayTag, (self.value, self.name)
+        return NamedByteArrayTag, (self.value_, self.name)
 
 
 cdef class NamedIntArrayTag(IntArrayTag):
@@ -1067,12 +1067,12 @@ cdef class NamedIntArrayTag(IntArrayTag):
 
     def __deepcopy__(self, memodict=None):
         return NamedIntArrayTag(
-            deepcopy(self.value),
+            deepcopy(self.value_),
             self.name
         )
 
     def __reduce__(self):
-        return NamedIntArrayTag, (self.value, self.name)
+        return NamedIntArrayTag, (self.value_, self.name)
 
 
 cdef class NamedLongArrayTag(LongArrayTag):
@@ -1133,9 +1133,9 @@ cdef class NamedLongArrayTag(LongArrayTag):
 
     def __deepcopy__(self, memodict=None):
         return NamedLongArrayTag(
-            deepcopy(self.value),
+            deepcopy(self.value_),
             self.name
         )
 
     def __reduce__(self):
-        return NamedLongArrayTag, (self.value, self.name)
+        return NamedLongArrayTag, (self.value_, self.name)

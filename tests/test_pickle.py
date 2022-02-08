@@ -10,12 +10,12 @@ class PickleNBTTests(unittest.TestCase):
         obj2 = pickle.loads(pickled_obj)
         self.assertEqual(obj, obj2)
         self.assertIsNot(obj, obj2)
-        if isinstance(obj.value, numpy.ndarray):
-            numpy.testing.assert_array_equal(obj.value, obj2.value)
+        if isinstance(obj.py_data, numpy.ndarray):
+            numpy.testing.assert_array_equal(obj.py_data, obj2.py_data)
         else:
-            self.assertEqual(obj.value, obj2.value)
-        if not isinstance(obj.value, (int, str)):
-            self.assertIsNot(obj.value, obj2.value)
+            self.assertEqual(obj.py_data, obj2.py_data)
+        if not isinstance(obj.py_data, (int, str)):
+            self.assertIsNot(obj.py_data, obj2.py_data)
 
     def test_pickle(self):
         self._test_pickle(amulet_nbt.ByteTag(10))

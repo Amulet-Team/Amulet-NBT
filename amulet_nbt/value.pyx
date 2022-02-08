@@ -10,7 +10,7 @@ cdef class BaseTag:
     tag_id: int = None
 
     @property
-    def value(self):
+    def py_data(self):
         """
         An immutable version/copy of the data in the class.
         The immutable types return the internal immutable data.

@@ -220,7 +220,7 @@ cdef class StringTag(BaseImmutableTag):
         return hash((self.tag_id, self.value_))
 
     @property
-    def value(StringTag self):
+    def py_data(StringTag self):
         """
         A copy of the data stored in the class.
         Use the public API to modify the data within the class.
@@ -366,9 +366,9 @@ cdef class NamedStringTag(StringTag):
 
     def __deepcopy__(self, memodict=None):
         return NamedStringTag(
-            deepcopy(self.value),
+            deepcopy(self.value_),
             self.name
         )
 
     def __reduce__(self):
-        return NamedStringTag, (self.value, self.name)
+        return NamedStringTag, (self.value_, self.name)

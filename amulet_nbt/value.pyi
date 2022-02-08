@@ -4,7 +4,7 @@ from .dtype import AnyNBT
 class BaseTag:
     tag_id: int
     @property
-    def value(self):
+    def py_data(self):
         raise NotImplementedError
     def to_snbt(self, indent: Union[int, str] = None) -> str: ...
     def to_nbt(

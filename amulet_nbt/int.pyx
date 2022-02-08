@@ -167,7 +167,7 @@ cdef class ByteTag(BaseIntTag):
         return hash((self.tag_id, self.value_))
 
     @property
-    def value(ByteTag self):
+    def py_data(ByteTag self):
         """
         A copy of the data stored in the class.
         Use the public API to modify the data within the class.
@@ -476,7 +476,7 @@ cdef class ShortTag(BaseIntTag):
         return hash((self.tag_id, self.value_))
 
     @property
-    def value(ShortTag self):
+    def py_data(ShortTag self):
         """
         A copy of the data stored in the class.
         Use the public API to modify the data within the class.
@@ -785,7 +785,7 @@ cdef class IntTag(BaseIntTag):
         return hash((self.tag_id, self.value_))
 
     @property
-    def value(IntTag self):
+    def py_data(IntTag self):
         """
         A copy of the data stored in the class.
         Use the public API to modify the data within the class.
@@ -1094,7 +1094,7 @@ cdef class LongTag(BaseIntTag):
         return hash((self.tag_id, self.value_))
 
     @property
-    def value(LongTag self):
+    def py_data(LongTag self):
         """
         A copy of the data stored in the class.
         Use the public API to modify the data within the class.
@@ -1374,12 +1374,12 @@ cdef class NamedByteTag(ByteTag):
 
     def __deepcopy__(self, memodict=None):
         return NamedByteTag(
-            deepcopy(self.value),
+            deepcopy(self.value_),
             self.name
         )
 
     def __reduce__(self):
-        return NamedByteTag, (self.value, self.name)
+        return NamedByteTag, (self.value_, self.name)
 
 
 cdef class NamedShortTag(ShortTag):
@@ -1440,12 +1440,12 @@ cdef class NamedShortTag(ShortTag):
 
     def __deepcopy__(self, memodict=None):
         return NamedShortTag(
-            deepcopy(self.value),
+            deepcopy(self.value_),
             self.name
         )
 
     def __reduce__(self):
-        return NamedShortTag, (self.value, self.name)
+        return NamedShortTag, (self.value_, self.name)
 
 
 cdef class NamedIntTag(IntTag):
@@ -1506,12 +1506,12 @@ cdef class NamedIntTag(IntTag):
 
     def __deepcopy__(self, memodict=None):
         return NamedIntTag(
-            deepcopy(self.value),
+            deepcopy(self.value_),
             self.name
         )
 
     def __reduce__(self):
-        return NamedIntTag, (self.value, self.name)
+        return NamedIntTag, (self.value_, self.name)
 
 
 cdef class NamedLongTag(LongTag):
@@ -1572,9 +1572,9 @@ cdef class NamedLongTag(LongTag):
 
     def __deepcopy__(self, memodict=None):
         return NamedLongTag(
-            deepcopy(self.value),
+            deepcopy(self.value_),
             self.name
         )
 
     def __reduce__(self):
-        return NamedLongTag, (self.value, self.name)
+        return NamedLongTag, (self.value_, self.name)

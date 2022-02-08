@@ -94,7 +94,7 @@ cdef class ListTag(BaseMutableTag):
         return self.__class__(self.value_)
 
     @property
-    def value(ListTag self):
+    def py_data(ListTag self):
         """
         A copy of the data stored in the class.
         Use the public API to modify the data within the class.
@@ -306,9 +306,9 @@ cdef class NamedListTag(ListTag):
 
     def __deepcopy__(self, memodict=None):
         return NamedListTag(
-            deepcopy(self.value),
+            deepcopy(self.value_),
             self.name
         )
 
     def __reduce__(self):
-        return NamedListTag, (self.value, self.name)
+        return NamedListTag, (self.value_, self.name)

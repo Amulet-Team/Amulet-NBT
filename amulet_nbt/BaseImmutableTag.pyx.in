@@ -5,7 +5,7 @@
         return hash((self.tag_id, self.value_))
 
     @property
-    def value({{cls_name}} self):
+    def py_data({{cls_name}} self):
         """
         A copy of the data stored in the class.
         Use the public API to modify the data within the class.

@@ -85,7 +85,7 @@ cdef class FloatTag(BaseFloatTag):
         return hash((self.tag_id, self.value_))
 
     @property
-    def value(FloatTag self):
+    def py_data(FloatTag self):
         """
         A copy of the data stored in the class.
         Use the public API to modify the data within the class.
@@ -275,7 +275,7 @@ cdef class DoubleTag(BaseFloatTag):
         return hash((self.tag_id, self.value_))
 
     @property
-    def value(DoubleTag self):
+    def py_data(DoubleTag self):
         """
         A copy of the data stored in the class.
         Use the public API to modify the data within the class.
@@ -476,12 +476,12 @@ cdef class NamedFloatTag(FloatTag):
 
     def __deepcopy__(self, memodict=None):
         return NamedFloatTag(
-            deepcopy(self.value),
+            deepcopy(self.value_),
             self.name
         )
 
     def __reduce__(self):
-        return NamedFloatTag, (self.value, self.name)
+        return NamedFloatTag, (self.value_, self.name)
 
 
 cdef class NamedDoubleTag(DoubleTag):
@@ -542,9 +542,9 @@ cdef class NamedDoubleTag(DoubleTag):
 
     def __deepcopy__(self, memodict=None):
         return NamedDoubleTag(
-            deepcopy(self.value),
+            deepcopy(self.value_),
             self.name
         )
 
     def __reduce__(self):
-        return NamedDoubleTag, (self.value, self.name)
+        return NamedDoubleTag, (self.value_, self.name)

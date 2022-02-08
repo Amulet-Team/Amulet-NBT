@@ -157,6 +157,3 @@ cdef class CompoundTag(BaseMutableTag):
 
     def __reversed__(CompoundTag self):
         return reversed(self.value_)
-
-
-{{include("amulet_nbt/BaseNamedTag.pyx.in", TAG_Name="CompoundTag", default_type="()")}}

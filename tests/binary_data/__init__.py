@@ -14,7 +14,6 @@ from amulet_nbt import (
     StringTag,
     ListTag,
     CompoundTag,
-    NBTFile,
 )
 
 

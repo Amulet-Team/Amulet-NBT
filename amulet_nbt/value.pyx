@@ -196,12 +196,3 @@ cdef class BaseImmutableTag(BaseTag):
 
 cdef class BaseMutableTag(BaseTag):
     pass
-
-
-class BaseNamedTagMetaclass(type):
-    def __instancecheck__(self, instance):
-        return isinstance(instance, BaseTag) and isinstance(getattr(instance, "name", None), str)
-
-
-class BaseNamedTag(BaseTag, metaclass=BaseNamedTagMetaclass):
-    name: str

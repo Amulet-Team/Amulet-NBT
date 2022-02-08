@@ -215,15 +215,3 @@ cdef class LongTag(BaseIntTag):
         cdef LongTag tag = LongTag.__new__(LongTag)
         _read_long_tag_payload(tag, buffer, little_endian)
         return tag
-
-
-{{include("amulet_nbt/BaseNamedTag.pyx.in", TAG_Name="ByteTag", default_type="0")}}
-
-
-{{include("amulet_nbt/BaseNamedTag.pyx.in", TAG_Name="ShortTag", default_type="0")}}
-
-
-{{include("amulet_nbt/BaseNamedTag.pyx.in", TAG_Name="IntTag", default_type="0")}}
-
-
-{{include("amulet_nbt/BaseNamedTag.pyx.in", TAG_Name="LongTag", default_type="0")}}

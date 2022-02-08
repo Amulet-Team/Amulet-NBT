@@ -7,12 +7,3 @@ class BaseArrayTag(BaseMutableTag, numpy.ndarray):
 class ByteArrayTag(BaseArrayTag): ...
 class IntArrayTag(BaseArrayTag): ...
 class LongArrayTag(BaseArrayTag): ...
-
-class NamedByteArrayTag(ByteArrayTag):
-    name: str
-
-class NamedIntArrayTag(IntArrayTag):
-    name: str
-
-class NamedLongArrayTag(LongArrayTag):
-    name: str

@@ -378,12 +378,3 @@ cdef class LongArrayTag(BaseArrayTag):
         cdef LongArrayTag tag = LongArrayTag.__new__(LongArrayTag)
         _read_long_array_tag_payload(tag, buffer, little_endian)
         return tag
-
-
-{{include("amulet_nbt/BaseNamedTag.pyx.in", TAG_Name="ByteArrayTag", default_type="()")}}
-
-
-{{include("amulet_nbt/BaseNamedTag.pyx.in", TAG_Name="IntArrayTag", default_type="()")}}
-
-
-{{include("amulet_nbt/BaseNamedTag.pyx.in", TAG_Name="LongArrayTag", default_type="()")}}

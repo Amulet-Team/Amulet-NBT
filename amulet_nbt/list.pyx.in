@@ -194,6 +194,3 @@ cdef class ListTag(BaseMutableTag):
     def __iadd__(ListTag self, other):
         self.extend(other)
         return self
-
-
-{{include("amulet_nbt/BaseNamedTag.pyx.in", TAG_Name="ListTag", default_type="()")}}

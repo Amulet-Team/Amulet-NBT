@@ -67,9 +67,3 @@ cdef class DoubleTag(BaseFloatTag):
         cdef DoubleTag tag = DoubleTag.__new__(DoubleTag)
         _read_double_tag_payload(tag, buffer, little_endian)
         return tag
-
-
-{{include("amulet_nbt/BaseNamedTag.pyx.in", TAG_Name="FloatTag", default_type="0")}}
-
-
-{{include("amulet_nbt/BaseNamedTag.pyx.in", TAG_Name="DoubleTag", default_type="0")}}

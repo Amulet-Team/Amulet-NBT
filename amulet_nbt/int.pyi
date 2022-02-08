@@ -149,15 +149,3 @@ class ByteTag(BaseIntTag): ...
 class ShortTag(BaseIntTag): ...
 class IntTag(BaseIntTag): ...
 class LongTag(BaseIntTag): ...
-
-class NamedByteTag(ByteTag):
-    name: str
-
-class NamedShortTag(ShortTag):
-    name: str
-
-class NamedIntTag(IntTag):
-    name: str
-
-class NamedLongTag(LongTag):
-    name: str

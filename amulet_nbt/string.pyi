@@ -32,6 +32,3 @@ class StringTag(BaseImmutableTag, str):
         raise NotImplementedError
     def __rmul__(self, n: int) -> str:
         raise NotImplementedError
-
-class NamedStringTag(StringTag):
-    name: str

@@ -151,6 +151,3 @@ cdef class StringTag(BaseImmutableTag):
 
     def __int__(StringTag self) -> int:
         return int(self.value_)
-
-
-{{include("amulet_nbt/BaseNamedTag.pyx.in", TAG_Name="StringTag", default_type='""')}}

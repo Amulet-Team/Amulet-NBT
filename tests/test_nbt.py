@@ -12,7 +12,7 @@ class NBTTests(unittest.TestCase):
         buffer = BufferContext(copy(b))
         name, tag = load_tag(buffer, little_endian)
         self.assertEqual(b, buffer.get_buffer(), msg="The buffer changed.")
-        nbt_file = amulet_nbt.load(b, little_endian=little_endian)
+        nbt_file = amulet_nbt.load_one(b, little_endian=little_endian)
         self.assertEqual(name, nbt_file.name)
         self.assertEqual(tag, nbt_file.value)
         return nbt_file
@@ -27,7 +27,7 @@ class NBTTests(unittest.TestCase):
         for data in binary_data_tuple:
             self.assertEqual(
                 data.nbt_file,
-                amulet_nbt.load(data.big_endian_compressed),
+                amulet_nbt.load_one(data.big_endian_compressed),
                 msg=str(data.nbt_file),
             )
 
@@ -43,7 +43,7 @@ class NBTTests(unittest.TestCase):
         for data in binary_data_tuple:
             self.assertEqual(
                 data.nbt_file,
-                amulet_nbt.load(data.little_endian_compressed, little_endian=True),
+                amulet_nbt.load_one(data.little_endian_compressed, little_endian=True),
                 msg=str(data.nbt_file),
             )
 

@@ -21,21 +21,21 @@ class FileNBTTests(unittest.TestCase):
         self._groups = (
             (
                 "big_endian_compressed_nbt",
-                lambda path_: amulet_nbt.load(
+                lambda path_: amulet_nbt.load_one(
                     path_, compressed=True, little_endian=False
                 ),
                 lambda obj_: obj_.save_to(compressed=True, little_endian=False),
             ),
             (
                 "big_endian_nbt",
-                lambda path_: amulet_nbt.load(
+                lambda path_: amulet_nbt.load_one(
                     path_, compressed=False, little_endian=False
                 ),
                 lambda obj_: obj_.save_to(compressed=False, little_endian=False),
             ),
             (
                 "little_endian_nbt",
-                lambda path_: amulet_nbt.load(
+                lambda path_: amulet_nbt.load_one(
                     path_, compressed=False, little_endian=True
                 ),
                 lambda obj_: obj_.save_to(compressed=False, little_endian=True),

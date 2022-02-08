@@ -71,5 +71,4 @@ from .compound cimport (
 from .nbtfile cimport NBTFile
 
 # Load functions
-from .load_nbt cimport load, load_one, load_many
 from .load_snbt cimport from_snbt

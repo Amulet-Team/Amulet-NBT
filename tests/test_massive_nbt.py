@@ -135,13 +135,13 @@ class MassiveNBTTests(unittest.TestCase):
             little_endian=True,
         )
 
-        test_be = amulet_nbt.load(
+        test_be = amulet_nbt.load_one(
             os.path.join("temp", "massive_nbt_test_big_endian.nbt")
         )
-        test_be_compressed = amulet_nbt.load(
+        test_be_compressed = amulet_nbt.load_one(
             os.path.join("temp", "massive_nbt_test_big_endian_compressed.nbt")
         )
-        test_le = amulet_nbt.load(
+        test_le = amulet_nbt.load_one(
             os.path.join("temp", "massive_nbt_test_little_endian.nbt"),
             little_endian=True,
         )

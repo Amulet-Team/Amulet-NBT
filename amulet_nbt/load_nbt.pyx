@@ -1,19 +1,42 @@
 import gzip
+import warnings
 import zlib
 from io import BytesIO
-from typing import Union, BinaryIO
+from typing import Union, BinaryIO, List, Tuple
 import os
 
 from .errors import NBTLoadError
 from .nbtfile cimport NBTFile
 from .util cimport BufferContext, read_string, read_byte
 from .value cimport BaseTag
-from .int cimport ByteTag, ShortTag, IntTag, LongTag
-from .float cimport FloatTag, DoubleTag
-from .array cimport ByteArrayTag, IntArrayTag, LongArrayTag
-from .string cimport StringTag
-from .list cimport ListTag
-from .compound cimport CompoundTag
+from .int cimport (
+    ByteTag,
+    ShortTag,
+    IntTag,
+    LongTag,
+    NamedByteTag,
+    NamedShortTag,
+    NamedIntTag,
+    NamedLongTag,
+)
+from .float cimport (
+    FloatTag,
+    DoubleTag,
+    NamedFloatTag,
+    NamedDoubleTag,
+)
+from .array cimport (
+    ByteArrayTag,
+    IntArrayTag,
+    LongArrayTag,
+    NamedByteArrayTag,
+    NamedIntArrayTag,
+    NamedLongArrayTag,
+)
+from .string cimport StringTag, NamedStringTag
+from .list cimport ListTag, NamedListTag
+from .compound cimport CompoundTag, NamedCompoundTag
+from .dtype import NamedTag
 
 
 cpdef inline bytes safe_gunzip(bytes data):
@@ -97,15 +120,16 @@ cdef class ReadContext:
         self.offset = 0
 
 
-cpdef NBTFile load_one(
+def load_one(
     object filepath_or_buffer: Union[str, bytes, BinaryIO, None],
+    *,
     bint compressed=True,
     bint little_endian: bool = False,
     ReadContext read_context = None
-):
+) -> NamedTag:
     cdef BufferContext buffer = get_buffer(filepath_or_buffer, compressed)
     if buffer.size < 1:
-        raise EOFError("load() was supplied an empty buffer")
+        raise EOFError("load_one() was supplied an empty buffer")
     cdef str name
     cdef BaseTag tag
     name, tag = load_tag(buffer, little_endian)
@@ -114,18 +138,19 @@ cpdef NBTFile load_one(
     return NBTFile(tag, name)
 
 
-cpdef list load_many(
+def load_many(
     object filepath_or_buffer: Union[str, bytes, BinaryIO, None],
+    *,
     int count = 1,
     bint compressed=True,
     bint little_endian: bool = False,
     ReadContext read_context = None
-):
+) -> List[NamedTag]:
     if count < 1:
         raise ValueError("Count must be 1 or more.")
     cdef BufferContext buffer = get_buffer(filepath_or_buffer, compressed)
     if buffer.size < 1:
-        raise EOFError("load() was supplied an empty buffer")
+        raise EOFError("load_many() was supplied an empty buffer")
     cdef list results = []
     cdef str name
     cdef BaseTag tag
@@ -138,13 +163,15 @@ cpdef list load_many(
     return results
 
 
-cpdef object load(
+def load(
     object filepath_or_buffer: Union[str, bytes, BinaryIO, None],
+    *,
     bint compressed=True,
     object count: int = None,
     bint offset: bool = False,
     bint little_endian: bool = False,
-):# -> Union[NBTFile, Tuple[Union[NBTFile, List[NBTFile]], int]]:
+) -> Union[NamedTag, Tuple[Union[NamedTag, List[NamedTag]], int]]:
+    warnings.warn("load is depreciated. Use load_one or load_many", DeprecationWarning)
     if offset:
         read_context = ReadContext()
     else:

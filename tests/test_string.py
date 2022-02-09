@@ -414,6 +414,7 @@ class TestString(base_type_test.BaseTypeTest):
             StringTag("ab c\n\nde fg\rkl\r\n").splitlines(keepends=True),
         )
 
+    @unittest.skipUnless(sys.version_info >= (3, 9), "removeprefix only exists in python 3.9+")
     def test_removeprefix(self):
         self.assertStrictEqual(str, "Hook", StringTag("TestHook").removeprefix("Test"))
         # self.assertStrictEqual(

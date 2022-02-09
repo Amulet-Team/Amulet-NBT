@@ -66,7 +66,7 @@ from .named_tag import (
 )
 
 # Load functions
-from .load_nbt import load, load_one, load_many
+from .load_nbt import load, load_one, load_many, tag_to_named_tag
 from .load_snbt import from_snbt
 
 from .errors import NBTError, NBTLoadError, NBTFormatError, SNBTParseError

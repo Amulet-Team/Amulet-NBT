@@ -6,7 +6,6 @@ from typing import Union, BinaryIO, List, Tuple
 import os
 
 from .errors import NBTLoadError
-from .nbtfile cimport NBTFile
 from .util cimport BufferContext, read_string, read_byte
 from .value cimport BaseTag
 from .int cimport (
@@ -14,29 +13,34 @@ from .int cimport (
     ShortTag,
     IntTag,
     LongTag,
-    NamedByteTag,
-    NamedShortTag,
-    NamedIntTag,
-    NamedLongTag,
 )
 from .float cimport (
     FloatTag,
     DoubleTag,
-    NamedFloatTag,
-    NamedDoubleTag,
 )
 from .array cimport (
     ByteArrayTag,
     IntArrayTag,
     LongArrayTag,
+)
+from .string cimport StringTag
+from .list cimport ListTag
+from .compound cimport CompoundTag
+from .named_tag import (
+    BaseNamedTag,
+    NamedByteTag,
+    NamedShortTag,
+    NamedIntTag,
+    NamedLongTag,
+    NamedFloatTag,
+    NamedDoubleTag,
     NamedByteArrayTag,
+    NamedStringTag,
+    NamedListTag,
+    NamedCompoundTag,
     NamedIntArrayTag,
     NamedLongArrayTag,
 )
-from .string cimport StringTag, NamedStringTag
-from .list cimport ListTag, NamedListTag
-from .compound cimport CompoundTag, NamedCompoundTag
-from .dtype import NamedTag
 
 
 cpdef inline bytes safe_gunzip(bytes data):
@@ -115,6 +119,48 @@ cpdef tuple load_tag(BufferContext buffer, bint little_endian):
     return name, load_payload(buffer, tag_type, little_endian)
 
 
+cdef inline BaseNamedTag wrap_tag(char tag_type, BaseTag tag, str name):
+    """Wrap a tag in its named variant."""
+    if tag_type == 1:
+        return NamedByteTag(tag, name)
+    elif tag_type == 2:
+        return NamedShortTag(tag, name)
+    elif tag_type == 3:
+        return NamedIntTag(tag, name)
+    elif tag_type == 4:
+        return NamedLongTag(tag, name)
+    elif tag_type == 5:
+        return NamedFloatTag(tag, name)
+    elif tag_type == 6:
+        return NamedDoubleTag(tag, name)
+    elif tag_type == 7:
+        return NamedByteArrayTag(tag, name)
+    elif tag_type == 8:
+        return NamedStringTag(tag, name)
+    elif tag_type == 9:
+        return NamedListTag(tag, name)
+    elif tag_type == 10:
+        return NamedCompoundTag(tag, name)
+    elif tag_type == 11:
+        return NamedIntArrayTag(tag, name)
+    elif tag_type == 12:
+        return NamedLongArrayTag(tag, name)
+    else:
+        raise NBTLoadError(f"Tag {tag_type} does not exist.")
+
+
+cdef BaseNamedTag load_named_tag(BufferContext buffer, bint little_endian):
+    cdef char tag_type = read_byte(buffer)
+    cdef str name = read_string(buffer, little_endian)
+    cdef BaseTag tag = load_payload(buffer, tag_type, little_endian)
+    return wrap_tag(tag_type, tag, name)
+
+
+cpdef BaseNamedTag tag_to_named_tag(BaseTag tag, str name = ""):
+    cdef char tag_type = tag.tag_id
+    return wrap_tag(tag_type, tag, name)
+
+
 cdef class ReadContext:
     def __cinit__(self):
         self.offset = 0
@@ -126,16 +172,14 @@ def load_one(
     bint compressed=True,
     bint little_endian: bool = False,
     ReadContext read_context = None
-) -> NamedTag:
+) -> BaseNamedTag:
     cdef BufferContext buffer = get_buffer(filepath_or_buffer, compressed)
     if buffer.size < 1:
         raise EOFError("load_one() was supplied an empty buffer")
-    cdef str name
-    cdef BaseTag tag
-    name, tag = load_tag(buffer, little_endian)
+    cdef object tag = load_named_tag(buffer, little_endian)
     if read_context is not None:
         read_context.offset = buffer.offset
-    return NBTFile(tag, name)
+    return tag
 
 
 def load_many(
@@ -145,19 +189,18 @@ def load_many(
     bint compressed=True,
     bint little_endian: bool = False,
     ReadContext read_context = None
-) -> List[NamedTag]:
+) -> List[BaseNamedTag]:
     if count < 1:
         raise ValueError("Count must be 1 or more.")
     cdef BufferContext buffer = get_buffer(filepath_or_buffer, compressed)
     if buffer.size < 1:
         raise EOFError("load_many() was supplied an empty buffer")
     cdef list results = []
-    cdef str name
-    cdef BaseTag tag
     cdef size_t i
     for i in range(count):
-        name, tag = load_tag(buffer, little_endian)
-        results.append(NBTFile(tag, name))
+        results.append(
+            load_named_tag(buffer, little_endian)
+        )
     if read_context is not None:
         read_context.offset = buffer.offset
     return results
@@ -170,7 +213,7 @@ def load(
     object count: int = None,
     bint offset: bool = False,
     bint little_endian: bool = False,
-) -> Union[NamedTag, Tuple[Union[NamedTag, List[NamedTag]], int]]:
+) -> Union[BaseNamedTag, Tuple[Union[BaseNamedTag, List[BaseNamedTag]], int]]:
     warnings.warn("load is depreciated. Use load_one or load_many", DeprecationWarning)
     if offset:
         read_context = ReadContext()

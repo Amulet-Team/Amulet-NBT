@@ -61,3 +61,4 @@ from .named_tag cimport (
 
 # Load functions
 from .load_snbt cimport from_snbt
+from .load_nbt import tag_to_named_tag

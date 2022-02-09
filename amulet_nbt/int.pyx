@@ -1,4 +1,4 @@
-from typing import Union, Iterable, SupportsBytes
+from typing import Union, Iterable, SupportsBytes, List
 from io import BytesIO
 from copy import deepcopy
 from math import floor, ceil
@@ -15,6 +15,7 @@ from .util cimport (
     read_data,
     to_little_endian,
     read_byte,
+    read_string,
 )
 
 
@@ -81,14 +82,18 @@ cdef class BaseIntTag(BaseNumericTag):
         raise NotImplementedError
 
 
-cdef class TAG_Byte(BaseIntTag):
+cdef inline void _read_byte_tag_payload(ByteTag tag, BufferContext buffer, bint little_endian):
+    tag.value_ = read_byte(buffer)
+
+
+cdef class ByteTag(BaseIntTag):
     """
     A class that behaves like an int but is stored in 1 byte.
     Can Store numbers between -(2^7) and (2^7 - 1)
     """
     tag_id = ID_BYTE
 
-    def __init__(TAG_Byte self, value = 0):
+    def __init__(ByteTag self, value = 0):
         self.value_ = self._sanitise_value(int(value))
 
     def bit_length(self):
@@ -128,168 +133,168 @@ cdef class TAG_Byte(BaseIntTag):
         return self.value_.conjugate()
     conjugate.__doc__ = int.conjugate.__doc__
 
-    def __str__(TAG_Byte self):
+    def __str__(ByteTag self):
         return str(self.value_)
 
-    def __dir__(TAG_Byte self):
+    def __dir__(ByteTag self):
         return list(set(list(super().__dir__()) + dir(self.value_)))
 
-    def __eq__(TAG_Byte self, other):
+    def __eq__(ByteTag self, other):
         return self.value_ == other
 
-    def __ge__(TAG_Byte self, other):
+    def __ge__(ByteTag self, other):
         return self.value_ >= other
 
-    def __gt__(TAG_Byte self, other):
+    def __gt__(ByteTag self, other):
         return self.value_ > other
 
-    def __le__(TAG_Byte self, other):
+    def __le__(ByteTag self, other):
         return self.value_ <= other
 
-    def __lt__(TAG_Byte self, other):
+    def __lt__(ByteTag self, other):
         return self.value_ < other
 
-    def __reduce__(TAG_Byte self):
+    def __reduce__(ByteTag self):
         return self.__class__, (self.value_,)
 
-    def __deepcopy__(TAG_Byte self, memo=None):
+    def __deepcopy__(ByteTag self, memo=None):
         return self.__class__(deepcopy(self.value_, memo=memo))
 
-    def __copy__(TAG_Byte self):
+    def __copy__(ByteTag self):
         return self.__class__(self.value_)
 
-    def __hash__(TAG_Byte self):
+    def __hash__(ByteTag self):
         return hash((self.tag_id, self.value_))
 
     @property
-    def value(TAG_Byte self):
+    def py_data(ByteTag self):
         """
         A copy of the data stored in the class.
         Use the public API to modify the data within the class.
         """
         return self.value_
 
-    def __repr__(TAG_Byte self):
+    def __repr__(ByteTag self):
         return f"{self.__class__.__name__}({self.value_})"
 
-    def __add__(TAG_Byte self, other):
+    def __add__(ByteTag self, other):
         return self.value_ + other
 
-    def __radd__(TAG_Byte self, other):
+    def __radd__(ByteTag self, other):
         return other + self.value_
 
-    def __iadd__(TAG_Byte self, other):
+    def __iadd__(ByteTag self, other):
         res = self + other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __sub__(TAG_Byte self, other):
+    def __sub__(ByteTag self, other):
         return self.value_ - other
 
-    def __rsub__(TAG_Byte self, other):
+    def __rsub__(ByteTag self, other):
         return other - self.value_
 
-    def __isub__(TAG_Byte self, other):
+    def __isub__(ByteTag self, other):
         res = self - other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __mul__(TAG_Byte self, other):
+    def __mul__(ByteTag self, other):
         return self.value_ * other
 
-    def __rmul__(TAG_Byte self, other):
+    def __rmul__(ByteTag self, other):
         return other * self.value_
 
-    def __imul__(TAG_Byte self, other):
+    def __imul__(ByteTag self, other):
         res = self * other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __truediv__(TAG_Byte self, other):
+    def __truediv__(ByteTag self, other):
         return self.value_ / other
 
-    def __rtruediv__(TAG_Byte self, other):
+    def __rtruediv__(ByteTag self, other):
         return other / self.value_
 
-    def __itruediv__(TAG_Byte self, other):
+    def __itruediv__(ByteTag self, other):
         res = self / other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __floordiv__(TAG_Byte self, other):
+    def __floordiv__(ByteTag self, other):
         return self.value_ // other
 
-    def __rfloordiv__(TAG_Byte self, other):
+    def __rfloordiv__(ByteTag self, other):
         return other // self.value_
 
-    def __ifloordiv__(TAG_Byte self, other):
+    def __ifloordiv__(ByteTag self, other):
         res = self // other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __mod__(TAG_Byte self, other):
+    def __mod__(ByteTag self, other):
         return self.value_ % other
 
-    def __rmod__(TAG_Byte self, other):
+    def __rmod__(ByteTag self, other):
         return other % self.value_
 
-    def __imod__(TAG_Byte self, other):
+    def __imod__(ByteTag self, other):
         res = self % other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __divmod__(TAG_Byte self, other):
+    def __divmod__(ByteTag self, other):
         return divmod(self.value_, other)
 
-    def __rdivmod__(TAG_Byte self, other):
+    def __rdivmod__(ByteTag self, other):
         return divmod(other, self.value_)
 
-    def __pow__(TAG_Byte self, power, modulo):
+    def __pow__(ByteTag self, power, modulo):
         return pow(self.value_, power, modulo)
 
-    def __rpow__(TAG_Byte self, other, modulo):
+    def __rpow__(ByteTag self, other, modulo):
         return pow(other, self.value_, modulo)
 
-    def __ipow__(TAG_Byte self, other):
+    def __ipow__(ByteTag self, other):
         res = pow(self, other)
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __neg__(TAG_Byte self):
+    def __neg__(ByteTag self):
         return self.value_.__neg__()
 
-    def __pos__(TAG_Byte self):
+    def __pos__(ByteTag self):
         return self.value_.__pos__()
 
-    def __abs__(TAG_Byte self):
+    def __abs__(ByteTag self):
         return self.value_.__abs__()
 
-    def __int__(TAG_Byte self):
+    def __int__(ByteTag self):
         return self.value_.__int__()
 
-    def __float__(TAG_Byte self):
+    def __float__(ByteTag self):
         return self.value_.__float__()
 
-    def __round__(TAG_Byte self, n=None):
+    def __round__(ByteTag self, n=None):
         return round(self.value_, n)
 
-    def __trunc__(TAG_Byte self):
+    def __trunc__(ByteTag self):
         return self.value_.__trunc__()
 
-    def __floor__(TAG_Byte self):
+    def __floor__(ByteTag self):
         return floor(self.value_)
 
-    def __ceil__(TAG_Byte self):
+    def __ceil__(ByteTag self):
         return ceil(self.value_)
 
-    def __bool__(TAG_Byte self):
+    def __bool__(ByteTag self):
         return self.value_.__bool__()
 
     @classmethod
@@ -299,97 +304,105 @@ cdef class TAG_Byte(BaseIntTag):
         byteorder: str,
         *,
         bint signed = False
-    ) -> TAG_Byte:
-        return TAG_Byte(int.from_bytes(bytes, byteorder, signed))
+    ) -> ByteTag:
+        return ByteTag(int.from_bytes(bytes, byteorder, signed))
 
-    def __and__(TAG_Byte self, other):
+    def __and__(ByteTag self, other):
         return self.value_ & other
 
-    def __rand__(TAG_Byte self, other):
+    def __rand__(ByteTag self, other):
         return other & self.value_
 
-    def __iand__(TAG_Byte self, other):
+    def __iand__(ByteTag self, other):
         res = self & other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __xor__(TAG_Byte self, other):
+    def __xor__(ByteTag self, other):
         return self.value_ ^ other
 
-    def __rxor__(TAG_Byte self, other):
+    def __rxor__(ByteTag self, other):
         return other ^ self.value_
 
-    def __ixor__(TAG_Byte self, other):
+    def __ixor__(ByteTag self, other):
         res = self ^ other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __or__(TAG_Byte self, other):
+    def __or__(ByteTag self, other):
         return self.value_ | other
 
-    def __ror__(TAG_Byte self, other):
+    def __ror__(ByteTag self, other):
         return other | self.value_
 
-    def __ior__(TAG_Byte self, other):
+    def __ior__(ByteTag self, other):
         res = self | other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __lshift__(TAG_Byte self, other):
+    def __lshift__(ByteTag self, other):
         return self.value_ << other
 
-    def __rlshift__(TAG_Byte self, other):
+    def __rlshift__(ByteTag self, other):
         return other << self.value_
 
-    def __ilshift__(TAG_Byte self, other):
+    def __ilshift__(ByteTag self, other):
         res = self << other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __rshift__(TAG_Byte self, other):
+    def __rshift__(ByteTag self, other):
         return self.value_ >> other
 
-    def __rrshift__(TAG_Byte self, other):
+    def __rrshift__(ByteTag self, other):
         return other >> self.value_
 
-    def __irshift__(TAG_Byte self, other):
+    def __irshift__(ByteTag self, other):
         res = self >> other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __invert__(TAG_Byte self):
+    def __invert__(ByteTag self):
         return self.value_.__invert__()
 
-    def __index__(TAG_Byte self) -> int:
+    def __index__(ByteTag self) -> int:
         return self.value_.__index__()
 
-    cdef char _sanitise_value(TAG_Byte self, value):
+    cdef char _sanitise_value(ByteTag self, value):
         return (value & 0x7F) - (value & 0x80)
 
-    cdef str _to_snbt(TAG_Byte self):
+    cdef str _to_snbt(ByteTag self):
         return f"{self.value_}b"
 
-    cdef void write_payload(TAG_Byte self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(ByteTag self, object buffer: BytesIO, bint little_endian) except *:
         write_byte(self.value_, buffer)
 
     @staticmethod
-    cdef TAG_Byte read_payload(BufferContext buffer, bint little_endian):
-        return TAG_Byte(read_byte(buffer))
+    cdef ByteTag read_payload(BufferContext buffer, bint little_endian):
+        cdef ByteTag tag = ByteTag.__new__(ByteTag)
+        _read_byte_tag_payload(tag, buffer, little_endian)
+        return tag
 
 
-cdef class TAG_Short(BaseIntTag):
+cdef inline void _read_short_tag_payload(ShortTag tag, BufferContext buffer, bint little_endian):
+    cdef short *pointer = <short*> read_data(buffer, 2)
+    tag.value_ = pointer[0]
+    to_little_endian(&tag.value_, 2, little_endian)
+
+
+cdef class ShortTag(BaseIntTag):
     """
     A class that behaves like an int but is stored in 2 bytes.
     Can Store numbers between -(2^15) and (2^15 - 1)
     """
     tag_id = ID_SHORT
 
-    def __init__(TAG_Short self, value = 0):
+    def __init__(ShortTag self, value = 0):
         self.value_ = self._sanitise_value(int(value))
 
     def bit_length(self):
@@ -429,168 +442,168 @@ cdef class TAG_Short(BaseIntTag):
         return self.value_.conjugate()
     conjugate.__doc__ = int.conjugate.__doc__
 
-    def __str__(TAG_Short self):
+    def __str__(ShortTag self):
         return str(self.value_)
 
-    def __dir__(TAG_Short self):
+    def __dir__(ShortTag self):
         return list(set(list(super().__dir__()) + dir(self.value_)))
 
-    def __eq__(TAG_Short self, other):
+    def __eq__(ShortTag self, other):
         return self.value_ == other
 
-    def __ge__(TAG_Short self, other):
+    def __ge__(ShortTag self, other):
         return self.value_ >= other
 
-    def __gt__(TAG_Short self, other):
+    def __gt__(ShortTag self, other):
         return self.value_ > other
 
-    def __le__(TAG_Short self, other):
+    def __le__(ShortTag self, other):
         return self.value_ <= other
 
-    def __lt__(TAG_Short self, other):
+    def __lt__(ShortTag self, other):
         return self.value_ < other
 
-    def __reduce__(TAG_Short self):
+    def __reduce__(ShortTag self):
         return self.__class__, (self.value_,)
 
-    def __deepcopy__(TAG_Short self, memo=None):
+    def __deepcopy__(ShortTag self, memo=None):
         return self.__class__(deepcopy(self.value_, memo=memo))
 
-    def __copy__(TAG_Short self):
+    def __copy__(ShortTag self):
         return self.__class__(self.value_)
 
-    def __hash__(TAG_Short self):
+    def __hash__(ShortTag self):
         return hash((self.tag_id, self.value_))
 
     @property
-    def value(TAG_Short self):
+    def py_data(ShortTag self):
         """
         A copy of the data stored in the class.
         Use the public API to modify the data within the class.
         """
         return self.value_
 
-    def __repr__(TAG_Short self):
+    def __repr__(ShortTag self):
         return f"{self.__class__.__name__}({self.value_})"
 
-    def __add__(TAG_Short self, other):
+    def __add__(ShortTag self, other):
         return self.value_ + other
 
-    def __radd__(TAG_Short self, other):
+    def __radd__(ShortTag self, other):
         return other + self.value_
 
-    def __iadd__(TAG_Short self, other):
+    def __iadd__(ShortTag self, other):
         res = self + other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __sub__(TAG_Short self, other):
+    def __sub__(ShortTag self, other):
         return self.value_ - other
 
-    def __rsub__(TAG_Short self, other):
+    def __rsub__(ShortTag self, other):
         return other - self.value_
 
-    def __isub__(TAG_Short self, other):
+    def __isub__(ShortTag self, other):
         res = self - other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __mul__(TAG_Short self, other):
+    def __mul__(ShortTag self, other):
         return self.value_ * other
 
-    def __rmul__(TAG_Short self, other):
+    def __rmul__(ShortTag self, other):
         return other * self.value_
 
-    def __imul__(TAG_Short self, other):
+    def __imul__(ShortTag self, other):
         res = self * other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __truediv__(TAG_Short self, other):
+    def __truediv__(ShortTag self, other):
         return self.value_ / other
 
-    def __rtruediv__(TAG_Short self, other):
+    def __rtruediv__(ShortTag self, other):
         return other / self.value_
 
-    def __itruediv__(TAG_Short self, other):
+    def __itruediv__(ShortTag self, other):
         res = self / other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __floordiv__(TAG_Short self, other):
+    def __floordiv__(ShortTag self, other):
         return self.value_ // other
 
-    def __rfloordiv__(TAG_Short self, other):
+    def __rfloordiv__(ShortTag self, other):
         return other // self.value_
 
-    def __ifloordiv__(TAG_Short self, other):
+    def __ifloordiv__(ShortTag self, other):
         res = self // other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __mod__(TAG_Short self, other):
+    def __mod__(ShortTag self, other):
         return self.value_ % other
 
-    def __rmod__(TAG_Short self, other):
+    def __rmod__(ShortTag self, other):
         return other % self.value_
 
-    def __imod__(TAG_Short self, other):
+    def __imod__(ShortTag self, other):
         res = self % other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __divmod__(TAG_Short self, other):
+    def __divmod__(ShortTag self, other):
         return divmod(self.value_, other)
 
-    def __rdivmod__(TAG_Short self, other):
+    def __rdivmod__(ShortTag self, other):
         return divmod(other, self.value_)
 
-    def __pow__(TAG_Short self, power, modulo):
+    def __pow__(ShortTag self, power, modulo):
         return pow(self.value_, power, modulo)
 
-    def __rpow__(TAG_Short self, other, modulo):
+    def __rpow__(ShortTag self, other, modulo):
         return pow(other, self.value_, modulo)
 
-    def __ipow__(TAG_Short self, other):
+    def __ipow__(ShortTag self, other):
         res = pow(self, other)
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __neg__(TAG_Short self):
+    def __neg__(ShortTag self):
         return self.value_.__neg__()
 
-    def __pos__(TAG_Short self):
+    def __pos__(ShortTag self):
         return self.value_.__pos__()
 
-    def __abs__(TAG_Short self):
+    def __abs__(ShortTag self):
         return self.value_.__abs__()
 
-    def __int__(TAG_Short self):
+    def __int__(ShortTag self):
         return self.value_.__int__()
 
-    def __float__(TAG_Short self):
+    def __float__(ShortTag self):
         return self.value_.__float__()
 
-    def __round__(TAG_Short self, n=None):
+    def __round__(ShortTag self, n=None):
         return round(self.value_, n)
 
-    def __trunc__(TAG_Short self):
+    def __trunc__(ShortTag self):
         return self.value_.__trunc__()
 
-    def __floor__(TAG_Short self):
+    def __floor__(ShortTag self):
         return floor(self.value_)
 
-    def __ceil__(TAG_Short self):
+    def __ceil__(ShortTag self):
         return ceil(self.value_)
 
-    def __bool__(TAG_Short self):
+    def __bool__(ShortTag self):
         return self.value_.__bool__()
 
     @classmethod
@@ -600,101 +613,105 @@ cdef class TAG_Short(BaseIntTag):
         byteorder: str,
         *,
         bint signed = False
-    ) -> TAG_Short:
-        return TAG_Short(int.from_bytes(bytes, byteorder, signed))
+    ) -> ShortTag:
+        return ShortTag(int.from_bytes(bytes, byteorder, signed))
 
-    def __and__(TAG_Short self, other):
+    def __and__(ShortTag self, other):
         return self.value_ & other
 
-    def __rand__(TAG_Short self, other):
+    def __rand__(ShortTag self, other):
         return other & self.value_
 
-    def __iand__(TAG_Short self, other):
+    def __iand__(ShortTag self, other):
         res = self & other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __xor__(TAG_Short self, other):
+    def __xor__(ShortTag self, other):
         return self.value_ ^ other
 
-    def __rxor__(TAG_Short self, other):
+    def __rxor__(ShortTag self, other):
         return other ^ self.value_
 
-    def __ixor__(TAG_Short self, other):
+    def __ixor__(ShortTag self, other):
         res = self ^ other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __or__(TAG_Short self, other):
+    def __or__(ShortTag self, other):
         return self.value_ | other
 
-    def __ror__(TAG_Short self, other):
+    def __ror__(ShortTag self, other):
         return other | self.value_
 
-    def __ior__(TAG_Short self, other):
+    def __ior__(ShortTag self, other):
         res = self | other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __lshift__(TAG_Short self, other):
+    def __lshift__(ShortTag self, other):
         return self.value_ << other
 
-    def __rlshift__(TAG_Short self, other):
+    def __rlshift__(ShortTag self, other):
         return other << self.value_
 
-    def __ilshift__(TAG_Short self, other):
+    def __ilshift__(ShortTag self, other):
         res = self << other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __rshift__(TAG_Short self, other):
+    def __rshift__(ShortTag self, other):
         return self.value_ >> other
 
-    def __rrshift__(TAG_Short self, other):
+    def __rrshift__(ShortTag self, other):
         return other >> self.value_
 
-    def __irshift__(TAG_Short self, other):
+    def __irshift__(ShortTag self, other):
         res = self >> other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __invert__(TAG_Short self):
+    def __invert__(ShortTag self):
         return self.value_.__invert__()
 
-    def __index__(TAG_Short self) -> int:
+    def __index__(ShortTag self) -> int:
         return self.value_.__index__()
 
-    cdef short _sanitise_value(TAG_Short self, value):
+    cdef short _sanitise_value(ShortTag self, value):
         return (value & 0x7FFF) - (value & 0x8000)
 
-    cdef str _to_snbt(TAG_Short self):
+    cdef str _to_snbt(ShortTag self):
         return f"{self.value_}s"
 
-    cdef void write_payload(TAG_Short self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(ShortTag self, object buffer: BytesIO, bint little_endian) except *:
         write_short(self.value_, buffer, little_endian)
 
     @staticmethod
-    cdef TAG_Short read_payload(BufferContext buffer, bint little_endian):
-        cdef short *pointer = <short*> read_data(buffer, 2)
-        cdef TAG_Short tag = TAG_Short.__new__(TAG_Short)
-        tag.value_ = pointer[0]
-        to_little_endian(&tag.value_, 2, little_endian)
+    cdef ShortTag read_payload(BufferContext buffer, bint little_endian):
+        cdef ShortTag tag = ShortTag.__new__(ShortTag)
+        _read_short_tag_payload(tag, buffer, little_endian)
         return tag
 
 
-cdef class TAG_Int(BaseIntTag):
+cdef inline void _read_int_tag_payload(IntTag tag, BufferContext buffer, bint little_endian):
+    cdef int*pointer = <int*> read_data(buffer, 4)
+    tag.value_ = pointer[0]
+    to_little_endian(&tag.value_, 4, little_endian)
+
+
+cdef class IntTag(BaseIntTag):
     """
     A class that behaves like an int but is stored in 4 bytes.
     Can Store numbers between -(2^31) and (2^31 - 1)
     """
     tag_id = ID_INT
 
-    def __init__(TAG_Int self, value = 0):
+    def __init__(IntTag self, value = 0):
         self.value_ = self._sanitise_value(int(value))
 
     def bit_length(self):
@@ -734,168 +751,168 @@ cdef class TAG_Int(BaseIntTag):
         return self.value_.conjugate()
     conjugate.__doc__ = int.conjugate.__doc__
 
-    def __str__(TAG_Int self):
+    def __str__(IntTag self):
         return str(self.value_)
 
-    def __dir__(TAG_Int self):
+    def __dir__(IntTag self):
         return list(set(list(super().__dir__()) + dir(self.value_)))
 
-    def __eq__(TAG_Int self, other):
+    def __eq__(IntTag self, other):
         return self.value_ == other
 
-    def __ge__(TAG_Int self, other):
+    def __ge__(IntTag self, other):
         return self.value_ >= other
 
-    def __gt__(TAG_Int self, other):
+    def __gt__(IntTag self, other):
         return self.value_ > other
 
-    def __le__(TAG_Int self, other):
+    def __le__(IntTag self, other):
         return self.value_ <= other
 
-    def __lt__(TAG_Int self, other):
+    def __lt__(IntTag self, other):
         return self.value_ < other
 
-    def __reduce__(TAG_Int self):
+    def __reduce__(IntTag self):
         return self.__class__, (self.value_,)
 
-    def __deepcopy__(TAG_Int self, memo=None):
+    def __deepcopy__(IntTag self, memo=None):
         return self.__class__(deepcopy(self.value_, memo=memo))
 
-    def __copy__(TAG_Int self):
+    def __copy__(IntTag self):
         return self.__class__(self.value_)
 
-    def __hash__(TAG_Int self):
+    def __hash__(IntTag self):
         return hash((self.tag_id, self.value_))
 
     @property
-    def value(TAG_Int self):
+    def py_data(IntTag self):
         """
         A copy of the data stored in the class.
         Use the public API to modify the data within the class.
         """
         return self.value_
 
-    def __repr__(TAG_Int self):
+    def __repr__(IntTag self):
         return f"{self.__class__.__name__}({self.value_})"
 
-    def __add__(TAG_Int self, other):
+    def __add__(IntTag self, other):
         return self.value_ + other
 
-    def __radd__(TAG_Int self, other):
+    def __radd__(IntTag self, other):
         return other + self.value_
 
-    def __iadd__(TAG_Int self, other):
+    def __iadd__(IntTag self, other):
         res = self + other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __sub__(TAG_Int self, other):
+    def __sub__(IntTag self, other):
         return self.value_ - other
 
-    def __rsub__(TAG_Int self, other):
+    def __rsub__(IntTag self, other):
         return other - self.value_
 
-    def __isub__(TAG_Int self, other):
+    def __isub__(IntTag self, other):
         res = self - other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __mul__(TAG_Int self, other):
+    def __mul__(IntTag self, other):
         return self.value_ * other
 
-    def __rmul__(TAG_Int self, other):
+    def __rmul__(IntTag self, other):
         return other * self.value_
 
-    def __imul__(TAG_Int self, other):
+    def __imul__(IntTag self, other):
         res = self * other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __truediv__(TAG_Int self, other):
+    def __truediv__(IntTag self, other):
         return self.value_ / other
 
-    def __rtruediv__(TAG_Int self, other):
+    def __rtruediv__(IntTag self, other):
         return other / self.value_
 
-    def __itruediv__(TAG_Int self, other):
+    def __itruediv__(IntTag self, other):
         res = self / other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __floordiv__(TAG_Int self, other):
+    def __floordiv__(IntTag self, other):
         return self.value_ // other
 
-    def __rfloordiv__(TAG_Int self, other):
+    def __rfloordiv__(IntTag self, other):
         return other // self.value_
 
-    def __ifloordiv__(TAG_Int self, other):
+    def __ifloordiv__(IntTag self, other):
         res = self // other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __mod__(TAG_Int self, other):
+    def __mod__(IntTag self, other):
         return self.value_ % other
 
-    def __rmod__(TAG_Int self, other):
+    def __rmod__(IntTag self, other):
         return other % self.value_
 
-    def __imod__(TAG_Int self, other):
+    def __imod__(IntTag self, other):
         res = self % other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __divmod__(TAG_Int self, other):
+    def __divmod__(IntTag self, other):
         return divmod(self.value_, other)
 
-    def __rdivmod__(TAG_Int self, other):
+    def __rdivmod__(IntTag self, other):
         return divmod(other, self.value_)
 
-    def __pow__(TAG_Int self, power, modulo):
+    def __pow__(IntTag self, power, modulo):
         return pow(self.value_, power, modulo)
 
-    def __rpow__(TAG_Int self, other, modulo):
+    def __rpow__(IntTag self, other, modulo):
         return pow(other, self.value_, modulo)
 
-    def __ipow__(TAG_Int self, other):
+    def __ipow__(IntTag self, other):
         res = pow(self, other)
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __neg__(TAG_Int self):
+    def __neg__(IntTag self):
         return self.value_.__neg__()
 
-    def __pos__(TAG_Int self):
+    def __pos__(IntTag self):
         return self.value_.__pos__()
 
-    def __abs__(TAG_Int self):
+    def __abs__(IntTag self):
         return self.value_.__abs__()
 
-    def __int__(TAG_Int self):
+    def __int__(IntTag self):
         return self.value_.__int__()
 
-    def __float__(TAG_Int self):
+    def __float__(IntTag self):
         return self.value_.__float__()
 
-    def __round__(TAG_Int self, n=None):
+    def __round__(IntTag self, n=None):
         return round(self.value_, n)
 
-    def __trunc__(TAG_Int self):
+    def __trunc__(IntTag self):
         return self.value_.__trunc__()
 
-    def __floor__(TAG_Int self):
+    def __floor__(IntTag self):
         return floor(self.value_)
 
-    def __ceil__(TAG_Int self):
+    def __ceil__(IntTag self):
         return ceil(self.value_)
 
-    def __bool__(TAG_Int self):
+    def __bool__(IntTag self):
         return self.value_.__bool__()
 
     @classmethod
@@ -905,101 +922,105 @@ cdef class TAG_Int(BaseIntTag):
         byteorder: str,
         *,
         bint signed = False
-    ) -> TAG_Int:
-        return TAG_Int(int.from_bytes(bytes, byteorder, signed))
+    ) -> IntTag:
+        return IntTag(int.from_bytes(bytes, byteorder, signed))
 
-    def __and__(TAG_Int self, other):
+    def __and__(IntTag self, other):
         return self.value_ & other
 
-    def __rand__(TAG_Int self, other):
+    def __rand__(IntTag self, other):
         return other & self.value_
 
-    def __iand__(TAG_Int self, other):
+    def __iand__(IntTag self, other):
         res = self & other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __xor__(TAG_Int self, other):
+    def __xor__(IntTag self, other):
         return self.value_ ^ other
 
-    def __rxor__(TAG_Int self, other):
+    def __rxor__(IntTag self, other):
         return other ^ self.value_
 
-    def __ixor__(TAG_Int self, other):
+    def __ixor__(IntTag self, other):
         res = self ^ other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __or__(TAG_Int self, other):
+    def __or__(IntTag self, other):
         return self.value_ | other
 
-    def __ror__(TAG_Int self, other):
+    def __ror__(IntTag self, other):
         return other | self.value_
 
-    def __ior__(TAG_Int self, other):
+    def __ior__(IntTag self, other):
         res = self | other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __lshift__(TAG_Int self, other):
+    def __lshift__(IntTag self, other):
         return self.value_ << other
 
-    def __rlshift__(TAG_Int self, other):
+    def __rlshift__(IntTag self, other):
         return other << self.value_
 
-    def __ilshift__(TAG_Int self, other):
+    def __ilshift__(IntTag self, other):
         res = self << other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __rshift__(TAG_Int self, other):
+    def __rshift__(IntTag self, other):
         return self.value_ >> other
 
-    def __rrshift__(TAG_Int self, other):
+    def __rrshift__(IntTag self, other):
         return other >> self.value_
 
-    def __irshift__(TAG_Int self, other):
+    def __irshift__(IntTag self, other):
         res = self >> other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __invert__(TAG_Int self):
+    def __invert__(IntTag self):
         return self.value_.__invert__()
 
-    def __index__(TAG_Int self) -> int:
+    def __index__(IntTag self) -> int:
         return self.value_.__index__()
 
-    cdef int _sanitise_value(TAG_Int self, value):
+    cdef int _sanitise_value(IntTag self, value):
         return (value & 0x7FFF_FFFF) - (value & 0x8000_0000)
 
-    cdef str _to_snbt(TAG_Int self):
+    cdef str _to_snbt(IntTag self):
         return f"{self.value_}"
 
-    cdef void write_payload(TAG_Int self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(IntTag self, object buffer: BytesIO, bint little_endian) except *:
         write_int(self.value_, buffer, little_endian)
 
     @staticmethod
-    cdef TAG_Int read_payload(BufferContext buffer, bint little_endian):
-        cdef int*pointer = <int*> read_data(buffer, 4)
-        cdef TAG_Int tag = TAG_Int.__new__(TAG_Int)
-        tag.value_ = pointer[0]
-        to_little_endian(&tag.value_, 4, little_endian)
+    cdef IntTag read_payload(BufferContext buffer, bint little_endian):
+        cdef IntTag tag = IntTag.__new__(IntTag)
+        _read_int_tag_payload(tag, buffer, little_endian)
         return tag
 
 
-cdef class TAG_Long(BaseIntTag):
+cdef inline void _read_long_tag_payload(LongTag tag, BufferContext buffer, bint little_endian):
+    cdef long long *pointer = <long long *> read_data(buffer, 8)
+    tag.value_ = pointer[0]
+    to_little_endian(&tag.value_, 8, little_endian)
+
+
+cdef class LongTag(BaseIntTag):
     """
     A class that behaves like an int but is stored in 8 bytes.
     Can Store numbers between -(2^63) and (2^63 - 1)
     """
     tag_id = ID_LONG
 
-    def __init__(TAG_Long self, value = 0):
+    def __init__(LongTag self, value = 0):
         self.value_ = self._sanitise_value(int(value))
 
     def bit_length(self):
@@ -1039,168 +1060,168 @@ cdef class TAG_Long(BaseIntTag):
         return self.value_.conjugate()
     conjugate.__doc__ = int.conjugate.__doc__
 
-    def __str__(TAG_Long self):
+    def __str__(LongTag self):
         return str(self.value_)
 
-    def __dir__(TAG_Long self):
+    def __dir__(LongTag self):
         return list(set(list(super().__dir__()) + dir(self.value_)))
 
-    def __eq__(TAG_Long self, other):
+    def __eq__(LongTag self, other):
         return self.value_ == other
 
-    def __ge__(TAG_Long self, other):
+    def __ge__(LongTag self, other):
         return self.value_ >= other
 
-    def __gt__(TAG_Long self, other):
+    def __gt__(LongTag self, other):
         return self.value_ > other
 
-    def __le__(TAG_Long self, other):
+    def __le__(LongTag self, other):
         return self.value_ <= other
 
-    def __lt__(TAG_Long self, other):
+    def __lt__(LongTag self, other):
         return self.value_ < other
 
-    def __reduce__(TAG_Long self):
+    def __reduce__(LongTag self):
         return self.__class__, (self.value_,)
 
-    def __deepcopy__(TAG_Long self, memo=None):
+    def __deepcopy__(LongTag self, memo=None):
         return self.__class__(deepcopy(self.value_, memo=memo))
 
-    def __copy__(TAG_Long self):
+    def __copy__(LongTag self):
         return self.__class__(self.value_)
 
-    def __hash__(TAG_Long self):
+    def __hash__(LongTag self):
         return hash((self.tag_id, self.value_))
 
     @property
-    def value(TAG_Long self):
+    def py_data(LongTag self):
         """
         A copy of the data stored in the class.
         Use the public API to modify the data within the class.
         """
         return self.value_
 
-    def __repr__(TAG_Long self):
+    def __repr__(LongTag self):
         return f"{self.__class__.__name__}({self.value_})"
 
-    def __add__(TAG_Long self, other):
+    def __add__(LongTag self, other):
         return self.value_ + other
 
-    def __radd__(TAG_Long self, other):
+    def __radd__(LongTag self, other):
         return other + self.value_
 
-    def __iadd__(TAG_Long self, other):
+    def __iadd__(LongTag self, other):
         res = self + other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __sub__(TAG_Long self, other):
+    def __sub__(LongTag self, other):
         return self.value_ - other
 
-    def __rsub__(TAG_Long self, other):
+    def __rsub__(LongTag self, other):
         return other - self.value_
 
-    def __isub__(TAG_Long self, other):
+    def __isub__(LongTag self, other):
         res = self - other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __mul__(TAG_Long self, other):
+    def __mul__(LongTag self, other):
         return self.value_ * other
 
-    def __rmul__(TAG_Long self, other):
+    def __rmul__(LongTag self, other):
         return other * self.value_
 
-    def __imul__(TAG_Long self, other):
+    def __imul__(LongTag self, other):
         res = self * other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __truediv__(TAG_Long self, other):
+    def __truediv__(LongTag self, other):
         return self.value_ / other
 
-    def __rtruediv__(TAG_Long self, other):
+    def __rtruediv__(LongTag self, other):
         return other / self.value_
 
-    def __itruediv__(TAG_Long self, other):
+    def __itruediv__(LongTag self, other):
         res = self / other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __floordiv__(TAG_Long self, other):
+    def __floordiv__(LongTag self, other):
         return self.value_ // other
 
-    def __rfloordiv__(TAG_Long self, other):
+    def __rfloordiv__(LongTag self, other):
         return other // self.value_
 
-    def __ifloordiv__(TAG_Long self, other):
+    def __ifloordiv__(LongTag self, other):
         res = self // other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __mod__(TAG_Long self, other):
+    def __mod__(LongTag self, other):
         return self.value_ % other
 
-    def __rmod__(TAG_Long self, other):
+    def __rmod__(LongTag self, other):
         return other % self.value_
 
-    def __imod__(TAG_Long self, other):
+    def __imod__(LongTag self, other):
         res = self % other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __divmod__(TAG_Long self, other):
+    def __divmod__(LongTag self, other):
         return divmod(self.value_, other)
 
-    def __rdivmod__(TAG_Long self, other):
+    def __rdivmod__(LongTag self, other):
         return divmod(other, self.value_)
 
-    def __pow__(TAG_Long self, power, modulo):
+    def __pow__(LongTag self, power, modulo):
         return pow(self.value_, power, modulo)
 
-    def __rpow__(TAG_Long self, other, modulo):
+    def __rpow__(LongTag self, other, modulo):
         return pow(other, self.value_, modulo)
 
-    def __ipow__(TAG_Long self, other):
+    def __ipow__(LongTag self, other):
         res = pow(self, other)
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __neg__(TAG_Long self):
+    def __neg__(LongTag self):
         return self.value_.__neg__()
 
-    def __pos__(TAG_Long self):
+    def __pos__(LongTag self):
         return self.value_.__pos__()
 
-    def __abs__(TAG_Long self):
+    def __abs__(LongTag self):
         return self.value_.__abs__()
 
-    def __int__(TAG_Long self):
+    def __int__(LongTag self):
         return self.value_.__int__()
 
-    def __float__(TAG_Long self):
+    def __float__(LongTag self):
         return self.value_.__float__()
 
-    def __round__(TAG_Long self, n=None):
+    def __round__(LongTag self, n=None):
         return round(self.value_, n)
 
-    def __trunc__(TAG_Long self):
+    def __trunc__(LongTag self):
         return self.value_.__trunc__()
 
-    def __floor__(TAG_Long self):
+    def __floor__(LongTag self):
         return floor(self.value_)
 
-    def __ceil__(TAG_Long self):
+    def __ceil__(LongTag self):
         return ceil(self.value_)
 
-    def __bool__(TAG_Long self):
+    def __bool__(LongTag self):
         return self.value_.__bool__()
 
     @classmethod
@@ -1210,88 +1231,86 @@ cdef class TAG_Long(BaseIntTag):
         byteorder: str,
         *,
         bint signed = False
-    ) -> TAG_Long:
-        return TAG_Long(int.from_bytes(bytes, byteorder, signed))
+    ) -> LongTag:
+        return LongTag(int.from_bytes(bytes, byteorder, signed))
 
-    def __and__(TAG_Long self, other):
+    def __and__(LongTag self, other):
         return self.value_ & other
 
-    def __rand__(TAG_Long self, other):
+    def __rand__(LongTag self, other):
         return other & self.value_
 
-    def __iand__(TAG_Long self, other):
+    def __iand__(LongTag self, other):
         res = self & other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __xor__(TAG_Long self, other):
+    def __xor__(LongTag self, other):
         return self.value_ ^ other
 
-    def __rxor__(TAG_Long self, other):
+    def __rxor__(LongTag self, other):
         return other ^ self.value_
 
-    def __ixor__(TAG_Long self, other):
+    def __ixor__(LongTag self, other):
         res = self ^ other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __or__(TAG_Long self, other):
+    def __or__(LongTag self, other):
         return self.value_ | other
 
-    def __ror__(TAG_Long self, other):
+    def __ror__(LongTag self, other):
         return other | self.value_
 
-    def __ior__(TAG_Long self, other):
+    def __ior__(LongTag self, other):
         res = self | other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __lshift__(TAG_Long self, other):
+    def __lshift__(LongTag self, other):
         return self.value_ << other
 
-    def __rlshift__(TAG_Long self, other):
+    def __rlshift__(LongTag self, other):
         return other << self.value_
 
-    def __ilshift__(TAG_Long self, other):
+    def __ilshift__(LongTag self, other):
         res = self << other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __rshift__(TAG_Long self, other):
+    def __rshift__(LongTag self, other):
         return self.value_ >> other
 
-    def __rrshift__(TAG_Long self, other):
+    def __rrshift__(LongTag self, other):
         return other >> self.value_
 
-    def __irshift__(TAG_Long self, other):
+    def __irshift__(LongTag self, other):
         res = self >> other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __invert__(TAG_Long self):
+    def __invert__(LongTag self):
         return self.value_.__invert__()
 
-    def __index__(TAG_Long self) -> int:
+    def __index__(LongTag self) -> int:
         return self.value_.__index__()
 
-    cdef long long _sanitise_value(TAG_Long self, value):
+    cdef long long _sanitise_value(LongTag self, value):
         return (value & 0x7FFF_FFFF_FFFF_FFFF) - (value & 0x8000_0000_0000_0000)
 
-    cdef str _to_snbt(TAG_Long self):
+    cdef str _to_snbt(LongTag self):
         return f"{self.value_}L"
 
-    cdef void write_payload(TAG_Long self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(LongTag self, object buffer: BytesIO, bint little_endian) except *:
         write_long(self.value_, buffer, little_endian)
 
     @staticmethod
-    cdef TAG_Long read_payload(BufferContext buffer, bint little_endian):
-        cdef long long *pointer = <long long *> read_data(buffer, 8)
-        cdef TAG_Long tag = TAG_Long.__new__(TAG_Long)
-        tag.value_ = pointer[0]
-        to_little_endian(&tag.value_, 8, little_endian)
+    cdef LongTag read_payload(BufferContext buffer, bint little_endian):
+        cdef LongTag tag = LongTag.__new__(LongTag)
+        _read_long_tag_payload(tag, buffer, little_endian)
         return tag

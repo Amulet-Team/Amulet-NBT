@@ -6,17 +6,17 @@ from amulet_nbt import (
     BaseNumericTag,
     BaseIntTag,
     BaseFloatTag,
-    TAG_Byte,
-    TAG_Short,
-    TAG_Int,
-    TAG_Long,
-    TAG_Float,
-    TAG_Double,
-    TAG_String,
-    TAG_List,
-    TAG_Compound,
-    TAG_Byte_Array,
-    TAG_Int_Array,
+    ByteTag,
+    ShortTag,
+    IntTag,
+    LongTag,
+    FloatTag,
+    DoubleTag,
+    StringTag,
+    ListTag,
+    CompoundTag,
+    ByteArrayTag,
+    IntArrayTag,
 )
 
 
@@ -37,12 +37,12 @@ class TestArray(base_type_test.BaseTypeTest):
         self._test_init(lambda x: numpy.array(x, dtype=numpy.int64), [])
 
     def test_array_overflow(self):
-        b_arr = TAG_Byte_Array([0])
+        b_arr = ByteArrayTag([0])
         b_arr += 2 ** 7
-        i_arr = TAG_Int_Array([0])
+        i_arr = IntArrayTag([0])
         i_arr += 2 ** 31
         # numpy throws an error when overflowing int64
-        # l_arr = TAG_Long_Array([0])
+        # l_arr = LongArrayTag([0])
         # l_arr += 2 ** 63
 
         self.assertTrue(numpy.array_equal(b_arr, [-(2 ** 7)]))

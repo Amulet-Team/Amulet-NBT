@@ -15,21 +15,6 @@ cdef class BaseTag:
         bint leading_indent=*
     )
 
-    cpdef bytes to_nbt(
-        self,
-        str name=*,
-        bint compressed=*,
-        bint little_endian=*
-    )
-
-    cpdef bytes save_to(
-        self,
-        object filepath_or_buffer=*,
-        bint compressed=*,
-        bint little_endian=*,
-        str name=*
-    )
-
     cdef void write_tag(
         self,
         object buffer,

@@ -10,10 +10,10 @@ from amulet_nbt import (
     BaseNumericTag,
     BaseIntTag,
     BaseFloatTag,
-    TAG_Byte,
-    TAG_Short,
-    TAG_Int,
-    TAG_Long,
+    ByteTag,
+    ShortTag,
+    IntTag,
+    LongTag,
 )
 
 AnyNum = Union[int, float, BaseNumericTag]
@@ -220,10 +220,10 @@ class TestNumerical(base_type_test.BaseTypeTest):
             self._test_single_op(val1, operator.invert, "~", (float, BaseFloatTag))
 
     def test_overflow(self):
-        b = TAG_Byte()
-        s = TAG_Short()
-        i = TAG_Int()
-        l = TAG_Long()
+        b = ByteTag()
+        s = ShortTag()
+        i = IntTag()
+        l = LongTag()
 
         b += 2 ** 7
         s += 2 ** 15

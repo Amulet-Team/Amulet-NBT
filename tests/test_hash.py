@@ -3,40 +3,40 @@ import unittest
 from tests import base_type_test
 
 from amulet_nbt import (
-    TAG_Byte,
-    TAG_Short,
-    TAG_Int,
-    TAG_Long,
-    TAG_Float,
-    TAG_Double,
-    TAG_Byte_Array,
-    TAG_String,
-    TAG_List,
-    TAG_Compound,
-    TAG_Int_Array,
-    TAG_Long_Array,
+    ByteTag,
+    ShortTag,
+    IntTag,
+    LongTag,
+    FloatTag,
+    DoubleTag,
+    ByteArrayTag,
+    StringTag,
+    ListTag,
+    CompoundTag,
+    IntArrayTag,
+    LongArrayTag,
 )
 
 
 class TestHash(base_type_test.BaseTagsTest):
     def test_hash(self):
-        hash(TAG_Byte())
-        hash(TAG_Short())
-        hash(TAG_Int())
-        hash(TAG_Long())
-        hash(TAG_Float())
-        hash(TAG_Double())
-        hash(TAG_String())
+        hash(ByteTag())
+        hash(ShortTag())
+        hash(IntTag())
+        hash(LongTag())
+        hash(FloatTag())
+        hash(DoubleTag())
+        hash(StringTag())
         with self.assertRaises(TypeError):
-            hash(TAG_List())
+            hash(ListTag())
         with self.assertRaises(TypeError):
-            hash(TAG_Compound())
+            hash(CompoundTag())
         with self.assertRaises(TypeError):
-            hash(TAG_Byte_Array())
+            hash(ByteArrayTag())
         with self.assertRaises(TypeError):
-            hash(TAG_Int_Array())
+            hash(IntArrayTag())
         with self.assertRaises(TypeError):
-            hash(TAG_Long_Array())
+            hash(LongArrayTag())
 
     def test_hash_num(self):
         for num in (-5, 0, 5):

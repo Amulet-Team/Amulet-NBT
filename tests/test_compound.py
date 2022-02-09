@@ -6,23 +6,23 @@ from amulet_nbt import (
     BaseNumericTag,
     BaseIntTag,
     BaseFloatTag,
-    TAG_Byte,
-    TAG_Short,
-    TAG_Int,
-    TAG_Long,
-    TAG_Float,
-    TAG_Double,
-    TAG_String,
-    TAG_List,
-    TAG_Compound,
-    TAG_Byte_Array,
-    TAG_Int_Array,
-    TAG_Long_Array,
+    ByteTag,
+    ShortTag,
+    IntTag,
+    LongTag,
+    FloatTag,
+    DoubleTag,
+    StringTag,
+    ListTag,
+    CompoundTag,
+    ByteArrayTag,
+    IntArrayTag,
+    LongArrayTag,
 )
 
 
 class TestCompound(base_type_test.BaseTypeTest):
-    this_types = (TAG_Compound,)
+    this_types = (CompoundTag,)
 
     @property
     def values(self):
@@ -41,81 +41,81 @@ class TestCompound(base_type_test.BaseTypeTest):
         self._test_init(dict, {})
 
         for t in self.nbt_types:
-            self.assertEqual(TAG_Compound({t.__name__: t()}), {t.__name__: t()})
-            self.assertEqual(TAG_Compound(test=t()), {"test": t()})
+            self.assertEqual(CompoundTag({t.__name__: t()}), {t.__name__: t()})
+            self.assertEqual(CompoundTag(test=t()), {"test": t()})
 
-        TAG_Compound({"key": TAG_Int()})
+        CompoundTag({"key": IntTag()})
         with self.assertRaises(TypeError):
-            TAG_Compound({0: TAG_Int()})
+            CompoundTag({0: IntTag()})
         with self.assertRaises(TypeError):
-            TAG_Compound({None: TAG_Int()})
+            CompoundTag({None: IntTag()})
         with self.assertRaises(TypeError):
-            TAG_Compound({"key": None})
+            CompoundTag({"key": None})
 
         for not_nbt in self.not_nbt:
             with self.assertRaises(TypeError, msg=repr(not_nbt)):
-                TAG_Compound({not_nbt.__class__.__name__: not_nbt})
+                CompoundTag({not_nbt.__class__.__name__: not_nbt})
             if not isinstance(not_nbt, str):
                 with self.assertRaises(TypeError, msg=repr(not_nbt)):
-                    TAG_Compound({not_nbt: TAG_Int()})
+                    CompoundTag({not_nbt: IntTag()})
 
         d = {
-            "key1": TAG_String("val1"),
-            "key2": TAG_String("val2"),
-            "key3": TAG_String("val3"),
+            "key1": StringTag("val1"),
+            "key2": StringTag("val2"),
+            "key3": StringTag("val3"),
         }
-        c1 = TAG_Compound(d)
-        c2 = TAG_Compound(c1)
+        c1 = CompoundTag(d)
+        c2 = CompoundTag(c1)
         self.assertEqual(d, c1)
         self.assertEqual(d, c2)
         self.assertIsNot(c1, c2)
 
     def test_equal(self):
-        c = TAG_Compound()
-        c["key"] = TAG_Int()
+        c = CompoundTag()
+        c["key"] = IntTag()
         for tag in (int,) + self.numerical_types:
             self.assertEqual(c, {"key": tag()})
             self.assertNotEqual(c, {"key": tag(5)})
             self.assertFalse(c.strict_equals({"key": tag()}))
         for tag in self.numerical_types:
-            if tag is TAG_Int:
-                self.assertTrue(c.strict_equals(TAG_Compound({"key": tag()})))
+            if tag is IntTag:
+                self.assertTrue(c.strict_equals(CompoundTag({"key": tag()})))
             else:
-                self.assertFalse(c.strict_equals(TAG_Compound({"key": tag()})))
+                self.assertFalse(c.strict_equals(CompoundTag({"key": tag()})))
 
     def test_clear(self):
-        c = TAG_Compound(self.full_dict)
+        c = CompoundTag(self.full_dict)
         self.assertEqual(c, self.full_dict)
         c.clear()
         self.assertEqual(c, {})
 
     def test_fromkeys(self):
-        c = TAG_Compound.fromkeys(("a", "b"), TAG_String("test"))
+        c = CompoundTag.fromkeys(("a", "b"), StringTag("test"))
         self.assertEqual(
-            c, TAG_Compound({"a": TAG_String("test"), "b": TAG_String("test")})
+            c, CompoundTag({"a": StringTag("test"), "b": StringTag("test")})
         )
-        self.assertIsInstance(c, TAG_Compound)
+        self.assertIsInstance(c, CompoundTag)
         with self.assertRaises(TypeError):
-            TAG_Compound.fromkeys((1, 2), TAG_String("test"))
+            CompoundTag.fromkeys((1, 2), StringTag("test"))
         with self.assertRaises(TypeError):
-            TAG_Compound.fromkeys((None, None), TAG_String("test"))
+            CompoundTag.fromkeys((None, None), StringTag("test"))
         with self.assertRaises(TypeError):
-            TAG_Compound.fromkeys(("a", "b"), None)
+            CompoundTag.fromkeys(("a", "b"), None)
 
     def test_get(self):
-        c = TAG_Compound()
-        value = c["key"] = TAG_String("test")
+        c = CompoundTag()
+        value = c["key"] = StringTag("test")
         self.assertIs(c.get("key"), value)
         self.assertIs(c.get("key2"), None)
         self.assertIs(c.get("key3", value), value)
 
     def test_iter(self):
         d = {
-            "key1": TAG_String("val1"),
-            "key2": TAG_String("val2"),
-            "key3": TAG_String("val3"),
+            "key1": StringTag("val1"),
+            "key2": StringTag("val2"),
+            "key3": StringTag("val3"),
         }
-        c = TAG_Compound(d)
+        c = CompoundTag(d)
         it = iter(c)
         self.assertEqual(next(it), "key1")
         self.assertEqual(next(it), "key2")
@@ -128,55 +128,55 @@ class TestCompound(base_type_test.BaseTypeTest):
 
     def test_keys(self):
         d = {
-            "key1": TAG_String("val1"),
-            "key2": TAG_String("val2"),
-            "key3": TAG_String("val3"),
+            "key1": StringTag("val1"),
+            "key2": StringTag("val2"),
+            "key3": StringTag("val3"),
         }
-        c = TAG_Compound(d)
+        c = CompoundTag(d)
         self.assertEqual(d.keys(), c.keys())
 
     def test_values(self):
         d = {
-            "key1": TAG_String("val1"),
-            "key2": TAG_String("val2"),
-            "key3": TAG_String("val3"),
+            "key1": StringTag("val1"),
+            "key2": StringTag("val2"),
+            "key3": StringTag("val3"),
         }
-        c = TAG_Compound(d)
+        c = CompoundTag(d)
         self.assertEqual(list(d.values()), list(c.values()))
 
     def test_items(self):
         d = {
-            "key1": TAG_String("val1"),
-            "key2": TAG_String("val2"),
-            "key3": TAG_String("val3"),
+            "key1": StringTag("val1"),
+            "key2": StringTag("val2"),
+            "key3": StringTag("val3"),
         }
-        c = TAG_Compound(d)
+        c = CompoundTag(d)
         self.assertEqual(d.items(), c.items())
 
     def test_pop(self):
         d = {
-            "key1": TAG_String("val1"),
-            "key2": TAG_String("val2"),
-            "key3": TAG_String("val3"),
+            "key1": StringTag("val1"),
+            "key2": StringTag("val2"),
+            "key3": StringTag("val3"),
         }
-        c = TAG_Compound(d)
-        self.assertEqual(c.pop("key1"), TAG_String("val1"))
+        c = CompoundTag(d)
+        self.assertEqual(c.pop("key1"), StringTag("val1"))
         self.assertEqual(
             c,
             {
-                "key2": TAG_String("val2"),
-                "key3": TAG_String("val3"),
+                "key2": StringTag("val2"),
+                "key3": StringTag("val3"),
             },
         )
         with self.assertRaises(KeyError):
             c.pop("key1")
         self.assertIs(c.pop("key1", None), None)
-        self.assertEqual(c.pop("key1", TAG_String("val1")), TAG_String("val1"))
+        self.assertEqual(c.pop("key1", StringTag("val1")), StringTag("val1"))
 
     def test_setdefault(self):
-        c = TAG_Compound(
+        c = CompoundTag(
             {
-                "key1": TAG_String("val1"),
+                "key1": StringTag("val1"),
             }
         )
         with self.assertRaises(Exception):
@@ -187,15 +187,15 @@ class TestCompound(base_type_test.BaseTypeTest):
             c.setdefault("key1", None)
         with self.assertRaises(TypeError):
             c.setdefault("key1", "val1")
-        self.assertEqual(c.setdefault("key1", TAG_String("val2")), "val1")
+        self.assertEqual(c.setdefault("key1", StringTag("val2")), "val1")
         self.assertEqual(c["key1"], "val1")
-        self.assertEqual(c.setdefault("key2", TAG_String("val2")), "val2")
+        self.assertEqual(c.setdefault("key2", StringTag("val2")), "val2")
         self.assertEqual(c["key2"], "val2")
 
     def test_update(self):
-        c = TAG_Compound()
+        c = CompoundTag()
         with self.assertRaises(TypeError):
-            c.update({None: TAG_String("val")})
+            c.update({None: StringTag("val")})
         with self.assertRaises(TypeError):
             c.update({"key": None})
         with self.assertRaises(TypeError):
@@ -204,63 +204,63 @@ class TestCompound(base_type_test.BaseTypeTest):
             c.update(key=None)
 
         d = {
-            "key1": TAG_String("val1"),
-            "key2": TAG_String("val2"),
-            "key3": TAG_String("val3"),
+            "key1": StringTag("val1"),
+            "key2": StringTag("val2"),
+            "key3": StringTag("val3"),
         }
         c.update(d)
         self.assertEqual(c, d)
 
-        c.update({"key4": TAG_String("val4")})
+        c.update({"key4": StringTag("val4")})
         self.assertEqual(
             c,
             {
-                "key1": TAG_String("val1"),
-                "key2": TAG_String("val2"),
-                "key3": TAG_String("val3"),
-                "key4": TAG_String("val4"),
+                "key1": StringTag("val1"),
+                "key2": StringTag("val2"),
+                "key3": StringTag("val3"),
+                "key4": StringTag("val4"),
             },
         )
-        c.update(key5=TAG_String("val5"))
+        c.update(key5=StringTag("val5"))
         self.assertEqual(
             c,
             {
-                "key1": TAG_String("val1"),
-                "key2": TAG_String("val2"),
-                "key3": TAG_String("val3"),
-                "key4": TAG_String("val4"),
-                "key5": TAG_String("val5"),
+                "key1": StringTag("val1"),
+                "key2": StringTag("val2"),
+                "key3": StringTag("val3"),
+                "key4": StringTag("val4"),
+                "key5": StringTag("val5"),
             },
         )
-        c.update({"key6": TAG_String("val6")}, key7=TAG_String("val7"))
+        c.update({"key6": StringTag("val6")}, key7=StringTag("val7"))
         self.assertEqual(
             c,
             {
-                "key1": TAG_String("val1"),
-                "key2": TAG_String("val2"),
-                "key3": TAG_String("val3"),
-                "key4": TAG_String("val4"),
-                "key5": TAG_String("val5"),
-                "key6": TAG_String("val6"),
-                "key7": TAG_String("val7"),
+                "key1": StringTag("val1"),
+                "key2": StringTag("val2"),
+                "key3": StringTag("val3"),
+                "key4": StringTag("val4"),
+                "key5": StringTag("val5"),
+                "key6": StringTag("val6"),
+                "key7": StringTag("val7"),
             },
         )
         d = {
-            "key1": TAG_String("val8"),
-            "key2": TAG_String("val9"),
-            "key3": TAG_String("val10"),
-            "key4": TAG_String("val11"),
-            "key5": TAG_String("val12"),
-            "key6": TAG_String("val13"),
-            "key7": TAG_String("val14"),
+            "key1": StringTag("val8"),
+            "key2": StringTag("val9"),
+            "key3": StringTag("val10"),
+            "key4": StringTag("val11"),
+            "key5": StringTag("val12"),
+            "key6": StringTag("val13"),
+            "key7": StringTag("val14"),
         }
         c.update(d)
         self.assertEqual(c, d)
 
     def test_contains(self):
-        c = TAG_Compound(
+        c = CompoundTag(
             {
-                "key1": TAG_String("val1"),
+                "key1": StringTag("val1"),
             }
         )
         self.assertIn("key1", c)
@@ -273,25 +273,25 @@ class TestCompound(base_type_test.BaseTypeTest):
                 self.assertNotIn(not_nbt, c)
 
     def test_delitem(self):
-        c = TAG_Compound(
+        c = CompoundTag(
             {
-                "key1": TAG_String("val1"),
-                "key2": TAG_String("val2"),
+                "key1": StringTag("val1"),
+                "key2": StringTag("val2"),
             }
         )
         del c["key1"]
         self.assertEqual(
             c,
             {
-                "key2": TAG_String("val2"),
+                "key2": StringTag("val2"),
             },
         )
 
     def test_getitem(self):
-        c = TAG_Compound(
+        c = CompoundTag(
             {
-                "key1": TAG_String("val1"),
-                "key2": TAG_String("val2"),
+                "key1": StringTag("val1"),
+                "key2": StringTag("val2"),
             }
         )
         self.assertEqual(c["key1"], "val1")
@@ -307,15 +307,15 @@ class TestCompound(base_type_test.BaseTypeTest):
                     c[not_nbt]
 
     def test_setitem(self):
-        c = TAG_Compound()
-        c["key"] = TAG_String("val")
+        c = CompoundTag()
+        c["key"] = StringTag("val")
         self.assertEqual(c, {"key": "val"})
 
         for not_nbt in self.not_nbt:
             # keys must be strings
             if not isinstance(not_nbt, str):
                 with self.assertRaises(TypeError):
-                    c[not_nbt] = TAG_String("val")
+                    c[not_nbt] = StringTag("val")
             # vals must be nbt objects
             with self.assertRaises(TypeError, msg=repr(not_nbt)):
                 c[not_nbt.__class__.__name__] = not_nbt
@@ -323,11 +323,11 @@ class TestCompound(base_type_test.BaseTypeTest):
     def test_len(self):
         self.assertEqual(
             len(
-                TAG_Compound(
+                CompoundTag(
                     {
-                        "key1": TAG_String("val1"),
-                        "key2": TAG_String("val2"),
-                        "key3": TAG_String("val3"),
+                        "key1": StringTag("val1"),
+                        "key2": StringTag("val2"),
+                        "key3": StringTag("val3"),
                     }
                 )
             ),
@@ -337,11 +337,11 @@ class TestCompound(base_type_test.BaseTypeTest):
     @unittest.skipUnless(sys.version_info >= (3, 8), "dicts are ")
     def test_reversed(self):
         d = {
-            "key1": TAG_String("val1"),
-            "key2": TAG_String("val2"),
-            "key3": TAG_String("val3"),
+            "key1": StringTag("val1"),
+            "key2": StringTag("val2"),
+            "key3": StringTag("val3"),
         }
-        c = TAG_Compound(d)
+        c = CompoundTag(d)
         self.assertEqual(
             list(reversed(d)),
             list(reversed(c)),
@@ -349,7 +349,7 @@ class TestCompound(base_type_test.BaseTypeTest):
 
     def test_hash(self):
         with self.assertRaises(TypeError):
-            hash(TAG_Compound())
+            hash(CompoundTag())
 
 
 if __name__ == "__main__":

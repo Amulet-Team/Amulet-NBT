@@ -6,41 +6,41 @@ This is here in case that data needs to be recreated in the future.
 from typing import Tuple, Type, Any, Iterable
 from amulet_nbt import (
     BaseTag,
-    TAG_Byte,
-    TAG_Short,
-    TAG_Int,
-    TAG_Long,
-    TAG_Float,
-    TAG_Double,
-    TAG_Byte_Array,
-    TAG_Int_Array,
-    TAG_Long_Array,
-    TAG_String,
-    TAG_List,
-    TAG_Compound,
-    NBTFile,
+    ByteTag,
+    ShortTag,
+    IntTag,
+    LongTag,
+    FloatTag,
+    DoubleTag,
+    ByteArrayTag,
+    IntArrayTag,
+    LongArrayTag,
+    StringTag,
+    ListTag,
+    CompoundTag,
+    tag_to_named_tag,
 )
 
 names = ("", "name")
 tags: Tuple[Tuple[Tuple[Type[BaseTag], ...], Tuple[Any, ...]], ...] = (
-    ((TAG_Byte, TAG_Short, TAG_Int, TAG_Long, TAG_Float, TAG_Double), (5, -5)),
-    ((TAG_Byte_Array, TAG_Int_Array, TAG_Long_Array), ([], [5, 6, 7], [-5, -6, -7])),
-    ((TAG_String,), ("value",)),
-    ((TAG_List,), ([],)),
-    ((TAG_Compound,), ({},)),
+    ((ByteTag, ShortTag, IntTag, LongTag, FloatTag, DoubleTag), (5, -5)),
+    ((ByteArrayTag, IntArrayTag, LongArrayTag), ([], [5, 6, 7], [-5, -6, -7])),
+    ((StringTag,), ("value",)),
+    ((ListTag,), ([],)),
+    ((CompoundTag,), ({},)),
 )
 
 
-def print_line(name: str, value: BaseTag):
-    nbt_file = NBTFile(value, name)
+def print_line(name: str, tag: BaseTag):
+    named_tag = tag_to_named_tag(tag, name)
     print(
         f"("
-        f"{repr(nbt_file)}, "
-        f"{repr(nbt_file.to_nbt(compressed=False, little_endian=False))}, "
-        f"{repr(nbt_file.to_nbt(compressed=False, little_endian=True))}, "
-        f"{repr(nbt_file.to_nbt(compressed=True, little_endian=False))}, "
-        f"{repr(nbt_file.to_nbt(compressed=True, little_endian=True))}, "
-        f"{repr(nbt_file.value.to_snbt())}"
+        f"{repr(named_tag)}, "
+        f"{repr(named_tag.to_nbt(compressed=False, little_endian=False))}, "
+        f"{repr(named_tag.to_nbt(compressed=False, little_endian=True))}, "
+        f"{repr(named_tag.to_nbt(compressed=True, little_endian=False))}, "
+        f"{repr(named_tag.to_nbt(compressed=True, little_endian=True))}, "
+        f"{repr(named_tag.tag.to_snbt())}"
         f"),"
     )
 
@@ -55,9 +55,9 @@ def gen_data() -> Iterable[BaseTag]:
 def gen_data_all() -> Iterable[BaseTag]:
     yield from gen_data()
     for data in gen_data():
-        yield TAG_List([data])
+        yield ListTag([data])
     for data in gen_data():
-        yield TAG_Compound({"key": data})
+        yield CompoundTag({"key": data})
 
 
 def main():

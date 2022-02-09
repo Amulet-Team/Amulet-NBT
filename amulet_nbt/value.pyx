@@ -1,4 +1,4 @@
-from copy import copy, deepcopy
+from copy import copy
 from io import BytesIO
 import warnings
 import gzip
@@ -10,13 +10,18 @@ cdef class BaseTag:
     tag_id: int = None
 
     @property
-    def value(self):
+    def py_data(self):
         """
         An immutable version/copy of the data in the class.
         The immutable types return the internal immutable data.
         The mutable types return a copy of the data. To modify these classes use the public API.
         """
         raise NotImplementedError
+
+    @property
+    def value(self):
+        warnings.warn("value property is depreciated. Use py_data instead", DeprecationWarning)
+        return self.py_data
 
     cpdef str to_snbt(self, object indent=None, object indent_chr=None):
         """
@@ -44,11 +49,12 @@ cdef class BaseTag:
     cdef str _pretty_to_snbt(self, str indent_chr, int indent_count=0, bint leading_indent=True):
         return f"{indent_chr * indent_count * leading_indent}{self._to_snbt()}"
 
-    cpdef bytes to_nbt(
+    def to_nbt(
         self,
-        str name="",
+        *,
         bint compressed=True,
         bint little_endian=False,
+        str name="",
     ):
         """
         Get the data in binary NBT format.
@@ -69,9 +75,10 @@ cdef class BaseTag:
             data = gzip_buffer.getvalue()
         return data
 
-    cpdef bytes save_to(
+    def save_to(
         self,
         object filepath_or_buffer=None,
+        *,
         bint compressed=True,
         bint little_endian=False,
         str name="",
@@ -89,7 +96,11 @@ cdef class BaseTag:
         :param name: The root tag name.
         :return: The binary NBT representation of the class.
         """
-        cdef bytes data = self.to_nbt(name, compressed, little_endian)
+        cdef bytes data = self.to_nbt(
+            compressed=compressed,
+            little_endian=little_endian,
+            name=name
+        )
 
         if filepath_or_buffer is None:
             pass

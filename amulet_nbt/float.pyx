@@ -1,21 +1,28 @@
+from typing import List
 from io import BytesIO
 from copy import deepcopy
 from math import floor, ceil
 
 from .numeric cimport BaseNumericTag
 from .const cimport ID_FLOAT, ID_DOUBLE
-from .util cimport write_float, write_double, BufferContext, read_data, to_little_endian
+from .util cimport write_float, write_double, BufferContext, read_data, to_little_endian, read_string
 
 
 cdef class BaseFloatTag(BaseNumericTag):
     pass
 
 
-cdef class TAG_Float(BaseFloatTag):
+cdef inline void _read_float_tag_payload(FloatTag tag, BufferContext buffer, bint little_endian):
+    cdef float*pointer = <float*> read_data(buffer, 4)
+    tag.value_ = pointer[0]
+    to_little_endian(&tag.value_, 4, little_endian)
+
+
+cdef class FloatTag(BaseFloatTag):
     """A class that behaves like a float but is stored as a single precision float."""
     tag_id = ID_FLOAT
 
-    def __init__(TAG_Float self, value = 0):
+    def __init__(FloatTag self, value = 0):
         self.value_ = float(value)
 
     def as_integer_ratio(self):
@@ -44,366 +51,368 @@ cdef class TAG_Float(BaseFloatTag):
         """the real part of a complex number"""
         return self.value_.real
     
-    def __str__(TAG_Float self):
+    def __str__(FloatTag self):
         return str(self.value_)
 
-    def __dir__(TAG_Float self):
+    def __dir__(FloatTag self):
         return list(set(list(super().__dir__()) + dir(self.value_)))
 
-    def __eq__(TAG_Float self, other):
+    def __eq__(FloatTag self, other):
         return self.value_ == other
 
-    def __ge__(TAG_Float self, other):
+    def __ge__(FloatTag self, other):
         return self.value_ >= other
 
-    def __gt__(TAG_Float self, other):
+    def __gt__(FloatTag self, other):
         return self.value_ > other
 
-    def __le__(TAG_Float self, other):
+    def __le__(FloatTag self, other):
         return self.value_ <= other
 
-    def __lt__(TAG_Float self, other):
+    def __lt__(FloatTag self, other):
         return self.value_ < other
 
-    def __reduce__(TAG_Float self):
+    def __reduce__(FloatTag self):
         return self.__class__, (self.value_,)
 
-    def __deepcopy__(TAG_Float self, memo=None):
+    def __deepcopy__(FloatTag self, memo=None):
         return self.__class__(deepcopy(self.value_, memo=memo))
 
-    def __copy__(TAG_Float self):
+    def __copy__(FloatTag self):
         return self.__class__(self.value_)
 
-    def __hash__(TAG_Float self):
+    def __hash__(FloatTag self):
         return hash((self.tag_id, self.value_))
 
     @property
-    def value(TAG_Float self):
+    def py_data(FloatTag self):
         """
         A copy of the data stored in the class.
         Use the public API to modify the data within the class.
         """
         return self.value_
 
-    def __repr__(TAG_Float self):
+    def __repr__(FloatTag self):
         return f"{self.__class__.__name__}({self.value_})"
 
-    def __add__(TAG_Float self, other):
+    def __add__(FloatTag self, other):
         return self.value_ + other
 
-    def __radd__(TAG_Float self, other):
+    def __radd__(FloatTag self, other):
         return other + self.value_
 
-    def __iadd__(TAG_Float self, other):
+    def __iadd__(FloatTag self, other):
         res = self + other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __sub__(TAG_Float self, other):
+    def __sub__(FloatTag self, other):
         return self.value_ - other
 
-    def __rsub__(TAG_Float self, other):
+    def __rsub__(FloatTag self, other):
         return other - self.value_
 
-    def __isub__(TAG_Float self, other):
+    def __isub__(FloatTag self, other):
         res = self - other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __mul__(TAG_Float self, other):
+    def __mul__(FloatTag self, other):
         return self.value_ * other
 
-    def __rmul__(TAG_Float self, other):
+    def __rmul__(FloatTag self, other):
         return other * self.value_
 
-    def __imul__(TAG_Float self, other):
+    def __imul__(FloatTag self, other):
         res = self * other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __truediv__(TAG_Float self, other):
+    def __truediv__(FloatTag self, other):
         return self.value_ / other
 
-    def __rtruediv__(TAG_Float self, other):
+    def __rtruediv__(FloatTag self, other):
         return other / self.value_
 
-    def __itruediv__(TAG_Float self, other):
+    def __itruediv__(FloatTag self, other):
         res = self / other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __floordiv__(TAG_Float self, other):
+    def __floordiv__(FloatTag self, other):
         return self.value_ // other
 
-    def __rfloordiv__(TAG_Float self, other):
+    def __rfloordiv__(FloatTag self, other):
         return other // self.value_
 
-    def __ifloordiv__(TAG_Float self, other):
+    def __ifloordiv__(FloatTag self, other):
         res = self // other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __mod__(TAG_Float self, other):
+    def __mod__(FloatTag self, other):
         return self.value_ % other
 
-    def __rmod__(TAG_Float self, other):
+    def __rmod__(FloatTag self, other):
         return other % self.value_
 
-    def __imod__(TAG_Float self, other):
+    def __imod__(FloatTag self, other):
         res = self % other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __divmod__(TAG_Float self, other):
+    def __divmod__(FloatTag self, other):
         return divmod(self.value_, other)
 
-    def __rdivmod__(TAG_Float self, other):
+    def __rdivmod__(FloatTag self, other):
         return divmod(other, self.value_)
 
-    def __pow__(TAG_Float self, power, modulo):
+    def __pow__(FloatTag self, power, modulo):
         return pow(self.value_, power, modulo)
 
-    def __rpow__(TAG_Float self, other, modulo):
+    def __rpow__(FloatTag self, other, modulo):
         return pow(other, self.value_, modulo)
 
-    def __ipow__(TAG_Float self, other):
+    def __ipow__(FloatTag self, other):
         res = pow(self, other)
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __neg__(TAG_Float self):
+    def __neg__(FloatTag self):
         return self.value_.__neg__()
 
-    def __pos__(TAG_Float self):
+    def __pos__(FloatTag self):
         return self.value_.__pos__()
 
-    def __abs__(TAG_Float self):
+    def __abs__(FloatTag self):
         return self.value_.__abs__()
 
-    def __int__(TAG_Float self):
+    def __int__(FloatTag self):
         return self.value_.__int__()
 
-    def __float__(TAG_Float self):
+    def __float__(FloatTag self):
         return self.value_.__float__()
 
-    def __round__(TAG_Float self, n=None):
+    def __round__(FloatTag self, n=None):
         return round(self.value_, n)
 
-    def __trunc__(TAG_Float self):
+    def __trunc__(FloatTag self):
         return self.value_.__trunc__()
 
-    def __floor__(TAG_Float self):
+    def __floor__(FloatTag self):
         return floor(self.value_)
 
-    def __ceil__(TAG_Float self):
+    def __ceil__(FloatTag self):
         return ceil(self.value_)
 
-    def __bool__(TAG_Float self):
+    def __bool__(FloatTag self):
         return self.value_.__bool__()
 
-    cdef str _to_snbt(TAG_Float self):
+    cdef str _to_snbt(FloatTag self):
         return f"{self.value_}f"
 
-    cdef void write_payload(TAG_Float self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(FloatTag self, object buffer: BytesIO, bint little_endian) except *:
         write_float(self.value_, buffer, little_endian)
 
     @staticmethod
-    cdef TAG_Float read_payload(BufferContext buffer, bint little_endian):
-        cdef float*pointer = <float*> read_data(buffer, 4)
-        cdef TAG_Float tag = TAG_Float.__new__(TAG_Float)
-        tag.value_ = pointer[0]
-        to_little_endian(&tag.value_, 4, little_endian)
+    cdef FloatTag read_payload(BufferContext buffer, bint little_endian):
+        cdef FloatTag tag = FloatTag.__new__(FloatTag)
+        _read_float_tag_payload(tag, buffer, little_endian)
         return tag
 
 
-cdef class TAG_Double(BaseFloatTag):
+cdef inline void _read_double_tag_payload(DoubleTag tag, BufferContext buffer, bint little_endian):
+    cdef double *pointer = <double *> read_data(buffer, 8)
+    tag.value_ = pointer[0]
+    to_little_endian(&tag.value_, 8, little_endian)
+
+
+cdef class DoubleTag(BaseFloatTag):
     """A class that behaves like a float but is stored as a double precision float."""
     tag_id = ID_DOUBLE
 
-    def __init__(TAG_Double self, value = 0):
+    def __init__(DoubleTag self, value = 0):
         self.value_ = float(value)
 
-    def __str__(TAG_Double self):
+    def __str__(DoubleTag self):
         return str(self.value_)
 
-    def __dir__(TAG_Double self):
+    def __dir__(DoubleTag self):
         return list(set(list(super().__dir__()) + dir(self.value_)))
 
-    def __eq__(TAG_Double self, other):
+    def __eq__(DoubleTag self, other):
         return self.value_ == other
 
-    def __ge__(TAG_Double self, other):
+    def __ge__(DoubleTag self, other):
         return self.value_ >= other
 
-    def __gt__(TAG_Double self, other):
+    def __gt__(DoubleTag self, other):
         return self.value_ > other
 
-    def __le__(TAG_Double self, other):
+    def __le__(DoubleTag self, other):
         return self.value_ <= other
 
-    def __lt__(TAG_Double self, other):
+    def __lt__(DoubleTag self, other):
         return self.value_ < other
 
-    def __reduce__(TAG_Double self):
+    def __reduce__(DoubleTag self):
         return self.__class__, (self.value_,)
 
-    def __deepcopy__(TAG_Double self, memo=None):
+    def __deepcopy__(DoubleTag self, memo=None):
         return self.__class__(deepcopy(self.value_, memo=memo))
 
-    def __copy__(TAG_Double self):
+    def __copy__(DoubleTag self):
         return self.__class__(self.value_)
 
-    def __hash__(TAG_Double self):
+    def __hash__(DoubleTag self):
         return hash((self.tag_id, self.value_))
 
     @property
-    def value(TAG_Double self):
+    def py_data(DoubleTag self):
         """
         A copy of the data stored in the class.
         Use the public API to modify the data within the class.
         """
         return self.value_
 
-    def __repr__(TAG_Double self):
+    def __repr__(DoubleTag self):
         return f"{self.__class__.__name__}({self.value_})"
 
-    def __add__(TAG_Double self, other):
+    def __add__(DoubleTag self, other):
         return self.value_ + other
 
-    def __radd__(TAG_Double self, other):
+    def __radd__(DoubleTag self, other):
         return other + self.value_
 
-    def __iadd__(TAG_Double self, other):
+    def __iadd__(DoubleTag self, other):
         res = self + other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __sub__(TAG_Double self, other):
+    def __sub__(DoubleTag self, other):
         return self.value_ - other
 
-    def __rsub__(TAG_Double self, other):
+    def __rsub__(DoubleTag self, other):
         return other - self.value_
 
-    def __isub__(TAG_Double self, other):
+    def __isub__(DoubleTag self, other):
         res = self - other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __mul__(TAG_Double self, other):
+    def __mul__(DoubleTag self, other):
         return self.value_ * other
 
-    def __rmul__(TAG_Double self, other):
+    def __rmul__(DoubleTag self, other):
         return other * self.value_
 
-    def __imul__(TAG_Double self, other):
+    def __imul__(DoubleTag self, other):
         res = self * other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __truediv__(TAG_Double self, other):
+    def __truediv__(DoubleTag self, other):
         return self.value_ / other
 
-    def __rtruediv__(TAG_Double self, other):
+    def __rtruediv__(DoubleTag self, other):
         return other / self.value_
 
-    def __itruediv__(TAG_Double self, other):
+    def __itruediv__(DoubleTag self, other):
         res = self / other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __floordiv__(TAG_Double self, other):
+    def __floordiv__(DoubleTag self, other):
         return self.value_ // other
 
-    def __rfloordiv__(TAG_Double self, other):
+    def __rfloordiv__(DoubleTag self, other):
         return other // self.value_
 
-    def __ifloordiv__(TAG_Double self, other):
+    def __ifloordiv__(DoubleTag self, other):
         res = self // other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __mod__(TAG_Double self, other):
+    def __mod__(DoubleTag self, other):
         return self.value_ % other
 
-    def __rmod__(TAG_Double self, other):
+    def __rmod__(DoubleTag self, other):
         return other % self.value_
 
-    def __imod__(TAG_Double self, other):
+    def __imod__(DoubleTag self, other):
         res = self % other
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __divmod__(TAG_Double self, other):
+    def __divmod__(DoubleTag self, other):
         return divmod(self.value_, other)
 
-    def __rdivmod__(TAG_Double self, other):
+    def __rdivmod__(DoubleTag self, other):
         return divmod(other, self.value_)
 
-    def __pow__(TAG_Double self, power, modulo):
+    def __pow__(DoubleTag self, power, modulo):
         return pow(self.value_, power, modulo)
 
-    def __rpow__(TAG_Double self, other, modulo):
+    def __rpow__(DoubleTag self, other, modulo):
         return pow(other, self.value_, modulo)
 
-    def __ipow__(TAG_Double self, other):
+    def __ipow__(DoubleTag self, other):
         res = pow(self, other)
         if isinstance(res, (int, float)):
             return self.__class__(res)
         return res
 
-    def __neg__(TAG_Double self):
+    def __neg__(DoubleTag self):
         return self.value_.__neg__()
 
-    def __pos__(TAG_Double self):
+    def __pos__(DoubleTag self):
         return self.value_.__pos__()
 
-    def __abs__(TAG_Double self):
+    def __abs__(DoubleTag self):
         return self.value_.__abs__()
 
-    def __int__(TAG_Double self):
+    def __int__(DoubleTag self):
         return self.value_.__int__()
 
-    def __float__(TAG_Double self):
+    def __float__(DoubleTag self):
         return self.value_.__float__()
 
-    def __round__(TAG_Double self, n=None):
+    def __round__(DoubleTag self, n=None):
         return round(self.value_, n)
 
-    def __trunc__(TAG_Double self):
+    def __trunc__(DoubleTag self):
         return self.value_.__trunc__()
 
-    def __floor__(TAG_Double self):
+    def __floor__(DoubleTag self):
         return floor(self.value_)
 
-    def __ceil__(TAG_Double self):
+    def __ceil__(DoubleTag self):
         return ceil(self.value_)
 
-    def __bool__(TAG_Double self):
+    def __bool__(DoubleTag self):
         return self.value_.__bool__()
 
-    cdef str _to_snbt(TAG_Double self):
+    cdef str _to_snbt(DoubleTag self):
         return f"{self.value_}d"
 
-    cdef void write_payload(TAG_Double self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(DoubleTag self, object buffer: BytesIO, bint little_endian) except *:
         write_double(self.value_, buffer, little_endian)
 
     @staticmethod
-    cdef TAG_Double read_payload(BufferContext buffer, bint little_endian):
-        cdef double *pointer = <double *> read_data(buffer, 8)
-        cdef TAG_Double tag = TAG_Double.__new__(TAG_Double)
-        tag.value_ = pointer[0]
-        to_little_endian(&tag.value_, 8, little_endian)
+    cdef DoubleTag read_payload(BufferContext buffer, bint little_endian):
+        cdef DoubleTag tag = DoubleTag.__new__(DoubleTag)
+        _read_double_tag_payload(tag, buffer, little_endian)
         return tag

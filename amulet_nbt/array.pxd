@@ -6,11 +6,11 @@ cdef class BaseArrayTag(BaseMutableTag):
     cdef void _fix_dtype(self)
     cdef numpy.ndarray _as_endianness(self, bint little_endian = *)
 
-cdef class TAG_Byte_Array(BaseArrayTag):
+cdef class ByteArrayTag(BaseArrayTag):
     pass
 
-cdef class TAG_Int_Array(BaseArrayTag):
+cdef class IntArrayTag(BaseArrayTag):
     pass
 
-cdef class TAG_Long_Array(BaseArrayTag):
+cdef class LongArrayTag(BaseArrayTag):
     pass

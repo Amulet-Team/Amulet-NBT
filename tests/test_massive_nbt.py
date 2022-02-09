@@ -1,156 +1,163 @@
 import unittest
 import numpy
 import os
-import amulet_nbt
+from amulet_nbt import (
+    ByteTag,
+    ShortTag,
+    IntTag,
+    LongTag,
+    FloatTag,
+    DoubleTag,
+    ByteArrayTag,
+    IntArrayTag,
+    LongArrayTag,
+    StringTag,
+    ListTag,
+    CompoundTag,
+    NamedCompoundTag,
+    load_one,
+)
 
 
 class MassiveNBTTests(unittest.TestCase):
     def test_api(self):
-        compound = amulet_nbt.TAG_Compound()
-        nbt_file = amulet_nbt.NBTFile(compound, name="hello")
+        compound = CompoundTag()
+        named_compound = NamedCompoundTag(compound, name="hello")
 
         # the nbt objects with no inputs
-        compound["emptyByte"] = amulet_nbt.TAG_Byte()
-        compound["emptyShort"] = amulet_nbt.TAG_Short()
-        compound["emptyInt"] = amulet_nbt.TAG_Int()
-        compound["emptyLong"] = amulet_nbt.TAG_Long()
-        compound["emptyFloat"] = amulet_nbt.TAG_Float()
-        compound["emptyDouble"] = amulet_nbt.TAG_Double()
-        compound["emptyByteArray"] = amulet_nbt.TAG_Byte_Array()
-        compound["emptyString"] = amulet_nbt.TAG_String()
-        compound["emptyList"] = amulet_nbt.TAG_List()
-        compound["emptyCompound"] = amulet_nbt.TAG_Compound()
-        compound["emptyIntArray"] = amulet_nbt.TAG_Int_Array()
-        compound["emptyLongArray"] = amulet_nbt.TAG_Long_Array()
+        compound["emptyByte"] = ByteTag()
+        compound["emptyShort"] = ShortTag()
+        compound["emptyInt"] = IntTag()
+        compound["emptyLong"] = LongTag()
+        compound["emptyFloat"] = FloatTag()
+        compound["emptyDouble"] = DoubleTag()
+        compound["emptyByteArray"] = ByteArrayTag()
+        compound["emptyString"] = StringTag()
+        compound["emptyList"] = ListTag()
+        compound["emptyCompound"] = CompoundTag()
+        compound["emptyIntArray"] = IntArrayTag()
+        compound["emptyLongArray"] = LongArrayTag()
 
         # the nbt objects with zero or empty inputs (pure python only)
-        compound["zeroByte"] = amulet_nbt.TAG_Byte(0)
-        compound["zeroShort"] = amulet_nbt.TAG_Short(0)
-        compound["zeroInt"] = amulet_nbt.TAG_Int(0)
-        compound["zeroLong"] = amulet_nbt.TAG_Long(0)
-        compound["zeroFloat"] = amulet_nbt.TAG_Float(0)
-        compound["zeroDouble"] = amulet_nbt.TAG_Double(0)
-        compound["zeroByteArray"] = amulet_nbt.TAG_Byte_Array([])
-        compound["zeroString"] = amulet_nbt.TAG_String("")
-        compound["zeroList"] = amulet_nbt.TAG_List([])
-        compound["zeroCompound"] = amulet_nbt.TAG_Compound({})
-        compound["zeroIntArray"] = amulet_nbt.TAG_Int_Array([])
-        compound["zeroLongArray"] = amulet_nbt.TAG_Long_Array([])
+        compound["zeroByte"] = ByteTag(0)
+        compound["zeroShort"] = ShortTag(0)
+        compound["zeroInt"] = IntTag(0)
+        compound["zeroLong"] = LongTag(0)
+        compound["zeroFloat"] = FloatTag(0)
+        compound["zeroDouble"] = DoubleTag(0)
+        compound["zeroByteArray"] = ByteArrayTag([])
+        compound["zeroString"] = StringTag("")
+        compound["zeroList"] = ListTag([])
+        compound["zeroCompound"] = CompoundTag({})
+        compound["zeroIntArray"] = IntArrayTag([])
+        compound["zeroLongArray"] = LongArrayTag([])
 
         # empty inputs but numpy arrays for the array types
-        compound["zeroNumpyByteArray"] = amulet_nbt.TAG_Byte_Array(numpy.array([]))
-        compound["zeroNumpyIntArray"] = amulet_nbt.TAG_Int_Array(numpy.array([]))
-        compound["zeroNumpyLongArray"] = amulet_nbt.TAG_Long_Array(numpy.array([]))
+        compound["zeroNumpyByteArray"] = ByteArrayTag(numpy.array([]))
+        compound["zeroNumpyIntArray"] = IntArrayTag(numpy.array([]))
+        compound["zeroNumpyLongArray"] = LongArrayTag(numpy.array([]))
 
         # test the array types with some python data
-        compound["listByteArray"] = amulet_nbt.TAG_Byte_Array(
-            [i for i in range(-128, 127)]
-        )
-        compound["listIntArray"] = amulet_nbt.TAG_Int_Array(
-            [i for i in range(-400, 400)]
-        )
-        compound["listLongArray"] = amulet_nbt.TAG_Long_Array(
-            [i for i in range(-400, 400)]
-        )
+        compound["listByteArray"] = ByteArrayTag([i for i in range(-128, 127)])
+        compound["listIntArray"] = IntArrayTag([i for i in range(-400, 400)])
+        compound["listLongArray"] = LongArrayTag([i for i in range(-400, 400)])
 
         # test the array types with numpy data of varying dtypes
-        compound["numpyDtypeTestByteArray"] = amulet_nbt.TAG_Byte_Array(
+        compound["numpyDtypeTestByteArray"] = ByteArrayTag(
             numpy.array([i for i in range(-128, 127)], dtype=int)
         )
-        compound["numpyDtypeuTestByteArray"] = amulet_nbt.TAG_Byte_Array(
+        compound["numpyDtypeuTestByteArray"] = ByteArrayTag(
             numpy.array([i for i in range(-128, 127)], dtype=numpy.uint)
         )
-        compound["numpyDtypeTestIntArray"] = amulet_nbt.TAG_Int_Array(
+        compound["numpyDtypeTestIntArray"] = IntArrayTag(
             numpy.array([i for i in range(-400, 400)], dtype=int)
         )
-        compound["numpyDtypeuTestIntArray"] = amulet_nbt.TAG_Int_Array(
+        compound["numpyDtypeuTestIntArray"] = IntArrayTag(
             numpy.array([i for i in range(-400, 400)], dtype=numpy.uint)
         )
-        compound["numpyDtypeTestLongArray"] = amulet_nbt.TAG_Long_Array(
+        compound["numpyDtypeTestLongArray"] = LongArrayTag(
             numpy.array([i for i in range(-400, 400)], dtype=int)
         )
-        compound["numpyDtypeuTestLongArray"] = amulet_nbt.TAG_Long_Array(
+        compound["numpyDtypeuTestLongArray"] = LongArrayTag(
             numpy.array([i for i in range(-400, 400)], dtype=numpy.uint)
         )
 
-        compound["numpyDtypedTestByteArray"] = amulet_nbt.TAG_Byte_Array(
+        compound["numpyDtypedTestByteArray"] = ByteArrayTag(
             numpy.array([i for i in range(-128, 127)])
         )
-        compound["numpyDtypedTestIntArray"] = amulet_nbt.TAG_Int_Array(
+        compound["numpyDtypedTestIntArray"] = IntArrayTag(
             numpy.array([i for i in range(-400, 400)])
         )
-        compound["numpyDtypedTestLongArray"] = amulet_nbt.TAG_Long_Array(
+        compound["numpyDtypedTestLongArray"] = LongArrayTag(
             numpy.array([i for i in range(-400, 400)])
         )
 
         # test the extremes of the array types
         # byte array tested above
-        compound["numpyExtremeTestIntArray"] = amulet_nbt.TAG_Int_Array(
+        compound["numpyExtremeTestIntArray"] = IntArrayTag(
             numpy.array([-(2 ** 31), (2 ** 31) - 1], dtype=int)
         )
-        compound["numpyExtremeTestLongArray"] = amulet_nbt.TAG_Long_Array(
+        compound["numpyExtremeTestLongArray"] = LongArrayTag(
             numpy.array([-(2 ** 63), (2 ** 63) - 1], dtype="q")
         )
 
-        compound["minByte"] = amulet_nbt.TAG_Byte(-128)
-        compound["minShort"] = amulet_nbt.TAG_Short(-(2 ** 15))
-        compound["minInt"] = amulet_nbt.TAG_Int(-(2 ** 31))
-        compound["minLong"] = amulet_nbt.TAG_Long(-(2 ** 63))
+        compound["minByte"] = ByteTag(-128)
+        compound["minShort"] = ShortTag(-(2 ** 15))
+        compound["minInt"] = IntTag(-(2 ** 31))
+        compound["minLong"] = LongTag(-(2 ** 63))
 
-        compound["maxByte"] = amulet_nbt.TAG_Byte(127)
-        compound["maxShort"] = amulet_nbt.TAG_Short(2 ** 15 - 1)
-        compound["maxInt"] = amulet_nbt.TAG_Int(2 ** 31 - 1)
-        compound["maxLong"] = amulet_nbt.TAG_Long(2 ** 63 - 1)
+        compound["maxByte"] = ByteTag(127)
+        compound["maxShort"] = ShortTag(2 ** 15 - 1)
+        compound["maxInt"] = IntTag(2 ** 31 - 1)
+        compound["maxLong"] = LongTag(2 ** 63 - 1)
 
         # these should either overflow when setting or error when saving. Test each and if it errors just comment it out
-        compound["overflowByte"] = amulet_nbt.TAG_Byte(300)
-        compound["underflowByte"] = amulet_nbt.TAG_Byte(-300)
-        compound["overflowShort"] = amulet_nbt.TAG_Short(2 ** 16)
-        compound["underflowShort"] = amulet_nbt.TAG_Short(-(2 ** 16))
-        compound["overflowInt"] = amulet_nbt.TAG_Int(2 ** 32)
-        compound["underflowInt"] = amulet_nbt.TAG_Int(-(2 ** 32))
-        compound["overflowLong"] = amulet_nbt.TAG_Long(2 ** 64)
-        compound["underflowLong"] = amulet_nbt.TAG_Long(-(2 ** 64))
+        compound["overflowByte"] = ByteTag(300)
+        compound["underflowByte"] = ByteTag(-300)
+        compound["overflowShort"] = ShortTag(2 ** 16)
+        compound["underflowShort"] = ShortTag(-(2 ** 16))
+        compound["overflowInt"] = IntTag(2 ** 32)
+        compound["underflowInt"] = IntTag(-(2 ** 32))
+        compound["overflowLong"] = LongTag(2 ** 64)
+        compound["underflowLong"] = LongTag(-(2 ** 64))
 
-        # compound['overflowByteArray'] = amulet_nbt.TAG_Byte_Array([-129, 128])
-        # compound['overflowIntArray'] = amulet_nbt.TAG_Int_Array([-2**31-1, 2**31])
-        # compound['overflowLongArray'] = amulet_nbt.TAG_Long_Array([-2**63-1, 2**63])
+        # compound['overflowByteArray'] = ByteArrayTag([-129, 128])
+        # compound['overflowIntArray'] = IntArrayTag([-2**31-1, 2**31])
+        # compound['overflowLongArray'] = LongArrayTag([-2**63-1, 2**63])
 
-        # compound['overflowNumpyByteArray'] = amulet_nbt.TAG_Byte_Array(numpy.array([-129, 128]))
-        # compound['overflowNumpyIntArray'] = amulet_nbt.TAG_Int_Array(numpy.array([-2**31-1, 2**31]))
-        # compound['overflowNumpyLongArray'] = amulet_nbt.TAG_Long_Array(numpy.array([-2**63-1, 2**63]))
+        # compound['overflowNumpyByteArray'] = ByteArrayTag(numpy.array([-129, 128]))
+        # compound['overflowNumpyIntArray'] = IntArrayTag(numpy.array([-2**31-1, 2**31]))
+        # compound['overflowNumpyLongArray'] = LongArrayTag(numpy.array([-2**63-1, 2**63]))
 
         # save then load back up and check the data matches
 
         os.makedirs("temp", exist_ok=True)
-        nbt_file.save_to(
+        named_compound.save_to(
             os.path.join("temp", "massive_nbt_test_big_endian.nbt"),
             compressed=False,
         )
-        nbt_file.save_to(
+        named_compound.save_to(
             os.path.join("temp", "massive_nbt_test_big_endian_compressed.nbt"),
             compressed=True,
         )
-        nbt_file.save_to(
+        named_compound.save_to(
             os.path.join("temp", "massive_nbt_test_little_endian.nbt"),
             compressed=False,
             little_endian=True,
         )
 
-        test_be = amulet_nbt.load(
-            os.path.join("temp", "massive_nbt_test_big_endian.nbt")
-        )
-        test_be_compressed = amulet_nbt.load(
+        test_be = load_one(os.path.join("temp", "massive_nbt_test_big_endian.nbt"))
+        test_be_compressed = load_one(
             os.path.join("temp", "massive_nbt_test_big_endian_compressed.nbt")
         )
-        test_le = amulet_nbt.load(
+        test_le = load_one(
             os.path.join("temp", "massive_nbt_test_little_endian.nbt"),
             little_endian=True,
         )
 
-        self.assertEqual(test_be, nbt_file)
-        self.assertEqual(test_be_compressed, nbt_file)
-        self.assertEqual(test_le, nbt_file)
+        self.assertEqual(test_be, named_compound)
+        self.assertEqual(test_be_compressed, named_compound)
+        self.assertEqual(test_le, named_compound)
 
 
 if __name__ == "__main__":

@@ -6,23 +6,23 @@ from amulet_nbt import (
     BaseIntTag,
     BaseFloatTag,
     BaseArrayTag,
-    TAG_Byte,
-    TAG_Short,
-    TAG_Int,
-    TAG_Long,
-    TAG_Float,
-    TAG_Double,
-    TAG_String,
-    TAG_List,
-    TAG_Compound,
-    TAG_Byte_Array,
-    TAG_Int_Array,
-    TAG_Long_Array,
+    ByteTag,
+    ShortTag,
+    IntTag,
+    LongTag,
+    FloatTag,
+    DoubleTag,
+    StringTag,
+    ListTag,
+    CompoundTag,
+    ByteArrayTag,
+    IntArrayTag,
+    LongArrayTag,
 )
 
 
 class TestList(base_type_test.BaseTypeTest):
-    this_types = (TAG_List,)
+    this_types = (ListTag,)
 
     @property
     def values(self):
@@ -38,12 +38,12 @@ class TestList(base_type_test.BaseTypeTest):
     def test_equal(self):
         for tag_cls in self.nbt_types:
             lval = [tag_cls() for _ in range(5)]
-            self.assertEqual(TAG_List(lval), lval)
-            self.assertEqual(TAG_List(lval), TAG_List(lval))
+            self.assertEqual(ListTag(lval), lval)
+            self.assertEqual(ListTag(lval), ListTag(lval))
         for tag_cls1 in self.nbt_types:
             for tag_cls2 in self.nbt_types:
-                tag1 = TAG_List([tag_cls1() for _ in range(5)])
-                tag2 = TAG_List([tag_cls2() for _ in range(5)])
+                tag1 = ListTag([tag_cls1() for _ in range(5)])
+                tag2 = ListTag([tag_cls2() for _ in range(5)])
                 if (
                     (tag_cls1 is tag_cls2)
                     or (
@@ -51,8 +51,8 @@ class TestList(base_type_test.BaseTypeTest):
                         and issubclass(tag_cls2, BaseNumericTag)
                     )
                     or (
-                        issubclass(tag_cls1, (BaseArrayTag, TAG_List))
-                        and issubclass(tag_cls2, (BaseArrayTag, TAG_List))
+                        issubclass(tag_cls1, (BaseArrayTag, ListTag))
+                        and issubclass(tag_cls2, (BaseArrayTag, ListTag))
                     )
                 ):
                     self.assertEqual(tag1, tag2)
@@ -69,28 +69,28 @@ class TestList(base_type_test.BaseTypeTest):
         for array_tag_cls in self.array_types:
             for num_tag_cls in self.numerical_types:
                 self.assertEqual(
-                    TAG_List([num_tag_cls(i) for i in num_list]),
+                    ListTag([num_tag_cls(i) for i in num_list]),
                     array_tag_cls(num_list),
                 )
                 self.assertEqual(
                     array_tag_cls(num_list),
-                    TAG_List([num_tag_cls(i) for i in num_list]),
+                    ListTag([num_tag_cls(i) for i in num_list]),
                 )
                 self.assertNotEqual(
-                    TAG_List([num_tag_cls(i) for i in reversed(num_list)]),
+                    ListTag([num_tag_cls(i) for i in reversed(num_list)]),
                     array_tag_cls(num_list),
                 )
                 self.assertNotEqual(
                     array_tag_cls(num_list),
-                    TAG_List([num_tag_cls(i) for i in reversed(num_list)]),
+                    ListTag([num_tag_cls(i) for i in reversed(num_list)]),
                 )
 
     def test_list(self):
         # initialisation with and appending not nbt objects
-        tag_list = TAG_List()
+        tag_list = ListTag()
         for not_nbt in self.not_nbt:
             with self.assertRaises(TypeError, msg=repr(not_nbt)):
-                TAG_List([not_nbt])
+                ListTag([not_nbt])
             with self.assertRaises(TypeError, msg=repr(not_nbt)):
                 tag_list.append(not_nbt)
 
@@ -98,14 +98,14 @@ class TestList(base_type_test.BaseTypeTest):
         for nbt_type1 in self.nbt_types:
             for nbt_type2 in self.nbt_types:
                 if nbt_type1 is nbt_type2:
-                    TAG_List([nbt_type1(), nbt_type2()])
+                    ListTag([nbt_type1(), nbt_type2()])
                 else:
                     with self.assertRaises(TypeError):
-                        TAG_List([nbt_type1(), nbt_type2()]),
+                        ListTag([nbt_type1(), nbt_type2()]),
 
         # adding different nbt objects
         for nbt_type1 in self.nbt_types:
-            tag_list = TAG_List([nbt_type1()])
+            tag_list = ListTag([nbt_type1()])
             for nbt_type2 in self.nbt_types:
                 if nbt_type1 is nbt_type2:
                     tag_list.append(nbt_type2())
@@ -115,134 +115,126 @@ class TestList(base_type_test.BaseTypeTest):
 
     def test_append(self):
         for dtype in self.nbt_types:
-            l = TAG_List()
+            l = ListTag()
             l.append(dtype())
             self.assertEqual(l, [dtype()])
         for dtype1 in self.nbt_types:
             for dtype2 in self.nbt_types:
-                l = TAG_List([dtype1()])
+                l = ListTag([dtype1()])
                 if dtype1 is dtype2:
                     l.append(dtype2())
                 else:
                     with self.assertRaises(TypeError):
                         l.append(dtype2())
-        l = TAG_List()
+        l = ListTag()
         for obj in self.not_nbt:
             with self.assertRaises(TypeError):
                 l.append(obj)
 
     def test_clear(self):
-        l = TAG_List([TAG_String("val1"), TAG_String("val2"), TAG_String("val3")])
+        l = ListTag([StringTag("val1"), StringTag("val2"), StringTag("val3")])
         l.clear()
         self.assertEqual(l, [])
 
     def test_count(self):
-        l = TAG_List([TAG_String("val1"), TAG_String("val2"), TAG_String("val2")])
-        self.assertEqual(l.count(TAG_String("val1")), 1)
-        self.assertEqual(l.count(TAG_String("val2")), 2)
+        l = ListTag([StringTag("val1"), StringTag("val2"), StringTag("val2")])
+        self.assertEqual(l.count(StringTag("val1")), 1)
+        self.assertEqual(l.count(StringTag("val2")), 2)
         for obj in self.not_nbt:
             self.assertEqual(l.count(obj), 0)
 
     def test_extend(self):
-        l = TAG_List()
+        l = ListTag()
         for obj in self.not_nbt:
             if obj not in ([], {}, set()):
                 with self.assertRaises(TypeError, msg=obj):
                     l.extend(obj)
             with self.assertRaises(TypeError, msg=obj):
                 l.extend([obj])
-        l.extend([TAG_String("val1"), TAG_String("val2")])
-        l.extend([TAG_String("val2")])
-        self.assertEqual(
-            l, [TAG_String("val1"), TAG_String("val2"), TAG_String("val2")]
-        )
+        l.extend([StringTag("val1"), StringTag("val2")])
+        l.extend([StringTag("val2")])
+        self.assertEqual(l, [StringTag("val1"), StringTag("val2"), StringTag("val2")])
 
     def test_index(self):
-        l = TAG_List([TAG_String("val1"), TAG_String("val2"), TAG_String("val2")])
-        self.assertEqual(l.index(TAG_String("val2")), 1)
+        l = ListTag([StringTag("val1"), StringTag("val2"), StringTag("val2")])
+        self.assertEqual(l.index(StringTag("val2")), 1)
         with self.assertRaises(ValueError):
-            l.index(TAG_String("val3"))
+            l.index(StringTag("val3"))
 
     def test_insert(self):
-        l = TAG_List([TAG_String("val1"), TAG_String("val2"), TAG_String("val3")])
-        l.insert(1, TAG_String("val2"))
+        l = ListTag([StringTag("val1"), StringTag("val2"), StringTag("val3")])
+        l.insert(1, StringTag("val2"))
         for obj in self.not_nbt:
             with self.assertRaises(TypeError):
                 l.insert(1, obj)
 
     def test_pop(self):
-        l = TAG_List([TAG_String("val1"), TAG_String("val2"), TAG_String("val3")])
-        self.assertEqual(l.pop(), TAG_String("val3"))
-        self.assertEqual(l, [TAG_String("val1"), TAG_String("val2")])
-        self.assertEqual(l.pop(0), TAG_String("val1"))
-        self.assertEqual(l, [TAG_String("val2")])
+        l = ListTag([StringTag("val1"), StringTag("val2"), StringTag("val3")])
+        self.assertEqual(l.pop(), StringTag("val3"))
+        self.assertEqual(l, [StringTag("val1"), StringTag("val2")])
+        self.assertEqual(l.pop(0), StringTag("val1"))
+        self.assertEqual(l, [StringTag("val2")])
 
     def test_remove(self):
-        l = TAG_List([TAG_String("val1"), TAG_String("val2"), TAG_String("val3")])
-        l.remove(TAG_String("val3"))
-        self.assertEqual(l, [TAG_String("val1"), TAG_String("val2")])
-        l.remove(TAG_String("val1"))
-        self.assertEqual(l, [TAG_String("val2")])
+        l = ListTag([StringTag("val1"), StringTag("val2"), StringTag("val3")])
+        l.remove(StringTag("val3"))
+        self.assertEqual(l, [StringTag("val1"), StringTag("val2")])
+        l.remove(StringTag("val1"))
+        self.assertEqual(l, [StringTag("val2")])
 
     def test_reverse(self):
-        l = TAG_List([TAG_String("val1"), TAG_String("val2"), TAG_String("val3")])
+        l = ListTag([StringTag("val1"), StringTag("val2"), StringTag("val3")])
         l.reverse()
-        self.assertEqual(
-            l, [TAG_String("val3"), TAG_String("val2"), TAG_String("val1")]
-        )
+        self.assertEqual(l, [StringTag("val3"), StringTag("val2"), StringTag("val1")])
 
     def test_sort(self):
-        l = TAG_List([TAG_String("val3"), TAG_String("val2"), TAG_String("val1")])
+        l = ListTag([StringTag("val3"), StringTag("val2"), StringTag("val1")])
         l.sort()
-        self.assertEqual(
-            l, [TAG_String("val1"), TAG_String("val2"), TAG_String("val3")]
-        )
+        self.assertEqual(l, [StringTag("val1"), StringTag("val2"), StringTag("val3")])
 
     def test_add(self):
-        l = TAG_List([TAG_String("val1"), TAG_String("val2"), TAG_String("val3")])
-        pyl = l + [TAG_String("val4")]
+        l = ListTag([StringTag("val1"), StringTag("val2"), StringTag("val3")])
+        pyl = l + [StringTag("val4")]
         self.assertIsInstance(pyl, list)
         self.assertEqual(
             pyl,
             [
-                TAG_String("val1"),
-                TAG_String("val2"),
-                TAG_String("val3"),
-                TAG_String("val4"),
+                StringTag("val1"),
+                StringTag("val2"),
+                StringTag("val3"),
+                StringTag("val4"),
             ],
         )
-        pyl = l + [TAG_String("val5")]
+        pyl = l + [StringTag("val5")]
         self.assertIsInstance(pyl, list)
         self.assertEqual(
             pyl,
             [
-                TAG_String("val1"),
-                TAG_String("val2"),
-                TAG_String("val3"),
-                TAG_String("val5"),
+                StringTag("val1"),
+                StringTag("val2"),
+                StringTag("val3"),
+                StringTag("val5"),
             ],
         )
 
-        self.assertIsInstance(l, TAG_List)
-        self.assertEqual(
-            l, [TAG_String("val1"), TAG_String("val2"), TAG_String("val3")]
-        )
+        self.assertIsInstance(l, ListTag)
+        self.assertEqual(l, [StringTag("val1"), StringTag("val2"), StringTag("val3")])
 
-        l += [TAG_String("val4")]
-        self.assertIsInstance(l, TAG_List)
+        l += [StringTag("val4")]
+        self.assertIsInstance(l, ListTag)
         self.assertEqual(
             l,
             [
-                TAG_String("val1"),
-                TAG_String("val2"),
-                TAG_String("val3"),
-                TAG_String("val4"),
+                StringTag("val1"),
+                StringTag("val2"),
+                StringTag("val3"),
+                StringTag("val4"),
             ],
         )
 
         for tag_cls1 in self.nbt_types:
             for tag_cls2 in self.nbt_types:
-                l = TAG_List([tag_cls1()])
+                l = ListTag([tag_cls1()])
                 if tag_cls1 is tag_cls2:
                     l += [tag_cls2()]
                 else:
@@ -250,13 +242,13 @@ class TestList(base_type_test.BaseTypeTest):
                         l += [tag_cls2()]
 
     def test_contains(self):
-        l = TAG_List([TAG_String("val1"), TAG_String("val2"), TAG_String("val3")])
-        self.assertIn(TAG_String("val1"), l)
-        self.assertNotIn(TAG_String("val4"), l)
+        l = ListTag([StringTag("val1"), StringTag("val2"), StringTag("val3")])
+        self.assertIn(StringTag("val1"), l)
+        self.assertNotIn(StringTag("val4"), l)
         for not_nbt in self.not_nbt:
             self.assertNotIn(not_nbt, l)
         for tag_cls1 in self.nbt_types:
-            tag = TAG_List([tag_cls1()])
+            tag = ListTag([tag_cls1()])
             for tag_cls2 in self.nbt_types:
                 if tag_cls1 is tag_cls2:
                     self.assertIn(tag_cls2(), tag)
@@ -264,73 +256,69 @@ class TestList(base_type_test.BaseTypeTest):
                     self.assertNotIn(tag_cls2(), tag)
 
     def test_del(self):
-        l = TAG_List([TAG_String("val1"), TAG_String("val2"), TAG_String("val3")])
+        l = ListTag([StringTag("val1"), StringTag("val2"), StringTag("val3")])
         del l[:2]
-        self.assertEqual(l, [TAG_String("val3")])
+        self.assertEqual(l, [StringTag("val3")])
         del l[0]
         self.assertEqual(l, [])
 
     def test_getitem(self):
-        l = TAG_List([TAG_String("val1"), TAG_String("val2"), TAG_String("val3")])
-        self.assertEqual(l[:2], [TAG_String("val1"), TAG_String("val2")])
+        l = ListTag([StringTag("val1"), StringTag("val2"), StringTag("val3")])
+        self.assertEqual(l[:2], [StringTag("val1"), StringTag("val2")])
         self.assertEqual(l[5:], [])
-        self.assertEqual(l[2], TAG_String("val3"))
+        self.assertEqual(l[2], StringTag("val3"))
 
     def test_setitem(self):
-        l = TAG_List([TAG_String("val1"), TAG_String("val2"), TAG_String("val3")])
-        l[1] = TAG_String("val4")
-        self.assertEqual(
-            l, [TAG_String("val1"), TAG_String("val4"), TAG_String("val3")]
-        )
-        l[:] = [TAG_String("val5"), TAG_String("val6"), TAG_String("val7")]
-        self.assertEqual(
-            l, [TAG_String("val5"), TAG_String("val6"), TAG_String("val7")]
-        )
-        l[3:] = [TAG_String("val8")]
+        l = ListTag([StringTag("val1"), StringTag("val2"), StringTag("val3")])
+        l[1] = StringTag("val4")
+        self.assertEqual(l, [StringTag("val1"), StringTag("val4"), StringTag("val3")])
+        l[:] = [StringTag("val5"), StringTag("val6"), StringTag("val7")]
+        self.assertEqual(l, [StringTag("val5"), StringTag("val6"), StringTag("val7")])
+        l[3:] = [StringTag("val8")]
         self.assertEqual(
             l,
             [
-                TAG_String("val5"),
-                TAG_String("val6"),
-                TAG_String("val7"),
-                TAG_String("val8"),
+                StringTag("val5"),
+                StringTag("val6"),
+                StringTag("val7"),
+                StringTag("val8"),
             ],
         )
 
     def test_mul(self):
-        l = TAG_List([TAG_String("val1"), TAG_String("val2")])
+        l = ListTag([StringTag("val1"), StringTag("val2")])
         self.assertEqual(
             l * 3,
             [
-                TAG_String("val1"),
-                TAG_String("val2"),
-                TAG_String("val1"),
-                TAG_String("val2"),
-                TAG_String("val1"),
-                TAG_String("val2"),
+                StringTag("val1"),
+                StringTag("val2"),
+                StringTag("val1"),
+                StringTag("val2"),
+                StringTag("val1"),
+                StringTag("val2"),
             ],
         )
-        self.assertEqual(l, [TAG_String("val1"), TAG_String("val2")])
+        self.assertEqual(l, [StringTag("val1"), StringTag("val2")])
         l *= 3
-        self.assertIsInstance(l, TAG_List)
+        self.assertIsInstance(l, ListTag)
         self.assertEqual(
             l,
             [
-                TAG_String("val1"),
-                TAG_String("val2"),
-                TAG_String("val1"),
-                TAG_String("val2"),
-                TAG_String("val1"),
-                TAG_String("val2"),
+                StringTag("val1"),
+                StringTag("val2"),
+                StringTag("val1"),
+                StringTag("val2"),
+                StringTag("val1"),
+                StringTag("val2"),
             ],
         )
 
     def test_iter(self):
-        l = TAG_List([TAG_String("val1"), TAG_String("val2"), TAG_String("val3")])
+        l = ListTag([StringTag("val1"), StringTag("val2"), StringTag("val3")])
         it = iter(l)
-        self.assertEqual(next(it), TAG_String("val1"))
-        self.assertEqual(next(it), TAG_String("val2"))
-        self.assertEqual(next(it), TAG_String("val3"))
+        self.assertEqual(next(it), StringTag("val1"))
+        self.assertEqual(next(it), StringTag("val2"))
+        self.assertEqual(next(it), StringTag("val3"))
         with self.assertRaises(StopIteration):
             next(it)
 

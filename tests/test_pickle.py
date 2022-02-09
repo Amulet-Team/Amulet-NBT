@@ -1,36 +1,73 @@
 import unittest
 import pickle
 import numpy
-import amulet_nbt
+from amulet_nbt import (
+    BaseTag,
+    ByteTag,
+    ShortTag,
+    IntTag,
+    LongTag,
+    FloatTag,
+    DoubleTag,
+    ByteArrayTag,
+    IntArrayTag,
+    LongArrayTag,
+    StringTag,
+    ListTag,
+    CompoundTag,
+    BaseNamedTag,
+    tag_to_named_tag,
+)
 
 
 class PickleNBTTests(unittest.TestCase):
     def _test_pickle(self, obj):
         pickled_obj = pickle.dumps(obj)
         obj2 = pickle.loads(pickled_obj)
+        self.assertIs(obj.__class__, obj2.__class__)
         self.assertEqual(obj, obj2)
         self.assertIsNot(obj, obj2)
-        if isinstance(obj.value, numpy.ndarray):
-            numpy.testing.assert_array_equal(obj.value, obj2.value)
+
+        if isinstance(obj, BaseNamedTag):
+            tag = obj.tag
+        elif isinstance(obj, BaseTag):
+            tag = obj
         else:
-            self.assertEqual(obj.value, obj2.value)
-        if not isinstance(obj.value, (int, str)):
-            self.assertIsNot(obj.value, obj2.value)
+            raise TypeError
+
+        if isinstance(tag.py_data, numpy.ndarray):
+            numpy.testing.assert_array_equal(tag.py_data, tag.py_data)
+        else:
+            self.assertEqual(tag.py_data, tag.py_data)
+        if not isinstance(tag.py_data, (int, str)):
+            self.assertIsNot(tag.py_data, tag.py_data)
 
     def test_pickle(self):
-        self._test_pickle(amulet_nbt.TAG_Byte(10))
-        self._test_pickle(amulet_nbt.TAG_Short(10))
-        self._test_pickle(amulet_nbt.TAG_Int(10))
-        self._test_pickle(amulet_nbt.TAG_Long(10))
-        self._test_pickle(amulet_nbt.TAG_Float(10))
-        self._test_pickle(amulet_nbt.TAG_Double(10))
-        self._test_pickle(amulet_nbt.TAG_Byte_Array([1, 2, 3]))
-        self._test_pickle(amulet_nbt.TAG_String())
-        self._test_pickle(amulet_nbt.TAG_List())
-        self._test_pickle(amulet_nbt.TAG_Compound())
-        self._test_pickle(amulet_nbt.TAG_Int_Array([1, 2, 3]))
-        self._test_pickle(amulet_nbt.TAG_Long_Array([1, 2, 3]))
-        self._test_pickle(amulet_nbt.NBTFile())
+        self._test_pickle(ByteTag(10))
+        self._test_pickle(ShortTag(10))
+        self._test_pickle(IntTag(10))
+        self._test_pickle(LongTag(10))
+        self._test_pickle(FloatTag(10))
+        self._test_pickle(DoubleTag(10))
+        self._test_pickle(ByteArrayTag([1, 2, 3]))
+        self._test_pickle(StringTag())
+        self._test_pickle(ListTag())
+        self._test_pickle(CompoundTag())
+        self._test_pickle(IntArrayTag([1, 2, 3]))
+        self._test_pickle(LongArrayTag([1, 2, 3]))
+
+        self._test_pickle(tag_to_named_tag(ByteTag(10)))
+        self._test_pickle(tag_to_named_tag(ShortTag(10)))
+        self._test_pickle(tag_to_named_tag(IntTag(10)))
+        self._test_pickle(tag_to_named_tag(LongTag(10)))
+        self._test_pickle(tag_to_named_tag(FloatTag(10)))
+        self._test_pickle(tag_to_named_tag(DoubleTag(10)))
+        self._test_pickle(tag_to_named_tag(ByteArrayTag([1, 2, 3])))
+        self._test_pickle(tag_to_named_tag(StringTag()))
+        self._test_pickle(tag_to_named_tag(ListTag()))
+        self._test_pickle(tag_to_named_tag(CompoundTag()))
+        self._test_pickle(tag_to_named_tag(IntArrayTag([1, 2, 3])))
+        self._test_pickle(tag_to_named_tag(LongArrayTag([1, 2, 3])))
 
 
 if __name__ == "__main__":

@@ -1,3 +1,4 @@
+from typing import List
 import numpy
 cimport numpy
 from numpy import ndarray
@@ -7,8 +8,8 @@ from copy import copy, deepcopy
 
 from .value cimport BaseMutableTag
 from .const cimport CommaSpace, ID_BYTE_ARRAY, ID_INT_ARRAY, ID_LONG_ARRAY
-from .util cimport write_array, BufferContext, read_int, read_data
-from .list cimport TAG_List
+from .util cimport write_array, BufferContext, read_int, read_data, read_string
+from .list cimport ListTag
 
 
 cdef class BaseArrayTag(BaseMutableTag):
@@ -553,7 +554,7 @@ cdef class BaseArrayTag(BaseMutableTag):
         return self.__class__(self.value_)
 
     @property
-    def value(BaseArrayTag self):
+    def py_data(BaseArrayTag self):
         """
         A copy of the data stored in the class.
         Use the public API to modify the data within the class.
@@ -686,7 +687,7 @@ cdef class BaseArrayTag(BaseMutableTag):
         return f"{self.__class__.__name__}({list(self.value_)})"
 
     def __eq__(BaseArrayTag self, other):
-        if isinstance(other, (BaseArrayType, numpy.ndarray, list, tuple, TAG_List)):
+        if isinstance(other, (BaseArrayType, numpy.ndarray, list, tuple, ListTag)):
             return numpy.array_equal(self.value_, other)
         return NotImplemented
 
@@ -851,74 +852,92 @@ cdef class BaseArrayTag(BaseMutableTag):
 BaseArrayType = BaseArrayTag
 
 
-cdef class TAG_Byte_Array(BaseArrayTag):
+cdef inline void _read_byte_array_tag_payload(ByteArrayTag tag, BufferContext buffer, bint little_endian):
+    cdef int length = read_int(buffer, little_endian)
+    cdef char*arr = read_data(buffer, length)
+    data_type = ByteArrayTag.little_endian_data_type if little_endian else ByteArrayTag.big_endian_data_type
+    tag.value_ = numpy.array(numpy.frombuffer(arr[:length], dtype=data_type, count=length), ByteArrayTag.big_endian_data_type).ravel()
+
+
+cdef class ByteArrayTag(BaseArrayTag):
     """This class behaves like an 1D Numpy signed integer array with each value stored in a byte."""
     tag_id = ID_BYTE_ARRAY
     big_endian_data_type = little_endian_data_type = numpy.dtype("int8")
 
-    cdef str _to_snbt(TAG_Byte_Array self):
+    cdef str _to_snbt(ByteArrayTag self):
         cdef int elem
         cdef list tags = []
         for elem in self.value_:
             tags.append(f"{elem}B")
         return f"[B;{CommaSpace.join(tags)}]"
 
-    cdef void write_payload(TAG_Byte_Array self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(ByteArrayTag self, object buffer: BytesIO, bint little_endian) except *:
         write_array(self._as_endianness(little_endian), buffer, 1, little_endian)
 
     @staticmethod
-    cdef TAG_Byte_Array read_payload(BufferContext buffer, bint little_endian):
-        cdef int length = read_int(buffer, little_endian)
-        cdef char*arr = read_data(buffer, length)
-        data_type = TAG_Byte_Array.little_endian_data_type if little_endian else TAG_Byte_Array.big_endian_data_type
-        return TAG_Byte_Array(numpy.frombuffer(arr[:length], dtype=data_type, count=length))
+    cdef ByteArrayTag read_payload(BufferContext buffer, bint little_endian):
+        cdef ByteArrayTag tag = ByteArrayTag.__new__(ByteArrayTag)
+        _read_byte_array_tag_payload(tag, buffer, little_endian)
+        return tag
 
 
-cdef class TAG_Int_Array(BaseArrayTag):
+cdef inline void _read_int_array_tag_payload(IntArrayTag tag, BufferContext buffer, bint little_endian):
+    cdef int length = read_int(buffer, little_endian)
+    cdef int byte_length = length * 4
+    cdef char*arr = read_data(buffer, byte_length)
+    cdef object data_type = IntArrayTag.little_endian_data_type if little_endian else IntArrayTag.big_endian_data_type
+    tag.value_ = numpy.array(numpy.frombuffer(arr[:byte_length], dtype=data_type, count=length), IntArrayTag.big_endian_data_type).ravel()
+
+
+cdef class IntArrayTag(BaseArrayTag):
     """This class behaves like an 1D Numpy signed integer array with each value stored in a 4 bytes."""
     tag_id = ID_INT_ARRAY
     big_endian_data_type = numpy.dtype(">i4")
     little_endian_data_type = numpy.dtype("<i4")
 
-    cdef str _to_snbt(TAG_Int_Array self):
+    cdef str _to_snbt(IntArrayTag self):
         cdef int elem
         cdef list tags = []
         for elem in self.value_:
             tags.append(str(elem))
         return f"[I;{CommaSpace.join(tags)}]"
 
-    cdef void write_payload(TAG_Int_Array self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(IntArrayTag self, object buffer: BytesIO, bint little_endian) except *:
         write_array(self._as_endianness(little_endian), buffer, 4, little_endian)
 
     @staticmethod
-    cdef TAG_Int_Array read_payload(BufferContext buffer, bint little_endian):
-        cdef int length = read_int(buffer, little_endian)
-        cdef int byte_length = length * 4
-        cdef char*arr = read_data(buffer, byte_length)
-        cdef object data_type = TAG_Int_Array.little_endian_data_type if little_endian else TAG_Int_Array.big_endian_data_type
-        return TAG_Int_Array(numpy.frombuffer(arr[:byte_length], dtype=data_type, count=length))
+    cdef IntArrayTag read_payload(BufferContext buffer, bint little_endian):
+        cdef IntArrayTag tag = IntArrayTag.__new__(IntArrayTag)
+        _read_int_array_tag_payload(tag, buffer, little_endian)
+        return tag
 
 
-cdef class TAG_Long_Array(BaseArrayTag):
+cdef inline void _read_long_array_tag_payload(LongArrayTag tag, BufferContext buffer, bint little_endian):
+    cdef int length = read_int(buffer, little_endian)
+    cdef int byte_length = length * 8
+    cdef char*arr = read_data(buffer, byte_length)
+    cdef object data_type = LongArrayTag.little_endian_data_type if little_endian else LongArrayTag.big_endian_data_type
+    tag.value_ = numpy.array(numpy.frombuffer(arr[:byte_length], dtype=data_type, count=length), LongArrayTag.big_endian_data_type).ravel()
+
+
+cdef class LongArrayTag(BaseArrayTag):
     """This class behaves like an 1D Numpy signed integer array with each value stored in a 8 bytes."""
     tag_id = ID_LONG_ARRAY
     big_endian_data_type = numpy.dtype(">i8")
     little_endian_data_type = numpy.dtype("<i8")
 
-    cdef str _to_snbt(TAG_Long_Array self):
+    cdef str _to_snbt(LongArrayTag self):
         cdef long long elem
         cdef list tags = []
         for elem in self.value_:
             tags.append(f"{elem}L")
         return f"[L;{CommaSpace.join(tags)}]"
 
-    cdef void write_payload(TAG_Long_Array self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(LongArrayTag self, object buffer: BytesIO, bint little_endian) except *:
         write_array(self._as_endianness(little_endian), buffer, 8, little_endian)
 
     @staticmethod
-    cdef TAG_Long_Array read_payload(BufferContext buffer, bint little_endian):
-        cdef int length = read_int(buffer, little_endian)
-        cdef int byte_length = length * 8
-        cdef char*arr = read_data(buffer, byte_length)
-        cdef object data_type = TAG_Long_Array.little_endian_data_type if little_endian else TAG_Long_Array.big_endian_data_type
-        return TAG_Long_Array(numpy.frombuffer(arr[:byte_length], dtype=data_type, count=length))
+    cdef LongArrayTag read_payload(BufferContext buffer, bint little_endian):
+        cdef LongArrayTag tag = LongArrayTag.__new__(LongArrayTag)
+        _read_long_array_tag_payload(tag, buffer, little_endian)
+        return tag

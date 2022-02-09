@@ -1,352 +1,342 @@
 import unittest
 
 from amulet_nbt import (
-    TAG_Byte,
-    TAG_Short,
-    TAG_Int,
-    TAG_Long,
-    TAG_Float,
-    TAG_Double,
-    TAG_Byte_Array,
-    TAG_Int_Array,
-    TAG_Long_Array,
-    TAG_String,
-    TAG_List,
-    TAG_Compound,
+    ByteTag,
+    ShortTag,
+    IntTag,
+    LongTag,
+    FloatTag,
+    DoubleTag,
+    ByteArrayTag,
+    IntArrayTag,
+    LongArrayTag,
+    StringTag,
+    ListTag,
+    CompoundTag,
 )
 
 
 class TestRepr(unittest.TestCase):
     def test_repr(self):
-        self.assertEqual(repr(TAG_Byte(5)), "TAG_Byte(5)")
-        self.assertEqual(repr(TAG_Byte(-5)), "TAG_Byte(-5)")
-        self.assertEqual(repr(TAG_Short(5)), "TAG_Short(5)")
-        self.assertEqual(repr(TAG_Short(-5)), "TAG_Short(-5)")
-        self.assertEqual(repr(TAG_Int(5)), "TAG_Int(5)")
-        self.assertEqual(repr(TAG_Int(-5)), "TAG_Int(-5)")
-        self.assertEqual(repr(TAG_Long(5)), "TAG_Long(5)")
-        self.assertEqual(repr(TAG_Long(-5)), "TAG_Long(-5)")
-        self.assertEqual(repr(TAG_Float(5)), "TAG_Float(5.0)")
-        self.assertEqual(repr(TAG_Float(-5)), "TAG_Float(-5.0)")
-        self.assertEqual(repr(TAG_Double(5)), "TAG_Double(5.0)")
-        self.assertEqual(repr(TAG_Double(-5)), "TAG_Double(-5.0)")
-        self.assertEqual(repr(TAG_String("value")), 'TAG_String("value")')
+        self.assertEqual(repr(ByteTag(5)), "ByteTag(5)")
+        self.assertEqual(repr(ByteTag(-5)), "ByteTag(-5)")
+        self.assertEqual(repr(ShortTag(5)), "ShortTag(5)")
+        self.assertEqual(repr(ShortTag(-5)), "ShortTag(-5)")
+        self.assertEqual(repr(IntTag(5)), "IntTag(5)")
+        self.assertEqual(repr(IntTag(-5)), "IntTag(-5)")
+        self.assertEqual(repr(LongTag(5)), "LongTag(5)")
+        self.assertEqual(repr(LongTag(-5)), "LongTag(-5)")
+        self.assertEqual(repr(FloatTag(5)), "FloatTag(5.0)")
+        self.assertEqual(repr(FloatTag(-5)), "FloatTag(-5.0)")
+        self.assertEqual(repr(DoubleTag(5)), "DoubleTag(5.0)")
+        self.assertEqual(repr(DoubleTag(-5)), "DoubleTag(-5.0)")
+        self.assertEqual(repr(StringTag("value")), 'StringTag("value")')
         self.assertEqual(
-            repr(TAG_Byte_Array([-3, -2, -1, 0, 1, 2, 3])),
-            "TAG_Byte_Array([-3, -2, -1, 0, 1, 2, 3])",
+            repr(ByteArrayTag([-3, -2, -1, 0, 1, 2, 3])),
+            "ByteArrayTag([-3, -2, -1, 0, 1, 2, 3])",
         )
         self.assertEqual(
-            repr(TAG_Int_Array([-3, -2, -1, 0, 1, 2, 3])),
-            "TAG_Int_Array([-3, -2, -1, 0, 1, 2, 3])",
+            repr(IntArrayTag([-3, -2, -1, 0, 1, 2, 3])),
+            "IntArrayTag([-3, -2, -1, 0, 1, 2, 3])",
         )
         self.assertEqual(
-            repr(TAG_Long_Array([-3, -2, -1, 0, 1, 2, 3])),
-            "TAG_Long_Array([-3, -2, -1, 0, 1, 2, 3])",
+            repr(LongArrayTag([-3, -2, -1, 0, 1, 2, 3])),
+            "LongArrayTag([-3, -2, -1, 0, 1, 2, 3])",
         )
-        self.assertEqual(repr(TAG_List()), "TAG_List([], 1)")
+        self.assertEqual(repr(ListTag()), "ListTag([], 1)")
 
     def test_repr_list(self):
-        self.assertEqual(repr(TAG_List([TAG_Byte(-5)])), "TAG_List([TAG_Byte(-5)], 1)")
+        self.assertEqual(repr(ListTag([ByteTag(-5)])), "ListTag([ByteTag(-5)], 1)")
         self.assertEqual(
-            repr(TAG_List([TAG_Byte(-5), TAG_Byte(-5)])),
-            "TAG_List([TAG_Byte(-5), TAG_Byte(-5)], 1)",
+            repr(ListTag([ByteTag(-5), ByteTag(-5)])),
+            "ListTag([ByteTag(-5), ByteTag(-5)], 1)",
         )
-        self.assertEqual(repr(TAG_List([TAG_Byte(5)])), "TAG_List([TAG_Byte(5)], 1)")
+        self.assertEqual(repr(ListTag([ByteTag(5)])), "ListTag([ByteTag(5)], 1)")
         self.assertEqual(
-            repr(TAG_List([TAG_Byte(5), TAG_Byte(5)])),
-            "TAG_List([TAG_Byte(5), TAG_Byte(5)], 1)",
+            repr(ListTag([ByteTag(5), ByteTag(5)])),
+            "ListTag([ByteTag(5), ByteTag(5)], 1)",
         )
+        self.assertEqual(repr(ListTag([ShortTag(-5)])), "ListTag([ShortTag(-5)], 2)")
         self.assertEqual(
-            repr(TAG_List([TAG_Short(-5)])), "TAG_List([TAG_Short(-5)], 2)"
+            repr(ListTag([ShortTag(-5), ShortTag(-5)])),
+            "ListTag([ShortTag(-5), ShortTag(-5)], 2)",
         )
+        self.assertEqual(repr(ListTag([ShortTag(5)])), "ListTag([ShortTag(5)], 2)")
         self.assertEqual(
-            repr(TAG_List([TAG_Short(-5), TAG_Short(-5)])),
-            "TAG_List([TAG_Short(-5), TAG_Short(-5)], 2)",
+            repr(ListTag([ShortTag(5), ShortTag(5)])),
+            "ListTag([ShortTag(5), ShortTag(5)], 2)",
         )
-        self.assertEqual(repr(TAG_List([TAG_Short(5)])), "TAG_List([TAG_Short(5)], 2)")
+        self.assertEqual(repr(ListTag([IntTag(-5)])), "ListTag([IntTag(-5)], 3)")
         self.assertEqual(
-            repr(TAG_List([TAG_Short(5), TAG_Short(5)])),
-            "TAG_List([TAG_Short(5), TAG_Short(5)], 2)",
+            repr(ListTag([IntTag(-5), IntTag(-5)])),
+            "ListTag([IntTag(-5), IntTag(-5)], 3)",
         )
-        self.assertEqual(repr(TAG_List([TAG_Int(-5)])), "TAG_List([TAG_Int(-5)], 3)")
+        self.assertEqual(repr(ListTag([IntTag(5)])), "ListTag([IntTag(5)], 3)")
         self.assertEqual(
-            repr(TAG_List([TAG_Int(-5), TAG_Int(-5)])),
-            "TAG_List([TAG_Int(-5), TAG_Int(-5)], 3)",
+            repr(ListTag([IntTag(5), IntTag(5)])),
+            "ListTag([IntTag(5), IntTag(5)], 3)",
         )
-        self.assertEqual(repr(TAG_List([TAG_Int(5)])), "TAG_List([TAG_Int(5)], 3)")
+        self.assertEqual(repr(ListTag([LongTag(-5)])), "ListTag([LongTag(-5)], 4)")
         self.assertEqual(
-            repr(TAG_List([TAG_Int(5), TAG_Int(5)])),
-            "TAG_List([TAG_Int(5), TAG_Int(5)], 3)",
+            repr(ListTag([LongTag(-5), LongTag(-5)])),
+            "ListTag([LongTag(-5), LongTag(-5)], 4)",
         )
-        self.assertEqual(repr(TAG_List([TAG_Long(-5)])), "TAG_List([TAG_Long(-5)], 4)")
+        self.assertEqual(repr(ListTag([LongTag(5)])), "ListTag([LongTag(5)], 4)")
         self.assertEqual(
-            repr(TAG_List([TAG_Long(-5), TAG_Long(-5)])),
-            "TAG_List([TAG_Long(-5), TAG_Long(-5)], 4)",
+            repr(ListTag([LongTag(5), LongTag(5)])),
+            "ListTag([LongTag(5), LongTag(5)], 4)",
         )
-        self.assertEqual(repr(TAG_List([TAG_Long(5)])), "TAG_List([TAG_Long(5)], 4)")
+        self.assertEqual(repr(ListTag([FloatTag(-5)])), "ListTag([FloatTag(-5.0)], 5)")
         self.assertEqual(
-            repr(TAG_List([TAG_Long(5), TAG_Long(5)])),
-            "TAG_List([TAG_Long(5), TAG_Long(5)], 4)",
+            repr(ListTag([FloatTag(-5), FloatTag(-5)])),
+            "ListTag([FloatTag(-5.0), FloatTag(-5.0)], 5)",
         )
+        self.assertEqual(repr(ListTag([FloatTag(5)])), "ListTag([FloatTag(5.0)], 5)")
         self.assertEqual(
-            repr(TAG_List([TAG_Float(-5)])), "TAG_List([TAG_Float(-5.0)], 5)"
-        )
-        self.assertEqual(
-            repr(TAG_List([TAG_Float(-5), TAG_Float(-5)])),
-            "TAG_List([TAG_Float(-5.0), TAG_Float(-5.0)], 5)",
-        )
-        self.assertEqual(
-            repr(TAG_List([TAG_Float(5)])), "TAG_List([TAG_Float(5.0)], 5)"
+            repr(ListTag([FloatTag(5), FloatTag(5)])),
+            "ListTag([FloatTag(5.0), FloatTag(5.0)], 5)",
         )
         self.assertEqual(
-            repr(TAG_List([TAG_Float(5), TAG_Float(5)])),
-            "TAG_List([TAG_Float(5.0), TAG_Float(5.0)], 5)",
+            repr(ListTag([DoubleTag(-5)])), "ListTag([DoubleTag(-5.0)], 6)"
         )
         self.assertEqual(
-            repr(TAG_List([TAG_Double(-5)])), "TAG_List([TAG_Double(-5.0)], 6)"
+            repr(ListTag([DoubleTag(-5), DoubleTag(-5)])),
+            "ListTag([DoubleTag(-5.0), DoubleTag(-5.0)], 6)",
+        )
+        self.assertEqual(repr(ListTag([DoubleTag(5)])), "ListTag([DoubleTag(5.0)], 6)")
+        self.assertEqual(
+            repr(ListTag([DoubleTag(5), DoubleTag(5)])),
+            "ListTag([DoubleTag(5.0), DoubleTag(5.0)], 6)",
         )
         self.assertEqual(
-            repr(TAG_List([TAG_Double(-5), TAG_Double(-5)])),
-            "TAG_List([TAG_Double(-5.0), TAG_Double(-5.0)], 6)",
-        )
-        self.assertEqual(
-            repr(TAG_List([TAG_Double(5)])), "TAG_List([TAG_Double(5.0)], 6)"
-        )
-        self.assertEqual(
-            repr(TAG_List([TAG_Double(5), TAG_Double(5)])),
-            "TAG_List([TAG_Double(5.0), TAG_Double(5.0)], 6)",
-        )
-        self.assertEqual(
-            repr(TAG_List([TAG_Byte_Array([-3, -2, -1, 0, 1, 2, 3])])),
-            "TAG_List([TAG_Byte_Array([-3, -2, -1, 0, 1, 2, 3])], 7)",
+            repr(ListTag([ByteArrayTag([-3, -2, -1, 0, 1, 2, 3])])),
+            "ListTag([ByteArrayTag([-3, -2, -1, 0, 1, 2, 3])], 7)",
         )
         self.assertEqual(
             repr(
-                TAG_List(
+                ListTag(
                     [
-                        TAG_Byte_Array([-3, -2, -1, 0, 1, 2, 3]),
-                        TAG_Byte_Array([-3, -2, -1, 0, 1, 2, 3]),
+                        ByteArrayTag([-3, -2, -1, 0, 1, 2, 3]),
+                        ByteArrayTag([-3, -2, -1, 0, 1, 2, 3]),
                     ]
                 )
             ),
-            "TAG_List([TAG_Byte_Array([-3, -2, -1, 0, 1, 2, 3]), TAG_Byte_Array([-3, -2, -1, 0, 1, 2, 3])], 7)",
+            "ListTag([ByteArrayTag([-3, -2, -1, 0, 1, 2, 3]), ByteArrayTag([-3, -2, -1, 0, 1, 2, 3])], 7)",
         )
         self.assertEqual(
-            repr(TAG_List([TAG_String("value")])), 'TAG_List([TAG_String("value")], 8)'
+            repr(ListTag([StringTag("value")])), 'ListTag([StringTag("value")], 8)'
         )
         self.assertEqual(
-            repr(TAG_List([TAG_String("value"), TAG_String("value")])),
-            'TAG_List([TAG_String("value"), TAG_String("value")], 8)',
+            repr(ListTag([StringTag("value"), StringTag("value")])),
+            'ListTag([StringTag("value"), StringTag("value")], 8)',
+        )
+        self.assertEqual(repr(ListTag([ListTag([])])), "ListTag([ListTag([], 1)], 9)")
+        self.assertEqual(
+            repr(ListTag([ListTag([]), ListTag([])])),
+            "ListTag([ListTag([], 1), ListTag([], 1)], 9)",
         )
         self.assertEqual(
-            repr(TAG_List([TAG_List([])])), "TAG_List([TAG_List([], 1)], 9)"
+            repr(ListTag([CompoundTag({})])), "ListTag([CompoundTag({})], 10)"
         )
         self.assertEqual(
-            repr(TAG_List([TAG_List([]), TAG_List([])])),
-            "TAG_List([TAG_List([], 1), TAG_List([], 1)], 9)",
+            repr(ListTag([CompoundTag({}), CompoundTag({})])),
+            "ListTag([CompoundTag({}), CompoundTag({})], 10)",
         )
         self.assertEqual(
-            repr(TAG_List([TAG_Compound({})])), "TAG_List([TAG_Compound({})], 10)"
-        )
-        self.assertEqual(
-            repr(TAG_List([TAG_Compound({}), TAG_Compound({})])),
-            "TAG_List([TAG_Compound({}), TAG_Compound({})], 10)",
-        )
-        self.assertEqual(
-            repr(TAG_List([TAG_Int_Array([-3, -2, -1, 0, 1, 2, 3])])),
-            "TAG_List([TAG_Int_Array([-3, -2, -1, 0, 1, 2, 3])], 11)",
+            repr(ListTag([IntArrayTag([-3, -2, -1, 0, 1, 2, 3])])),
+            "ListTag([IntArrayTag([-3, -2, -1, 0, 1, 2, 3])], 11)",
         )
         self.assertEqual(
             repr(
-                TAG_List(
+                ListTag(
                     [
-                        TAG_Int_Array([-3, -2, -1, 0, 1, 2, 3]),
-                        TAG_Int_Array([-3, -2, -1, 0, 1, 2, 3]),
+                        IntArrayTag([-3, -2, -1, 0, 1, 2, 3]),
+                        IntArrayTag([-3, -2, -1, 0, 1, 2, 3]),
                     ]
                 )
             ),
-            "TAG_List([TAG_Int_Array([-3, -2, -1, 0, 1, 2, 3]), TAG_Int_Array([-3, -2, -1, 0, 1, 2, 3])], 11)",
+            "ListTag([IntArrayTag([-3, -2, -1, 0, 1, 2, 3]), IntArrayTag([-3, -2, -1, 0, 1, 2, 3])], 11)",
         )
         self.assertEqual(
-            repr(TAG_List([TAG_Long_Array([-3, -2, -1, 0, 1, 2, 3])])),
-            "TAG_List([TAG_Long_Array([-3, -2, -1, 0, 1, 2, 3])], 12)",
+            repr(ListTag([LongArrayTag([-3, -2, -1, 0, 1, 2, 3])])),
+            "ListTag([LongArrayTag([-3, -2, -1, 0, 1, 2, 3])], 12)",
         )
         self.assertEqual(
             repr(
-                TAG_List(
+                ListTag(
                     [
-                        TAG_Long_Array([-3, -2, -1, 0, 1, 2, 3]),
-                        TAG_Long_Array([-3, -2, -1, 0, 1, 2, 3]),
+                        LongArrayTag([-3, -2, -1, 0, 1, 2, 3]),
+                        LongArrayTag([-3, -2, -1, 0, 1, 2, 3]),
                     ]
                 )
             ),
-            "TAG_List([TAG_Long_Array([-3, -2, -1, 0, 1, 2, 3]), TAG_Long_Array([-3, -2, -1, 0, 1, 2, 3])], 12)",
+            "ListTag([LongArrayTag([-3, -2, -1, 0, 1, 2, 3]), LongArrayTag([-3, -2, -1, 0, 1, 2, 3])], 12)",
         )
 
     def test_repr_compound(self):
         self.assertEqual(
-            repr(TAG_Compound({"key": TAG_Byte(-5)})),
-            "TAG_Compound({'key': TAG_Byte(-5)})",
+            repr(CompoundTag({"key": ByteTag(-5)})),
+            "CompoundTag({'key': ByteTag(-5)})",
         )
         self.assertEqual(
-            repr(TAG_Compound({"b": TAG_Byte(-5), "a": TAG_Byte(-5)})),
-            "TAG_Compound({'b': TAG_Byte(-5), 'a': TAG_Byte(-5)})",
+            repr(CompoundTag({"b": ByteTag(-5), "a": ByteTag(-5)})),
+            "CompoundTag({'b': ByteTag(-5), 'a': ByteTag(-5)})",
         )
         self.assertEqual(
-            repr(TAG_Compound({"key": TAG_Byte(5)})),
-            "TAG_Compound({'key': TAG_Byte(5)})",
+            repr(CompoundTag({"key": ByteTag(5)})),
+            "CompoundTag({'key': ByteTag(5)})",
         )
         self.assertEqual(
-            repr(TAG_Compound({"b": TAG_Byte(5), "a": TAG_Byte(5)})),
-            "TAG_Compound({'b': TAG_Byte(5), 'a': TAG_Byte(5)})",
+            repr(CompoundTag({"b": ByteTag(5), "a": ByteTag(5)})),
+            "CompoundTag({'b': ByteTag(5), 'a': ByteTag(5)})",
         )
         self.assertEqual(
-            repr(TAG_Compound({"key": TAG_Short(-5)})),
-            "TAG_Compound({'key': TAG_Short(-5)})",
+            repr(CompoundTag({"key": ShortTag(-5)})),
+            "CompoundTag({'key': ShortTag(-5)})",
         )
         self.assertEqual(
-            repr(TAG_Compound({"b": TAG_Short(-5), "a": TAG_Short(-5)})),
-            "TAG_Compound({'b': TAG_Short(-5), 'a': TAG_Short(-5)})",
+            repr(CompoundTag({"b": ShortTag(-5), "a": ShortTag(-5)})),
+            "CompoundTag({'b': ShortTag(-5), 'a': ShortTag(-5)})",
         )
         self.assertEqual(
-            repr(TAG_Compound({"key": TAG_Short(5)})),
-            "TAG_Compound({'key': TAG_Short(5)})",
+            repr(CompoundTag({"key": ShortTag(5)})),
+            "CompoundTag({'key': ShortTag(5)})",
         )
         self.assertEqual(
-            repr(TAG_Compound({"b": TAG_Short(5), "a": TAG_Short(5)})),
-            "TAG_Compound({'b': TAG_Short(5), 'a': TAG_Short(5)})",
+            repr(CompoundTag({"b": ShortTag(5), "a": ShortTag(5)})),
+            "CompoundTag({'b': ShortTag(5), 'a': ShortTag(5)})",
         )
         self.assertEqual(
-            repr(TAG_Compound({"key": TAG_Int(-5)})),
-            "TAG_Compound({'key': TAG_Int(-5)})",
+            repr(CompoundTag({"key": IntTag(-5)})),
+            "CompoundTag({'key': IntTag(-5)})",
         )
         self.assertEqual(
-            repr(TAG_Compound({"b": TAG_Int(-5), "a": TAG_Int(-5)})),
-            "TAG_Compound({'b': TAG_Int(-5), 'a': TAG_Int(-5)})",
+            repr(CompoundTag({"b": IntTag(-5), "a": IntTag(-5)})),
+            "CompoundTag({'b': IntTag(-5), 'a': IntTag(-5)})",
         )
         self.assertEqual(
-            repr(TAG_Compound({"key": TAG_Int(5)})), "TAG_Compound({'key': TAG_Int(5)})"
+            repr(CompoundTag({"key": IntTag(5)})), "CompoundTag({'key': IntTag(5)})"
         )
         self.assertEqual(
-            repr(TAG_Compound({"b": TAG_Int(5), "a": TAG_Int(5)})),
-            "TAG_Compound({'b': TAG_Int(5), 'a': TAG_Int(5)})",
+            repr(CompoundTag({"b": IntTag(5), "a": IntTag(5)})),
+            "CompoundTag({'b': IntTag(5), 'a': IntTag(5)})",
         )
         self.assertEqual(
-            repr(TAG_Compound({"key": TAG_Long(-5)})),
-            "TAG_Compound({'key': TAG_Long(-5)})",
+            repr(CompoundTag({"key": LongTag(-5)})),
+            "CompoundTag({'key': LongTag(-5)})",
         )
         self.assertEqual(
-            repr(TAG_Compound({"b": TAG_Long(-5), "a": TAG_Long(-5)})),
-            "TAG_Compound({'b': TAG_Long(-5), 'a': TAG_Long(-5)})",
+            repr(CompoundTag({"b": LongTag(-5), "a": LongTag(-5)})),
+            "CompoundTag({'b': LongTag(-5), 'a': LongTag(-5)})",
         )
         self.assertEqual(
-            repr(TAG_Compound({"key": TAG_Long(5)})),
-            "TAG_Compound({'key': TAG_Long(5)})",
+            repr(CompoundTag({"key": LongTag(5)})),
+            "CompoundTag({'key': LongTag(5)})",
         )
         self.assertEqual(
-            repr(TAG_Compound({"b": TAG_Long(5), "a": TAG_Long(5)})),
-            "TAG_Compound({'b': TAG_Long(5), 'a': TAG_Long(5)})",
+            repr(CompoundTag({"b": LongTag(5), "a": LongTag(5)})),
+            "CompoundTag({'b': LongTag(5), 'a': LongTag(5)})",
         )
         self.assertEqual(
-            repr(TAG_Compound({"key": TAG_Float(-5)})),
-            "TAG_Compound({'key': TAG_Float(-5.0)})",
+            repr(CompoundTag({"key": FloatTag(-5)})),
+            "CompoundTag({'key': FloatTag(-5.0)})",
         )
         self.assertEqual(
-            repr(TAG_Compound({"b": TAG_Float(-5), "a": TAG_Float(-5)})),
-            "TAG_Compound({'b': TAG_Float(-5.0), 'a': TAG_Float(-5.0)})",
+            repr(CompoundTag({"b": FloatTag(-5), "a": FloatTag(-5)})),
+            "CompoundTag({'b': FloatTag(-5.0), 'a': FloatTag(-5.0)})",
         )
         self.assertEqual(
-            repr(TAG_Compound({"key": TAG_Float(5)})),
-            "TAG_Compound({'key': TAG_Float(5.0)})",
+            repr(CompoundTag({"key": FloatTag(5)})),
+            "CompoundTag({'key': FloatTag(5.0)})",
         )
         self.assertEqual(
-            repr(TAG_Compound({"b": TAG_Float(5), "a": TAG_Float(5)})),
-            "TAG_Compound({'b': TAG_Float(5.0), 'a': TAG_Float(5.0)})",
+            repr(CompoundTag({"b": FloatTag(5), "a": FloatTag(5)})),
+            "CompoundTag({'b': FloatTag(5.0), 'a': FloatTag(5.0)})",
         )
         self.assertEqual(
-            repr(TAG_Compound({"key": TAG_Double(-5)})),
-            "TAG_Compound({'key': TAG_Double(-5.0)})",
+            repr(CompoundTag({"key": DoubleTag(-5)})),
+            "CompoundTag({'key': DoubleTag(-5.0)})",
         )
         self.assertEqual(
-            repr(TAG_Compound({"b": TAG_Double(-5), "a": TAG_Double(-5)})),
-            "TAG_Compound({'b': TAG_Double(-5.0), 'a': TAG_Double(-5.0)})",
+            repr(CompoundTag({"b": DoubleTag(-5), "a": DoubleTag(-5)})),
+            "CompoundTag({'b': DoubleTag(-5.0), 'a': DoubleTag(-5.0)})",
         )
         self.assertEqual(
-            repr(TAG_Compound({"key": TAG_Double(5)})),
-            "TAG_Compound({'key': TAG_Double(5.0)})",
+            repr(CompoundTag({"key": DoubleTag(5)})),
+            "CompoundTag({'key': DoubleTag(5.0)})",
         )
         self.assertEqual(
-            repr(TAG_Compound({"b": TAG_Double(5), "a": TAG_Double(5)})),
-            "TAG_Compound({'b': TAG_Double(5.0), 'a': TAG_Double(5.0)})",
+            repr(CompoundTag({"b": DoubleTag(5), "a": DoubleTag(5)})),
+            "CompoundTag({'b': DoubleTag(5.0), 'a': DoubleTag(5.0)})",
         )
         self.assertEqual(
-            repr(TAG_Compound({"key": TAG_Byte_Array([-3, -2, -1, 0, 1, 2, 3])})),
-            "TAG_Compound({'key': TAG_Byte_Array([-3, -2, -1, 0, 1, 2, 3])})",
-        )
-        self.assertEqual(
-            repr(
-                TAG_Compound(
-                    {
-                        "b": TAG_Byte_Array([-3, -2, -1, 0, 1, 2, 3]),
-                        "a": TAG_Byte_Array([-3, -2, -1, 0, 1, 2, 3]),
-                    }
-                )
-            ),
-            "TAG_Compound({'b': TAG_Byte_Array([-3, -2, -1, 0, 1, 2, 3]), 'a': TAG_Byte_Array([-3, -2, -1, 0, 1, 2, 3])})",
-        )
-        self.assertEqual(
-            repr(TAG_Compound({"key": TAG_String("value")})),
-            "TAG_Compound({'key': TAG_String(\"value\")})",
-        )
-        self.assertEqual(
-            repr(TAG_Compound({"b": TAG_String("value"), "a": TAG_String("value")})),
-            "TAG_Compound({'b': TAG_String(\"value\"), 'a': TAG_String(\"value\")})",
-        )
-        self.assertEqual(
-            repr(TAG_Compound({"key": TAG_List([])})),
-            "TAG_Compound({'key': TAG_List([], 1)})",
-        )
-        self.assertEqual(
-            repr(TAG_Compound({"b": TAG_List([]), "a": TAG_List([])})),
-            "TAG_Compound({'b': TAG_List([], 1), 'a': TAG_List([], 1)})",
-        )
-        self.assertEqual(
-            repr(TAG_Compound({"key": TAG_Compound({})})),
-            "TAG_Compound({'key': TAG_Compound({})})",
-        )
-        self.assertEqual(
-            repr(TAG_Compound({"b": TAG_Compound({}), "a": TAG_Compound({})})),
-            "TAG_Compound({'b': TAG_Compound({}), 'a': TAG_Compound({})})",
-        )
-        self.assertEqual(
-            repr(TAG_Compound({"key": TAG_Int_Array([-3, -2, -1, 0, 1, 2, 3])})),
-            "TAG_Compound({'key': TAG_Int_Array([-3, -2, -1, 0, 1, 2, 3])})",
+            repr(CompoundTag({"key": ByteArrayTag([-3, -2, -1, 0, 1, 2, 3])})),
+            "CompoundTag({'key': ByteArrayTag([-3, -2, -1, 0, 1, 2, 3])})",
         )
         self.assertEqual(
             repr(
-                TAG_Compound(
+                CompoundTag(
                     {
-                        "b": TAG_Int_Array([-3, -2, -1, 0, 1, 2, 3]),
-                        "a": TAG_Int_Array([-3, -2, -1, 0, 1, 2, 3]),
+                        "b": ByteArrayTag([-3, -2, -1, 0, 1, 2, 3]),
+                        "a": ByteArrayTag([-3, -2, -1, 0, 1, 2, 3]),
                     }
                 )
             ),
-            "TAG_Compound({'b': TAG_Int_Array([-3, -2, -1, 0, 1, 2, 3]), 'a': TAG_Int_Array([-3, -2, -1, 0, 1, 2, 3])})",
+            "CompoundTag({'b': ByteArrayTag([-3, -2, -1, 0, 1, 2, 3]), 'a': ByteArrayTag([-3, -2, -1, 0, 1, 2, 3])})",
         )
         self.assertEqual(
-            repr(TAG_Compound({"key": TAG_Long_Array([-3, -2, -1, 0, 1, 2, 3])})),
-            "TAG_Compound({'key': TAG_Long_Array([-3, -2, -1, 0, 1, 2, 3])})",
+            repr(CompoundTag({"key": StringTag("value")})),
+            "CompoundTag({'key': StringTag(\"value\")})",
+        )
+        self.assertEqual(
+            repr(CompoundTag({"b": StringTag("value"), "a": StringTag("value")})),
+            "CompoundTag({'b': StringTag(\"value\"), 'a': StringTag(\"value\")})",
+        )
+        self.assertEqual(
+            repr(CompoundTag({"key": ListTag([])})),
+            "CompoundTag({'key': ListTag([], 1)})",
+        )
+        self.assertEqual(
+            repr(CompoundTag({"b": ListTag([]), "a": ListTag([])})),
+            "CompoundTag({'b': ListTag([], 1), 'a': ListTag([], 1)})",
+        )
+        self.assertEqual(
+            repr(CompoundTag({"key": CompoundTag({})})),
+            "CompoundTag({'key': CompoundTag({})})",
+        )
+        self.assertEqual(
+            repr(CompoundTag({"b": CompoundTag({}), "a": CompoundTag({})})),
+            "CompoundTag({'b': CompoundTag({}), 'a': CompoundTag({})})",
+        )
+        self.assertEqual(
+            repr(CompoundTag({"key": IntArrayTag([-3, -2, -1, 0, 1, 2, 3])})),
+            "CompoundTag({'key': IntArrayTag([-3, -2, -1, 0, 1, 2, 3])})",
         )
         self.assertEqual(
             repr(
-                TAG_Compound(
+                CompoundTag(
                     {
-                        "b": TAG_Long_Array([-3, -2, -1, 0, 1, 2, 3]),
-                        "a": TAG_Long_Array([-3, -2, -1, 0, 1, 2, 3]),
+                        "b": IntArrayTag([-3, -2, -1, 0, 1, 2, 3]),
+                        "a": IntArrayTag([-3, -2, -1, 0, 1, 2, 3]),
                     }
                 )
             ),
-            "TAG_Compound({'b': TAG_Long_Array([-3, -2, -1, 0, 1, 2, 3]), 'a': TAG_Long_Array([-3, -2, -1, 0, 1, 2, 3])})",
+            "CompoundTag({'b': IntArrayTag([-3, -2, -1, 0, 1, 2, 3]), 'a': IntArrayTag([-3, -2, -1, 0, 1, 2, 3])})",
+        )
+        self.assertEqual(
+            repr(CompoundTag({"key": LongArrayTag([-3, -2, -1, 0, 1, 2, 3])})),
+            "CompoundTag({'key': LongArrayTag([-3, -2, -1, 0, 1, 2, 3])})",
+        )
+        self.assertEqual(
+            repr(
+                CompoundTag(
+                    {
+                        "b": LongArrayTag([-3, -2, -1, 0, 1, 2, 3]),
+                        "a": LongArrayTag([-3, -2, -1, 0, 1, 2, 3]),
+                    }
+                )
+            ),
+            "CompoundTag({'b': LongArrayTag([-3, -2, -1, 0, 1, 2, 3]), 'a': LongArrayTag([-3, -2, -1, 0, 1, 2, 3])})",
         )
 
 

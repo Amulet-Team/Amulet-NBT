@@ -3,43 +3,43 @@ from typing import Iterable, Tuple, Any, Type
 
 from amulet_nbt import (
     BaseTag,
-    TAG_Byte,
-    TAG_Short,
-    TAG_Int,
-    TAG_Long,
-    TAG_Float,
-    TAG_Double,
-    TAG_Byte_Array,
-    TAG_Int_Array,
-    TAG_Long_Array,
-    TAG_String,
-    TAG_List,
-    TAG_Compound,
+    ByteTag,
+    ShortTag,
+    IntTag,
+    LongTag,
+    FloatTag,
+    DoubleTag,
+    ByteArrayTag,
+    IntArrayTag,
+    LongArrayTag,
+    StringTag,
+    ListTag,
+    CompoundTag,
 )
 
 
 class BaseTagsTest(unittest.TestCase):
     def setUp(self):
         self.int_types = (
-            TAG_Byte,
-            TAG_Short,
-            TAG_Int,
-            TAG_Long,
+            ByteTag,
+            ShortTag,
+            IntTag,
+            LongTag,
         )
         self.float_types = (
-            TAG_Float,
-            TAG_Double,
+            FloatTag,
+            DoubleTag,
         )
         self.numerical_types = self.int_types + self.float_types
-        self.string_types = (TAG_String,)
+        self.string_types = (StringTag,)
         self.array_types = (
-            TAG_Byte_Array,
-            TAG_Int_Array,
-            TAG_Long_Array,
+            ByteArrayTag,
+            IntArrayTag,
+            LongArrayTag,
         )
         self.container_types = (
-            TAG_List,
-            TAG_Compound,
+            ListTag,
+            CompoundTag,
         )
         self.nbt_types = (
             self.numerical_types

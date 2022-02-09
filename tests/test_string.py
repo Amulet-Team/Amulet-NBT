@@ -1,3 +1,4 @@
+import sys
 from typing import Union
 import unittest
 from tests import base_type_test
@@ -429,6 +430,7 @@ class TestString(base_type_test.BaseTypeTest):
         #     StringTag("BaseTestCase").removeprefix(StringTag("Test")),
         # )
 
+    @unittest.skipUnless(sys.version_info >= (3, 9), "removesuffix only exists in python 3.9+")
     def test_removesuffix(self):
         self.assertStrictEqual(str, "Test", StringTag("TestHook").removesuffix("Hook"))
         # self.assertStrictEqual(

@@ -414,7 +414,9 @@ class TestString(base_type_test.BaseTypeTest):
             StringTag("ab c\n\nde fg\rkl\r\n").splitlines(keepends=True),
         )
 
-    @unittest.skipUnless(sys.version_info >= (3, 9), "removeprefix only exists in python 3.9+")
+    @unittest.skipUnless(
+        sys.version_info >= (3, 9), "removeprefix only exists in python 3.9+"
+    )
     def test_removeprefix(self):
         self.assertStrictEqual(str, "Hook", StringTag("TestHook").removeprefix("Test"))
         # self.assertStrictEqual(
@@ -431,7 +433,9 @@ class TestString(base_type_test.BaseTypeTest):
         #     StringTag("BaseTestCase").removeprefix(StringTag("Test")),
         # )
 
-    @unittest.skipUnless(sys.version_info >= (3, 9), "removesuffix only exists in python 3.9+")
+    @unittest.skipUnless(
+        sys.version_info >= (3, 9), "removesuffix only exists in python 3.9+"
+    )
     def test_removesuffix(self):
         self.assertStrictEqual(str, "Test", StringTag("TestHook").removesuffix("Hook"))
         # self.assertStrictEqual(

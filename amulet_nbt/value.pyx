@@ -1,4 +1,4 @@
-from copy import copy, deepcopy
+from copy import copy
 from io import BytesIO
 import warnings
 import gzip
@@ -17,6 +17,11 @@ cdef class BaseTag:
         The mutable types return a copy of the data. To modify these classes use the public API.
         """
         raise NotImplementedError
+
+    @property
+    def value(self):
+        warnings.warn("value property is depreciated. Use py_data instead", DeprecationWarning)
+        return self.py_data
 
     cpdef str to_snbt(self, object indent=None, object indent_chr=None):
         """

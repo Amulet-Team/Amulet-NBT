@@ -20,6 +20,7 @@ from .array cimport (
 from .string cimport StringTag
 from .list cimport ListTag
 from .compound cimport CompoundTag
+from .dtype import AnyNBT
 
 
 cdef class BaseNamedTag:
@@ -125,6 +126,46 @@ cdef class NamedListTag(BaseNamedTag):
 cdef class NamedCompoundTag(BaseNamedTag):
     tag: CompoundTag
     TagCls = CompoundTag
+
+    def __len__(self) -> int:
+        warnings.warn("tag methods in NBTFile/NamedCompoundTag are depreciated. Use tag attribute instead.")
+        return self.tag.__len__()
+
+    def keys(self):
+        warnings.warn("tag methods in NBTFile/NamedCompoundTag are depreciated. Use tag attribute instead.")
+        return self.tag.keys()
+
+    def values(self):
+        warnings.warn("tag methods in NBTFile/NamedCompoundTag are depreciated. Use tag attribute instead.")
+        self.tag.values()
+
+    def items(self):
+        warnings.warn("tag methods in NBTFile/NamedCompoundTag are depreciated. Use tag attribute instead.")
+        return self.tag.items()
+
+    def __getitem__(self, key: str) -> AnyNBT:
+        warnings.warn("tag methods in NBTFile/NamedCompoundTag are depreciated. Use tag attribute instead.")
+        return self.tag[key]
+
+    def __setitem__(self, key: str, tag: AnyNBT):
+        warnings.warn("tag methods in NBTFile/NamedCompoundTag are depreciated. Use tag attribute instead.")
+        self.tag[key] = tag
+
+    def __delitem__(self, key: str):
+        warnings.warn("tag methods in NBTFile/NamedCompoundTag are depreciated. Use tag attribute instead.")
+        del self.tag[key]
+
+    def __contains__(self, key: str) -> bool:
+        warnings.warn("tag methods in NBTFile/NamedCompoundTag are depreciated. Use tag attribute instead.")
+        return key in self.tag
+
+    def pop(self, k, default=None) -> AnyNBT:
+        warnings.warn("tag methods in NBTFile/NamedCompoundTag are depreciated. Use tag attribute instead.")
+        return self.tag.pop(k, default)
+
+    def get(self, k, default=None) -> AnyNBT:
+        warnings.warn("tag methods in NBTFile/NamedCompoundTag are depreciated. Use tag attribute instead.")
+        return self.tag.get(k, default)
 
 
 cdef class NamedIntArrayTag(BaseNamedTag):

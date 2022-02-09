@@ -55,6 +55,7 @@ from .named_tag cimport (
     NamedStringTag,
     NamedListTag,
     NamedCompoundTag,
+    NamedCompoundTag as NBTFile,
     NamedIntArrayTag,
     NamedLongArrayTag,
 )

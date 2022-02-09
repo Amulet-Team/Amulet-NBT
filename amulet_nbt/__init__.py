@@ -61,6 +61,7 @@ from .named_tag import (
     NamedStringTag,
     NamedListTag,
     NamedCompoundTag,
+    NamedCompoundTag as NBTFile,
     NamedIntArrayTag,
     NamedLongArrayTag,
 )

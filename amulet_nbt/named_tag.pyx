@@ -1,4 +1,6 @@
 from typing import Type
+import warnings
+
 from .value cimport BaseTag
 from .int cimport (
     ByteTag,
@@ -31,6 +33,11 @@ cdef class BaseNamedTag:
         else:
             raise TypeError(f"Expected type {self.TagCls} but got {tag.__class__}")
         self.name = name
+
+    @property
+    def value(self):
+        warnings.warn("value property is depreciated. Use tag attribute instead.")
+        return self.tag
 
     def to_nbt(
         self,

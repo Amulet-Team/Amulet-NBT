@@ -25,7 +25,7 @@ class SNBTTests(unittest.TestCase):
     def test_write(self):
         for data in binary_data_tuple:
             self.assertEqual(
-                data.nbt_file.value.to_snbt(), data.snbt, msg=str(data.nbt_file)
+                data.named_tag.tag.to_snbt(), data.snbt, msg=str(data.named_tag)
             )
 
     def _is_same(self, ground: BaseTag, *test: str):

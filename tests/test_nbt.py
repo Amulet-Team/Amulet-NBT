@@ -12,55 +12,55 @@ class NBTTests(unittest.TestCase):
         buffer = BufferContext(copy(b))
         name, tag = load_tag(buffer, little_endian)
         self.assertEqual(b, buffer.get_buffer(), msg="The buffer changed.")
-        nbt_file = amulet_nbt.load_one(b, little_endian=little_endian)
-        self.assertEqual(name, nbt_file.name)
-        self.assertEqual(tag, nbt_file.value)
-        return nbt_file
+        named_tag = amulet_nbt.load_one(b, little_endian=little_endian)
+        self.assertEqual(name, named_tag.name)
+        self.assertEqual(tag, named_tag.tag)
+        return named_tag
 
     def test_read_big_endian(self):
         for data in binary_data_tuple:
             self.assertEqual(
-                data.nbt_file, self._load(data.big_endian), msg=str(data.nbt_file)
+                data.named_tag, self._load(data.big_endian), msg=str(data.named_tag)
             )
 
     def test_read_big_endian_compressed(self):
         for data in binary_data_tuple:
             self.assertEqual(
-                data.nbt_file,
+                data.named_tag,
                 amulet_nbt.load_one(data.big_endian_compressed),
-                msg=str(data.nbt_file),
+                msg=str(data.named_tag),
             )
 
     def test_read_little_endian(self):
         for data in binary_data_tuple:
             self.assertEqual(
-                data.nbt_file,
+                data.named_tag,
                 self._load(data.little_endian, little_endian=True),
-                msg=str(data.nbt_file),
+                msg=str(data.named_tag),
             )
 
     def test_read_little_endian_compressed(self):
         for data in binary_data_tuple:
             self.assertEqual(
-                data.nbt_file,
+                data.named_tag,
                 amulet_nbt.load_one(data.little_endian_compressed, little_endian=True),
-                msg=str(data.nbt_file),
+                msg=str(data.named_tag),
             )
 
     def test_write_big_endian(self):
         for data in binary_data_tuple:
             self.assertEqual(
-                data.nbt_file.to_nbt(compressed=False),
+                data.named_tag.to_nbt(compressed=False),
                 data.big_endian,
-                msg=str(data.nbt_file),
+                msg=str(data.named_tag),
             )
 
     def test_write_little_endian(self):
         for data in binary_data_tuple:
             self.assertEqual(
-                data.nbt_file.to_nbt(compressed=False, little_endian=True),
+                data.named_tag.to_nbt(compressed=False, little_endian=True),
                 data.little_endian,
-                msg=str(data.nbt_file),
+                msg=str(data.named_tag),
             )
 
 

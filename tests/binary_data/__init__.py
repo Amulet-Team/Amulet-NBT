@@ -32,7 +32,7 @@ from amulet_nbt import (
 
 @dataclass
 class Bin:
-    nbt_file: BaseNamedTag
+    named_tag: BaseNamedTag
     big_endian: bytes
     little_endian: bytes
     big_endian_compressed: bytes

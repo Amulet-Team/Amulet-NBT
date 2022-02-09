@@ -18,7 +18,7 @@ from amulet_nbt import (
     StringTag,
     ListTag,
     CompoundTag,
-    NBTFile,
+    tag_to_named_tag,
 )
 
 names = ("", "name")
@@ -31,16 +31,16 @@ tags: Tuple[Tuple[Tuple[Type[BaseTag], ...], Tuple[Any, ...]], ...] = (
 )
 
 
-def print_line(name: str, value: BaseTag):
-    nbt_file = NBTFile(value, name)
+def print_line(name: str, tag: BaseTag):
+    named_tag = tag_to_named_tag(tag, name)
     print(
         f"("
-        f"{repr(nbt_file)}, "
-        f"{repr(nbt_file.to_nbt(compressed=False, little_endian=False))}, "
-        f"{repr(nbt_file.to_nbt(compressed=False, little_endian=True))}, "
-        f"{repr(nbt_file.to_nbt(compressed=True, little_endian=False))}, "
-        f"{repr(nbt_file.to_nbt(compressed=True, little_endian=True))}, "
-        f"{repr(nbt_file.value.to_snbt())}"
+        f"{repr(named_tag)}, "
+        f"{repr(named_tag.to_nbt(compressed=False, little_endian=False))}, "
+        f"{repr(named_tag.to_nbt(compressed=False, little_endian=True))}, "
+        f"{repr(named_tag.to_nbt(compressed=True, little_endian=False))}, "
+        f"{repr(named_tag.to_nbt(compressed=True, little_endian=True))}, "
+        f"{repr(named_tag.tag.to_snbt())}"
         f"),"
     )
 

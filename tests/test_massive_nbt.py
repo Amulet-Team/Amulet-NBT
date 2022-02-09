@@ -95,31 +95,31 @@ class MassiveNBTTests(unittest.TestCase):
         # test the extremes of the array types
         # byte array tested above
         compound["numpyExtremeTestIntArray"] = IntArrayTag(
-            numpy.array([-(2 ** 31), (2 ** 31) - 1], dtype=int)
+            numpy.array([-(2**31), (2**31) - 1], dtype=int)
         )
         compound["numpyExtremeTestLongArray"] = LongArrayTag(
-            numpy.array([-(2 ** 63), (2 ** 63) - 1], dtype="q")
+            numpy.array([-(2**63), (2**63) - 1], dtype="q")
         )
 
         compound["minByte"] = ByteTag(-128)
-        compound["minShort"] = ShortTag(-(2 ** 15))
-        compound["minInt"] = IntTag(-(2 ** 31))
-        compound["minLong"] = LongTag(-(2 ** 63))
+        compound["minShort"] = ShortTag(-(2**15))
+        compound["minInt"] = IntTag(-(2**31))
+        compound["minLong"] = LongTag(-(2**63))
 
         compound["maxByte"] = ByteTag(127)
-        compound["maxShort"] = ShortTag(2 ** 15 - 1)
-        compound["maxInt"] = IntTag(2 ** 31 - 1)
-        compound["maxLong"] = LongTag(2 ** 63 - 1)
+        compound["maxShort"] = ShortTag(2**15 - 1)
+        compound["maxInt"] = IntTag(2**31 - 1)
+        compound["maxLong"] = LongTag(2**63 - 1)
 
         # these should either overflow when setting or error when saving. Test each and if it errors just comment it out
         compound["overflowByte"] = ByteTag(300)
         compound["underflowByte"] = ByteTag(-300)
-        compound["overflowShort"] = ShortTag(2 ** 16)
-        compound["underflowShort"] = ShortTag(-(2 ** 16))
-        compound["overflowInt"] = IntTag(2 ** 32)
-        compound["underflowInt"] = IntTag(-(2 ** 32))
-        compound["overflowLong"] = LongTag(2 ** 64)
-        compound["underflowLong"] = LongTag(-(2 ** 64))
+        compound["overflowShort"] = ShortTag(2**16)
+        compound["underflowShort"] = ShortTag(-(2**16))
+        compound["overflowInt"] = IntTag(2**32)
+        compound["underflowInt"] = IntTag(-(2**32))
+        compound["overflowLong"] = LongTag(2**64)
+        compound["underflowLong"] = LongTag(-(2**64))
 
         # compound['overflowByteArray'] = ByteArrayTag([-129, 128])
         # compound['overflowIntArray'] = IntArrayTag([-2**31-1, 2**31])

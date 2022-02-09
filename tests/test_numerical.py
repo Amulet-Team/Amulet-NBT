@@ -225,25 +225,25 @@ class TestNumerical(base_type_test.BaseTypeTest):
         i = IntTag()
         l = LongTag()
 
-        b += 2 ** 7
-        s += 2 ** 15
-        i += 2 ** 31
-        l += 2 ** 63
+        b += 2**7
+        s += 2**15
+        i += 2**31
+        l += 2**63
 
-        self.assertEqual(b, -(2 ** 7))
-        self.assertEqual(s, -(2 ** 15))
-        self.assertEqual(i, -(2 ** 31))
-        self.assertEqual(l, -(2 ** 63))
+        self.assertEqual(b, -(2**7))
+        self.assertEqual(s, -(2**15))
+        self.assertEqual(i, -(2**31))
+        self.assertEqual(l, -(2**63))
 
         b -= 1
         s -= 1
         i -= 1
         l -= 1
 
-        self.assertEqual(b, 2 ** 7 - 1)
-        self.assertEqual(s, 2 ** 15 - 1)
-        self.assertEqual(i, 2 ** 31 - 1)
-        self.assertEqual(l, 2 ** 63 - 1)
+        self.assertEqual(b, 2**7 - 1)
+        self.assertEqual(s, 2**15 - 1)
+        self.assertEqual(i, 2**31 - 1)
+        self.assertEqual(l, 2**63 - 1)
 
 
 if __name__ == "__main__":

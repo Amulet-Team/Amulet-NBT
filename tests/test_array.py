@@ -38,23 +38,23 @@ class TestArray(base_type_test.BaseTypeTest):
 
     def test_array_overflow(self):
         b_arr = ByteArrayTag([0])
-        b_arr += 2 ** 7
+        b_arr += 2**7
         i_arr = IntArrayTag([0])
-        i_arr += 2 ** 31
+        i_arr += 2**31
         # numpy throws an error when overflowing int64
         # l_arr = LongArrayTag([0])
         # l_arr += 2 ** 63
 
-        self.assertTrue(numpy.array_equal(b_arr, [-(2 ** 7)]))
-        self.assertTrue(numpy.array_equal(i_arr, [-(2 ** 31)]))
+        self.assertTrue(numpy.array_equal(b_arr, [-(2**7)]))
+        self.assertTrue(numpy.array_equal(i_arr, [-(2**31)]))
         # self.assertTrue(numpy.array_equal(l_arr, [-(2 ** 63)]))
 
         b_arr -= 1
         i_arr -= 1
         # l_arr -= 1
 
-        self.assertTrue(numpy.array_equal(b_arr, [2 ** 7 - 1]))
-        self.assertTrue(numpy.array_equal(i_arr, [2 ** 31 - 1]))
+        self.assertTrue(numpy.array_equal(b_arr, [2**7 - 1]))
+        self.assertTrue(numpy.array_equal(i_arr, [2**31 - 1]))
         # self.assertTrue(numpy.array_equal(l_arr, [2 ** 63 - 1]))
 
 

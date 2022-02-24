@@ -40,6 +40,11 @@ cdef class BaseNamedTag:
         warnings.warn("value property is depreciated. Use tag attribute instead.")
         return self.tag
 
+    @value.setter
+    def value(self, BaseTag value):
+        warnings.warn("value property is depreciated.")
+        self.tag = value
+
     def to_snbt(self, indent_chr=None) -> str:
         return self.tag.to_snbt(indent_chr)
 

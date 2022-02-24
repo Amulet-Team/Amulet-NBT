@@ -3,21 +3,9 @@ from tests import base_type_test
 
 from amulet_nbt import (
     BaseNumericTag,
-    BaseIntTag,
-    BaseFloatTag,
     BaseArrayTag,
-    ByteTag,
-    ShortTag,
-    IntTag,
-    LongTag,
-    FloatTag,
-    DoubleTag,
     StringTag,
     ListTag,
-    CompoundTag,
-    ByteArrayTag,
-    IntArrayTag,
-    LongArrayTag,
 )
 
 

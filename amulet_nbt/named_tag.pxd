@@ -3,7 +3,7 @@ from .value cimport BaseTag
 
 cdef class BaseNamedTag:
     cdef readonly BaseTag tag
-    cdef readonly str name
+    cdef public str name
 
 
 cdef class NamedByteTag(BaseNamedTag):

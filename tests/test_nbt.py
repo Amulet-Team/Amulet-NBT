@@ -2,8 +2,8 @@ import unittest
 from copy import copy
 
 import amulet_nbt
-from amulet_nbt.load_nbt import load_tag
-from amulet_nbt.util import BufferContext
+from amulet_nbt._load_nbt import load_tag
+from amulet_nbt._util import BufferContext
 from tests.binary_data import binary_data_tuple
 
 

@@ -7,7 +7,7 @@ from ._value cimport BaseTag, BaseMutableTag
 from ._const cimport ID_END, ID_COMPOUND, CommaSpace, CommaNewline
 from ._util cimport write_byte, BufferContext, read_byte, read_string
 from ._load_nbt cimport load_payload
-{{py:from tools.tempita import include, gen_wrapper}}
+{{py:from template import include, gen_wrapper}}
 
 NON_QUOTED_KEY = re.compile('[A-Za-z0-9._+-]+')
 
@@ -53,7 +53,7 @@ cdef class CompoundTag(BaseMutableTag):
         "items",
     ]
 )}}
-{{include("amulet_nbt/BaseMutableTag.pyx.in", cls_name="CompoundTag")}}
+{{include("BaseMutableTag.pyx.in", cls_name="CompoundTag")}}
 
     @staticmethod
     def fromkeys(object keys, BaseTag value=None):

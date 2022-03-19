@@ -1,5 +1,5 @@
-{{py:from tools.tempita import include}}
-{{include("amulet_nbt/BaseTag.pyx.in", cls_name=cls_name)}}
+{{py:from template import include}}
+{{include("BaseTag.pyx.in", cls_name=cls_name)}}
 
     def __hash__({{cls_name}} self):
         return hash((self.tag_id, self.value_))

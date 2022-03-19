@@ -6,7 +6,7 @@ from math import floor, ceil
 from ._numeric cimport BaseNumericTag
 from ._const cimport ID_FLOAT, ID_DOUBLE
 from ._util cimport write_float, write_double, BufferContext, read_data, to_little_endian, read_string
-{{py:from tools.tempita import include}}
+{{py:from template import include}}
 
 
 cdef class BaseFloatTag(BaseNumericTag):
@@ -26,7 +26,7 @@ cdef class FloatTag(BaseFloatTag):
     def __init__(FloatTag self, value = 0):
         self.value_ = float(value)
 
-{{include("amulet_nbt/BaseFloatTag.pyx.in", cls_name="FloatTag")}}
+{{include("BaseFloatTag.pyx.in", cls_name="FloatTag")}}
 
     cdef str _to_snbt(FloatTag self):
         return f"{self.value_}f"
@@ -54,7 +54,7 @@ cdef class DoubleTag(BaseFloatTag):
     def __init__(DoubleTag self, value = 0):
         self.value_ = float(value)
 
-{{include("amulet_nbt/BaseNumericTag.pyx.in", cls_name="DoubleTag")}}
+{{include("BaseNumericTag.pyx.in", cls_name="DoubleTag")}}
 
     cdef str _to_snbt(DoubleTag self):
         return f"{self.value_}d"

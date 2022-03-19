@@ -17,7 +17,7 @@ from ._util cimport (
     read_byte,
     read_string,
 )
-{{py:from tools.tempita import include}}
+{{py:from template import include}}
 
 
 cdef class BaseIntTag(BaseNumericTag):
@@ -97,7 +97,7 @@ cdef class ByteTag(BaseIntTag):
     def __init__(ByteTag self, value = 0):
         self.value_ = self._sanitise_value(int(value))
 
-{{include("amulet_nbt/BaseIntTag.pyx.in", cls_name="ByteTag")}}
+{{include("BaseIntTag.pyx.in", cls_name="ByteTag")}}
 
     cdef char _sanitise_value(ByteTag self, value):
         return (value & 0x7F) - (value & 0x80)
@@ -131,7 +131,7 @@ cdef class ShortTag(BaseIntTag):
     def __init__(ShortTag self, value = 0):
         self.value_ = self._sanitise_value(int(value))
 
-{{include("amulet_nbt/BaseIntTag.pyx.in", cls_name="ShortTag")}}
+{{include("BaseIntTag.pyx.in", cls_name="ShortTag")}}
 
     cdef short _sanitise_value(ShortTag self, value):
         return (value & 0x7FFF) - (value & 0x8000)
@@ -165,7 +165,7 @@ cdef class IntTag(BaseIntTag):
     def __init__(IntTag self, value = 0):
         self.value_ = self._sanitise_value(int(value))
 
-{{include("amulet_nbt/BaseIntTag.pyx.in", cls_name="IntTag")}}
+{{include("BaseIntTag.pyx.in", cls_name="IntTag")}}
 
     cdef int _sanitise_value(IntTag self, value):
         return (value & 0x7FFF_FFFF) - (value & 0x8000_0000)
@@ -199,7 +199,7 @@ cdef class LongTag(BaseIntTag):
     def __init__(LongTag self, value = 0):
         self.value_ = self._sanitise_value(int(value))
 
-{{include("amulet_nbt/BaseIntTag.pyx.in", cls_name="LongTag")}}
+{{include("BaseIntTag.pyx.in", cls_name="LongTag")}}
 
     cdef long long _sanitise_value(LongTag self, value):
         return (value & 0x7FFF_FFFF_FFFF_FFFF) - (value & 0x8000_0000_0000_0000)

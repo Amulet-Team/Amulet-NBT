@@ -1,4 +1,4 @@
-{{py:from tools.tempita import include, gen_wrapper}}
+{{py:from template import include, gen_wrapper}}
 {{gen_wrapper(
     "value_",
     float,
@@ -11,4 +11,4 @@
         "real",
     ]
 )}}
-{{include("amulet_nbt/BaseNumericTag.pyx.in", cls_name=cls_name)}}
+{{include("BaseNumericTag.pyx.in", cls_name=cls_name)}}

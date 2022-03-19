@@ -1,5 +1,5 @@
-{{py:from tools.tempita import include}}
-{{include("amulet_nbt/BaseImmutableTag.pyx.in", cls_name=cls_name)}}
+{{py:from template import include}}
+{{include("BaseImmutableTag.pyx.in", cls_name=cls_name)}}
 
     def __repr__({{cls_name}} self):
         return f"{self.__class__.__name__}({self.value_})"

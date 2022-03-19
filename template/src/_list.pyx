@@ -8,7 +8,7 @@ from ._util cimport write_byte, write_int, BufferContext, read_byte, read_int, r
 from ._load_nbt cimport load_payload
 from ._dtype import AnyNBT
 from ._array import BaseArrayTag
-{{py:from tools.tempita import include, gen_wrapper}}
+{{py:from template import include, gen_wrapper}}
 
 
 cdef inline void _read_list_tag_payload(ListTag tag, BufferContext buffer, bint little_endian):
@@ -49,7 +49,7 @@ cdef class ListTag(BaseMutableTag):
         "sort",
     ]
 )}}
-{{include("amulet_nbt/BaseMutableTag.pyx.in", cls_name="ListTag")}}
+{{include("BaseMutableTag.pyx.in", cls_name="ListTag")}}
 
     cdef void _check_tag(ListTag self, BaseTag value, bint fix_if_empty=True) except *:
         if value is None:

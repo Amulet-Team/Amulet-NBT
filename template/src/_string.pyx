@@ -6,7 +6,7 @@ import sys
 from ._value cimport BaseImmutableTag
 from ._const cimport ID_STRING
 from ._util cimport write_string, BufferContext, read_string
-{{py:from tools.tempita import include,gen_wrapper}}
+{{py:from template import include,gen_wrapper}}
 
 
 cdef inline escape(str string):
@@ -70,7 +70,7 @@ cdef class StringTag(BaseImmutableTag):
         "zfill",
     ]
 )}}
-{{include("amulet_nbt/BaseImmutableTag.pyx.in", cls_name="StringTag")}}
+{{include("BaseImmutableTag.pyx.in", cls_name="StringTag")}}
 
     def join(StringTag self, iterable: Iterable[str]) -> str:
         return self.value_.join([str(s) for s in iterable])

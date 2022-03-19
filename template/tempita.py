@@ -26,9 +26,7 @@ def include(rel_path, **kwargs):
 
 
 def build():
-    for path in glob.glob(
-        os.path.join(SRC_PATH, "**", "*.*"), recursive=True
-    ):
+    for path in glob.glob(os.path.join(SRC_PATH, "**", "*.*"), recursive=True):
         rel_path = os.path.relpath(path, SRC_PATH)
         print(f"Baking tempita file {rel_path}")
         with open(path) as template:

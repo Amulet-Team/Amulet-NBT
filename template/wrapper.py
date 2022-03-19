@@ -54,7 +54,7 @@ def get_docstring(obj):
 
 
 def gen_wrapper(
-        wrapped_name: str, wrapped_dtype, attrs: Sequence[str] = None, indent=4
+    wrapped_name: str, wrapped_dtype, attrs: Sequence[str] = None, indent=4
 ):
     """
     Generate wrapper methods for a given type.

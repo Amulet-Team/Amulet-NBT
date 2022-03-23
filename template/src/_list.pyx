@@ -49,7 +49,7 @@ cdef class ListTag(BaseMutableTag):
         "sort",
     ]
 )}}
-{{include("BaseMutableTag.pyx.in", cls_name="ListTag")}}
+{{include("BaseMutableTag.pyx", cls_name="ListTag")}}
 
     cdef void _check_tag(ListTag self, BaseTag value, bint fix_if_empty=True) except *:
         if value is None:

@@ -26,7 +26,7 @@ cdef class FloatTag(BaseFloatTag):
     def __init__(FloatTag self, value = 0):
         self.value_ = float(value)
 
-{{include("BaseFloatTag.pyx.in", cls_name="FloatTag")}}
+{{include("BaseFloatTag.pyx", cls_name="FloatTag")}}
 
     cdef str _to_snbt(FloatTag self):
         return f"{self.value_}f"
@@ -54,7 +54,7 @@ cdef class DoubleTag(BaseFloatTag):
     def __init__(DoubleTag self, value = 0):
         self.value_ = float(value)
 
-{{include("BaseNumericTag.pyx.in", cls_name="DoubleTag")}}
+{{include("BaseNumericTag.pyx", cls_name="DoubleTag")}}
 
     cdef str _to_snbt(DoubleTag self):
         return f"{self.value_}d"

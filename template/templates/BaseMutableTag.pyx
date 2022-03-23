@@ -1,5 +1,5 @@
 {{py:from template import include}}
-{{include("BaseTag.pyx.in", cls_name=cls_name)}}
+{{include("BaseTag.pyx", cls_name=cls_name)}}
 
     @property
     def py_data({{cls_name}} self):

@@ -70,7 +70,7 @@ cdef class StringTag(BaseImmutableTag):
         "zfill",
     ]
 )}}
-{{include("BaseImmutableTag.pyx.in", cls_name="StringTag")}}
+{{include("BaseImmutableTag.pyx", cls_name="StringTag")}}
 
     def join(StringTag self, iterable: Iterable[str]) -> str:
         return self.value_.join([str(s) for s in iterable])

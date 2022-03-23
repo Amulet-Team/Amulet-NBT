@@ -91,7 +91,7 @@ cdef class BaseArrayTag(BaseMutableTag):
         "view"
     ]
 )}}
-{{include("BaseMutableTag.pyx.in", cls_name="BaseArrayTag")}}
+{{include("BaseMutableTag.pyx", cls_name="BaseArrayTag")}}
     @property
     def shape(self):
 {{get_clean_docstring(numpy.ndarray.shape)}}

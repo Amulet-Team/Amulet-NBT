@@ -21,7 +21,7 @@
         return self.value_.conjugate()
     conjugate.__doc__ = int.conjugate.__doc__
 
-{{include("BaseNumericTag.pyx.in", cls_name=cls_name)}}
+{{include("BaseNumericTag.pyx", cls_name=cls_name)}}
 
     @classmethod
     def from_bytes(

@@ -1,5 +1,5 @@
 {{py:from template import include}}
-{{include("BaseTag.pyx.in", cls_name=cls_name)}}
+{{include("BaseTag.pyx", cls_name=cls_name)}}
 
     def __hash__({{cls_name}} self):
         return hash((self.tag_id, self.value_))

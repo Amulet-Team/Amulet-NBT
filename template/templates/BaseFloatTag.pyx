@@ -11,4 +11,4 @@
         "real",
     ]
 )}}
-{{include("BaseNumericTag.pyx.in", cls_name=cls_name)}}
+{{include("BaseNumericTag.pyx", cls_name=cls_name)}}

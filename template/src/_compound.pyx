@@ -53,7 +53,7 @@ cdef class CompoundTag(BaseMutableTag):
         "items",
     ]
 )}}
-{{include("BaseMutableTag.pyx.in", cls_name="CompoundTag")}}
+{{include("BaseMutableTag.pyx", cls_name="CompoundTag")}}
 
     @staticmethod
     def fromkeys(object keys, BaseTag value=None):

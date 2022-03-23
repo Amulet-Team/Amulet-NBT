@@ -117,13 +117,13 @@ class BaseNumericTag(BaseImmutableTag, ABC):
         return self._to_python(divmod(other, self.value))
 
     def __pow__(self, other, modulo=None):
-        return self._to_python(self.value ** other)
+        return self._to_python(self.value**other)
 
     def __rpow__(self, other):
-        return self._to_python(other ** self.value)
+        return self._to_python(other**self.value)
 
     def __ipow__(self, other):
-        return self.__class__(self ** other)
+        return self.__class__(self**other)
 
     def __neg__(self):
         return self._to_python(self._value.__neg__())

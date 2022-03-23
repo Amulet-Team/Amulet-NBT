@@ -138,7 +138,7 @@ cdef tuple _parse_snbt_recursive(unicode snbt, int index=0):
                     index = match.end()
 
                 index = _strip_comma(snbt, index, ']')
-            data = array_type(numpy.asarray(array, dtype=array_type.big_endian_data_type))
+            data = array_type(array)
         else:
             # list
             array = []

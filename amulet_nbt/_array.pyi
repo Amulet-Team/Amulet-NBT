@@ -1,7 +1,6 @@
-import numpy
 from ._value import BaseMutableTag
 
-class BaseArrayTag(BaseMutableTag, numpy.ndarray):
+class BaseArrayTag(BaseMutableTag):
     def __init__(self, value=()): ...
 
 class ByteArrayTag(BaseArrayTag): ...

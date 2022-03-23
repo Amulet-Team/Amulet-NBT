@@ -1,6 +1,6 @@
 from io import BytesIO
 import re
-from typing import Iterator, List
+from typing import Iterator
 from copy import copy, deepcopy
 
 from ._value cimport BaseTag, BaseMutableTag

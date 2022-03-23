@@ -15,7 +15,9 @@ class TestString(unittest.TestCase):
         """Check if the files have been baked out."""
         for file in TempitaManager().files:
             if file.changed:
-                raise self.failureException(f"Tempita file {file.rel_path} has not been compiled.")
+                raise self.failureException(
+                    f"Tempita file {file.rel_path} has not been compiled."
+                )
 
 
 if __name__ == "__main__":

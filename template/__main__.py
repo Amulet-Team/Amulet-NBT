@@ -1,4 +1,4 @@
-from template.tempita import build
+from template.tempita import TempitaManager
 
 if __name__ == "__main__":
-    build()
+    TempitaManager.build()

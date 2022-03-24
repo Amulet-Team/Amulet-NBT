@@ -2,19 +2,11 @@
         return str(self.value_)
 
     def __eq__({{cls_name}} self, other):
-        return self.value_ == other
-
-    def __ge__({{cls_name}} self, other):
-        return self.value_ >= other
-
-    def __gt__({{cls_name}} self, other):
-        return self.value_ > other
-
-    def __le__({{cls_name}} self, other):
-        return self.value_ <= other
-
-    def __lt__({{cls_name}} self, other):
-        return self.value_ < other
+        cdef {{cls_name}} other_
+        if isinstance(other, {{cls_name}}):
+            other_ = other
+            return self.value_ == other_.value_
+        return False
 
     def __reduce__({{cls_name}} self):
         return self.__class__, (self.value_,)

@@ -310,9 +310,6 @@ cdef class ByteArrayTag(BaseArrayTag):
     def __str__(ByteArrayTag self):
         return str(self.value_)
 
-    def __dir__(ByteArrayTag self):
-        return list(set(list(super().__dir__()) + dir(self.value_)))
-
     def __eq__(ByteArrayTag self, other):
         return self.value_ == other
 
@@ -679,9 +676,6 @@ cdef class IntArrayTag(BaseArrayTag):
     def __str__(IntArrayTag self):
         return str(self.value_)
 
-    def __dir__(IntArrayTag self):
-        return list(set(list(super().__dir__()) + dir(self.value_)))
-
     def __eq__(IntArrayTag self, other):
         return self.value_ == other
 
@@ -1047,9 +1041,6 @@ cdef class LongArrayTag(BaseArrayTag):
 
     def __str__(LongArrayTag self):
         return str(self.value_)
-
-    def __dir__(LongArrayTag self):
-        return list(set(list(super().__dir__()) + dir(self.value_)))
 
     def __eq__(LongArrayTag self, other):
         return self.value_ == other

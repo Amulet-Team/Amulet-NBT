@@ -136,9 +136,6 @@ cdef class ByteTag(BaseIntTag):
     def __str__(ByteTag self):
         return str(self.value_)
 
-    def __dir__(ByteTag self):
-        return list(set(list(super().__dir__()) + dir(self.value_)))
-
     def __eq__(ByteTag self, other):
         return self.value_ == other
 
@@ -444,9 +441,6 @@ cdef class ShortTag(BaseIntTag):
 
     def __str__(ShortTag self):
         return str(self.value_)
-
-    def __dir__(ShortTag self):
-        return list(set(list(super().__dir__()) + dir(self.value_)))
 
     def __eq__(ShortTag self, other):
         return self.value_ == other
@@ -754,9 +748,6 @@ cdef class IntTag(BaseIntTag):
     def __str__(IntTag self):
         return str(self.value_)
 
-    def __dir__(IntTag self):
-        return list(set(list(super().__dir__()) + dir(self.value_)))
-
     def __eq__(IntTag self, other):
         return self.value_ == other
 
@@ -1062,9 +1053,6 @@ cdef class LongTag(BaseIntTag):
 
     def __str__(LongTag self):
         return str(self.value_)
-
-    def __dir__(LongTag self):
-        return list(set(list(super().__dir__()) + dir(self.value_)))
 
     def __eq__(LongTag self, other):
         return self.value_ == other

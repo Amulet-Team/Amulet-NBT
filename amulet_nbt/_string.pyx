@@ -189,9 +189,6 @@ cdef class StringTag(BaseImmutableTag):
     def __str__(StringTag self):
         return str(self.value_)
 
-    def __dir__(StringTag self):
-        return list(set(list(super().__dir__()) + dir(self.value_)))
-
     def __eq__(StringTag self, other):
         return self.value_ == other
 

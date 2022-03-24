@@ -70,9 +70,6 @@ cdef class CompoundTag(BaseMutableTag):
     def __str__(CompoundTag self):
         return str(self.value_)
 
-    def __dir__(CompoundTag self):
-        return list(set(list(super().__dir__()) + dir(self.value_)))
-
     def __eq__(CompoundTag self, other):
         return self.value_ == other
 

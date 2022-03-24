@@ -54,9 +54,6 @@ cdef class FloatTag(BaseFloatTag):
     def __str__(FloatTag self):
         return str(self.value_)
 
-    def __dir__(FloatTag self):
-        return list(set(list(super().__dir__()) + dir(self.value_)))
-
     def __eq__(FloatTag self, other):
         return self.value_ == other
 
@@ -243,9 +240,6 @@ cdef class DoubleTag(BaseFloatTag):
 
     def __str__(DoubleTag self):
         return str(self.value_)
-
-    def __dir__(DoubleTag self):
-        return list(set(list(super().__dir__()) + dir(self.value_)))
 
     def __eq__(DoubleTag self, other):
         return self.value_ == other

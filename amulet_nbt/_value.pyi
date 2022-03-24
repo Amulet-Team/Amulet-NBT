@@ -21,8 +21,6 @@ class BaseTag:
         raise NotImplementedError
     def __str__(self) -> str:
         raise NotImplementedError
-    def __dir__(self) -> List[str]:
-        raise NotImplementedError
     def __eq__(self, other) -> bool:
         raise NotImplementedError
     def strict_equals(self, other) -> bool: ...

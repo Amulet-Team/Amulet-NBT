@@ -66,9 +66,6 @@ cdef class ListTag(BaseMutableTag):
     def __str__(ListTag self):
         return str(self.value_)
 
-    def __dir__(ListTag self):
-        return list(set(list(super().__dir__()) + dir(self.value_)))
-
     def __eq__(ListTag self, other):
         return self.value_ == other
 

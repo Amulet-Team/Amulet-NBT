@@ -42,13 +42,13 @@ cdef class {{dtype.capitalize()}}ArrayTag(BaseArrayTag):
     @property
     def shape(self):
 {{get_clean_docstring(numpy.ndarray.shape)}}
-        return tuple(self.value_.shape[i] for i in range(self.value_.ndim))
+        return (self.value_.shape[0],)
     # shape.__doc__ = numpy.ndarray.shape.__doc__
 
     @property
     def strides(self):
 {{get_clean_docstring(numpy.ndarray.strides)}}
-        return tuple(self.value_.strides[i] for i in range(self.value_.ndim))
+        return (self.value_.strides[0],)
     # strides.__doc__ = numpy.ndarray.strides.__doc__
 
     def __repr__({{dtype.capitalize()}}ArrayTag self):
@@ -225,17 +225,17 @@ cdef class {{dtype.capitalize()}}ArrayTag(BaseArrayTag):
         return {{native_data_type}}
 
     @property
-    def itemsize(self):
+    def itemsize(self) -> int:
         return {{width}}
 
     @property
-    def size(self):
+    def size(self) -> int:
         return self.value_.size
 
     @property
-    def nbytes(self):
+    def nbytes(self) -> int:
         return self.itemsize * self.size
 
     @property
-    def ndim(self):
+    def ndim(self) -> int:
         return 1

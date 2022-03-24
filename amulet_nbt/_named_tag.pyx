@@ -25,6 +25,7 @@ from ._dtype import AnyNBT
 
 cdef class BaseNamedTag:
     TagCls: Type[BaseTag] = None
+    tag: BaseTag
 
     def __init__(self, BaseTag tag = None, str name = ""):
         if tag is None:

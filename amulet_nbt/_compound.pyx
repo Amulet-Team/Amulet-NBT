@@ -105,8 +105,6 @@ cdef class CompoundTag(BaseMutableTag):
         """
         return copy(self.value_)
 
-    __hash__ = None
-
     @staticmethod
     def fromkeys(object keys, BaseTag value=None):
         cdef dict dict_value = dict.fromkeys(keys, value)

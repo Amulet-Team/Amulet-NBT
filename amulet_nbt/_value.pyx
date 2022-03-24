@@ -202,16 +202,14 @@ cdef class BaseTag:
     def __copy__(self):
         raise NotImplementedError
 
-    def __hash__(self):
-        raise NotImplementedError
-
 
 BaseValueType = BaseTag
 
 
 cdef class BaseImmutableTag(BaseTag):
-    pass
+    def __hash__(self):
+        raise NotImplementedError
 
 
 cdef class BaseMutableTag(BaseTag):
-    pass
+    __hash__ = None

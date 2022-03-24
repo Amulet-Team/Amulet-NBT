@@ -8,5 +8,3 @@
         Use the public API to modify the data within the class.
         """
         return copy(self.value_)
-
-    __hash__ = None

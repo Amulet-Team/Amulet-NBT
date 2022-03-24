@@ -101,8 +101,6 @@ cdef class ListTag(BaseMutableTag):
         """
         return copy(self.value_)
 
-    __hash__ = None
-
     cdef void _check_tag(ListTag self, BaseTag value, bint fix_if_empty=True) except *:
         if value is None:
             raise TypeError("List values must be NBT Tags")

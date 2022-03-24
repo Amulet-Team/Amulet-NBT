@@ -344,8 +344,6 @@ cdef class ByteArrayTag(BaseArrayTag):
         Use the public API to modify the data within the class.
         """
         return copy(self.value_)
-
-    __hash__ = None
     @property
     def shape(self):
         """
@@ -715,8 +713,6 @@ cdef class IntArrayTag(BaseArrayTag):
         Use the public API to modify the data within the class.
         """
         return copy(self.value_)
-
-    __hash__ = None
     @property
     def shape(self):
         """
@@ -1086,8 +1082,6 @@ cdef class LongArrayTag(BaseArrayTag):
         Use the public API to modify the data within the class.
         """
         return copy(self.value_)
-
-    __hash__ = None
     @property
     def shape(self):
         """

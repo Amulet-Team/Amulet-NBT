@@ -24,22 +24,12 @@ class BaseTag:
     def __eq__(self, other) -> bool:
         raise NotImplementedError
     def strict_equals(self, other) -> bool: ...
-    def __ge__(self, other) -> bool:
-        raise NotImplementedError
-    def __gt__(self, other) -> bool:
-        raise NotImplementedError
-    def __le__(self, other) -> bool:
-        raise NotImplementedError
-    def __lt__(self, other) -> bool:
-        raise NotImplementedError
     def __reduce__(self):
         raise NotImplementedError
     def copy(self) -> AnyNBT: ...
     def __deepcopy__(self, memo=None):
         raise NotImplementedError
     def __copy__(self):
-        raise NotImplementedError
-    def __hash__(self):
         raise NotImplementedError
 
 class BaseImmutableTag(BaseTag):

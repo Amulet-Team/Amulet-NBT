@@ -177,18 +177,6 @@ cdef class BaseTag:
         """
         return isinstance(other, self.__class__) and self.tag_id == other.tag_id and self == other
 
-    def __ge__(self, other):
-        raise NotImplementedError
-
-    def __gt__(self, other):
-        raise NotImplementedError
-
-    def __le__(self, other):
-        raise NotImplementedError
-
-    def __lt__(self, other):
-        raise NotImplementedError
-
     def __reduce__(self):
         raise NotImplementedError
 

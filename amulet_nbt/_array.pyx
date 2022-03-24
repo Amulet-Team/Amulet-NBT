@@ -311,19 +311,11 @@ cdef class ByteArrayTag(BaseArrayTag):
         return str(self.value_)
 
     def __eq__(ByteArrayTag self, other):
-        return self.value_ == other
-
-    def __ge__(ByteArrayTag self, other):
-        return self.value_ >= other
-
-    def __gt__(ByteArrayTag self, other):
-        return self.value_ > other
-
-    def __le__(ByteArrayTag self, other):
-        return self.value_ <= other
-
-    def __lt__(ByteArrayTag self, other):
-        return self.value_ < other
+        cdef ByteArrayTag other_
+        if isinstance(other, ByteArrayTag):
+            other_ = other
+            return self.value_ == other_.value_
+        return False
 
     def __reduce__(ByteArrayTag self):
         return self.__class__, (self.value_,)
@@ -407,19 +399,11 @@ cdef class IntArrayTag(BaseArrayTag):
         return str(self.value_)
 
     def __eq__(IntArrayTag self, other):
-        return self.value_ == other
-
-    def __ge__(IntArrayTag self, other):
-        return self.value_ >= other
-
-    def __gt__(IntArrayTag self, other):
-        return self.value_ > other
-
-    def __le__(IntArrayTag self, other):
-        return self.value_ <= other
-
-    def __lt__(IntArrayTag self, other):
-        return self.value_ < other
+        cdef IntArrayTag other_
+        if isinstance(other, IntArrayTag):
+            other_ = other
+            return self.value_ == other_.value_
+        return False
 
     def __reduce__(IntArrayTag self):
         return self.__class__, (self.value_,)
@@ -503,19 +487,11 @@ cdef class LongArrayTag(BaseArrayTag):
         return str(self.value_)
 
     def __eq__(LongArrayTag self, other):
-        return self.value_ == other
-
-    def __ge__(LongArrayTag self, other):
-        return self.value_ >= other
-
-    def __gt__(LongArrayTag self, other):
-        return self.value_ > other
-
-    def __le__(LongArrayTag self, other):
-        return self.value_ <= other
-
-    def __lt__(LongArrayTag self, other):
-        return self.value_ < other
+        cdef LongArrayTag other_
+        if isinstance(other, LongArrayTag):
+            other_ = other
+            return self.value_ == other_.value_
+        return False
 
     def __reduce__(LongArrayTag self):
         return self.__class__, (self.value_,)

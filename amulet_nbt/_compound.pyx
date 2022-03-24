@@ -71,19 +71,11 @@ cdef class CompoundTag(BaseMutableTag):
         return str(self.value_)
 
     def __eq__(CompoundTag self, other):
-        return self.value_ == other
-
-    def __ge__(CompoundTag self, other):
-        return self.value_ >= other
-
-    def __gt__(CompoundTag self, other):
-        return self.value_ > other
-
-    def __le__(CompoundTag self, other):
-        return self.value_ <= other
-
-    def __lt__(CompoundTag self, other):
-        return self.value_ < other
+        cdef CompoundTag other_
+        if isinstance(other, CompoundTag):
+            other_ = other
+            return self.value_ == other_.value_
+        return False
 
     def __reduce__(CompoundTag self):
         return self.__class__, (self.value_,)

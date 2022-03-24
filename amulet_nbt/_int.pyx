@@ -137,19 +137,11 @@ cdef class ByteTag(BaseIntTag):
         return str(self.value_)
 
     def __eq__(ByteTag self, other):
-        return self.value_ == other
-
-    def __ge__(ByteTag self, other):
-        return self.value_ >= other
-
-    def __gt__(ByteTag self, other):
-        return self.value_ > other
-
-    def __le__(ByteTag self, other):
-        return self.value_ <= other
-
-    def __lt__(ByteTag self, other):
-        return self.value_ < other
+        cdef ByteTag other_
+        if isinstance(other, ByteTag):
+            other_ = other
+            return self.value_ == other_.value_
+        return False
 
     def __reduce__(ByteTag self):
         return self.__class__, (self.value_,)
@@ -160,9 +152,6 @@ cdef class ByteTag(BaseIntTag):
     def __copy__(ByteTag self):
         return self.__class__(self.value_)
 
-    def __hash__(ByteTag self):
-        return hash((self.tag_id, self.value_))
-
     @property
     def py_data(ByteTag self):
         """
@@ -170,6 +159,37 @@ cdef class ByteTag(BaseIntTag):
         Use the public API to modify the data within the class.
         """
         return self.value_
+
+    def __hash__(ByteTag self):
+        return hash((self.tag_id, self.value_))
+
+    def __ge__(ByteTag self, other):
+        cdef ByteTag other_
+        if isinstance(other, ByteTag):
+            other_ = other
+            return self.value_ >= other_.value_
+        return NotImplemented
+
+    def __gt__(ByteTag self, other):
+        cdef ByteTag other_
+        if isinstance(other, ByteTag):
+            other_ = other
+            return self.value_ > other_.value_
+        return NotImplemented
+
+    def __le__(ByteTag self, other):
+        cdef ByteTag other_
+        if isinstance(other, ByteTag):
+            other_ = other
+            return self.value_ <= other_.value_
+        return NotImplemented
+
+    def __lt__(ByteTag self, other):
+        cdef ByteTag other_
+        if isinstance(other, ByteTag):
+            other_ = other
+            return self.value_ < other_.value_
+        return NotImplemented
 
     def __repr__(ByteTag self):
         return f"{self.__class__.__name__}({self.value_})"
@@ -443,19 +463,11 @@ cdef class ShortTag(BaseIntTag):
         return str(self.value_)
 
     def __eq__(ShortTag self, other):
-        return self.value_ == other
-
-    def __ge__(ShortTag self, other):
-        return self.value_ >= other
-
-    def __gt__(ShortTag self, other):
-        return self.value_ > other
-
-    def __le__(ShortTag self, other):
-        return self.value_ <= other
-
-    def __lt__(ShortTag self, other):
-        return self.value_ < other
+        cdef ShortTag other_
+        if isinstance(other, ShortTag):
+            other_ = other
+            return self.value_ == other_.value_
+        return False
 
     def __reduce__(ShortTag self):
         return self.__class__, (self.value_,)
@@ -466,9 +478,6 @@ cdef class ShortTag(BaseIntTag):
     def __copy__(ShortTag self):
         return self.__class__(self.value_)
 
-    def __hash__(ShortTag self):
-        return hash((self.tag_id, self.value_))
-
     @property
     def py_data(ShortTag self):
         """
@@ -476,6 +485,37 @@ cdef class ShortTag(BaseIntTag):
         Use the public API to modify the data within the class.
         """
         return self.value_
+
+    def __hash__(ShortTag self):
+        return hash((self.tag_id, self.value_))
+
+    def __ge__(ShortTag self, other):
+        cdef ShortTag other_
+        if isinstance(other, ShortTag):
+            other_ = other
+            return self.value_ >= other_.value_
+        return NotImplemented
+
+    def __gt__(ShortTag self, other):
+        cdef ShortTag other_
+        if isinstance(other, ShortTag):
+            other_ = other
+            return self.value_ > other_.value_
+        return NotImplemented
+
+    def __le__(ShortTag self, other):
+        cdef ShortTag other_
+        if isinstance(other, ShortTag):
+            other_ = other
+            return self.value_ <= other_.value_
+        return NotImplemented
+
+    def __lt__(ShortTag self, other):
+        cdef ShortTag other_
+        if isinstance(other, ShortTag):
+            other_ = other
+            return self.value_ < other_.value_
+        return NotImplemented
 
     def __repr__(ShortTag self):
         return f"{self.__class__.__name__}({self.value_})"
@@ -749,19 +789,11 @@ cdef class IntTag(BaseIntTag):
         return str(self.value_)
 
     def __eq__(IntTag self, other):
-        return self.value_ == other
-
-    def __ge__(IntTag self, other):
-        return self.value_ >= other
-
-    def __gt__(IntTag self, other):
-        return self.value_ > other
-
-    def __le__(IntTag self, other):
-        return self.value_ <= other
-
-    def __lt__(IntTag self, other):
-        return self.value_ < other
+        cdef IntTag other_
+        if isinstance(other, IntTag):
+            other_ = other
+            return self.value_ == other_.value_
+        return False
 
     def __reduce__(IntTag self):
         return self.__class__, (self.value_,)
@@ -772,9 +804,6 @@ cdef class IntTag(BaseIntTag):
     def __copy__(IntTag self):
         return self.__class__(self.value_)
 
-    def __hash__(IntTag self):
-        return hash((self.tag_id, self.value_))
-
     @property
     def py_data(IntTag self):
         """
@@ -782,6 +811,37 @@ cdef class IntTag(BaseIntTag):
         Use the public API to modify the data within the class.
         """
         return self.value_
+
+    def __hash__(IntTag self):
+        return hash((self.tag_id, self.value_))
+
+    def __ge__(IntTag self, other):
+        cdef IntTag other_
+        if isinstance(other, IntTag):
+            other_ = other
+            return self.value_ >= other_.value_
+        return NotImplemented
+
+    def __gt__(IntTag self, other):
+        cdef IntTag other_
+        if isinstance(other, IntTag):
+            other_ = other
+            return self.value_ > other_.value_
+        return NotImplemented
+
+    def __le__(IntTag self, other):
+        cdef IntTag other_
+        if isinstance(other, IntTag):
+            other_ = other
+            return self.value_ <= other_.value_
+        return NotImplemented
+
+    def __lt__(IntTag self, other):
+        cdef IntTag other_
+        if isinstance(other, IntTag):
+            other_ = other
+            return self.value_ < other_.value_
+        return NotImplemented
 
     def __repr__(IntTag self):
         return f"{self.__class__.__name__}({self.value_})"
@@ -1055,19 +1115,11 @@ cdef class LongTag(BaseIntTag):
         return str(self.value_)
 
     def __eq__(LongTag self, other):
-        return self.value_ == other
-
-    def __ge__(LongTag self, other):
-        return self.value_ >= other
-
-    def __gt__(LongTag self, other):
-        return self.value_ > other
-
-    def __le__(LongTag self, other):
-        return self.value_ <= other
-
-    def __lt__(LongTag self, other):
-        return self.value_ < other
+        cdef LongTag other_
+        if isinstance(other, LongTag):
+            other_ = other
+            return self.value_ == other_.value_
+        return False
 
     def __reduce__(LongTag self):
         return self.__class__, (self.value_,)
@@ -1078,9 +1130,6 @@ cdef class LongTag(BaseIntTag):
     def __copy__(LongTag self):
         return self.__class__(self.value_)
 
-    def __hash__(LongTag self):
-        return hash((self.tag_id, self.value_))
-
     @property
     def py_data(LongTag self):
         """
@@ -1088,6 +1137,37 @@ cdef class LongTag(BaseIntTag):
         Use the public API to modify the data within the class.
         """
         return self.value_
+
+    def __hash__(LongTag self):
+        return hash((self.tag_id, self.value_))
+
+    def __ge__(LongTag self, other):
+        cdef LongTag other_
+        if isinstance(other, LongTag):
+            other_ = other
+            return self.value_ >= other_.value_
+        return NotImplemented
+
+    def __gt__(LongTag self, other):
+        cdef LongTag other_
+        if isinstance(other, LongTag):
+            other_ = other
+            return self.value_ > other_.value_
+        return NotImplemented
+
+    def __le__(LongTag self, other):
+        cdef LongTag other_
+        if isinstance(other, LongTag):
+            other_ = other
+            return self.value_ <= other_.value_
+        return NotImplemented
+
+    def __lt__(LongTag self, other):
+        cdef LongTag other_
+        if isinstance(other, LongTag):
+            other_ = other
+            return self.value_ < other_.value_
+        return NotImplemented
 
     def __repr__(LongTag self):
         return f"{self.__class__.__name__}({self.value_})"

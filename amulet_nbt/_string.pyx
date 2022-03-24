@@ -190,19 +190,11 @@ cdef class StringTag(BaseImmutableTag):
         return str(self.value_)
 
     def __eq__(StringTag self, other):
-        return self.value_ == other
-
-    def __ge__(StringTag self, other):
-        return self.value_ >= other
-
-    def __gt__(StringTag self, other):
-        return self.value_ > other
-
-    def __le__(StringTag self, other):
-        return self.value_ <= other
-
-    def __lt__(StringTag self, other):
-        return self.value_ < other
+        cdef StringTag other_
+        if isinstance(other, StringTag):
+            other_ = other
+            return self.value_ == other_.value_
+        return False
 
     def __reduce__(StringTag self):
         return self.__class__, (self.value_,)
@@ -213,9 +205,6 @@ cdef class StringTag(BaseImmutableTag):
     def __copy__(StringTag self):
         return self.__class__(self.value_)
 
-    def __hash__(StringTag self):
-        return hash((self.tag_id, self.value_))
-
     @property
     def py_data(StringTag self):
         """
@@ -223,6 +212,37 @@ cdef class StringTag(BaseImmutableTag):
         Use the public API to modify the data within the class.
         """
         return self.value_
+
+    def __hash__(StringTag self):
+        return hash((self.tag_id, self.value_))
+
+    def __ge__(StringTag self, other):
+        cdef StringTag other_
+        if isinstance(other, StringTag):
+            other_ = other
+            return self.value_ >= other_.value_
+        return NotImplemented
+
+    def __gt__(StringTag self, other):
+        cdef StringTag other_
+        if isinstance(other, StringTag):
+            other_ = other
+            return self.value_ > other_.value_
+        return NotImplemented
+
+    def __le__(StringTag self, other):
+        cdef StringTag other_
+        if isinstance(other, StringTag):
+            other_ = other
+            return self.value_ <= other_.value_
+        return NotImplemented
+
+    def __lt__(StringTag self, other):
+        cdef StringTag other_
+        if isinstance(other, StringTag):
+            other_ = other
+            return self.value_ < other_.value_
+        return NotImplemented
 
     def join(StringTag self, iterable: Iterable[str]) -> str:
         return self.value_.join([str(s) for s in iterable])

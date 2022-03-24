@@ -67,19 +67,11 @@ cdef class ListTag(BaseMutableTag):
         return str(self.value_)
 
     def __eq__(ListTag self, other):
-        return self.value_ == other
-
-    def __ge__(ListTag self, other):
-        return self.value_ >= other
-
-    def __gt__(ListTag self, other):
-        return self.value_ > other
-
-    def __le__(ListTag self, other):
-        return self.value_ <= other
-
-    def __lt__(ListTag self, other):
-        return self.value_ < other
+        cdef ListTag other_
+        if isinstance(other, ListTag):
+            other_ = other
+            return self.value_ == other_.value_
+        return False
 
     def __reduce__(ListTag self):
         return self.__class__, (self.value_,)
@@ -207,11 +199,6 @@ cdef class ListTag(BaseMutableTag):
     def __imul__(ListTag self, other):
         self.value_ *= other
         return self
-
-    def __eq__(ListTag self, other):
-        if isinstance(other, BaseArrayTag):
-            return NotImplemented
-        return self.value_ == other
 
     cpdef bint strict_equals(ListTag self, other):
         """

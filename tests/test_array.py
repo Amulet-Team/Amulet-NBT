@@ -81,28 +81,57 @@ class TestArray(base_type_test.BaseTypeTest):
         pass
 
     def test_eq(self):
-        pass
+        for dtype1 in self.array_types:  # + (numpy.array,):
+            for dtype2 in self.array_types + (numpy.array,):
+                self.assertEqual(
+                    dtype1([-1, 1, 2, 3, 4, 5]), dtype2([-1, 1, 2, 3, 4, 5])
+                )
 
     def test_ge(self):
-        pass
+        for dtype1 in self.array_types + (numpy.array,):
+            for dtype2 in self.array_types + (numpy.array,):
+                a = dtype1([4, -1, 10, 4])
+                b = dtype2([1, 2, 3, 4])
+                numpy.testing.assert_array_equal([True, False, True, True], a >= b)
 
     def test_gt(self):
-        pass
+        for dtype1 in self.array_types + (numpy.array,):
+            for dtype2 in self.array_types + (numpy.array,):
+                a = dtype1([4, -1, 10, 4])
+                b = dtype2([1, 2, 3, 4])
+                numpy.testing.assert_array_equal([True, False, True, False], a > b)
 
     def test_le(self):
-        pass
+        for dtype1 in self.array_types + (numpy.array,):
+            for dtype2 in self.array_types + (numpy.array,):
+                a = dtype1([1, 2, 3, 4])
+                b = dtype2([4, -1, 10, 4])
+                numpy.testing.assert_array_equal([True, False, True, True], a <= b)
 
     def test_lt(self):
-        pass
+        for dtype1 in self.array_types + (numpy.array,):
+            for dtype2 in self.array_types + (numpy.array,):
+                a = dtype1([1, 2, 3, 4])
+                b = dtype2([4, -1, 10, 4])
+                numpy.testing.assert_array_equal([True, False, True, False], a < b)
 
     def test_shape(self):
-        pass
+        self.assertEqual((3,), ByteArrayTag([1, 2, 3]).shape)
+        self.assertEqual((3,), IntArrayTag([1, 2, 3]).shape)
+        self.assertEqual((3,), LongArrayTag([1, 2, 3]).shape)
 
     def test_strides(self):
-        pass
+        self.assertEqual((1,), ByteArrayTag([1, 2, 3]).strides)
+        self.assertEqual((4,), IntArrayTag([1, 2, 3]).strides)
+        self.assertEqual((8,), LongArrayTag([1, 2, 3]).strides)
+        self.assertEqual((2,), ByteArrayTag([1, 2, 3])[::2].strides)
+        self.assertEqual((8,), IntArrayTag([1, 2, 3])[::2].strides)
+        self.assertEqual((16,), LongArrayTag([1, 2, 3])[::2].strides)
 
     def test_getitem(self):
-        pass
+        self.assertEqual(2, ByteArrayTag([1, 2, 3])[1])
+        self.assertEqual(2, IntArrayTag([1, 2, 3])[1])
+        self.assertEqual(2, LongArrayTag([1, 2, 3])[1])
 
     def test_setitem(self):
         pass
@@ -111,7 +140,9 @@ class TestArray(base_type_test.BaseTypeTest):
         pass
 
     def test_len(self):
-        pass
+        self.assertEqual(3, len(ByteArrayTag([1, 2, 3])))
+        self.assertEqual(3, len(IntArrayTag([1, 2, 3])))
+        self.assertEqual(3, len(LongArrayTag([1, 2, 3])))
 
     def test_add(self):
         pass

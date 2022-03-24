@@ -3,7 +3,7 @@ from typing import Iterator, Any, Optional, Tuple
 from ._value import BaseMutableTag
 from ._dtype import AnyNBT
 
-class CompoundTag(BaseMutableTag, dict):
+class CompoundTag(BaseMutableTag):
     tag_id: int
     def __init__(self, value: Any = (), **kwvals: AnyNBT): ...
     @staticmethod

@@ -2,7 +2,7 @@ from typing import overload, Tuple
 
 from ._numeric import BaseNumericTag
 
-class BaseFloatTag(BaseNumericTag, float):
+class BaseFloatTag(BaseNumericTag):
     # type modifications from numeric
     def __add__(self, x: float) -> float:
         raise NotImplementedError

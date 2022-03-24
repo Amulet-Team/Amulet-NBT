@@ -16,7 +16,7 @@ Int = Union[int, "BaseIntTag"]
 Float = Union[float, BaseFloatTag]
 Str = Union[str, StringTag]
 
-class BaseIntTag(BaseNumericTag, int):
+class BaseIntTag(BaseNumericTag):
     # type modifications from numeric
     def __abs__(self) -> int:
         raise NotImplementedError

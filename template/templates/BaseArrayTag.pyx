@@ -43,10 +43,11 @@ cdef class {{dtype.capitalize()}}ArrayTag(BaseArrayTag):
         return f"{self.__class__.__name__}({list(self.value_)})"
 
     def __eq__({{dtype.capitalize()}}ArrayTag self, other):
-        warnings.warn("The behaviour of __eq__ on arrays will change in the future. You should use eq_other to ensure the return is always a bool.", FutureWarning)
-        if isinstance(other, (BaseArrayType, numpy.ndarray, list, tuple, ListTag)):
-            return numpy.array_equal(self.value_, other)
-        return NotImplemented
+        cdef {{dtype.capitalize()}}ArrayTag other_
+        if isinstance(other, {{dtype.capitalize()}}ArrayTag):
+            other_ = other
+            return numpy.array_equal(self.value_, other_.value_)
+        return False
 
     cpdef bint equals(self, other):
         return numpy.array_equal(self.value_, other)

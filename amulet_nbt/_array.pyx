@@ -93,10 +93,11 @@ cdef class ByteArrayTag(BaseArrayTag):
         return f"{self.__class__.__name__}({list(self.value_)})"
 
     def __eq__(ByteArrayTag self, other):
-        warnings.warn("The behaviour of __eq__ on arrays will change in the future. You should use eq_other to ensure the return is always a bool.", FutureWarning)
-        if isinstance(other, (BaseArrayType, numpy.ndarray, list, tuple, ListTag)):
-            return numpy.array_equal(self.value_, other)
-        return NotImplemented
+        cdef ByteArrayTag other_
+        if isinstance(other, ByteArrayTag):
+            other_ = other
+            return numpy.array_equal(self.value_, other_.value_)
+        return False
 
     cpdef bint equals(self, other):
         return numpy.array_equal(self.value_, other)
@@ -181,10 +182,11 @@ cdef class IntArrayTag(BaseArrayTag):
         return f"{self.__class__.__name__}({list(self.value_)})"
 
     def __eq__(IntArrayTag self, other):
-        warnings.warn("The behaviour of __eq__ on arrays will change in the future. You should use eq_other to ensure the return is always a bool.", FutureWarning)
-        if isinstance(other, (BaseArrayType, numpy.ndarray, list, tuple, ListTag)):
-            return numpy.array_equal(self.value_, other)
-        return NotImplemented
+        cdef IntArrayTag other_
+        if isinstance(other, IntArrayTag):
+            other_ = other
+            return numpy.array_equal(self.value_, other_.value_)
+        return False
 
     cpdef bint equals(self, other):
         return numpy.array_equal(self.value_, other)
@@ -269,12 +271,13 @@ cdef class LongArrayTag(BaseArrayTag):
         return f"{self.__class__.__name__}({list(self.value_)})"
 
     def __eq__(LongArrayTag self, other):
-        warnings.warn("The behaviour of __eq__ on arrays will change in the future. You should use eq_other to ensure the return is always a bool.", FutureWarning)
-        if isinstance(other, (BaseArrayType, numpy.ndarray, list, tuple, ListTag)):
-            return numpy.array_equal(self.value_, other)
-        return NotImplemented
+        cdef LongArrayTag other_
+        if isinstance(other, LongArrayTag):
+            other_ = other
+            return numpy.array_equal(self.value_, other_.value_)
+        return False
 
-    def eq_other(self, other):
+    cpdef bint equals(self, other):
         return numpy.array_equal(self.value_, other)
 
     def __getitem__(LongArrayTag self, item):
@@ -288,4 +291,3 @@ cdef class LongArrayTag(BaseArrayTag):
 
     def __len__(LongArrayTag self):
         return len(self.value_)
-

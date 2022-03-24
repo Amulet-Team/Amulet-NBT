@@ -2,6 +2,7 @@ import numpy
 cimport numpy
 from io import BytesIO
 from copy import copy, deepcopy
+import warnings
 
 from ._value cimport BaseMutableTag
 from ._const cimport CommaSpace, ID_BYTE_ARRAY, ID_INT_ARRAY, ID_LONG_ARRAY

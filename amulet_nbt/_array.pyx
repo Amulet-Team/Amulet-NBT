@@ -2,6 +2,7 @@ import numpy
 cimport numpy
 from io import BytesIO
 from copy import copy, deepcopy
+import warnings
 
 from ._value cimport BaseMutableTag
 from ._const cimport CommaSpace, ID_BYTE_ARRAY, ID_INT_ARRAY, ID_LONG_ARRAY
@@ -455,9 +456,13 @@ cdef class ByteArrayTag(BaseArrayTag):
         return f"{self.__class__.__name__}({list(self.value_)})"
 
     def __eq__(ByteArrayTag self, other):
+        warnings.warn("The behaviour of __eq__ on arrays will change in the future. You should use eq_other to ensure the return is always a bool.", FutureWarning)
         if isinstance(other, (BaseArrayType, numpy.ndarray, list, tuple, ListTag)):
             return numpy.array_equal(self.value_, other)
         return NotImplemented
+
+    def eq_other(self, other):
+        return numpy.array_equal(self.value_, other)
 
     def __getitem__(ByteArrayTag self, item):
         return self.value_.__getitem__(item)
@@ -822,9 +827,13 @@ cdef class IntArrayTag(BaseArrayTag):
         return f"{self.__class__.__name__}({list(self.value_)})"
 
     def __eq__(IntArrayTag self, other):
+        warnings.warn("The behaviour of __eq__ on arrays will change in the future. You should use eq_other to ensure the return is always a bool.", FutureWarning)
         if isinstance(other, (BaseArrayType, numpy.ndarray, list, tuple, ListTag)):
             return numpy.array_equal(self.value_, other)
         return NotImplemented
+
+    def eq_other(self, other):
+        return numpy.array_equal(self.value_, other)
 
     def __getitem__(IntArrayTag self, item):
         return self.value_.__getitem__(item)
@@ -1189,9 +1198,13 @@ cdef class LongArrayTag(BaseArrayTag):
         return f"{self.__class__.__name__}({list(self.value_)})"
 
     def __eq__(LongArrayTag self, other):
+        warnings.warn("The behaviour of __eq__ on arrays will change in the future. You should use eq_other to ensure the return is always a bool.", FutureWarning)
         if isinstance(other, (BaseArrayType, numpy.ndarray, list, tuple, ListTag)):
             return numpy.array_equal(self.value_, other)
         return NotImplemented
+
+    def eq_other(self, other):
+        return numpy.array_equal(self.value_, other)
 
     def __getitem__(LongArrayTag self, item):
         return self.value_.__getitem__(item)

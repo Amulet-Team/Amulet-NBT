@@ -154,6 +154,20 @@ cdef class BaseTag:
     def __eq__(self, other):
         raise NotImplementedError
 
+    def is_other(self, other):
+        """
+        Check if this object and the other object are the same.
+        Works like python's is operator however potential future changes may break that so you should use this instead.
+        """
+        return self is other
+
+    def eq_other(self, other):
+        """
+        Does all the data equal the other's data.
+        Works like the normal __eq__ method but always returns a bool.
+        """
+        return self == other
+
     cpdef bint strict_equals(self, other):
         """
         Does the data and data type match the other object.

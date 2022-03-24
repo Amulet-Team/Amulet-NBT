@@ -161,11 +161,6 @@ cdef class ListTag(BaseMutableTag):
         self.value_ *= other
         return self
 
-    def __eq__(ListTag self, other):
-        if isinstance(other, BaseArrayTag):
-            return NotImplemented
-        return self.value_ == other
-
     cpdef bint strict_equals(ListTag self, other):
         """
         Does the data and data type match the other object.

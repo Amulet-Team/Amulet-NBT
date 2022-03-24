@@ -151,17 +151,17 @@ cdef class BaseTag:
     def __str__(self):
         raise NotImplementedError
 
-    def __eq__(self, other):
-        raise NotImplementedError
-
-    def is_other(self, other):
+    cpdef bint is_other(self, other):
         """
         Check if this object and the other object are the same.
         Works like python's is operator however potential future changes may break that so you should use this instead.
         """
         return self is other
 
-    def eq_other(self, other):
+    def __eq__(self, other):
+        raise NotImplementedError
+
+    cpdef bint equals(self, other):
         """
         Does all the data equal the other's data.
         Works like the normal __eq__ method but always returns a bool.
@@ -175,7 +175,7 @@ cdef class BaseTag:
         :param other: The other object to compare with
         :return: True if the classes are identical, False otherwise.
         """
-        return isinstance(other, self.__class__) and self.tag_id == other.tag_id and self == other
+        return isinstance(other, self.__class__) and self == other
 
     def __reduce__(self):
         raise NotImplementedError

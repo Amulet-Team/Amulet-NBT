@@ -82,12 +82,14 @@ class BaseTypeTest(BaseTagsTest):
     def _test_init(self, cls, default, invalid=()):
         for tag_cls in self.this_types:
             # check init with no inputs
-            self.assertEqual(tag_cls(), default, msg=tag_cls.__name__)
+            self.assertEqual(tag_cls(), tag_cls(default), msg=tag_cls.__name__)
             # check init with valid inputs
             for val in self.values:
                 for tag in self._iter_tags(val):
                     self.assertEqual(
-                        tag_cls(tag), val, msg=f"{tag_cls.__name__}({repr(tag)})"
+                        tag_cls(tag),
+                        tag_cls(val),
+                        msg=f"{tag_cls.__name__}({repr(tag)})",
                     )
             # check init with various inputs. Should match the python behaviour.
             for inp in self.not_nbt + tuple(self._iter_instance()):

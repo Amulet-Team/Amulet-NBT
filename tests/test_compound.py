@@ -41,8 +41,11 @@ class TestCompound(base_type_test.BaseTypeTest):
         self._test_init(dict, {})
 
         for t in self.nbt_types:
-            self.assertEqual(CompoundTag({t.__name__: t()}), {t.__name__: t()})
-            self.assertEqual(CompoundTag(test=t()), {"test": t()})
+            self.assertNotEqual(CompoundTag({t.__name__: t()}), {t.__name__: t()})
+            self.assertEqual(
+                CompoundTag({t.__name__: t()}), CompoundTag({t.__name__: t()})
+            )
+            self.assertEqual(CompoundTag(test=t()), CompoundTag({"test": t()}))
 
         CompoundTag({"key": IntTag()})
         with self.assertRaises(TypeError):
@@ -66,28 +69,50 @@ class TestCompound(base_type_test.BaseTypeTest):
         }
         c1 = CompoundTag(d)
         c2 = CompoundTag(c1)
-        self.assertEqual(d, c1)
-        self.assertEqual(d, c2)
+        self.assertEqual(d, c1.py_data)
+        self.assertEqual(c1, c2)
         self.assertIsNot(c1, c2)
 
     def test_equal(self):
         c = CompoundTag()
-        c["key"] = IntTag()
-        for tag in (int,) + self.numerical_types:
-            self.assertEqual(c, {"key": tag()})
-            self.assertNotEqual(c, {"key": tag(5)})
-            self.assertFalse(c.strict_equals({"key": tag()}))
-        for tag in self.numerical_types:
-            if tag is IntTag:
-                self.assertTrue(c.strict_equals(CompoundTag({"key": tag()})))
-            else:
-                self.assertFalse(c.strict_equals(CompoundTag({"key": tag()})))
+        c["byte"] = ByteTag()
+        c["short"] = ShortTag()
+        c["int"] = IntTag()
+        c["long"] = LongTag()
+        c["float"] = FloatTag()
+        c["double"] = DoubleTag()
+        c["string"] = StringTag()
+        c["list"] = ListTag()
+        c["compound"] = CompoundTag()
+        c["byte_array"] = ByteArrayTag()
+        c["int_array"] = IntArrayTag()
+        c["long_array"] = LongArrayTag()
+
+        self.assertEqual(
+            c,
+            CompoundTag(
+                {
+                    "byte": ByteTag(),
+                    "short": ShortTag(),
+                    "int": IntTag(),
+                    "long": LongTag(),
+                    "float": FloatTag(),
+                    "double": DoubleTag(),
+                    "string": StringTag(),
+                    "list": ListTag(),
+                    "compound": CompoundTag(),
+                    "byte_array": ByteArrayTag(),
+                    "int_array": IntArrayTag(),
+                    "long_array": LongArrayTag(),
+                }
+            ),
+        )
 
     def test_clear(self):
         c = CompoundTag(self.full_dict)
-        self.assertEqual(c, self.full_dict)
+        self.assertEqual(c, CompoundTag(self.full_dict))
         c.clear()
-        self.assertEqual(c, {})
+        self.assertEqual(c, CompoundTag({}))
 
     def test_fromkeys(self):
         c = CompoundTag.fromkeys(("a", "b"), StringTag("test"))
@@ -121,10 +146,10 @@ class TestCompound(base_type_test.BaseTypeTest):
         self.assertEqual(next(it), "key2")
         self.assertEqual(next(it), "key3")
 
-        self.assertEqual(list(d), list(c))
         self.assertIsInstance(list(c), list)
-        self.assertEqual(dict(d), dict(c))
+        self.assertEqual(list(d), list(c))
         self.assertIsInstance(dict(c), dict)
+        self.assertEqual(dict(d), dict(c))
 
     def test_keys(self):
         d = {
@@ -163,10 +188,12 @@ class TestCompound(base_type_test.BaseTypeTest):
         self.assertEqual(c.pop("key1"), StringTag("val1"))
         self.assertEqual(
             c,
-            {
-                "key2": StringTag("val2"),
-                "key3": StringTag("val3"),
-            },
+            CompoundTag(
+                {
+                    "key2": StringTag("val2"),
+                    "key3": StringTag("val3"),
+                }
+            ),
         )
         with self.assertRaises(KeyError):
             c.pop("key1")
@@ -179,18 +206,26 @@ class TestCompound(base_type_test.BaseTypeTest):
                 "key1": StringTag("val1"),
             }
         )
-        with self.assertRaises(Exception):
-            c.setdefault("key1")
+
+        # invalid keys
         with self.assertRaises(TypeError):
-            c.setdefault(None, "val1")
+            c.setdefault(None, StringTag("val1"))
         with self.assertRaises(TypeError):
-            c.setdefault("key1", None)
+            c.setdefault(StringTag("key2"), StringTag("val1"))
+
+        # invalid values
         with self.assertRaises(TypeError):
-            c.setdefault("key1", "val1")
-        self.assertEqual(c.setdefault("key1", StringTag("val2")), "val1")
-        self.assertEqual(c["key1"], "val1")
-        self.assertEqual(c.setdefault("key2", StringTag("val2")), "val2")
-        self.assertEqual(c["key2"], "val2")
+            c.setdefault("key2")
+        with self.assertRaises(TypeError):
+            c.setdefault("key2", None)
+        with self.assertRaises(TypeError):
+            c.setdefault("key2", "val1")
+
+        self.assertEqual(StringTag("val1"), c.setdefault("key1"))
+        self.assertEqual(StringTag("val1"), c.setdefault("key1", StringTag("val2")))
+        self.assertEqual(StringTag("val1"), c["key1"])
+        self.assertEqual(StringTag("val2"), c.setdefault("key2", StringTag("val2")))
+        self.assertEqual(StringTag("val2"), c["key2"])
 
     def test_update(self):
         c = CompoundTag()
@@ -209,53 +244,61 @@ class TestCompound(base_type_test.BaseTypeTest):
             "key3": StringTag("val3"),
         }
         c.update(d)
-        self.assertEqual(c, d)
+        self.assertEqual(CompoundTag(d), c)
 
         c.update({"key4": StringTag("val4")})
         self.assertEqual(
+            CompoundTag(
+                {
+                    "key1": StringTag("val1"),
+                    "key2": StringTag("val2"),
+                    "key3": StringTag("val3"),
+                    "key4": StringTag("val4"),
+                }
+            ),
             c,
-            {
-                "key1": StringTag("val1"),
-                "key2": StringTag("val2"),
-                "key3": StringTag("val3"),
-                "key4": StringTag("val4"),
-            },
         )
         c.update(key5=StringTag("val5"))
         self.assertEqual(
+            CompoundTag(
+                {
+                    "key1": StringTag("val1"),
+                    "key2": StringTag("val2"),
+                    "key3": StringTag("val3"),
+                    "key4": StringTag("val4"),
+                    "key5": StringTag("val5"),
+                }
+            ),
             c,
-            {
-                "key1": StringTag("val1"),
-                "key2": StringTag("val2"),
-                "key3": StringTag("val3"),
-                "key4": StringTag("val4"),
-                "key5": StringTag("val5"),
-            },
         )
         c.update({"key6": StringTag("val6")}, key7=StringTag("val7"))
         self.assertEqual(
+            CompoundTag(
+                {
+                    "key1": StringTag("val1"),
+                    "key2": StringTag("val2"),
+                    "key3": StringTag("val3"),
+                    "key4": StringTag("val4"),
+                    "key5": StringTag("val5"),
+                    "key6": StringTag("val6"),
+                    "key7": StringTag("val7"),
+                }
+            ),
             c,
-            {
-                "key1": StringTag("val1"),
-                "key2": StringTag("val2"),
-                "key3": StringTag("val3"),
-                "key4": StringTag("val4"),
-                "key5": StringTag("val5"),
-                "key6": StringTag("val6"),
-                "key7": StringTag("val7"),
-            },
         )
-        d = {
-            "key1": StringTag("val8"),
-            "key2": StringTag("val9"),
-            "key3": StringTag("val10"),
-            "key4": StringTag("val11"),
-            "key5": StringTag("val12"),
-            "key6": StringTag("val13"),
-            "key7": StringTag("val14"),
-        }
+        d = CompoundTag(
+            {
+                "key1": StringTag("val8"),
+                "key2": StringTag("val9"),
+                "key3": StringTag("val10"),
+                "key4": StringTag("val11"),
+                "key5": StringTag("val12"),
+                "key6": StringTag("val13"),
+                "key7": StringTag("val14"),
+            }
+        )
         c.update(d)
-        self.assertEqual(c, d)
+        self.assertEqual(CompoundTag(d), c)
 
     def test_contains(self):
         c = CompoundTag(
@@ -266,11 +309,11 @@ class TestCompound(base_type_test.BaseTypeTest):
         self.assertIn("key1", c)
         self.assertNotIn("key2", c)
         for not_nbt in self.not_nbt:
-            if isinstance(not_nbt, (list, dict, set)):
+            if isinstance(not_nbt, str):
+                self.assertNotIn(not_nbt, c)
+            else:
                 with self.assertRaises(TypeError, msg=not_nbt):
                     not_nbt in c
-            else:
-                self.assertNotIn(not_nbt, c)
 
     def test_delitem(self):
         c = CompoundTag(
@@ -282,9 +325,11 @@ class TestCompound(base_type_test.BaseTypeTest):
         del c["key1"]
         self.assertEqual(
             c,
-            {
-                "key2": StringTag("val2"),
-            },
+            CompoundTag(
+                {
+                    "key2": StringTag("val2"),
+                }
+            ),
         )
 
     def test_getitem(self):
@@ -294,8 +339,8 @@ class TestCompound(base_type_test.BaseTypeTest):
                 "key2": StringTag("val2"),
             }
         )
-        self.assertEqual(c["key1"], "val1")
-        self.assertEqual(c["key2"], "val2")
+        self.assertEqual(c["key1"], StringTag("val1"))
+        self.assertEqual(c["key2"], StringTag("val2"))
 
         for not_nbt in self.not_nbt:
             # keys must be strings
@@ -309,7 +354,7 @@ class TestCompound(base_type_test.BaseTypeTest):
     def test_setitem(self):
         c = CompoundTag()
         c["key"] = StringTag("val")
-        self.assertEqual(c, {"key": "val"})
+        self.assertEqual(c, CompoundTag({"key": StringTag("val")}))
 
         for not_nbt in self.not_nbt:
             # keys must be strings
@@ -332,19 +377,6 @@ class TestCompound(base_type_test.BaseTypeTest):
                 )
             ),
             3,
-        )
-
-    @unittest.skipUnless(sys.version_info >= (3, 8), "dicts are ")
-    def test_reversed(self):
-        d = {
-            "key1": StringTag("val1"),
-            "key2": StringTag("val2"),
-            "key3": StringTag("val3"),
-        }
-        c = CompoundTag(d)
-        self.assertEqual(
-            list(reversed(d)),
-            list(reversed(c)),
         )
 
     def test_hash(self):

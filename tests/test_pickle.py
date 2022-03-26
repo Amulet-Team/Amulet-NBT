@@ -3,6 +3,8 @@ import pickle
 import numpy
 from amulet_nbt import (
     BaseTag,
+    BaseIntTag,
+    BaseArrayTag,
     ByteTag,
     ShortTag,
     IntTag,
@@ -39,7 +41,9 @@ class PickleNBTTests(unittest.TestCase):
             numpy.testing.assert_array_equal(tag.py_data, tag.py_data)
         else:
             self.assertEqual(tag.py_data, tag.py_data)
-        if not isinstance(tag.py_data, (int, str)):
+        if isinstance(tag, (BaseIntTag, StringTag, BaseArrayTag)):
+            self.assertIs(tag.py_data, tag.py_data)
+        else:
             self.assertIsNot(tag.py_data, tag.py_data)
 
     def test_pickle(self):

@@ -25,32 +25,6 @@ cdef class FloatTag(BaseFloatTag):
     def __init__(FloatTag self, value = 0):
         self.value_ = float(value)
 
-    def as_integer_ratio(self):
-        return self.value_.as_integer_ratio()
-    as_integer_ratio.__doc__ = float.as_integer_ratio.__doc__
-    
-    def conjugate(self):
-        return self.value_.conjugate()
-    conjugate.__doc__ = float.conjugate.__doc__
-    
-    def hex(self):
-        return self.value_.hex()
-    hex.__doc__ = float.hex.__doc__
-    
-    @property
-    def imag(self):
-        """the imaginary part of a complex number"""
-        return self.value_.imag
-    
-    def is_integer(self):
-        return self.value_.is_integer()
-    is_integer.__doc__ = float.is_integer.__doc__
-    
-    @property
-    def real(self):
-        """the real part of a complex number"""
-        return self.value_.real
-    
     def __str__(FloatTag self):
         return str(self.value_)
 
@@ -112,122 +86,11 @@ cdef class FloatTag(BaseFloatTag):
     def __repr__(FloatTag self):
         return f"{self.__class__.__name__}({self.value_})"
 
-    def __add__(FloatTag self, other):
-        return self.value_ + other
-
-    def __radd__(FloatTag self, other):
-        return other + self.value_
-
-    def __iadd__(FloatTag self, other):
-        res = self + other
-        if isinstance(res, (int, float)):
-            return self.__class__(res)
-        return res
-
-    def __sub__(FloatTag self, other):
-        return self.value_ - other
-
-    def __rsub__(FloatTag self, other):
-        return other - self.value_
-
-    def __isub__(FloatTag self, other):
-        res = self - other
-        if isinstance(res, (int, float)):
-            return self.__class__(res)
-        return res
-
-    def __mul__(FloatTag self, other):
-        return self.value_ * other
-
-    def __rmul__(FloatTag self, other):
-        return other * self.value_
-
-    def __imul__(FloatTag self, other):
-        res = self * other
-        if isinstance(res, (int, float)):
-            return self.__class__(res)
-        return res
-
-    def __truediv__(FloatTag self, other):
-        return self.value_ / other
-
-    def __rtruediv__(FloatTag self, other):
-        return other / self.value_
-
-    def __itruediv__(FloatTag self, other):
-        res = self / other
-        if isinstance(res, (int, float)):
-            return self.__class__(res)
-        return res
-
-    def __floordiv__(FloatTag self, other):
-        return self.value_ // other
-
-    def __rfloordiv__(FloatTag self, other):
-        return other // self.value_
-
-    def __ifloordiv__(FloatTag self, other):
-        res = self // other
-        if isinstance(res, (int, float)):
-            return self.__class__(res)
-        return res
-
-    def __mod__(FloatTag self, other):
-        return self.value_ % other
-
-    def __rmod__(FloatTag self, other):
-        return other % self.value_
-
-    def __imod__(FloatTag self, other):
-        res = self % other
-        if isinstance(res, (int, float)):
-            return self.__class__(res)
-        return res
-
-    def __divmod__(FloatTag self, other):
-        return divmod(self.value_, other)
-
-    def __rdivmod__(FloatTag self, other):
-        return divmod(other, self.value_)
-
-    def __pow__(FloatTag self, power, modulo):
-        return pow(self.value_, power, modulo)
-
-    def __rpow__(FloatTag self, other, modulo):
-        return pow(other, self.value_, modulo)
-
-    def __ipow__(FloatTag self, other):
-        res = pow(self, other)
-        if isinstance(res, (int, float)):
-            return self.__class__(res)
-        return res
-
-    def __neg__(FloatTag self):
-        return self.value_.__neg__()
-
-    def __pos__(FloatTag self):
-        return self.value_.__pos__()
-
-    def __abs__(FloatTag self):
-        return self.value_.__abs__()
-
     def __int__(FloatTag self):
         return self.value_.__int__()
 
     def __float__(FloatTag self):
         return self.value_.__float__()
-
-    def __round__(FloatTag self, n=None):
-        return round(self.value_, n)
-
-    def __trunc__(FloatTag self):
-        return self.value_.__trunc__()
-
-    def __floor__(FloatTag self):
-        return floor(self.value_)
-
-    def __ceil__(FloatTag self):
-        return ceil(self.value_)
 
     def __bool__(FloatTag self):
         return self.value_.__bool__()
@@ -319,122 +182,11 @@ cdef class DoubleTag(BaseFloatTag):
     def __repr__(DoubleTag self):
         return f"{self.__class__.__name__}({self.value_})"
 
-    def __add__(DoubleTag self, other):
-        return self.value_ + other
-
-    def __radd__(DoubleTag self, other):
-        return other + self.value_
-
-    def __iadd__(DoubleTag self, other):
-        res = self + other
-        if isinstance(res, (int, float)):
-            return self.__class__(res)
-        return res
-
-    def __sub__(DoubleTag self, other):
-        return self.value_ - other
-
-    def __rsub__(DoubleTag self, other):
-        return other - self.value_
-
-    def __isub__(DoubleTag self, other):
-        res = self - other
-        if isinstance(res, (int, float)):
-            return self.__class__(res)
-        return res
-
-    def __mul__(DoubleTag self, other):
-        return self.value_ * other
-
-    def __rmul__(DoubleTag self, other):
-        return other * self.value_
-
-    def __imul__(DoubleTag self, other):
-        res = self * other
-        if isinstance(res, (int, float)):
-            return self.__class__(res)
-        return res
-
-    def __truediv__(DoubleTag self, other):
-        return self.value_ / other
-
-    def __rtruediv__(DoubleTag self, other):
-        return other / self.value_
-
-    def __itruediv__(DoubleTag self, other):
-        res = self / other
-        if isinstance(res, (int, float)):
-            return self.__class__(res)
-        return res
-
-    def __floordiv__(DoubleTag self, other):
-        return self.value_ // other
-
-    def __rfloordiv__(DoubleTag self, other):
-        return other // self.value_
-
-    def __ifloordiv__(DoubleTag self, other):
-        res = self // other
-        if isinstance(res, (int, float)):
-            return self.__class__(res)
-        return res
-
-    def __mod__(DoubleTag self, other):
-        return self.value_ % other
-
-    def __rmod__(DoubleTag self, other):
-        return other % self.value_
-
-    def __imod__(DoubleTag self, other):
-        res = self % other
-        if isinstance(res, (int, float)):
-            return self.__class__(res)
-        return res
-
-    def __divmod__(DoubleTag self, other):
-        return divmod(self.value_, other)
-
-    def __rdivmod__(DoubleTag self, other):
-        return divmod(other, self.value_)
-
-    def __pow__(DoubleTag self, power, modulo):
-        return pow(self.value_, power, modulo)
-
-    def __rpow__(DoubleTag self, other, modulo):
-        return pow(other, self.value_, modulo)
-
-    def __ipow__(DoubleTag self, other):
-        res = pow(self, other)
-        if isinstance(res, (int, float)):
-            return self.__class__(res)
-        return res
-
-    def __neg__(DoubleTag self):
-        return self.value_.__neg__()
-
-    def __pos__(DoubleTag self):
-        return self.value_.__pos__()
-
-    def __abs__(DoubleTag self):
-        return self.value_.__abs__()
-
     def __int__(DoubleTag self):
         return self.value_.__int__()
 
     def __float__(DoubleTag self):
         return self.value_.__float__()
-
-    def __round__(DoubleTag self, n=None):
-        return round(self.value_, n)
-
-    def __trunc__(DoubleTag self):
-        return self.value_.__trunc__()
-
-    def __floor__(DoubleTag self):
-        return floor(self.value_)
-
-    def __ceil__(DoubleTag self):
-        return ceil(self.value_)
 
     def __bool__(DoubleTag self):
         return self.value_.__bool__()

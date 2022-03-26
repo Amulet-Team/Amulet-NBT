@@ -31,57 +31,6 @@ cdef class BaseIntTag(BaseNumericTag):
     ) -> BaseIntTag:
         raise NotImplementedError
 
-    def __and__(BaseIntTag self, other):
-        raise NotImplementedError
-
-    def __rand__(BaseIntTag self, other):
-        raise NotImplementedError
-
-    def __iand__(BaseIntTag self, other):
-        raise NotImplementedError
-
-    def __xor__(BaseIntTag self, other):
-        raise NotImplementedError
-
-    def __rxor__(BaseIntTag self, other):
-        raise NotImplementedError
-
-    def __ixor__(BaseIntTag self, other):
-        raise NotImplementedError
-
-    def __or__(BaseIntTag self, other):
-        raise NotImplementedError
-
-    def __ror__(BaseIntTag self, other):
-        raise NotImplementedError
-
-    def __ior__(BaseIntTag self, other):
-        raise NotImplementedError
-
-    def __lshift__(BaseIntTag self, other):
-        raise NotImplementedError
-
-    def __rlshift__(BaseIntTag self, other):
-        raise NotImplementedError
-
-    def __ilshift__(BaseIntTag self, other):
-        raise NotImplementedError
-
-    def __rshift__(BaseIntTag self, other):
-        raise NotImplementedError
-
-    def __rrshift__(BaseIntTag self, other):
-        raise NotImplementedError
-
-    def __irshift__(BaseIntTag self, other):
-        raise NotImplementedError
-
-    def __invert__(BaseIntTag self):
-        raise NotImplementedError
-
-    def __index__(self) -> int:
-        raise NotImplementedError
-
 
 cdef inline void _read_byte_tag_payload(ByteTag tag, BufferContext buffer, bint little_endian):
     tag.value_ = read_byte(buffer)

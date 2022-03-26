@@ -42,3 +42,12 @@ cdef class StringTag(BaseImmutableTag):
         cdef StringTag tag = StringTag.__new__(StringTag)
         _read_string_tag_payload(tag, buffer, little_endian)
         return tag
+
+    def __getitem__(StringTag self, item):
+        return self.value_.__getitem__(item)
+
+    def __contains__(StringTag self, str item) -> bool:
+        return item in self.value_
+
+    def __iter__(StringTag self) -> Iterator[str]:
+        return self.value_.__iter__()

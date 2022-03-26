@@ -2,12 +2,10 @@ import numpy
 cimport numpy
 from io import BytesIO
 from copy import copy, deepcopy
-import warnings
 
 from ._value cimport BaseMutableTag
 from ._const cimport CommaSpace, ID_BYTE_ARRAY, ID_INT_ARRAY, ID_LONG_ARRAY
 from ._util cimport write_array, BufferContext, read_int, read_data
-from ._list cimport ListTag
 
 
 cdef class BaseArrayTag(BaseMutableTag):
@@ -88,7 +86,8 @@ cdef class ByteArrayTag(BaseArrayTag):
         A copy of the data stored in the class.
         Use the public API to modify the data within the class.
         """
-        return copy(self.value_)
+        return self.value_
+
     def __repr__(ByteArrayTag self):
         return f"{self.__class__.__name__}({list(self.value_)})"
 
@@ -177,7 +176,8 @@ cdef class IntArrayTag(BaseArrayTag):
         A copy of the data stored in the class.
         Use the public API to modify the data within the class.
         """
-        return copy(self.value_)
+        return self.value_
+
     def __repr__(IntArrayTag self):
         return f"{self.__class__.__name__}({list(self.value_)})"
 
@@ -266,7 +266,8 @@ cdef class LongArrayTag(BaseArrayTag):
         A copy of the data stored in the class.
         Use the public API to modify the data within the class.
         """
-        return copy(self.value_)
+        return self.value_
+
     def __repr__(LongArrayTag self):
         return f"{self.__class__.__name__}({list(self.value_)})"
 

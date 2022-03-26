@@ -39,6 +39,15 @@ cdef class {{dtype.capitalize()}}ArrayTag(BaseArrayTag):
         return tag
 
 {{include("BaseMutableTag.pyx", cls_name=f"{dtype.capitalize()}ArrayTag")}}
+
+    @property
+    def py_data({{dtype.capitalize()}}ArrayTag self):
+        """
+        A copy of the data stored in the class.
+        Use the public API to modify the data within the class.
+        """
+        return self.value_
+
     def __repr__({{dtype.capitalize()}}ArrayTag self):
         return f"{self.__class__.__name__}({list(self.value_)})"
 

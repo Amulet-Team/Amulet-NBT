@@ -2,12 +2,10 @@ import numpy
 cimport numpy
 from io import BytesIO
 from copy import copy, deepcopy
-import warnings
 
 from ._value cimport BaseMutableTag
 from ._const cimport CommaSpace, ID_BYTE_ARRAY, ID_INT_ARRAY, ID_LONG_ARRAY
 from ._util cimport write_array, BufferContext, read_int, read_data
-from ._list cimport ListTag
 {{py:
 import numpy
 from template import include, gen_wrapper, get_clean_docstring

@@ -149,25 +149,6 @@ cdef class CyListTag(BaseMutableTag):
         self.value_.insert(index, value)
     insert.__doc__ = list.insert.__doc__
 
-    cpdef bint strict_equals(CyListTag self, other):
-        """
-        Does the data and data type match the other object.
-        
-        :param other: The other object to compare with
-        :return: True if the classes are identical, False otherwise.
-        """
-        cdef BaseTag self_val, other_val
-        if (
-            isinstance(other, ListTag)
-            and self.list_data_type == other.list_data_type
-            and len(self) == len(other)
-        ):
-            for self_val, other_val in zip(self, other):
-                if not self_val.strict_equals(other_val):
-                    return False
-            return True
-        return False
-
 
 if sys.version_info >= (3, 9):
     class ListTag(CyListTag, MutableSequence[AnyNBT]):

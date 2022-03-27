@@ -121,19 +121,6 @@ cdef class CyCompoundTag(BaseMutableTag):
         _read_compound_tag_payload(tag, buffer, little_endian)
         return tag
 
-    cpdef bint strict_equals(CyCompoundTag self, other):
-        """Does the data and data type match the other object."""
-        cdef str self_key, other_key
-        if (
-                isinstance(other, CompoundTag)
-                and self.keys() == other.keys()
-        ):
-            for self_key, other_key in zip(self, other):
-                if not self[self_key].strict_equals(other[other_key]):
-                    return False
-            return True
-        return False
-
     def __repr__(CyCompoundTag self):
         return f"{self.__class__.__name__}({repr(self.value_)})"
 

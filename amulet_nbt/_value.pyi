@@ -23,7 +23,6 @@ class BaseTag:
         raise NotImplementedError
     def __eq__(self, other) -> bool:
         raise NotImplementedError
-    def strict_equals(self, other) -> bool: ...
     def __reduce__(self):
         raise NotImplementedError
     def copy(self) -> AnyNBT: ...

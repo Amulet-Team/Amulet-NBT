@@ -34,10 +34,6 @@ cdef class BaseTag:
         bint little_endian
     )
 
-    cpdef bint strict_equals(self, other)
-    cpdef bint is_other(self, other)
-    cpdef bint equals(self, other)
-
 cdef class BaseImmutableTag(BaseTag):
     pass
 

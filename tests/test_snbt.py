@@ -31,7 +31,7 @@ class SNBTTests(unittest.TestCase):
     def _is_same(self, ground: BaseTag, *test: str):
         for snbt in test:
             nbt = amulet_nbt.from_snbt(snbt)
-            self.assertTrue(ground.strict_equals(nbt), msg=f"{repr(ground)} != {snbt}")
+            self.assertEqual(ground, nbt, msg=f"{repr(ground)} != {snbt}")
         self.assertEqual(ground.to_snbt(), test[0])
 
     def test_byte(self):

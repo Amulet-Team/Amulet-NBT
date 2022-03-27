@@ -58,9 +58,6 @@ cdef class {{dtype.capitalize()}}ArrayTag(BaseArrayTag):
             return numpy.array_equal(self.value_, other_.value_)
         return False
 
-    cpdef bint equals(self, other):
-        return numpy.array_equal(self.value_, other)
-
     def __getitem__({{dtype.capitalize()}}ArrayTag self, item):
         return self.value_.__getitem__(item)
 

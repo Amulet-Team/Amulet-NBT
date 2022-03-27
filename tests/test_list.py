@@ -36,11 +36,6 @@ class TestList(base_type_test.BaseTypeTest):
                 else:
                     self.assertNotEqual(tag1, tag2)
 
-                if tag_cls1 is tag_cls2:
-                    self.assertTrue(tag1.strict_equals(tag2))
-                else:
-                    self.assertFalse(tag1.strict_equals(tag2))
-
     def test_list(self):
         # initialisation with and appending not nbt objects
         tag_list = ListTag()

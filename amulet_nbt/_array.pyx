@@ -98,9 +98,6 @@ cdef class ByteArrayTag(BaseArrayTag):
             return numpy.array_equal(self.value_, other_.value_)
         return False
 
-    cpdef bint equals(self, other):
-        return numpy.array_equal(self.value_, other)
-
     def __getitem__(ByteArrayTag self, item):
         return self.value_.__getitem__(item)
 
@@ -188,9 +185,6 @@ cdef class IntArrayTag(BaseArrayTag):
             return numpy.array_equal(self.value_, other_.value_)
         return False
 
-    cpdef bint equals(self, other):
-        return numpy.array_equal(self.value_, other)
-
     def __getitem__(IntArrayTag self, item):
         return self.value_.__getitem__(item)
 
@@ -277,9 +271,6 @@ cdef class LongArrayTag(BaseArrayTag):
             other_ = other
             return numpy.array_equal(self.value_, other_.value_)
         return False
-
-    cpdef bint equals(self, other):
-        return numpy.array_equal(self.value_, other)
 
     def __getitem__(LongArrayTag self, item):
         return self.value_.__getitem__(item)

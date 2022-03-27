@@ -67,8 +67,8 @@ cdef class ByteTag(BaseIntTag):
     @property
     def py_data(ByteTag self):
         """
-        A copy of the data stored in the class.
-        Use the public API to modify the data within the class.
+        The python representation of the class.
+        The returned data is immutable so changes will not mirror the instance.
         """
         return self.value_
 
@@ -169,8 +169,8 @@ cdef class ShortTag(BaseIntTag):
     @property
     def py_data(ShortTag self):
         """
-        A copy of the data stored in the class.
-        Use the public API to modify the data within the class.
+        The python representation of the class.
+        The returned data is immutable so changes will not mirror the instance.
         """
         return self.value_
 
@@ -271,8 +271,8 @@ cdef class IntTag(BaseIntTag):
     @property
     def py_data(IntTag self):
         """
-        A copy of the data stored in the class.
-        Use the public API to modify the data within the class.
+        The python representation of the class.
+        The returned data is immutable so changes will not mirror the instance.
         """
         return self.value_
 
@@ -373,8 +373,8 @@ cdef class LongTag(BaseIntTag):
     @property
     def py_data(LongTag self):
         """
-        A copy of the data stored in the class.
-        Use the public API to modify the data within the class.
+        The python representation of the class.
+        The returned data is immutable so changes will not mirror the instance.
         """
         return self.value_
 

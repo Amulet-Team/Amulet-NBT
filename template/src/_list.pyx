@@ -43,8 +43,9 @@ cdef class CyListTag(BaseMutableTag):
     @property
     def py_data(CyListTag self):
         """
-        A copy of the data stored in the class.
-        Use the public API to modify the data within the class.
+        The python representation of the class.
+        The returned list is a copy of the internal data, meaning changes will not mirror the instance.
+        Use the public API to modify the internal data.
         """
         return copy(self.value_)
 

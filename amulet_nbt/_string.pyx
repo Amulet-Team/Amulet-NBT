@@ -44,8 +44,8 @@ cdef class StringTag(BaseImmutableTag):
     @property
     def py_data(StringTag self):
         """
-        A copy of the data stored in the class.
-        Use the public API to modify the data within the class.
+        The python representation of the class.
+        The returned data is immutable so changes will not mirror the instance.
         """
         return self.value_
 

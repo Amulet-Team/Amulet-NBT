@@ -12,9 +12,9 @@ cdef class BaseTag:
     @property
     def py_data(self):
         """
-        An immutable version/copy of the data in the class.
-        The immutable types return the internal immutable data.
-        The mutable types return a copy of the data. To modify these classes use the public API.
+        The python representation of the class.
+        The returned data may be a copy of the internal data meaning changes will not mirror the instance.
+        Use the public API to modify the internal data.
         """
         raise NotImplementedError
 

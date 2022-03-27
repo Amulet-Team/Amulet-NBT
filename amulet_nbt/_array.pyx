@@ -83,8 +83,8 @@ cdef class ByteArrayTag(BaseArrayTag):
     @property
     def py_data(ByteArrayTag self):
         """
-        A copy of the data stored in the class.
-        Use the public API to modify the data within the class.
+        A numpy array holding the same internal data.
+        Changes to the array will also modify the internal state.
         """
         return self.value_
 
@@ -173,8 +173,8 @@ cdef class IntArrayTag(BaseArrayTag):
     @property
     def py_data(IntArrayTag self):
         """
-        A copy of the data stored in the class.
-        Use the public API to modify the data within the class.
+        A numpy array holding the same internal data.
+        Changes to the array will also modify the internal state.
         """
         return self.value_
 
@@ -263,8 +263,8 @@ cdef class LongArrayTag(BaseArrayTag):
     @property
     def py_data(LongArrayTag self):
         """
-        A copy of the data stored in the class.
-        Use the public API to modify the data within the class.
+        A numpy array holding the same internal data.
+        Changes to the array will also modify the internal state.
         """
         return self.value_
 

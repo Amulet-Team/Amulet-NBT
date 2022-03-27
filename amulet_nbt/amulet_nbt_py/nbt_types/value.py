@@ -151,7 +151,7 @@ class TAG_Value(ABC):
         return self._value.__lt__(self.get_primitive(other))
 
     def __hash__(self):
-        return self._value.__hash__()
+        return hash((self.tag_id, self.value))
 
     @staticmethod
     def get_primitive(obj):

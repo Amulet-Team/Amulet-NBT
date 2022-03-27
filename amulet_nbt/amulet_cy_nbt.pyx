@@ -186,6 +186,9 @@ cpdef bytes safe_gunzip(bytes data):
 cdef class _TAG_Value:
     tag_id = None
 
+    def __hash__(self):
+        return hash((self.tag_id, self.value))
+
     def copy(self):
         return self.__class__(self.value)
 

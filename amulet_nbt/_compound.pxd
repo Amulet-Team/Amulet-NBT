@@ -1,8 +1,5 @@
 from ._value cimport BaseMutableTag
 
 
-cdef class CompoundTag(BaseMutableTag):
+cdef class CyCompoundTag(BaseMutableTag):
     cdef dict value_
-
-    @staticmethod
-    cdef _check_dict(dict value)

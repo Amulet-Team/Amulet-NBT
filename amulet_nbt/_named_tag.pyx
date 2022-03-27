@@ -18,8 +18,8 @@ from ._array cimport (
     LongArrayTag,
 )
 from ._string cimport StringTag
-from ._list cimport ListTag
-from ._compound cimport CompoundTag
+from ._list import ListTag
+from ._compound import CompoundTag
 from ._dtype import AnyNBT
 
 

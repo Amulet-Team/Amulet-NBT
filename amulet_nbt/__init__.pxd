@@ -35,12 +35,12 @@ from ._string cimport (
     StringTag as TAG_String,
 )
 from ._list cimport (
-    ListTag,
     ListTag as TAG_List,
+    CyListTag,
 )
 from ._compound cimport (
-    CompoundTag,
     CompoundTag as TAG_Compound,
+    CyCompoundTag,
 )
 
 from ._named_tag cimport (

@@ -1,6 +1,6 @@
 from ._value cimport BaseTag, BaseMutableTag
 
-cdef class ListTag(BaseMutableTag):
+cdef class CyListTag(BaseMutableTag):
     cdef list value_
     cdef readonly char list_data_type
 

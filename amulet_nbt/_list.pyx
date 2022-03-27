@@ -1,16 +1,17 @@
-from typing import Iterator, List
+from __future__ import annotations
 from io import BytesIO
 from copy import copy, deepcopy
+from collections.abc import MutableSequence
 
 from ._value cimport BaseTag, BaseMutableTag
 from ._const cimport ID_LIST, CommaSpace, CommaNewline
-from ._util cimport write_byte, write_int, BufferContext, read_byte, read_int, read_string
+from ._util cimport write_byte, write_int, BufferContext, read_byte, read_int
 from ._load_nbt cimport load_payload
+# from ._load_nbt cimport load_payload
 from ._dtype import AnyNBT
-from ._array import BaseArrayTag
 
 
-cdef inline void _read_list_tag_payload(ListTag tag, BufferContext buffer, bint little_endian):
+cdef inline void _read_list_tag_payload(CyListTag tag, BufferContext buffer, bint little_endian):
     cdef char list_type = read_byte(buffer)
     tag.list_data_type = list_type
     cdef int length = read_int(buffer, little_endian)
@@ -20,14 +21,14 @@ cdef inline void _read_list_tag_payload(ListTag tag, BufferContext buffer, bint 
         val.append(load_payload(buffer, list_type, little_endian))
 
 
-cdef class ListTag(BaseMutableTag):
+cdef class CyListTag(BaseMutableTag):
     """
     This class behaves like a python list.
     All contained data must be of the same NBT data type.
     """
     tag_id = ID_LIST
 
-    def __init__(ListTag self, object value = (), char list_data_type = 1):
+    def __init__(CyListTag self, object value = (), char list_data_type = 1):
         self.list_data_type = list_data_type
         self.value_ = []
         cdef list list_value
@@ -35,62 +36,34 @@ cdef class ListTag(BaseMutableTag):
         self._check_tag_iterable(list_value)
         self.value_ = list_value
 
-    def clear(self):
-        return self.value_.clear()
-    clear.__doc__ = list.clear.__doc__
-    
-    def count(self, value):
-        return self.value_.count(value)
-    count.__doc__ = list.count.__doc__
-    
-    def index(self, value, start=0, stop=9223372036854775807):
-        return self.value_.index(value, start, stop)
-    index.__doc__ = list.index.__doc__
-    
-    def pop(self, index=-1):
-        return self.value_.pop(index)
-    pop.__doc__ = list.pop.__doc__
-    
-    def remove(self, value):
-        return self.value_.remove(value)
-    remove.__doc__ = list.remove.__doc__
-    
-    def reverse(self):
-        return self.value_.reverse()
-    reverse.__doc__ = list.reverse.__doc__
-    
-    def sort(self, *, key=None, reverse=False):
-        return self.value_.sort(key=key, reverse=reverse)
-    sort.__doc__ = list.sort.__doc__
-    
-    def __str__(ListTag self):
+    def __str__(CyListTag self):
         return str(self.value_)
 
-    def __eq__(ListTag self, other):
-        cdef ListTag other_
-        if isinstance(other, ListTag):
+    def __eq__(CyListTag self, other):
+        cdef CyListTag other_
+        if isinstance(other, CyListTag):
             other_ = other
             return self.value_ == other_.value_
         return False
 
-    def __reduce__(ListTag self):
+    def __reduce__(CyListTag self):
         return self.__class__, (self.value_,)
 
-    def __deepcopy__(ListTag self, memo=None):
+    def __deepcopy__(CyListTag self, memo=None):
         return self.__class__(deepcopy(self.value_, memo=memo))
 
-    def __copy__(ListTag self):
+    def __copy__(CyListTag self):
         return self.__class__(self.value_)
 
     @property
-    def py_data(ListTag self):
+    def py_data(CyListTag self):
         """
         A copy of the data stored in the class.
         Use the public API to modify the data within the class.
         """
         return copy(self.value_)
 
-    cdef void _check_tag(ListTag self, BaseTag value, bint fix_if_empty=True) except *:
+    cdef void _check_tag(CyListTag self, BaseTag value, bint fix_if_empty=True) except *:
         if value is None:
             raise TypeError("List values must be NBT Tags")
         if fix_if_empty and not self.value_:
@@ -100,13 +73,13 @@ cdef class ListTag(BaseMutableTag):
                 f"Invalid type {value.__class__.__name__} for ListTag({self.list_data_type})"
             )
 
-    cdef void _check_tag_iterable(ListTag self, list value) except *:
+    cdef void _check_tag_iterable(CyListTag self, list value) except *:
         cdef int i
         cdef BaseTag tag
         for i, tag in enumerate(value):
             self._check_tag(tag, not i)
 
-    cdef void write_payload(ListTag self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(CyListTag self, object buffer: BytesIO, bint little_endian) except *:
         cdef char list_type = self.list_data_type
 
         write_byte(list_type, buffer)
@@ -121,19 +94,19 @@ cdef class ListTag(BaseMutableTag):
             subtag.write_payload(buffer, little_endian)
 
     @staticmethod
-    cdef ListTag read_payload(BufferContext buffer, bint little_endian):
-        cdef ListTag tag = ListTag()
+    cdef CyListTag read_payload(BufferContext buffer, bint little_endian):
+        cdef CyListTag tag = ListTag()
         _read_list_tag_payload(tag, buffer, little_endian)
         return tag
 
-    cdef str _to_snbt(ListTag self):
+    cdef str _to_snbt(CyListTag self):
         cdef BaseTag elem
         cdef list tags = []
         for elem in self.value_:
             tags.append(elem._to_snbt())
         return f"[{CommaSpace.join(tags)}]"
 
-    cdef str _pretty_to_snbt(ListTag self, str indent_chr, int indent_count=0, bint leading_indent=True):
+    cdef str _pretty_to_snbt(CyListTag self, str indent_chr, int indent_count=0, bint leading_indent=True):
         cdef BaseTag elem
         cdef list tags = []
         for elem in self.value_:
@@ -143,22 +116,19 @@ cdef class ListTag(BaseMutableTag):
         else:
             return f"{indent_chr * indent_count * leading_indent}[]"
 
-    def __repr__(ListTag self):
+    def __repr__(CyListTag self):
         return f"{self.__class__.__name__}({repr(self.value_)}, {self.list_data_type})"
 
-    def __contains__(ListTag self, object item) -> bool:
+    def __contains__(CyListTag self, object item) -> bool:
         return isinstance(item, BaseTag) and item.tag_id == self.list_data_type and self.value_.__contains__(item)
 
-    def __iter__(ListTag self) -> Iterator[AnyNBT]:
-        return self.value_.__iter__()
-
-    def __len__(ListTag self) -> int:
+    def __len__(CyListTag self) -> int:
         return self.value_.__len__()
 
-    def __getitem__(ListTag self, index: int) -> AnyNBT:
+    def __getitem__(CyListTag self, index: int) -> AnyNBT:
         return self.value_[index]
 
-    def __setitem__(ListTag self, index, value):
+    def __setitem__(CyListTag self, index, value):
         if isinstance(index, slice):
             value = list(value)
             self._check_tag_iterable(value)
@@ -166,41 +136,19 @@ cdef class ListTag(BaseMutableTag):
             self._check_tag(value)
         self.value_[index] = value
 
-    def __delitem__(ListTag self, object index):
-        del self.value_[index]
+    def __delitem__(CyListTag self, object index):
+        self.value_.__delitem__(index)
 
-    def append(ListTag self, BaseTag value not None) -> None:
-        self._check_tag(value)
-        self.value_.append(value)
-    append.__doc__ = list.append.__doc__
-
-    def copy(ListTag self):
+    def copy(CyListTag self):
         """Return a shallow copy of the class"""
         return ListTag(self.value_.copy(), self.list_data_type)
 
-    def extend(ListTag self, object other):
-        other = list(other)
-        self._check_tag_iterable(other)
-        self.value_.extend(other)
-        return self
-    extend.__doc__ = list.extend.__doc__
-
-    def insert(ListTag self, object index, BaseTag value not None):
+    def insert(CyListTag self, object index, BaseTag value not None):
         self._check_tag(value)
         self.value_.insert(index, value)
     insert.__doc__ = list.insert.__doc__
 
-    def __mul__(ListTag self, other):
-        return self.value_ * other
-
-    def __rmul__(ListTag self, other):
-        return other * self.value_
-
-    def __imul__(ListTag self, other):
-        self.value_ *= other
-        return self
-
-    cpdef bint strict_equals(ListTag self, other):
+    cpdef bint strict_equals(CyListTag self, other):
         """
         Does the data and data type match the other object.
         
@@ -219,12 +167,6 @@ cdef class ListTag(BaseMutableTag):
             return True
         return False
 
-    def __add__(ListTag self, other):
-        return self.value_ + other
 
-    def __radd__(ListTag self, other):
-        return other + self.value_
-
-    def __iadd__(ListTag self, other):
-        self.extend(other)
-        return self
+class ListTag(CyListTag, MutableSequence[AnyNBT]):
+    pass

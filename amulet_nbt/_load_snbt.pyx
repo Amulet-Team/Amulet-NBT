@@ -8,8 +8,8 @@ from ._int cimport ByteTag, ShortTag, IntTag, LongTag
 from ._float cimport FloatTag, DoubleTag
 from ._array cimport ByteArrayTag, IntArrayTag, LongArrayTag
 from ._string cimport StringTag
-from ._list cimport ListTag
-from ._compound cimport CompoundTag
+from ._list import ListTag
+from ._compound import CompoundTag
 
 whitespace = re.compile('[ \t\r\n]*')
 int_numeric = re.compile('-?[0-9]+[bBsSlL]?')

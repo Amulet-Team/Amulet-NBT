@@ -24,9 +24,9 @@ from ._array cimport (
     LongArrayTag,
 )
 from ._string cimport StringTag
-from ._list cimport ListTag
-from ._compound cimport CompoundTag
-from ._named_tag import (
+from ._list cimport CyListTag
+from ._compound cimport CyCompoundTag
+from ._named_tag cimport (
     BaseNamedTag,
     NamedByteTag,
     NamedShortTag,
@@ -102,9 +102,9 @@ cdef BaseTag load_payload(BufferContext buffer, char tag_type, bint little_endia
     elif tag_type == 8:
         return StringTag.read_payload(buffer, little_endian)
     elif tag_type == 9:
-        return ListTag.read_payload(buffer, little_endian)
+        return CyListTag.read_payload(buffer, little_endian)
     elif tag_type == 10:
-        return CompoundTag.read_payload(buffer, little_endian)
+        return CyCompoundTag.read_payload(buffer, little_endian)
     elif tag_type == 11:
         return IntArrayTag.read_payload(buffer, little_endian)
     elif tag_type == 12:

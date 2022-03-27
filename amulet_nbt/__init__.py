@@ -40,14 +40,6 @@ from ._string import (
     StringTag,
     StringTag as TAG_String,
 )
-from ._list import (
-    ListTag,
-    ListTag as TAG_List,
-)
-from ._compound import (
-    CompoundTag,
-    CompoundTag as TAG_Compound,
-)
 
 from ._named_tag import (
     BaseNamedTag,
@@ -64,6 +56,15 @@ from ._named_tag import (
     NamedCompoundTag as NBTFile,
     NamedIntArrayTag,
     NamedLongArrayTag,
+)
+
+from ._list import (
+    ListTag,
+    ListTag as TAG_List,
+)
+from ._compound import (
+    CompoundTag,
+    CompoundTag as TAG_Compound,
 )
 
 # Load functions

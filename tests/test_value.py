@@ -68,6 +68,14 @@ class TestPyData(BaseTagsTest):
             self.assertIsNot(a.py_data, dtype([1, 2, 3]).py_data)
             numpy.testing.assert_array_equal(a.py_data, [1, 2, 3])
 
+    def test_equal(self):
+        for tag1 in self.nbt_types:
+            for tag2 in self.nbt_types:
+                if tag1 is tag2:
+                    self.assertEqual(tag1(), tag2())
+                else:
+                    self.assertNotEqual(tag1(), tag2())
+
 
 if __name__ == "__main__":
     unittest.main()

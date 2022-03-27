@@ -3,6 +3,7 @@ import re
 from typing import Iterator
 from copy import copy, deepcopy
 from collections.abc import MutableMapping
+import sys
 
 from ._value cimport BaseTag, BaseMutableTag
 from ._const cimport ID_END, ID_COMPOUND, CommaSpace, CommaNewline
@@ -135,5 +136,10 @@ cdef class CyCompoundTag(BaseMutableTag):
         return self.value_.__len__()
 
 
-class CompoundTag(CyCompoundTag, MutableMapping[str, AnyNBT]):
-    pass
+if sys.version_info >= (3, 9):
+    class CompoundTag(CyCompoundTag, MutableMapping[str, AnyNBT]):
+        pass
+
+else:
+    class CompoundTag(CyCompoundTag, MutableMapping):
+        pass

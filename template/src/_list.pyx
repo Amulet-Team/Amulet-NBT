@@ -2,6 +2,7 @@ from __future__ import annotations
 from io import BytesIO
 from copy import copy, deepcopy
 from collections.abc import MutableSequence
+import sys
 
 from ._value cimport BaseTag, BaseMutableTag
 from ._const cimport ID_LIST, CommaSpace, CommaNewline
@@ -152,5 +153,10 @@ cdef class CyListTag(BaseMutableTag):
         return False
 
 
-class ListTag(CyListTag, MutableSequence[AnyNBT]):
-    pass
+if sys.version_info >= (3, 9):
+    class ListTag(CyListTag, MutableSequence[AnyNBT]):
+        pass
+
+else:
+    class ListTag(CyListTag, MutableSequence):
+        pass

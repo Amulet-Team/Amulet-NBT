@@ -1,7 +1,8 @@
+from typing import SupportsInt
 from ._numeric import BaseNumericTag
 
 class BaseIntTag(BaseNumericTag):
-    pass
+    def __init__(self, value: SupportsInt): ...
 
 class ByteTag(BaseIntTag): ...
 class ShortTag(BaseIntTag): ...

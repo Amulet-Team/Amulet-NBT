@@ -1,7 +1,11 @@
-from typing import Union, Iterator
+from typing import Union, Iterator, overload, Any
 from ._value import BaseImmutableTag
 
 class StringTag(BaseImmutableTag):
+    @overload
+    def __init__(self, value: Any): ...
+    @overload
+    def __init__(self, value: str): ...
     def __contains__(self, o: str) -> bool:
         raise NotImplementedError
     def __eq__(self, x: object) -> bool:

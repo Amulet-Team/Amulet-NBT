@@ -76,12 +76,19 @@ cdef class BaseNamedTag:
         )
 
     def __eq__(self, other):
-        if isinstance(other, self.__class__):
+        if isinstance(other, BaseNamedTag):
             return self.name == other.name and self.tag == other.tag
         return NotImplemented
 
     def __repr__(self):
         return f'{self.__class__.__name__}({repr(self.tag)}, "{self.name}")'
+
+    def __iter__(self):
+        yield self.name
+        yield self.value
+
+    def __getitem__(self, int item):
+        return (self.name, self.value)[item]
 
 
 cdef class NamedByteTag(BaseNamedTag):

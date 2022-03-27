@@ -1,8 +1,5 @@
-from typing import Union, Iterable, SupportsBytes, List
 from io import BytesIO
 from copy import deepcopy
-from math import floor, ceil
-import sys
 
 from ._numeric cimport BaseNumericTag
 from ._const cimport ID_BYTE, ID_SHORT, ID_INT, ID_LONG
@@ -15,21 +12,12 @@ from ._util cimport (
     read_data,
     to_little_endian,
     read_byte,
-    read_string,
 )
 {{py:from template import include}}
 
 
 cdef class BaseIntTag(BaseNumericTag):
-    @classmethod
-    def from_bytes(
-        cls,
-        bytes: Union[Iterable[int], SupportsBytes],
-        byteorder: str,
-        *,
-        bint signed = False
-    ) -> BaseIntTag:
-        raise NotImplementedError
+    pass
 
 
 cdef inline void _read_byte_tag_payload(ByteTag tag, BufferContext buffer, bint little_endian):

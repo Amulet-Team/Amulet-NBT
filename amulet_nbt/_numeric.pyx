@@ -2,9 +2,6 @@ from ._value cimport BaseImmutableTag
 
 
 cdef class BaseNumericTag(BaseImmutableTag):
-    def __repr__(self):
-        raise NotImplementedError
-
     def __int__(self):
         raise NotImplementedError
 

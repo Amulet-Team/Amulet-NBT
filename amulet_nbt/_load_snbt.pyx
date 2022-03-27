@@ -1,6 +1,4 @@
 import re
-import numpy
-cimport numpy
 
 from ._errors import SNBTParseError
 from ._value cimport BaseTag

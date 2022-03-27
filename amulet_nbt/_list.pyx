@@ -8,7 +8,6 @@ from ._value cimport BaseTag, BaseMutableTag
 from ._const cimport ID_LIST, CommaSpace, CommaNewline
 from ._util cimport write_byte, write_int, BufferContext, read_byte, read_int
 from ._load_nbt cimport load_payload
-# from ._load_nbt cimport load_payload
 from ._dtype import AnyNBT
 
 

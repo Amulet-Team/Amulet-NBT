@@ -1,7 +1,5 @@
-from typing import List
 from io import BytesIO
 from copy import deepcopy
-from math import floor, ceil
 
 from ._numeric cimport BaseNumericTag
 from ._const cimport ID_FLOAT, ID_DOUBLE

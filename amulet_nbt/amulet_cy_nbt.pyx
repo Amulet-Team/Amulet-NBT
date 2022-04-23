@@ -769,7 +769,7 @@ cdef class TAG_String(_TAG_Value):
         return f"\"{escape(self.value)}\""
 
     cdef void write_value(self, buffer, little_endian):
-        write_string(self.value.encode("utf-8"), buffer, little_endian)
+        write_string(self._value, buffer, little_endian)
 
     def __getitem__(self, item):
         return self.value.__getitem__(item)

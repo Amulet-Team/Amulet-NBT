@@ -686,8 +686,8 @@ cdef class TAG_Byte_Array(_TAG_Array):
         cdef int elem
         cdef list tags = []
         for elem in self.value:
-            tags.append(str(elem))
-        return f"[B;{'B, '.join(tags)}B]"
+            tags.append(f"{elem}B")
+        return f"[B;{CommaSpace.join(tags)}]"
 
     cdef void write_value(self, buffer, little_endian):
         data_type = self.little_endian_data_type if little_endian else self.big_endian_data_type
@@ -726,7 +726,7 @@ cdef class TAG_Long_Array(_TAG_Array):
         cdef long long elem
         cdef list tags = []
         for elem in self.value:
-            tags.append(str(elem))
+            tags.append(f"{elem}L")
         return f"[L;{CommaSpace.join(tags)}]"
 
     cdef void write_value(self, buffer, little_endian):

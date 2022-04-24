@@ -531,25 +531,25 @@ class AbstractNBTTest:
             i = self.nbt.TAG_Int()
             l = self.nbt.TAG_Long()
 
-            b += 2 ** 7
-            s += 2 ** 15
-            i += 2 ** 31
-            l += 2 ** 63
+            b += 2**7
+            s += 2**15
+            i += 2**31
+            l += 2**63
 
-            self.assertEqual(b, -(2 ** 7))
-            self.assertEqual(s, -(2 ** 15))
-            self.assertEqual(i, -(2 ** 31))
-            self.assertEqual(l, -(2 ** 63))
+            self.assertEqual(b, -(2**7))
+            self.assertEqual(s, -(2**15))
+            self.assertEqual(i, -(2**31))
+            self.assertEqual(l, -(2**63))
 
             b -= 1
             s -= 1
             i -= 1
             l -= 1
 
-            self.assertEqual(b, 2 ** 7 - 1)
-            self.assertEqual(s, 2 ** 15 - 1)
-            self.assertEqual(i, 2 ** 31 - 1)
-            self.assertEqual(l, 2 ** 63 - 1)
+            self.assertEqual(b, 2**7 - 1)
+            self.assertEqual(s, 2**15 - 1)
+            self.assertEqual(i, 2**31 - 1)
+            self.assertEqual(l, 2**63 - 1)
 
         def test_string(self):
             self.assertEqual(self.nbt.TAG_String(), "")
@@ -562,23 +562,23 @@ class AbstractNBTTest:
 
         def test_array_overflow(self):
             b_arr = self.nbt.TAG_Byte_Array([0])
-            b_arr += 2 ** 7
+            b_arr += 2**7
             i_arr = self.nbt.TAG_Int_Array([0])
-            i_arr += 2 ** 31
+            i_arr += 2**31
             # numpy throws an error when overflowing int64
             # l_arr = self.nbt.TAG_Long_Array([0])
             # l_arr += 2 ** 63
 
-            self.assertTrue(numpy.array_equal(b_arr, [-(2 ** 7)]))
-            self.assertTrue(numpy.array_equal(i_arr, [-(2 ** 31)]))
+            self.assertTrue(numpy.array_equal(b_arr, [-(2**7)]))
+            self.assertTrue(numpy.array_equal(i_arr, [-(2**31)]))
             # self.assertTrue(numpy.array_equal(l_arr, [-(2 ** 63)]))
 
             b_arr -= 1
             i_arr -= 1
             # l_arr -= 1
 
-            self.assertTrue(numpy.array_equal(b_arr, [2 ** 7 - 1]))
-            self.assertTrue(numpy.array_equal(i_arr, [2 ** 31 - 1]))
+            self.assertTrue(numpy.array_equal(b_arr, [2**7 - 1]))
+            self.assertTrue(numpy.array_equal(i_arr, [2**31 - 1]))
             # self.assertTrue(numpy.array_equal(l_arr, [2 ** 63 - 1]))
 
         def test_list(self):

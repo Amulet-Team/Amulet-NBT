@@ -97,21 +97,21 @@ class AbstractNBTTest:
             # test the extremes of the array types
             # byte array tested above
             test["numpyExtremeTestIntArray"] = self.nbt.TAG_Int_Array(
-                numpy.array([-(2 ** 31), (2 ** 31) - 1], dtype=int)
+                numpy.array([-(2**31), (2**31) - 1], dtype=int)
             )
             test["numpyExtremeTestLongArray"] = self.nbt.TAG_Long_Array(
-                numpy.array([-(2 ** 63), (2 ** 63) - 1], dtype="q")
+                numpy.array([-(2**63), (2**63) - 1], dtype="q")
             )
 
             test["minByte"] = self.nbt.TAG_Byte(-128)
-            test["minShort"] = self.nbt.TAG_Short(-(2 ** 15))
-            test["minInt"] = self.nbt.TAG_Int(-(2 ** 31))
-            test["minLong"] = self.nbt.TAG_Long(-(2 ** 63))
+            test["minShort"] = self.nbt.TAG_Short(-(2**15))
+            test["minInt"] = self.nbt.TAG_Int(-(2**31))
+            test["minLong"] = self.nbt.TAG_Long(-(2**63))
 
             test["maxByte"] = self.nbt.TAG_Byte(127)
-            test["maxShort"] = self.nbt.TAG_Short(2 ** 15 - 1)
-            test["maxInt"] = self.nbt.TAG_Int(2 ** 31 - 1)
-            test["maxLong"] = self.nbt.TAG_Long(2 ** 63 - 1)
+            test["maxShort"] = self.nbt.TAG_Short(2**15 - 1)
+            test["maxInt"] = self.nbt.TAG_Int(2**31 - 1)
+            test["maxLong"] = self.nbt.TAG_Long(2**63 - 1)
 
             # these should either overflow when setting or error when saving. Test each and if it errors just comment it out
             # test['overflowByte'] = self.nbt.TAG_Byte(300)

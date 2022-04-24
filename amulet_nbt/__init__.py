@@ -21,9 +21,7 @@ try:
         SNBTType,
     )
 except (ImportError, ModuleNotFoundError) as e:
-    print(
-        "Failed to import cython nbt library."
-    )
+    print("Failed to import cython nbt library.")
     raise e
 
 from ._version import get_versions

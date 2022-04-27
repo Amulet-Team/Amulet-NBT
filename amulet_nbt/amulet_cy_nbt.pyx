@@ -228,6 +228,9 @@ cdef class _Int(_TAG_Value):
     def __eq__(self, other):
         return primitive_conversion(self) == primitive_conversion(other)
 
+    def __hash__(self):
+        return hash((self.tag_id, self.value))
+
     def __add__(self, other):
         return primitive_conversion(self) + primitive_conversion(other)
 
@@ -346,6 +349,9 @@ cdef class _Int(_TAG_Value):
 cdef class _Float(_TAG_Value):
     def __eq__(self, other):
         return primitive_conversion(self) == primitive_conversion(other)
+
+    def __hash__(self):
+        return hash((self.tag_id, self.value))
 
     def __add__(self, other):
         return float(primitive_conversion(self) + primitive_conversion(other))
@@ -767,6 +773,9 @@ cdef class TAG_String(_TAG_Value):
             return self.py_bytes == other.py_bytes
         else:
             return primitive_conversion(self) == primitive_conversion(other)
+
+    def __hash__(self):
+        return hash((self.tag_id, self.value))
 
     def __len__(self) -> int:
         return len(self.value)

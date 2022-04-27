@@ -7,7 +7,7 @@ from typing import Optional, Union, Tuple, List, Iterator, BinaryIO
 
 import numpy
 import os
-from cpython cimport PyUnicode_DecodeUTF8, PyUnicode_DecodeCharmap, PyList_Append
+from cpython cimport PyUnicode_DecodeUTF8, PyList_Append, PyBytes_FromStringAndSize
 
 import re
 
@@ -97,8 +97,6 @@ class NBTFormatError(NBTLoadError):
 class SNBTParseError(NBTError):
     """Indicates the SNBT format is invalid."""
     pass
-
-CHAR_MAP = "".join(map(chr, range(256)))
 
 
 cdef class buffer_context:
@@ -748,10 +746,27 @@ def unescape(string: str):
 
 cdef class TAG_String(_TAG_Value):
     tag_id = _ID_STRING
-    cdef readonly unicode value
+    cdef readonly bytes py_bytes
+
+    @property
+    def value(self) -> str:
+        return self.py_str
+
+    @property
+    def py_str(self) -> str:
+        return self.py_bytes.decode("utf-8")
 
     def __init__(self, value = ""):
-        self.value = str(value)
+        if isinstance(value, bytes):
+            self.py_bytes = value
+        else:
+            self.py_bytes = str(value).encode("utf-8")
+
+    def __eq__(self, other):
+        if isinstance(self, TAG_String) and isinstance(other, TAG_String):
+            return self.py_bytes == other.py_bytes
+        else:
+            return primitive_conversion(self) == primitive_conversion(other)
 
     def __len__(self) -> int:
         return len(self.value)
@@ -760,7 +775,7 @@ cdef class TAG_String(_TAG_Value):
         return f"\"{escape(self.value)}\""
 
     cdef void write_value(self, buffer, little_endian):
-        write_string(self.value.encode("utf-8"), buffer, little_endian)
+        write_string(self.py_bytes, buffer, little_endian)
 
     def __getitem__(self, item):
         return self.value.__getitem__(item)
@@ -1142,16 +1157,12 @@ cdef _TAG_Compound load_compound_tag(buffer_context context, bint little_endian)
             root_tag[tup[0]] = tup[1]
     return root_tag
 
-cdef str load_string(buffer_context context, bint little_endian):
+cdef bytes load_string(buffer_context context, bint little_endian):
     cdef unsigned short *pointer = <unsigned short *> read_data(context, 2)
     cdef unsigned short length = pointer[0]
     to_little_endian(&length, 2, little_endian)
     b = read_data(context, length)
-    try:
-        return PyUnicode_DecodeUTF8(b, length, "strict")
-    except:
-        return PyUnicode_DecodeCharmap(b, length, CHAR_MAP, "strict")
-
+    return PyBytes_FromStringAndSize(b, length)
 
 cdef TAG_Byte_Array load_byte_array(buffer_context context, bint little_endian):
     cdef int*pointer = <int *> read_data(context, 4)

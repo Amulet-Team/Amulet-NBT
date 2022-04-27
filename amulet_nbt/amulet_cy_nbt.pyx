@@ -762,6 +762,12 @@ cdef class TAG_String(_TAG_Value):
         else:
             self.py_bytes = str(value).encode("utf-8")
 
+    def __eq__(self, other):
+        if isinstance(self, TAG_String) and isinstance(other, TAG_String):
+            return self.py_bytes == other.py_bytes
+        else:
+            return primitive_conversion(self) == primitive_conversion(other)
+
     def __len__(self) -> int:
         return len(self.value)
 

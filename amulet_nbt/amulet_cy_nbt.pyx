@@ -746,21 +746,21 @@ def unescape(string: str):
 
 cdef class TAG_String(_TAG_Value):
     tag_id = _ID_STRING
-    cdef readonly bytes _value
+    cdef readonly bytes py_bytes
 
     @property
     def value(self) -> str:
-        return self._value.decode("utf-8")
+        return self.py_str
 
     @property
-    def py_data(self) -> bytes:
-        return self._value
+    def py_str(self) -> str:
+        return self.py_bytes.decode("utf-8")
 
     def __init__(self, value = ""):
         if isinstance(value, bytes):
-            self._value = value
+            self.py_bytes = value
         else:
-            self._value = str(value).encode("utf-8")
+            self.py_bytes = str(value).encode("utf-8")
 
     def __len__(self) -> int:
         return len(self.value)
@@ -769,7 +769,7 @@ cdef class TAG_String(_TAG_Value):
         return f"\"{escape(self.value)}\""
 
     cdef void write_value(self, buffer, little_endian):
-        write_string(self._value, buffer, little_endian)
+        write_string(self.py_bytes, buffer, little_endian)
 
     def __getitem__(self, item):
         return self.value.__getitem__(item)

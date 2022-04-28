@@ -1,6 +1,6 @@
 from io import BytesIO
 import re
-from typing import Iterator
+from typing import Iterator, Dict
 from copy import copy, deepcopy
 from collections.abc import MutableMapping
 import sys
@@ -70,13 +70,17 @@ cdef class CyCompoundTag(BaseMutableTag):
         return self.__class__(self.value_)
 
     @property
-    def py_data(CyCompoundTag self):
+    def py_dict(CyCompoundTag self) -> Dict[str, AnyNBT]:
         """
-        The python representation of the class.
-        The returned dictionary is a copy of the internal data, meaning changes will not mirror the instance.
+        A python dictionary representation of the class.
+        The returned list is a shallow copy of the class, meaning changes will not mirror the instance.
         Use the public API to modify the internal data.
         """
         return copy(self.value_)
+
+    @property
+    def py_data(self):
+        return self.py_dict
 
     @staticmethod
     def fromkeys(object keys, BaseTag value=None):

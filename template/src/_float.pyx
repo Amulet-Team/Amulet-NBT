@@ -8,7 +8,18 @@ from ._util cimport write_float, write_double, BufferContext, read_data, to_litt
 
 
 cdef class BaseFloatTag(BaseNumericTag):
-    pass
+    @property
+    def py_float(BaseNumericTag self) -> float:
+        """
+        A python float representation of the class.
+        The returned data is immutable so changes will not mirror the instance.
+        """
+        raise NotImplementedError
+
+    @property
+    def py_data(self):
+        return self.py_float
+
 
 
 cdef inline void _read_float_tag_payload(FloatTag tag, BufferContext buffer, bint little_endian):
@@ -52,7 +63,7 @@ cdef class DoubleTag(BaseFloatTag):
     def __init__(DoubleTag self, value = 0):
         self.value_ = float(value)
 
-{{include("BaseNumericTag.pyx", cls_name="DoubleTag")}}
+{{include("BaseFloatTag.pyx", cls_name="DoubleTag")}}
 
     cdef str _to_snbt(DoubleTag self):
         return f"{self.value_}d"

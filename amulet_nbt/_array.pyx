@@ -21,6 +21,18 @@ cdef class BaseArrayTag(BaseMutableTag):
     def __len__(BaseArrayTag self):
         raise NotImplementedError
 
+    @property
+    def np_array(BaseArrayTag self):
+        """
+        A numpy array holding the same internal data.
+        Changes to the array will also modify the internal state.
+        """
+        raise NotImplementedError
+
+    @property
+    def py_data(self):
+        return self.np_array
+
 
 BaseArrayType = BaseArrayTag
 
@@ -81,7 +93,7 @@ cdef class ByteArrayTag(BaseArrayTag):
         return self.__class__(self.value_)
 
     @property
-    def py_data(ByteArrayTag self):
+    def np_array(ByteArrayTag self):
         """
         A numpy array holding the same internal data.
         Changes to the array will also modify the internal state.
@@ -168,7 +180,7 @@ cdef class IntArrayTag(BaseArrayTag):
         return self.__class__(self.value_)
 
     @property
-    def py_data(IntArrayTag self):
+    def np_array(IntArrayTag self):
         """
         A numpy array holding the same internal data.
         Changes to the array will also modify the internal state.
@@ -255,7 +267,7 @@ cdef class LongArrayTag(BaseArrayTag):
         return self.__class__(self.value_)
 
     @property
-    def py_data(LongArrayTag self):
+    def np_array(LongArrayTag self):
         """
         A numpy array holding the same internal data.
         Changes to the array will also modify the internal state.

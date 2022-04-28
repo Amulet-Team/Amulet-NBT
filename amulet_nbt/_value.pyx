@@ -2,6 +2,7 @@ from copy import copy
 from io import BytesIO
 import warnings
 import gzip
+from typing import Any
 
 from ._util cimport write_byte, write_string, BufferContext
 
@@ -10,11 +11,11 @@ cdef class BaseTag:
     tag_id: int = None
 
     @property
-    def py_data(self):
+    def py_data(self) -> Any:
         """
-        The python representation of the class.
-        The returned data may be a copy of the internal data meaning changes will not mirror the instance.
-        Use the public API to modify the internal data.
+        A python representation of the class. Note that the return type is undefined and may change in the future.
+        You would be better off using the py_{type} or np_array properties if you require a fixed type.
+        This is here for convenience to get a python representation under the same property name.
         """
         raise NotImplementedError
 

@@ -25,6 +25,18 @@ cdef class BaseArrayTag(BaseMutableTag):
     def __len__(BaseArrayTag self):
         raise NotImplementedError
 
+    @property
+    def np_array(BaseArrayTag self):
+        """
+        A numpy array holding the same internal data.
+        Changes to the array will also modify the internal state.
+        """
+        raise NotImplementedError
+
+    @property
+    def py_data(self):
+        return self.np_array
+
 
 BaseArrayType = BaseArrayTag
 

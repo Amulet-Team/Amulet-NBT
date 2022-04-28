@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import List
 from io import BytesIO
 from copy import copy, deepcopy
 from collections.abc import MutableSequence
@@ -40,13 +41,17 @@ cdef class CyListTag(BaseMutableTag):
 {{include("BaseMutableTag.pyx", cls_name="CyListTag")}}
 
     @property
-    def py_data(CyListTag self):
+    def py_list(CyListTag self) -> List[AnyNBT]:
         """
-        The python representation of the class.
-        The returned list is a copy of the internal data, meaning changes will not mirror the instance.
+        A python list representation of the class.
+        The returned list is a shallow copy of the class, meaning changes will not mirror the instance.
         Use the public API to modify the internal data.
         """
         return copy(self.value_)
+
+    @property
+    def py_data(self):
+        return self.py_list
 
     cdef void _check_tag(CyListTag self, BaseTag value, bint fix_if_empty=True) except *:
         if value is None:

@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict
 from collections.abc import MutableMapping
 
 from ._value import BaseMutableTag
@@ -8,4 +8,4 @@ class CompoundTag(BaseMutableTag, MutableMapping[str, AnyNBT]):
     tag_id: int
     def __init__(self, value: Any = (), **kwvals: AnyNBT): ...
     @property
-    def py_data(self) -> dict: ...
+    def py_dict(self) -> Dict[str, AnyNBT]: ...

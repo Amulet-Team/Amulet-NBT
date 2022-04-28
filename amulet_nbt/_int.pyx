@@ -16,7 +16,17 @@ from ._util cimport (
 
 
 cdef class BaseIntTag(BaseNumericTag):
-    pass
+    @property
+    def py_int(BaseNumericTag self) -> int:
+        """
+        A python int representation of the class.
+        The returned data is immutable so changes will not mirror the instance.
+        """
+        raise NotImplementedError
+
+    @property
+    def py_data(self):
+        return self.py_int
 
 
 cdef inline void _read_byte_tag_payload(ByteTag tag, BufferContext buffer, bint little_endian):
@@ -51,14 +61,6 @@ cdef class ByteTag(BaseIntTag):
 
     def __copy__(ByteTag self):
         return self.__class__(self.value_)
-
-    @property
-    def py_data(ByteTag self):
-        """
-        The python representation of the class.
-        The returned data is immutable so changes will not mirror the instance.
-        """
-        return self.value_
 
     def __hash__(ByteTag self):
         return hash((self.tag_id, self.value_))
@@ -102,6 +104,14 @@ cdef class ByteTag(BaseIntTag):
 
     def __bool__(ByteTag self):
         return self.value_.__bool__()
+
+    @property
+    def py_int(ByteTag self) -> int:
+        """
+        A python int representation of the class.
+        The returned data is immutable so changes will not mirror the instance.
+        """
+        return self.value_
 
     cdef char _sanitise_value(ByteTag self, value):
         return (value & 0x7F) - (value & 0x80)
@@ -154,14 +164,6 @@ cdef class ShortTag(BaseIntTag):
     def __copy__(ShortTag self):
         return self.__class__(self.value_)
 
-    @property
-    def py_data(ShortTag self):
-        """
-        The python representation of the class.
-        The returned data is immutable so changes will not mirror the instance.
-        """
-        return self.value_
-
     def __hash__(ShortTag self):
         return hash((self.tag_id, self.value_))
 
@@ -204,6 +206,14 @@ cdef class ShortTag(BaseIntTag):
 
     def __bool__(ShortTag self):
         return self.value_.__bool__()
+
+    @property
+    def py_int(ShortTag self) -> int:
+        """
+        A python int representation of the class.
+        The returned data is immutable so changes will not mirror the instance.
+        """
+        return self.value_
 
     cdef short _sanitise_value(ShortTag self, value):
         return (value & 0x7FFF) - (value & 0x8000)
@@ -256,14 +266,6 @@ cdef class IntTag(BaseIntTag):
     def __copy__(IntTag self):
         return self.__class__(self.value_)
 
-    @property
-    def py_data(IntTag self):
-        """
-        The python representation of the class.
-        The returned data is immutable so changes will not mirror the instance.
-        """
-        return self.value_
-
     def __hash__(IntTag self):
         return hash((self.tag_id, self.value_))
 
@@ -306,6 +308,14 @@ cdef class IntTag(BaseIntTag):
 
     def __bool__(IntTag self):
         return self.value_.__bool__()
+
+    @property
+    def py_int(IntTag self) -> int:
+        """
+        A python int representation of the class.
+        The returned data is immutable so changes will not mirror the instance.
+        """
+        return self.value_
 
     cdef int _sanitise_value(IntTag self, value):
         return (value & 0x7FFF_FFFF) - (value & 0x8000_0000)
@@ -358,14 +368,6 @@ cdef class LongTag(BaseIntTag):
     def __copy__(LongTag self):
         return self.__class__(self.value_)
 
-    @property
-    def py_data(LongTag self):
-        """
-        The python representation of the class.
-        The returned data is immutable so changes will not mirror the instance.
-        """
-        return self.value_
-
     def __hash__(LongTag self):
         return hash((self.tag_id, self.value_))
 
@@ -408,6 +410,14 @@ cdef class LongTag(BaseIntTag):
 
     def __bool__(LongTag self):
         return self.value_.__bool__()
+
+    @property
+    def py_int(LongTag self) -> int:
+        """
+        A python int representation of the class.
+        The returned data is immutable so changes will not mirror the instance.
+        """
+        return self.value_
 
     cdef long long _sanitise_value(LongTag self, value):
         return (value & 0x7FFF_FFFF_FFFF_FFFF) - (value & 0x8000_0000_0000_0000)

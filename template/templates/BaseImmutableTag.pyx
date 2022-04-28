@@ -1,14 +1,6 @@
 {{py:from template import include}}
 {{include("BaseTag.pyx", cls_name=cls_name)}}
 
-    @property
-    def py_data({{cls_name}} self):
-        """
-        The python representation of the class.
-        The returned data is immutable so changes will not mirror the instance.
-        """
-        return self.value_
-
     def __hash__({{cls_name}} self):
         return hash((self.tag_id, self.value_))
 

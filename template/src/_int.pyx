@@ -17,7 +17,17 @@ from ._util cimport (
 
 
 cdef class BaseIntTag(BaseNumericTag):
-    pass
+    @property
+    def py_int(BaseNumericTag self) -> int:
+        """
+        A python int representation of the class.
+        The returned data is immutable so changes will not mirror the instance.
+        """
+        raise NotImplementedError
+
+    @property
+    def py_data(self):
+        return self.py_int
 
 
 cdef inline void _read_byte_tag_payload(ByteTag tag, BufferContext buffer, bint little_endian):

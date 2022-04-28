@@ -7,7 +7,18 @@ from ._util cimport write_float, write_double, BufferContext, read_data, to_litt
 
 
 cdef class BaseFloatTag(BaseNumericTag):
-    pass
+    @property
+    def py_float(BaseNumericTag self) -> float:
+        """
+        A python float representation of the class.
+        The returned data is immutable so changes will not mirror the instance.
+        """
+        raise NotImplementedError
+
+    @property
+    def py_data(self):
+        return self.py_float
+
 
 
 cdef inline void _read_float_tag_payload(FloatTag tag, BufferContext buffer, bint little_endian):
@@ -41,14 +52,6 @@ cdef class FloatTag(BaseFloatTag):
 
     def __copy__(FloatTag self):
         return self.__class__(self.value_)
-
-    @property
-    def py_data(FloatTag self):
-        """
-        The python representation of the class.
-        The returned data is immutable so changes will not mirror the instance.
-        """
-        return self.value_
 
     def __hash__(FloatTag self):
         return hash((self.tag_id, self.value_))
@@ -92,6 +95,14 @@ cdef class FloatTag(BaseFloatTag):
 
     def __bool__(FloatTag self):
         return self.value_.__bool__()
+
+    @property
+    def py_float(FloatTag self) -> float:
+        """
+        A python float representation of the class.
+        The returned data is immutable so changes will not mirror the instance.
+        """
+        return self.value_
 
     cdef str _to_snbt(FloatTag self):
         return f"{self.value_}f"
@@ -138,14 +149,6 @@ cdef class DoubleTag(BaseFloatTag):
     def __copy__(DoubleTag self):
         return self.__class__(self.value_)
 
-    @property
-    def py_data(DoubleTag self):
-        """
-        The python representation of the class.
-        The returned data is immutable so changes will not mirror the instance.
-        """
-        return self.value_
-
     def __hash__(DoubleTag self):
         return hash((self.tag_id, self.value_))
 
@@ -188,6 +191,14 @@ cdef class DoubleTag(BaseFloatTag):
 
     def __bool__(DoubleTag self):
         return self.value_.__bool__()
+
+    @property
+    def py_float(DoubleTag self) -> float:
+        """
+        A python float representation of the class.
+        The returned data is immutable so changes will not mirror the instance.
+        """
+        return self.value_
 
     cdef str _to_snbt(DoubleTag self):
         return f"{self.value_}d"

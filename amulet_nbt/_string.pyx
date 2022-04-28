@@ -40,14 +40,6 @@ cdef class StringTag(BaseImmutableTag):
     def __copy__(StringTag self):
         return self.__class__(self.value_)
 
-    @property
-    def py_data(StringTag self):
-        """
-        The python representation of the class.
-        The returned data is immutable so changes will not mirror the instance.
-        """
-        return self.value_
-
     def __hash__(StringTag self):
         return hash((self.tag_id, self.value_))
 
@@ -78,6 +70,19 @@ cdef class StringTag(BaseImmutableTag):
             other_ = other
             return self.value_ < other_.value_
         return NotImplemented
+
+
+    @property
+    def py_str(StringTag self) -> str:
+        """
+        A python string representation of the class.
+        The returned data is immutable so changes will not mirror the instance.
+        """
+        return self.value_
+
+    @property
+    def py_data(self):
+        return self.py_str
 
     def __len__(StringTag self) -> int:
         return len(self.value_)

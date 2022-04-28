@@ -24,6 +24,19 @@ cdef class StringTag(BaseImmutableTag):
 
 {{include("BaseImmutableTag.pyx", cls_name="StringTag")}}
 
+
+    @property
+    def py_str(StringTag self) -> str:
+        """
+        A python string representation of the class.
+        The returned data is immutable so changes will not mirror the instance.
+        """
+        return self.value_
+
+    @property
+    def py_data(self):
+        return self.py_str
+
     def __len__(StringTag self) -> int:
         return len(self.value_)
 

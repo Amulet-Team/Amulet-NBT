@@ -41,7 +41,7 @@ cdef class {{dtype.capitalize()}}ArrayTag(BaseArrayTag):
 {{include("BaseMutableTag.pyx", cls_name=f"{dtype.capitalize()}ArrayTag")}}
 
     @property
-    def py_data({{dtype.capitalize()}}ArrayTag self):
+    def np_array({{dtype.capitalize()}}ArrayTag self):
         """
         A numpy array holding the same internal data.
         Changes to the array will also modify the internal state.

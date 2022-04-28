@@ -16,3 +16,5 @@ class StringTag(BaseImmutableTag):
         raise NotImplementedError
     def __len__(self) -> int:
         raise NotImplementedError
+    @property
+    def py_str(self) -> str: ...

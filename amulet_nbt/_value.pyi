@@ -1,11 +1,10 @@
-from typing import Union, List
+from typing import Union, Any
 from ._dtype import AnyNBT
 
 class BaseTag:
     tag_id: int
     @property
-    def py_data(self):
-        raise NotImplementedError
+    def py_data(self) -> Any: ...
     def to_snbt(self, indent: Union[int, str] = None) -> str: ...
     def to_nbt(
         self,

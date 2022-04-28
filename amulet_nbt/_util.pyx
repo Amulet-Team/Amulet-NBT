@@ -77,11 +77,21 @@ cdef inline str read_string(BufferContext buffer, bint little_endian):
     except:
         return PyUnicode_DecodeCharmap(b, length, CHAR_MAP, "strict")
 
+cdef inline bytes read_bytes(BufferContext buffer, bint little_endian):
+    cdef unsigned short *pointer = <unsigned short *> read_data(buffer, 2)
+    cdef unsigned short length = pointer[0]
+    to_little_endian(&length, 2, little_endian)
+    b = read_data(buffer, length)
+    return PyBytes_FromStringAndSize(b, length)
+
 cdef inline void cwrite(object obj, char*buf, size_t length):
     obj.write(buf[:length])
 
 cdef inline void write_string(str s, object buffer, bint little_endian):
     cdef bytes b = s.encode("utf-8")
+    write_bytes(b, buffer, little_endian)
+
+cdef inline void write_bytes(bytes b, object buffer, bint little_endian):
     cdef char *c = b
     cdef short length = <short> len(b)
     write_short(length, buffer, little_endian)

@@ -11,9 +11,11 @@ cdef void to_little_endian(void *data_buffer, int num_bytes, bint little_endian=
 cdef char read_byte(BufferContext buffer)
 cdef int read_int(BufferContext buffer, bint little_endian)
 cdef str read_string(BufferContext buffer, bint little_endian)
+cdef bytes read_bytes(BufferContext buffer, bint little_endian)
 
 cdef void cwrite(object obj, char*buf, size_t length)
 cdef void write_string(str s, object buffer, bint little_endian)
+cdef void write_bytes(bytes b, object buffer, bint little_endian)
 cdef void write_array(object value, object buffer, char size, bint little_endian)
 cdef void write_byte(char value, object buffer)
 cdef void write_short(short value, object buffer, bint little_endian)

@@ -32,9 +32,6 @@ class TestString(base_type_test.BaseTypeTest):
         self.assertIsInstance(test, expected_type)
         self.assertEqual(expected_value, test)
 
-    def test_contains(self):
-        self.assertIn("test", StringTag("hitesthi"))
-
     def test_eq(self):
         self.assertEqual(StringTag("val1"), StringTag("val1"))
         self.assertNotEqual(StringTag("val1"), StringTag("Val1"))
@@ -47,22 +44,6 @@ class TestString(base_type_test.BaseTypeTest):
         self.assertGreater(StringTag("val2"), StringTag("val1"))
         self.assertGreaterEqual(StringTag("val2"), StringTag("val1"))
         self.assertGreaterEqual(StringTag("val1"), StringTag("val1"))
-
-    def test_getitem(self):
-        self.assertEqual("e", StringTag("test")[1])
-        self.assertEqual("es", StringTag("test")[1:3])
-
-    def test_iter(self):
-        it = iter(StringTag("test"))
-        self.assertEqual("t", next(it))
-        self.assertEqual("e", next(it))
-        self.assertEqual("s", next(it))
-        self.assertEqual("t", next(it))
-        with self.assertRaises(StopIteration):
-            next(it)
-
-    def test_len(self):
-        self.assertEqual(4, len(StringTag("test")))
 
     def test_str(self):
         self.assertStrictEqual(str, "test", str(StringTag("test")))

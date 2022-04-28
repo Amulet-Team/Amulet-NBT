@@ -18,7 +18,8 @@ class TestPyData(BaseTagsTest):
         for dtype in self.float_types:
             self.assertIsInstance(dtype().py_float, float)
             self.assertAlmostEqual(dtype().py_float, 0.0)
-        self.assertIs(StringTag().py_str, "")
+        self.assertEqual(StringTag().py_str, "")
+        self.assertEqual(StringTag().py_bytes, b"")
 
         # Mutable types
         l = ListTag()
@@ -46,7 +47,8 @@ class TestPyData(BaseTagsTest):
         for dtype in self.float_types:
             self.assertIsInstance(dtype(5.5).py_float, float)
             self.assertAlmostEqual(dtype(5.5).py_float, 5.5)
-        self.assertIs(StringTag("value").py_str, "value")
+        self.assertEqual(StringTag("value").py_str, "value")
+        self.assertEqual(StringTag("value").py_bytes, b"value")
 
         # Mutable types
         l = ListTag([StringTag("value")])
@@ -77,7 +79,7 @@ class TestPyData(BaseTagsTest):
         for dtype in self.float_types:
             self.assertIsInstance(dtype().py_data, float)
             self.assertAlmostEqual(dtype().py_data, 0.0)
-        self.assertIs(StringTag().py_data, "")
+        self.assertEqual(StringTag().py_data, b"")
 
         # Mutable types
         l = ListTag()
@@ -105,7 +107,7 @@ class TestPyData(BaseTagsTest):
         for dtype in self.float_types:
             self.assertIsInstance(dtype(5.5).py_data, float)
             self.assertAlmostEqual(dtype(5.5).py_data, 5.5)
-        self.assertIs(StringTag("value").py_data, "value")
+        self.assertEqual(StringTag("value").py_data, b"value")
 
         # Mutable types
         l = ListTag([StringTag("value")])

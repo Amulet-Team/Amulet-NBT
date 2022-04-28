@@ -30,7 +30,12 @@ class TestRepr(unittest.TestCase):
         self.assertEqual(repr(FloatTag(-5)), "FloatTag(-5.0)")
         self.assertEqual(repr(DoubleTag(5)), "DoubleTag(5.0)")
         self.assertEqual(repr(DoubleTag(-5)), "DoubleTag(-5.0)")
+        self.assertEqual(repr(StringTag("")), 'StringTag("")')
         self.assertEqual(repr(StringTag("value")), 'StringTag("value")')
+        self.assertEqual(repr(StringTag(b"value")), 'StringTag("value")')
+        self.assertEqual(repr(StringTag(b"")), 'StringTag("")')
+        self.assertEqual(repr(StringTag(b"\x98")), 'StringTag(b"\\x98")')
+        self.assertEqual(repr(StringTag(b"value\x98")), 'StringTag(b"value\\x98")')
         self.assertEqual(
             repr(ByteArrayTag([-3, -2, -1, 0, 1, 2, 3])),
             "ByteArrayTag([-3, -2, -1, 0, 1, 2, 3])",

@@ -1,6 +1,6 @@
 {{py:
 import numpy
-from template import include, get_clean_docstring
+from template import include
 }}
 cdef inline void _read_{{dtype}}_array_tag_payload({{dtype.capitalize()}}ArrayTag tag, BufferContext buffer, bint little_endian):
     cdef int length = read_int(buffer, little_endian)

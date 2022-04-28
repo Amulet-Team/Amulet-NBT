@@ -5,7 +5,7 @@ from copy import deepcopy
 from ._value cimport BaseImmutableTag
 from ._const cimport ID_STRING
 from ._util cimport write_string, BufferContext, read_string
-{{py:from template import include,gen_wrapper}}
+{{py:from template import include}}
 
 
 cdef inline escape(str string):

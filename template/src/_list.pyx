@@ -9,7 +9,7 @@ from ._const cimport ID_LIST, CommaSpace, CommaNewline
 from ._util cimport write_byte, write_int, BufferContext, read_byte, read_int
 from ._load_nbt cimport load_payload
 from ._dtype import AnyNBT
-{{py:from template import include, gen_wrapper}}
+{{py:from template import include}}
 
 
 cdef inline void _read_list_tag_payload(CyListTag tag, BufferContext buffer, bint little_endian):

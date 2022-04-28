@@ -10,7 +10,7 @@ from ._const cimport ID_END, ID_COMPOUND, CommaSpace, CommaNewline
 from ._util cimport write_byte, BufferContext, read_byte, read_string
 from ._load_nbt cimport load_payload
 from ._dtype import AnyNBT
-{{py:from template import include, gen_wrapper}}
+{{py:from template import include}}
 
 NON_QUOTED_KEY = re.compile('[A-Za-z0-9._+-]+')
 

@@ -68,12 +68,6 @@ cdef BufferContext get_buffer(
         data = filepath_or_buffer.read()
         if not isinstance(data, bytes):
             raise NBTLoadError(f"buffer.read() must return a bytes object. Got {type(data)} instead.")
-        if hasattr(filepath_or_buffer, "close"):
-            filepath_or_buffer.close()
-        elif hasattr(filepath_or_buffer, "open"):
-            print(
-                "[Warning]: Input buffer didn't have close() function. Memory leak may occur!"
-            )
     else:
         raise NBTLoadError("buffer did not have a read method.")
 

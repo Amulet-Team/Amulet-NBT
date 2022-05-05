@@ -19,6 +19,10 @@ try:
         BaseArrayType,
         AnyNBT,
         SNBTType,
+        NBTError,
+        NBTLoadError,
+        NBTFormatError,
+        SNBTParseError,
     )
 except (ImportError, ModuleNotFoundError) as e:
     print("Failed to import cython nbt library.")

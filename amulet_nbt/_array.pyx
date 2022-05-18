@@ -34,9 +34,6 @@ cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
         return self.np_array
 
 
-BaseArrayType = AbstractBaseArrayTag
-
-
 cdef inline void _read_byte_array_tag_payload(ByteArrayTag tag, BufferContext buffer, bint little_endian):
     cdef int length = read_int(buffer, little_endian)
     cdef int byte_length = length * 1

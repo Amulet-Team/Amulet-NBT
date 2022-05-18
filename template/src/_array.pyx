@@ -38,9 +38,6 @@ cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
         return self.np_array
 
 
-BaseArrayType = AbstractBaseArrayTag
-
-
 {{include(
     "AbstractBaseArrayTag.pyx",
     native_data_type='numpy.dtype("int8")',

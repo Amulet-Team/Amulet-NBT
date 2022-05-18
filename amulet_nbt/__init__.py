@@ -1,9 +1,10 @@
 # Base Types
+import warnings
+
 from ._value import (
     AbstractBaseTag,
     AbstractBaseImmutableTag,
     AbstractBaseMutableTag,
-    BaseValueType,
 )
 from ._numeric import AbstractBaseNumericTag
 
@@ -28,7 +29,6 @@ from ._float import (
 )
 from ._array import (
     AbstractBaseArrayTag,
-    BaseArrayType,
     ByteArrayTag,
     IntArrayTag,
     LongArrayTag,
@@ -64,3 +64,16 @@ from ._version import get_versions
 
 __version__ = get_versions()["version"]
 del get_versions
+
+
+def __getattr__(name):
+    if name == "NBTFile":
+        warnings.warn("NBTFile is depreciated. Use NamedTag instead.")
+        return NamedTag
+    elif name == "BaseArrayType":
+        warnings.warn("BaseArrayType is depreciated. Use AbstractBaseArrayTag instead.")
+        return AbstractBaseArrayTag
+    elif name == "BaseValueType":
+        warnings.warn("BaseValueType is depreciated. Use AbstractBaseTag instead.")
+        return AbstractBaseTag
+    raise AttributeError(f"module {__name__} has no attribute {name}")

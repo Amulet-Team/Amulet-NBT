@@ -193,9 +193,6 @@ cdef class AbstractBaseTag(AbstractBase):
         raise NotImplementedError
 
 
-BaseValueType = AbstractBaseTag
-
-
 cdef class AbstractBaseImmutableTag(AbstractBaseTag):
     def __hash__(self):
         raise NotImplementedError

@@ -31,23 +31,7 @@ from ._compound cimport (
     CyCompoundTag,
 )
 
-from ._named_tag cimport (
-    BaseNamedTag,
-    NamedByteTag,
-    NamedShortTag,
-    NamedIntTag,
-    NamedLongTag,
-    NamedFloatTag,
-    NamedDoubleTag,
-    NamedByteArrayTag,
-    NamedStringTag,
-    NamedListTag,
-    NamedCompoundTag,
-    NamedCompoundTag as NBTFile,
-    NamedIntArrayTag,
-    NamedLongArrayTag,
-)
+from ._named_tag cimport NamedTag
 
 # Load functions
 from ._load_snbt cimport from_snbt
-from ._load_nbt import tag_to_named_tag

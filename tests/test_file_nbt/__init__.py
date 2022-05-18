@@ -1,6 +1,6 @@
 import os
 import unittest
-from amulet_nbt import CompoundTag, load_one, from_snbt, tag_to_named_tag, BaseNamedTag
+from amulet_nbt import CompoundTag, load_one, from_snbt, NamedTag
 
 TESTS_DIR = os.path.dirname(__file__)
 DATA_DIR = os.path.join(TESTS_DIR, "src")
@@ -16,7 +16,7 @@ class FileNBTTests(unittest.TestCase):
                     snbt = f_.read()
             else:
                 snbt = path_
-            return tag_to_named_tag(from_snbt(snbt))
+            return NamedTag(from_snbt(snbt))
 
         self._groups = (
             (
@@ -52,7 +52,7 @@ class FileNBTTests(unittest.TestCase):
                 except Exception as e_:
                     print(group1, path1)
                     raise e_
-                self.assertIsInstance(data, BaseNamedTag)
+                self.assertIsInstance(data, NamedTag)
                 self.assertIsInstance(data.tag, CompoundTag)
                 group_data.setdefault(name, {})[group1] = data
 

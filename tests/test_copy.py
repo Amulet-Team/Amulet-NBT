@@ -3,7 +3,7 @@ import copy
 import numpy
 from amulet_nbt import (
     AbstractBaseTag,
-    BaseNamedTag,
+    NamedTag,
     AbstractBaseIntTag,
     ByteTag,
     ShortTag,
@@ -45,10 +45,10 @@ class CopyNBTTests(unittest.TestCase):
         self.assertIsNot(obj, obj_copy2)
         self.assertIsNot(obj, obj_deepcopy)
 
-        if isinstance(obj, BaseNamedTag):
-            obj_copy: BaseNamedTag
-            obj_copy2: BaseNamedTag
-            obj_deepcopy: BaseNamedTag
+        if isinstance(obj, NamedTag):
+            obj_copy: NamedTag
+            obj_copy2: NamedTag
+            obj_deepcopy: NamedTag
             # Check if the names are the same
             self.assertIs(obj.name, obj_copy.name)
             self.assertIs(obj.name, obj_copy2.name)

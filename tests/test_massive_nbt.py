@@ -14,7 +14,7 @@ from amulet_nbt import (
     StringTag,
     ListTag,
     CompoundTag,
-    NamedCompoundTag,
+    NamedTag,
     load_one,
 )
 
@@ -22,7 +22,7 @@ from amulet_nbt import (
 class MassiveNBTTests(unittest.TestCase):
     def test_api(self):
         compound = CompoundTag()
-        named_compound = NamedCompoundTag(compound, name="hello")
+        named_compound = NamedTag(compound, name="hello")
 
         # the nbt objects with no inputs
         compound["emptyByte"] = ByteTag()

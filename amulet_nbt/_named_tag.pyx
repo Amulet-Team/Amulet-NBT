@@ -1,7 +1,7 @@
-from typing import Type
+from typing import Type, TypeVar
 import warnings
 
-from ._value cimport AbstractBaseTag
+from ._value cimport AbstractBaseTag, AbstractBase
 from ._int cimport (
     ByteTag,
     ShortTag,
@@ -20,20 +20,19 @@ from ._array cimport (
 from ._string cimport StringTag
 from ._list import ListTag
 from ._compound import CompoundTag
-from ._dtype import AnyNBT
 
 
-cdef class BaseNamedTag:
-    TagCls: Type[AbstractBaseTag] = None
+T = TypeVar("T")
+
+
+cdef class NamedTag(AbstractBase):
     tag: AbstractBaseTag
 
-    def __init__(self, AbstractBaseTag tag = None, str name = ""):
+    def __init__(self, AbstractBaseTag tag = None, str name not None = ""):
         if tag is None:
-            self.tag = self.TagCls()
-        elif tag.__class__ is self.TagCls:
-            self.tag = tag
+            self.tag = CompoundTag()
         else:
-            raise TypeError(f"Expected type {self.TagCls} but got {tag.__class__}")
+            self.tag = tag
         self.name = name
 
     @property
@@ -46,19 +45,61 @@ cdef class BaseNamedTag:
         warnings.warn("value property is depreciated.")
         self.tag = value
 
-    def to_snbt(self, indent_chr=None) -> str:
-        return self.tag.to_snbt(indent_chr)
+    def _get_tag(self, t: Type[T]) -> T:
+        if not isinstance(self.tag, t):
+            raise TypeError(f"Expected tag to be of type {t} but got {type(self.tag)}")
+        return self.tag
+
+    def get_byte(self) -> ByteTag:
+        return self._get_tag(ByteTag)
+
+    def get_short(self) -> ShortTag:
+        return self._get_tag(ShortTag)
+
+    def get_int(self) -> IntTag:
+        return self._get_tag(IntTag)
+
+    def get_long(self) -> LongTag:
+        return self._get_tag(LongTag)
+
+    def get_float(self) -> FloatTag:
+        return self._get_tag(FloatTag)
+
+    def get_double(self) -> DoubleTag:
+        return self._get_tag(DoubleTag)
+
+    def get_string(self) -> StringTag:
+        return self._get_tag(StringTag)
+
+    def get_list(self) -> ListTag:
+        return self._get_tag(ListTag)
+
+    def get_compound(self) -> CompoundTag:
+        return self._get_tag(CompoundTag)
+
+    def get_byte_array(self) -> ByteArrayTag:
+        return self._get_tag(ByteArrayTag)
+
+    def get_int_array(self) -> IntArrayTag:
+        return self._get_tag(IntArrayTag)
+
+    def get_long_array(self) -> LongArrayTag:
+        return self._get_tag(LongArrayTag)
+
+    cpdef str to_snbt(self, object indent=None, object indent_chr=None):
+        return self.tag.to_snbt(indent=indent, indent_chr=indent_chr)
 
     def to_nbt(
         self,
         *,
         bint compressed=True,
         bint little_endian=False,
+        str name="",
     ):
         return self.tag.to_nbt(
             compressed=compressed,
             little_endian=little_endian,
-            name=self.name
+            name=name or self.name
         )
 
     def save_to(
@@ -67,21 +108,22 @@ cdef class BaseNamedTag:
         *,
         bint compressed=True,
         bint little_endian=False,
+        str name="",
     ):
         return self.tag.save_to(
             filepath_or_buffer,
             compressed=compressed,
             little_endian=little_endian,
-            name=self.name
+            name=name or self.name
         )
 
     def __eq__(self, other):
-        if isinstance(other, BaseNamedTag):
+        if isinstance(other, NamedTag):
             return self.name == other.name and self.tag == other.tag
         return NotImplemented
 
     def __repr__(self):
-        return f'{self.__class__.__name__}({repr(self.tag)}, "{self.name}")'
+        return f'NamedTag({repr(self.tag)}, "{self.name}")'
 
     def __iter__(self):
         yield self.name
@@ -89,103 +131,3 @@ cdef class BaseNamedTag:
 
     def __getitem__(self, int item):
         return (self.name, self.value)[item]
-
-
-cdef class NamedByteTag(BaseNamedTag):
-    tag: ByteTag
-    TagCls = ByteTag
-
-
-cdef class NamedShortTag(BaseNamedTag):
-    tag: ShortTag
-    TagCls = ShortTag
-
-
-cdef class NamedIntTag(BaseNamedTag):
-    tag: IntTag
-    TagCls = IntTag
-
-
-cdef class NamedLongTag(BaseNamedTag):
-    tag: LongTag
-    TagCls = LongTag
-
-
-cdef class NamedFloatTag(BaseNamedTag):
-    tag: FloatTag
-    TagCls = FloatTag
-
-
-cdef class NamedDoubleTag(BaseNamedTag):
-    tag: DoubleTag
-    TagCls = DoubleTag
-
-
-cdef class NamedByteArrayTag(BaseNamedTag):
-    tag: ByteArrayTag
-    TagCls = ByteArrayTag
-
-
-cdef class NamedStringTag(BaseNamedTag):
-    tag: StringTag
-    TagCls = StringTag
-
-
-cdef class NamedListTag(BaseNamedTag):
-    tag: ListTag
-    TagCls = ListTag
-
-
-cdef class NamedCompoundTag(BaseNamedTag):
-    tag: CompoundTag
-    TagCls = CompoundTag
-
-    def __len__(self) -> int:
-        warnings.warn("tag methods in NBTFile/NamedCompoundTag are depreciated. Use tag attribute instead.")
-        return self.tag.__len__()
-
-    def keys(self):
-        warnings.warn("tag methods in NBTFile/NamedCompoundTag are depreciated. Use tag attribute instead.")
-        return self.tag.keys()
-
-    def values(self):
-        warnings.warn("tag methods in NBTFile/NamedCompoundTag are depreciated. Use tag attribute instead.")
-        self.tag.values()
-
-    def items(self):
-        warnings.warn("tag methods in NBTFile/NamedCompoundTag are depreciated. Use tag attribute instead.")
-        return self.tag.items()
-
-    def __getitem__(self, key: str) -> AnyNBT:
-        warnings.warn("tag methods in NBTFile/NamedCompoundTag are depreciated. Use tag attribute instead.")
-        return self.tag[key]
-
-    def __setitem__(self, key: str, tag: AnyNBT):
-        warnings.warn("tag methods in NBTFile/NamedCompoundTag are depreciated. Use tag attribute instead.")
-        self.tag[key] = tag
-
-    def __delitem__(self, key: str):
-        warnings.warn("tag methods in NBTFile/NamedCompoundTag are depreciated. Use tag attribute instead.")
-        del self.tag[key]
-
-    def __contains__(self, key: str) -> bool:
-        warnings.warn("tag methods in NBTFile/NamedCompoundTag are depreciated. Use tag attribute instead.")
-        return key in self.tag
-
-    def pop(self, k, default=None) -> AnyNBT:
-        warnings.warn("tag methods in NBTFile/NamedCompoundTag are depreciated. Use tag attribute instead.")
-        return self.tag.pop(k, default)
-
-    def get(self, k, default=None) -> AnyNBT:
-        warnings.warn("tag methods in NBTFile/NamedCompoundTag are depreciated. Use tag attribute instead.")
-        return self.tag.get(k, default)
-
-
-cdef class NamedIntArrayTag(BaseNamedTag):
-    tag: IntArrayTag
-    TagCls = IntArrayTag
-
-
-cdef class NamedLongArrayTag(BaseNamedTag):
-    tag: LongArrayTag
-    TagCls = LongArrayTag

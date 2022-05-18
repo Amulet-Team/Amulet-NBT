@@ -41,22 +41,7 @@ from ._string import (
     StringTag as TAG_String,
 )
 
-from ._named_tag import (
-    BaseNamedTag,
-    NamedByteTag,
-    NamedShortTag,
-    NamedIntTag,
-    NamedLongTag,
-    NamedFloatTag,
-    NamedDoubleTag,
-    NamedByteArrayTag,
-    NamedStringTag,
-    NamedListTag,
-    NamedCompoundTag,
-    NamedCompoundTag as NBTFile,
-    NamedIntArrayTag,
-    NamedLongArrayTag,
-)
+from ._named_tag import NamedTag
 
 from ._list import (
     ListTag,
@@ -68,7 +53,7 @@ from ._compound import (
 )
 
 # Load functions
-from ._load_nbt import load, load_one, load_many, tag_to_named_tag
+from ._load_nbt import load, load_one, load_many
 from ._load_snbt import from_snbt
 
 from ._errors import NBTError, NBTLoadError, NBTFormatError, SNBTParseError

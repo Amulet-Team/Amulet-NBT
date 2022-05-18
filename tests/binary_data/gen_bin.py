@@ -18,7 +18,7 @@ from amulet_nbt import (
     StringTag,
     ListTag,
     CompoundTag,
-    tag_to_named_tag,
+    NamedTag,
 )
 
 names = ("", "name")
@@ -32,7 +32,7 @@ tags: Tuple[Tuple[Tuple[Type[AbstractBaseTag], ...], Tuple[Any, ...]], ...] = (
 
 
 def print_line(name: str, tag: AbstractBaseTag):
-    named_tag = tag_to_named_tag(tag, name)
+    named_tag = NamedTag(tag, name)
     print(
         f"("
         f"{repr(named_tag)}, "

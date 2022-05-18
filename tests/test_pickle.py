@@ -17,8 +17,7 @@ from amulet_nbt import (
     StringTag,
     ListTag,
     CompoundTag,
-    BaseNamedTag,
-    tag_to_named_tag,
+    NamedTag,
 )
 
 
@@ -30,7 +29,7 @@ class PickleNBTTests(unittest.TestCase):
         self.assertEqual(obj, obj2)
         self.assertIsNot(obj, obj2)
 
-        if isinstance(obj, BaseNamedTag):
+        if isinstance(obj, NamedTag):
             tag = obj.tag
         elif isinstance(obj, AbstractBaseTag):
             tag = obj
@@ -60,18 +59,18 @@ class PickleNBTTests(unittest.TestCase):
         self._test_pickle(IntArrayTag([1, 2, 3]))
         self._test_pickle(LongArrayTag([1, 2, 3]))
 
-        self._test_pickle(tag_to_named_tag(ByteTag(10)))
-        self._test_pickle(tag_to_named_tag(ShortTag(10)))
-        self._test_pickle(tag_to_named_tag(IntTag(10)))
-        self._test_pickle(tag_to_named_tag(LongTag(10)))
-        self._test_pickle(tag_to_named_tag(FloatTag(10)))
-        self._test_pickle(tag_to_named_tag(DoubleTag(10)))
-        self._test_pickle(tag_to_named_tag(ByteArrayTag([1, 2, 3])))
-        self._test_pickle(tag_to_named_tag(StringTag()))
-        self._test_pickle(tag_to_named_tag(ListTag()))
-        self._test_pickle(tag_to_named_tag(CompoundTag()))
-        self._test_pickle(tag_to_named_tag(IntArrayTag([1, 2, 3])))
-        self._test_pickle(tag_to_named_tag(LongArrayTag([1, 2, 3])))
+        self._test_pickle(NamedTag(ByteTag(10)))
+        self._test_pickle(NamedTag(ShortTag(10)))
+        self._test_pickle(NamedTag(IntTag(10)))
+        self._test_pickle(NamedTag(LongTag(10)))
+        self._test_pickle(NamedTag(FloatTag(10)))
+        self._test_pickle(NamedTag(DoubleTag(10)))
+        self._test_pickle(NamedTag(ByteArrayTag([1, 2, 3])))
+        self._test_pickle(NamedTag(StringTag()))
+        self._test_pickle(NamedTag(ListTag()))
+        self._test_pickle(NamedTag(CompoundTag()))
+        self._test_pickle(NamedTag(IntArrayTag([1, 2, 3])))
+        self._test_pickle(NamedTag(LongArrayTag([1, 2, 3])))
 
 
 if __name__ == "__main__":

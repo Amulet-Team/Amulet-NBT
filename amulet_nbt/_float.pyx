@@ -1,14 +1,14 @@
 from io import BytesIO
 from copy import deepcopy
 
-from ._numeric cimport BaseNumericTag
+from ._numeric cimport AbstractBaseNumericTag
 from ._const cimport ID_FLOAT, ID_DOUBLE
 from ._util cimport write_float, write_double, BufferContext, read_data, to_little_endian, read_string
 
 
-cdef class BaseFloatTag(BaseNumericTag):
+cdef class AbstractBaseFloatTag(AbstractBaseNumericTag):
     @property
-    def py_float(BaseNumericTag self) -> float:
+    def py_float(AbstractBaseNumericTag self) -> float:
         """
         A python float representation of the class.
         The returned data is immutable so changes will not mirror the instance.
@@ -27,7 +27,7 @@ cdef inline void _read_float_tag_payload(FloatTag tag, BufferContext buffer, bin
     to_little_endian(&tag.value_, 4, little_endian)
 
 
-cdef class FloatTag(BaseFloatTag):
+cdef class FloatTag(AbstractBaseFloatTag):
     """A class that behaves like a float but is stored as a single precision float."""
     tag_id = ID_FLOAT
 
@@ -123,7 +123,7 @@ cdef inline void _read_double_tag_payload(DoubleTag tag, BufferContext buffer, b
     to_little_endian(&tag.value_, 8, little_endian)
 
 
-cdef class DoubleTag(BaseFloatTag):
+cdef class DoubleTag(AbstractBaseFloatTag):
     """A class that behaves like a float but is stored as a double precision float."""
     tag_id = ID_DOUBLE
 

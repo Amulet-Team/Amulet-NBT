@@ -7,12 +7,12 @@ from tests import base_type_test
 
 from amulet_nbt import (
     AbstractBaseTag,
-    BaseNumericTag,
-    BaseIntTag,
-    BaseFloatTag,
+    AbstractBaseNumericTag,
+    AbstractBaseIntTag,
+    AbstractBaseFloatTag,
 )
 
-AnyNum = Union[int, float, BaseNumericTag]
+AnyNum = Union[int, float, AbstractBaseNumericTag]
 
 
 class TestNumerical(base_type_test.BaseTypeTest):
@@ -34,7 +34,7 @@ class TestNumerical(base_type_test.BaseTypeTest):
                         msg=f"{tag_cls.__name__}({repr(tag)})",
                     )
             for inp in self.not_nbt + tuple(self._iter_instance()):
-                if isinstance(inp, (bool, int, float, BaseNumericTag)):
+                if isinstance(inp, (bool, int, float, AbstractBaseNumericTag)):
                     tag_cls(inp)
                 else:
                     with self.assertRaises(
@@ -56,9 +56,9 @@ class TestNumerical(base_type_test.BaseTypeTest):
 
     @staticmethod
     def _fix_type(tag: AnyNum, val: AnyNum):
-        if isinstance(tag, BaseIntTag):
+        if isinstance(tag, AbstractBaseIntTag):
             val = int(val)
-        elif isinstance(tag, BaseFloatTag):
+        elif isinstance(tag, AbstractBaseFloatTag):
             val = float(val)
         return val
 
@@ -77,7 +77,8 @@ class TestNumerical(base_type_test.BaseTypeTest):
                 ):
                     continue
                 if tag1.__class__ is tag2.__class__ or (
-                    not isinstance(tag1, AbstractBaseTag) and not isinstance(tag2, AbstractBaseTag)
+                    not isinstance(tag1, AbstractBaseTag)
+                    and not isinstance(tag2, AbstractBaseTag)
                 ):
                     test = op(tag1, tag2)
                 else:

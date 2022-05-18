@@ -1,6 +1,6 @@
 from ._value import AbstractBaseImmutableTag
 
-class BaseNumericTag(AbstractBaseImmutableTag):
+class AbstractBaseNumericTag(AbstractBaseImmutableTag):
     def __int__(self) -> int:
         raise NotImplementedError
     def __float__(self) -> float:

@@ -10,7 +10,7 @@ cdef inline void _read_{{dtype}}_array_tag_payload({{dtype.capitalize()}}ArrayTa
     tag.value_ = numpy.array(numpy.frombuffer(arr[:byte_length], dtype=data_type, count=length), {{native_data_type}}).ravel()
 
 
-cdef class {{dtype.capitalize()}}ArrayTag(BaseArrayTag):
+cdef class {{dtype.capitalize()}}ArrayTag(AbstractBaseArrayTag):
     """This class behaves like an 1D Numpy signed integer array with each value stored in a {{dtype}}."""
     tag_id = ID_{{dtype.upper()}}_ARRAY
 

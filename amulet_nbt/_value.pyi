@@ -1,7 +1,6 @@
 from typing import Union, Any
 from ._dtype import AnyNBT
 
-
 class AbstractBase:
     def to_snbt(self, indent: Union[int, str] = None) -> str: ...
     def to_nbt(
@@ -14,7 +13,6 @@ class AbstractBase:
     def save_to(
         self, filepath_or_buffer=None, *, compressed=True, little_endian=False, name=""
     ) -> bytes: ...
-
 
 class AbstractBaseTag(AbstractBase):
     tag_id: int
@@ -34,11 +32,9 @@ class AbstractBaseTag(AbstractBase):
     def __copy__(self):
         raise NotImplementedError
 
-
 class AbstractBaseImmutableTag(AbstractBaseTag):
     def __hash__(self) -> int:
         raise NotImplementedError
-
 
 class AbstractBaseMutableTag(AbstractBaseTag):
     __hash__: None

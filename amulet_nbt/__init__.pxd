@@ -1,22 +1,22 @@
 # Base Types
 from ._value cimport AbstractBaseTag, AbstractBaseImmutableTag, AbstractBaseMutableTag
-from ._numeric cimport BaseNumericTag
+from ._numeric cimport AbstractBaseNumericTag
 
 # Types
 from ._int cimport (
-    BaseIntTag,
+    AbstractBaseIntTag,
     ByteTag,
     ShortTag,
     IntTag,
     LongTag,
 )
 from ._float cimport (
-    BaseFloatTag,
+    AbstractBaseFloatTag,
     FloatTag,
     DoubleTag,
 )
 from ._array cimport (
-    BaseArrayTag,
+    AbstractBaseArrayTag,
     ByteArrayTag,
     IntArrayTag,
     LongArrayTag,

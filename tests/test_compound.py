@@ -3,9 +3,9 @@ import unittest
 from tests import base_type_test
 
 from amulet_nbt import (
-    BaseNumericTag,
-    BaseIntTag,
-    BaseFloatTag,
+    AbstractBaseNumericTag,
+    AbstractBaseIntTag,
+    AbstractBaseFloatTag,
     ByteTag,
     ShortTag,
     IntTag,

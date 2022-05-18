@@ -4,15 +4,15 @@ import numpy
 from amulet_nbt import (
     AbstractBaseTag,
     BaseNamedTag,
-    BaseIntTag,
+    AbstractBaseIntTag,
     ByteTag,
     ShortTag,
     IntTag,
-    BaseFloatTag,
+    AbstractBaseFloatTag,
     LongTag,
     FloatTag,
     DoubleTag,
-    BaseArrayTag,
+    AbstractBaseArrayTag,
     ByteArrayTag,
     IntArrayTag,
     LongArrayTag,
@@ -56,7 +56,7 @@ class CopyNBTTests(unittest.TestCase):
             self.assertIs(obj.name, obj_deepcopy.name)
 
         # Check the values match
-        if isinstance(obj, BaseArrayTag):
+        if isinstance(obj, AbstractBaseArrayTag):
             numpy.testing.assert_array_equal(obj.py_data, obj_copy.py_data)
             numpy.testing.assert_array_equal(obj.py_data, obj_copy2.py_data)
             numpy.testing.assert_array_equal(obj.py_data, obj_deepcopy.py_data)
@@ -66,12 +66,14 @@ class CopyNBTTests(unittest.TestCase):
             self.assertEqual(obj.py_data, obj_deepcopy.py_data)
 
         # Check if the values are the same
-        if isinstance(obj, (BaseFloatTag, BaseArrayTag, ListTag, CompoundTag)):
+        if isinstance(
+            obj, (AbstractBaseFloatTag, AbstractBaseArrayTag, ListTag, CompoundTag)
+        ):
             # some tags always create copies
             self.assertIsNot(obj.py_data, obj_copy.py_data)
             self.assertIsNot(obj.py_data, obj_copy2.py_data)
             self.assertIsNot(obj.py_data, obj_deepcopy.py_data)
-        elif isinstance(obj, (BaseIntTag, StringTag)):
+        elif isinstance(obj, (AbstractBaseIntTag, StringTag)):
             # python does some caching
             self.assertIs(obj.py_data, obj_copy.py_data)
             self.assertIs(obj.py_data, obj_copy2.py_data)

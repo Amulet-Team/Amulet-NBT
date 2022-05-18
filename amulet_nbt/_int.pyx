@@ -1,7 +1,7 @@
 from io import BytesIO
 from copy import deepcopy
 
-from ._numeric cimport BaseNumericTag
+from ._numeric cimport AbstractBaseNumericTag
 from ._const cimport ID_BYTE, ID_SHORT, ID_INT, ID_LONG
 from ._util cimport (
     write_byte,
@@ -15,9 +15,9 @@ from ._util cimport (
 )
 
 
-cdef class BaseIntTag(BaseNumericTag):
+cdef class AbstractBaseIntTag(AbstractBaseNumericTag):
     @property
-    def py_int(BaseNumericTag self) -> int:
+    def py_int(AbstractBaseNumericTag self) -> int:
         """
         A python int representation of the class.
         The returned data is immutable so changes will not mirror the instance.
@@ -33,7 +33,7 @@ cdef inline void _read_byte_tag_payload(ByteTag tag, BufferContext buffer, bint 
     tag.value_ = read_byte(buffer)
 
 
-cdef class ByteTag(BaseIntTag):
+cdef class ByteTag(AbstractBaseIntTag):
     """
     A class that behaves like an int but is stored in 1 byte.
     Can Store numbers between -(2^7) and (2^7 - 1)
@@ -135,7 +135,7 @@ cdef inline void _read_short_tag_payload(ShortTag tag, BufferContext buffer, bin
     to_little_endian(&tag.value_, 2, little_endian)
 
 
-cdef class ShortTag(BaseIntTag):
+cdef class ShortTag(AbstractBaseIntTag):
     """
     A class that behaves like an int but is stored in 2 bytes.
     Can Store numbers between -(2^15) and (2^15 - 1)
@@ -237,7 +237,7 @@ cdef inline void _read_int_tag_payload(IntTag tag, BufferContext buffer, bint li
     to_little_endian(&tag.value_, 4, little_endian)
 
 
-cdef class IntTag(BaseIntTag):
+cdef class IntTag(AbstractBaseIntTag):
     """
     A class that behaves like an int but is stored in 4 bytes.
     Can Store numbers between -(2^31) and (2^31 - 1)
@@ -339,7 +339,7 @@ cdef inline void _read_long_tag_payload(LongTag tag, BufferContext buffer, bint 
     to_little_endian(&tag.value_, 8, little_endian)
 
 
-cdef class LongTag(BaseIntTag):
+cdef class LongTag(AbstractBaseIntTag):
     """
     A class that behaves like an int but is stored in 8 bytes.
     Can Store numbers between -(2^63) and (2^63 - 1)

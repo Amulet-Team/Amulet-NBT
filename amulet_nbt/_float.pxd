@@ -1,10 +1,10 @@
-from ._numeric cimport BaseNumericTag
+from ._numeric cimport AbstractBaseNumericTag
 
-cdef class BaseFloatTag(BaseNumericTag):
+cdef class AbstractBaseFloatTag(AbstractBaseNumericTag):
     pass
 
-cdef class FloatTag(BaseFloatTag):
+cdef class FloatTag(AbstractBaseFloatTag):
     cdef float value_
 
-cdef class DoubleTag(BaseFloatTag):
+cdef class DoubleTag(AbstractBaseFloatTag):
     cdef double value_

@@ -12,21 +12,21 @@ from template import include
 }}
 
 
-cdef class BaseArrayTag(AbstractBaseMutableTag):
-    def __getitem__(BaseArrayTag self, item):
+cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
+    def __getitem__(AbstractBaseArrayTag self, item):
         raise NotImplementedError
 
-    def __setitem__(BaseArrayTag self, key, value):
+    def __setitem__(AbstractBaseArrayTag self, key, value):
         raise NotImplementedError
 
-    def __array__(BaseArrayTag self, dtype=None):
+    def __array__(AbstractBaseArrayTag self, dtype=None):
         raise NotImplementedError
 
-    def __len__(BaseArrayTag self):
+    def __len__(AbstractBaseArrayTag self):
         raise NotImplementedError
 
     @property
-    def np_array(BaseArrayTag self):
+    def np_array(AbstractBaseArrayTag self):
         """
         A numpy array holding the same internal data.
         Changes to the array will also modify the internal state.
@@ -38,11 +38,11 @@ cdef class BaseArrayTag(AbstractBaseMutableTag):
         return self.np_array
 
 
-BaseArrayType = BaseArrayTag
+BaseArrayType = AbstractBaseArrayTag
 
 
 {{include(
-    "BaseArrayTag.pyx",
+    "AbstractBaseArrayTag.pyx",
     native_data_type='numpy.dtype("int8")',
     big_endian_data_type='numpy.dtype("int8")',
     little_endian_data_type='numpy.dtype("int8")',
@@ -54,7 +54,7 @@ BaseArrayType = BaseArrayTag
 
 
 {{include(
-    "BaseArrayTag.pyx",
+    "AbstractBaseArrayTag.pyx",
     native_data_type='numpy.int32',
     big_endian_data_type='numpy.dtype(">i4")',
     little_endian_data_type='numpy.dtype("<i4")',
@@ -66,7 +66,7 @@ BaseArrayType = BaseArrayTag
 
 
 {{include(
-    "BaseArrayTag.pyx",
+    "AbstractBaseArrayTag.pyx",
     native_data_type='numpy.int64',
     big_endian_data_type='numpy.dtype(">i8")',
     little_endian_data_type='numpy.dtype("<i8")',

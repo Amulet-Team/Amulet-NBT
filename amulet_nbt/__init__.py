@@ -5,11 +5,11 @@ from ._value import (
     AbstractBaseMutableTag,
     BaseValueType,
 )
-from ._numeric import BaseNumericTag
+from ._numeric import AbstractBaseNumericTag
 
 # Types
 from ._int import (
-    BaseIntTag,
+    AbstractBaseIntTag,
     ByteTag,
     ShortTag,
     IntTag,
@@ -20,14 +20,14 @@ from ._int import (
     LongTag as TAG_Long,
 )
 from ._float import (
-    BaseFloatTag,
+    AbstractBaseFloatTag,
     FloatTag,
     DoubleTag,
     FloatTag as TAG_Float,
     DoubleTag as TAG_Double,
 )
 from ._array import (
-    BaseArrayTag,
+    AbstractBaseArrayTag,
     BaseArrayType,
     ByteArrayTag,
     IntArrayTag,

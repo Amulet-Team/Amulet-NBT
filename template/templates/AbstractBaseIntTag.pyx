@@ -1,5 +1,5 @@
 {{py:from template import include}}
-{{include("BaseNumericTag.pyx", cls_name=cls_name)}}
+{{include("AbstractBaseNumericTag.pyx", cls_name=cls_name)}}
 
     @property
     def py_int({{cls_name}} self) -> int:

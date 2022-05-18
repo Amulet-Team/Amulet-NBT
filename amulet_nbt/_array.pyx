@@ -8,21 +8,21 @@ from ._const cimport CommaSpace, ID_BYTE_ARRAY, ID_INT_ARRAY, ID_LONG_ARRAY
 from ._util cimport write_array, BufferContext, read_int, read_data
 
 
-cdef class BaseArrayTag(AbstractBaseMutableTag):
-    def __getitem__(BaseArrayTag self, item):
+cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
+    def __getitem__(AbstractBaseArrayTag self, item):
         raise NotImplementedError
 
-    def __setitem__(BaseArrayTag self, key, value):
+    def __setitem__(AbstractBaseArrayTag self, key, value):
         raise NotImplementedError
 
-    def __array__(BaseArrayTag self, dtype=None):
+    def __array__(AbstractBaseArrayTag self, dtype=None):
         raise NotImplementedError
 
-    def __len__(BaseArrayTag self):
+    def __len__(AbstractBaseArrayTag self):
         raise NotImplementedError
 
     @property
-    def np_array(BaseArrayTag self):
+    def np_array(AbstractBaseArrayTag self):
         """
         A numpy array holding the same internal data.
         Changes to the array will also modify the internal state.
@@ -34,7 +34,7 @@ cdef class BaseArrayTag(AbstractBaseMutableTag):
         return self.np_array
 
 
-BaseArrayType = BaseArrayTag
+BaseArrayType = AbstractBaseArrayTag
 
 
 cdef inline void _read_byte_array_tag_payload(ByteArrayTag tag, BufferContext buffer, bint little_endian):
@@ -45,7 +45,7 @@ cdef inline void _read_byte_array_tag_payload(ByteArrayTag tag, BufferContext bu
     tag.value_ = numpy.array(numpy.frombuffer(arr[:byte_length], dtype=data_type, count=length), numpy.dtype("int8")).ravel()
 
 
-cdef class ByteArrayTag(BaseArrayTag):
+cdef class ByteArrayTag(AbstractBaseArrayTag):
     """This class behaves like an 1D Numpy signed integer array with each value stored in a byte."""
     tag_id = ID_BYTE_ARRAY
 
@@ -132,7 +132,7 @@ cdef inline void _read_int_array_tag_payload(IntArrayTag tag, BufferContext buff
     tag.value_ = numpy.array(numpy.frombuffer(arr[:byte_length], dtype=data_type, count=length), numpy.int32).ravel()
 
 
-cdef class IntArrayTag(BaseArrayTag):
+cdef class IntArrayTag(AbstractBaseArrayTag):
     """This class behaves like an 1D Numpy signed integer array with each value stored in a int."""
     tag_id = ID_INT_ARRAY
 
@@ -219,7 +219,7 @@ cdef inline void _read_long_array_tag_payload(LongArrayTag tag, BufferContext bu
     tag.value_ = numpy.array(numpy.frombuffer(arr[:byte_length], dtype=data_type, count=length), numpy.int64).ravel()
 
 
-cdef class LongArrayTag(BaseArrayTag):
+cdef class LongArrayTag(AbstractBaseArrayTag):
     """This class behaves like an 1D Numpy signed integer array with each value stored in a long."""
     tag_id = ID_LONG_ARRAY
 

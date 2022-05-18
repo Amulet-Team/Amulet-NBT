@@ -1,7 +1,7 @@
 from io import BytesIO
 from copy import deepcopy
 
-from ._numeric cimport BaseNumericTag
+from ._numeric cimport AbstractBaseNumericTag
 from ._const cimport ID_BYTE, ID_SHORT, ID_INT, ID_LONG
 from ._util cimport (
     write_byte,
@@ -16,9 +16,9 @@ from ._util cimport (
 {{py:from template import include}}
 
 
-cdef class BaseIntTag(BaseNumericTag):
+cdef class AbstractBaseIntTag(AbstractBaseNumericTag):
     @property
-    def py_int(BaseNumericTag self) -> int:
+    def py_int(AbstractBaseNumericTag self) -> int:
         """
         A python int representation of the class.
         The returned data is immutable so changes will not mirror the instance.
@@ -34,7 +34,7 @@ cdef inline void _read_byte_tag_payload(ByteTag tag, BufferContext buffer, bint 
     tag.value_ = read_byte(buffer)
 
 
-cdef class ByteTag(BaseIntTag):
+cdef class ByteTag(AbstractBaseIntTag):
     """
     A class that behaves like an int but is stored in 1 byte.
     Can Store numbers between -(2^7) and (2^7 - 1)
@@ -44,7 +44,7 @@ cdef class ByteTag(BaseIntTag):
     def __init__(ByteTag self, value = 0):
         self.value_ = self._sanitise_value(int(value))
 
-{{include("BaseIntTag.pyx", cls_name="ByteTag")}}
+{{include("AbstractBaseIntTag.pyx", cls_name="ByteTag")}}
 
     cdef char _sanitise_value(ByteTag self, value):
         return (value & 0x7F) - (value & 0x80)
@@ -68,7 +68,7 @@ cdef inline void _read_short_tag_payload(ShortTag tag, BufferContext buffer, bin
     to_little_endian(&tag.value_, 2, little_endian)
 
 
-cdef class ShortTag(BaseIntTag):
+cdef class ShortTag(AbstractBaseIntTag):
     """
     A class that behaves like an int but is stored in 2 bytes.
     Can Store numbers between -(2^15) and (2^15 - 1)
@@ -78,7 +78,7 @@ cdef class ShortTag(BaseIntTag):
     def __init__(ShortTag self, value = 0):
         self.value_ = self._sanitise_value(int(value))
 
-{{include("BaseIntTag.pyx", cls_name="ShortTag")}}
+{{include("AbstractBaseIntTag.pyx", cls_name="ShortTag")}}
 
     cdef short _sanitise_value(ShortTag self, value):
         return (value & 0x7FFF) - (value & 0x8000)
@@ -102,7 +102,7 @@ cdef inline void _read_int_tag_payload(IntTag tag, BufferContext buffer, bint li
     to_little_endian(&tag.value_, 4, little_endian)
 
 
-cdef class IntTag(BaseIntTag):
+cdef class IntTag(AbstractBaseIntTag):
     """
     A class that behaves like an int but is stored in 4 bytes.
     Can Store numbers between -(2^31) and (2^31 - 1)
@@ -112,7 +112,7 @@ cdef class IntTag(BaseIntTag):
     def __init__(IntTag self, value = 0):
         self.value_ = self._sanitise_value(int(value))
 
-{{include("BaseIntTag.pyx", cls_name="IntTag")}}
+{{include("AbstractBaseIntTag.pyx", cls_name="IntTag")}}
 
     cdef int _sanitise_value(IntTag self, value):
         return (value & 0x7FFF_FFFF) - (value & 0x8000_0000)
@@ -136,7 +136,7 @@ cdef inline void _read_long_tag_payload(LongTag tag, BufferContext buffer, bint 
     to_little_endian(&tag.value_, 8, little_endian)
 
 
-cdef class LongTag(BaseIntTag):
+cdef class LongTag(AbstractBaseIntTag):
     """
     A class that behaves like an int but is stored in 8 bytes.
     Can Store numbers between -(2^63) and (2^63 - 1)
@@ -146,7 +146,7 @@ cdef class LongTag(BaseIntTag):
     def __init__(LongTag self, value = 0):
         self.value_ = self._sanitise_value(int(value))
 
-{{include("BaseIntTag.pyx", cls_name="LongTag")}}
+{{include("AbstractBaseIntTag.pyx", cls_name="LongTag")}}
 
     cdef long long _sanitise_value(LongTag self, value):
         return (value & 0x7FFF_FFFF_FFFF_FFFF) - (value & 0x8000_0000_0000_0000)

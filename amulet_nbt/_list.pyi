@@ -1,10 +1,10 @@
 from typing import Iterable, overload, List
 from collections.abc import MutableSequence
 
-from ._value import BaseMutableTag
+from ._value import AbstractBaseMutableTag
 from ._dtype import AnyNBT
 
-class ListTag(BaseMutableTag, MutableSequence[AnyNBT]):
+class ListTag(AbstractBaseMutableTag, MutableSequence[AnyNBT]):
     tag_id: int
     list_data_type: int
     @overload

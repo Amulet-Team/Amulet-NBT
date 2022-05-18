@@ -38,7 +38,7 @@ cdef class {{dtype.capitalize()}}ArrayTag(BaseArrayTag):
         _read_{{dtype}}_array_tag_payload(tag, buffer, little_endian)
         return tag
 
-{{include("BaseMutableTag.pyx", cls_name=f"{dtype.capitalize()}ArrayTag")}}
+{{include("AbstractBaseMutableTag.pyx", cls_name=f"{dtype.capitalize()}ArrayTag")}}
 
     @property
     def np_array({{dtype.capitalize()}}ArrayTag self):

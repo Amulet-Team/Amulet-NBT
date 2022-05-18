@@ -1,8 +1,8 @@
 # Base Types
 from ._value import (
-    BaseTag,
-    BaseImmutableTag,
-    BaseMutableTag,
+    AbstractBaseTag,
+    AbstractBaseImmutableTag,
+    AbstractBaseMutableTag,
     BaseValueType,
 )
 from ._numeric import BaseNumericTag

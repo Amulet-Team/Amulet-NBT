@@ -1,7 +1,7 @@
 from typing import Type
 import warnings
 
-from ._value cimport BaseTag
+from ._value cimport AbstractBaseTag
 from ._int cimport (
     ByteTag,
     ShortTag,
@@ -24,10 +24,10 @@ from ._dtype import AnyNBT
 
 
 cdef class BaseNamedTag:
-    TagCls: Type[BaseTag] = None
-    tag: BaseTag
+    TagCls: Type[AbstractBaseTag] = None
+    tag: AbstractBaseTag
 
-    def __init__(self, BaseTag tag = None, str name = ""):
+    def __init__(self, AbstractBaseTag tag = None, str name = ""):
         if tag is None:
             self.tag = self.TagCls()
         elif tag.__class__ is self.TagCls:
@@ -42,7 +42,7 @@ cdef class BaseNamedTag:
         return self.tag
 
     @value.setter
-    def value(self, BaseTag value):
+    def value(self, AbstractBaseTag value):
         warnings.warn("value property is depreciated.")
         self.tag = value
 

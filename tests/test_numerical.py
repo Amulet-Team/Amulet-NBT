@@ -6,7 +6,7 @@ import math
 from tests import base_type_test
 
 from amulet_nbt import (
-    BaseTag,
+    AbstractBaseTag,
     BaseNumericTag,
     BaseIntTag,
     BaseFloatTag,
@@ -77,7 +77,7 @@ class TestNumerical(base_type_test.BaseTypeTest):
                 ):
                     continue
                 if tag1.__class__ is tag2.__class__ or (
-                    not isinstance(tag1, BaseTag) and not isinstance(tag2, BaseTag)
+                    not isinstance(tag1, AbstractBaseTag) and not isinstance(tag2, AbstractBaseTag)
                 ):
                     test = op(tag1, tag2)
                 else:

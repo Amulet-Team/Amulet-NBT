@@ -1,7 +1,7 @@
 from typing import Union, Any
 from ._dtype import AnyNBT
 
-class BaseTag:
+class AbstractBaseTag:
     tag_id: int
     @property
     def py_data(self) -> Any: ...
@@ -30,9 +30,11 @@ class BaseTag:
     def __copy__(self):
         raise NotImplementedError
 
-class BaseImmutableTag(BaseTag):
+
+class AbstractBaseImmutableTag(AbstractBaseTag):
     def __hash__(self) -> int:
         raise NotImplementedError
 
-class BaseMutableTag(BaseTag):
+
+class AbstractBaseMutableTag(AbstractBaseTag):
     __hash__: None

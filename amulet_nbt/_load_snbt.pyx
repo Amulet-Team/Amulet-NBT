@@ -1,7 +1,7 @@
 import re
 
 from ._errors import SNBTParseError
-from ._value cimport BaseTag
+from ._value cimport AbstractBaseTag
 from ._int cimport ByteTag, ShortTag, IntTag, LongTag
 from ._float cimport FloatTag, DoubleTag
 from ._array cimport ByteArrayTag, IntArrayTag, LongArrayTag
@@ -82,7 +82,7 @@ cdef tuple _parse_snbt_recursive(unicode snbt, int index=0):
     cdef list array
     cdef unicode array_type_chr
     cdef object array_type, first_data_type
-    cdef BaseTag nested_data, data
+    cdef AbstractBaseTag nested_data, data
     cdef unicode val
     cdef bint strict_str
 
@@ -194,7 +194,7 @@ cdef tuple _parse_snbt_recursive(unicode snbt, int index=0):
 
     return data, index
 
-cpdef BaseTag from_snbt(unicode snbt):
+cpdef AbstractBaseTag from_snbt(unicode snbt):
     try:
         return _parse_snbt_recursive(snbt)[0]
     except SNBTParseError as e:

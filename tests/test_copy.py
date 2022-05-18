@@ -2,7 +2,7 @@ import unittest
 import copy
 import numpy
 from amulet_nbt import (
-    BaseTag,
+    AbstractBaseTag,
     BaseNamedTag,
     BaseIntTag,
     ByteTag,
@@ -23,14 +23,14 @@ from amulet_nbt import (
 
 
 class CopyNBTTests(unittest.TestCase):
-    def _test_copy(self, obj: BaseTag):
-        obj_copy: BaseTag = copy.copy(obj)
-        obj_copy2: BaseTag = obj.copy()
-        obj_deepcopy: BaseTag = copy.deepcopy(obj)
+    def _test_copy(self, obj: AbstractBaseTag):
+        obj_copy: AbstractBaseTag = copy.copy(obj)
+        obj_copy2: AbstractBaseTag = obj.copy()
+        obj_deepcopy: AbstractBaseTag = copy.deepcopy(obj)
 
-        self.assertIsInstance(obj_copy, BaseTag)
-        self.assertIsInstance(obj_copy2, BaseTag)
-        self.assertIsInstance(obj_deepcopy, BaseTag)
+        self.assertIsInstance(obj_copy, AbstractBaseTag)
+        self.assertIsInstance(obj_copy2, AbstractBaseTag)
+        self.assertIsInstance(obj_deepcopy, AbstractBaseTag)
         self.assertIsInstance(obj_copy, obj.__class__)
         self.assertIsInstance(obj_copy2, obj.__class__)
         self.assertIsInstance(obj_deepcopy, obj.__class__)

@@ -2,7 +2,7 @@ from typing import Iterator
 from io import BytesIO
 from copy import deepcopy
 
-from ._value cimport BaseImmutableTag
+from ._value cimport AbstractBaseImmutableTag
 from ._const cimport ID_STRING
 from ._util cimport write_bytes, read_bytes, BufferContext
 {{py:from template import include}}
@@ -12,7 +12,7 @@ cdef inline escape(str string):
     return string.replace('\\', '\\\\').replace('"', '\\"')
 
 
-cdef class StringTag(BaseImmutableTag):
+cdef class StringTag(AbstractBaseImmutableTag):
     """A class that behaves like a string."""
     tag_id = ID_STRING
 
@@ -24,7 +24,7 @@ cdef class StringTag(BaseImmutableTag):
         else:
             self.value_ = str(value).encode("utf-8")
 
-{{include("BaseImmutableTag.pyx", cls_name="StringTag")}}
+{{include("AbstractBaseImmutableTag.pyx", cls_name="StringTag")}}
 
 
     @property

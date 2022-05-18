@@ -1,4 +1,4 @@
-from ._value cimport BaseImmutableTag
+from ._value cimport AbstractBaseImmutableTag
 
-cdef class StringTag(BaseImmutableTag):
+cdef class StringTag(AbstractBaseImmutableTag):
     cdef bytes value_

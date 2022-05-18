@@ -5,7 +5,7 @@ This is here in case that data needs to be recreated in the future.
 """
 from typing import Tuple, Type, Any, Iterable
 from amulet_nbt import (
-    BaseTag,
+    AbstractBaseTag,
     ByteTag,
     ShortTag,
     IntTag,
@@ -22,7 +22,7 @@ from amulet_nbt import (
 )
 
 names = ("", "name")
-tags: Tuple[Tuple[Tuple[Type[BaseTag], ...], Tuple[Any, ...]], ...] = (
+tags: Tuple[Tuple[Tuple[Type[AbstractBaseTag], ...], Tuple[Any, ...]], ...] = (
     ((ByteTag, ShortTag, IntTag, LongTag, FloatTag, DoubleTag), (5, -5)),
     ((ByteArrayTag, IntArrayTag, LongArrayTag), ([], [5, 6, 7], [-5, -6, -7])),
     ((StringTag,), ("value",)),
@@ -31,7 +31,7 @@ tags: Tuple[Tuple[Tuple[Type[BaseTag], ...], Tuple[Any, ...]], ...] = (
 )
 
 
-def print_line(name: str, tag: BaseTag):
+def print_line(name: str, tag: AbstractBaseTag):
     named_tag = tag_to_named_tag(tag, name)
     print(
         f"("
@@ -45,14 +45,14 @@ def print_line(name: str, tag: BaseTag):
     )
 
 
-def gen_data() -> Iterable[BaseTag]:
+def gen_data() -> Iterable[AbstractBaseTag]:
     for dtypes, values in tags:
         for tag in dtypes:
             for value in values:
                 yield tag(value)
 
 
-def gen_data_all() -> Iterable[BaseTag]:
+def gen_data_all() -> Iterable[AbstractBaseTag]:
     yield from gen_data()
     for data in gen_data():
         yield ListTag([data])

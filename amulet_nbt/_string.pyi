@@ -1,7 +1,7 @@
 from typing import Union, Iterator, overload, Any
-from ._value import BaseImmutableTag
+from ._value import AbstractBaseImmutableTag
 
-class StringTag(BaseImmutableTag):
+class StringTag(AbstractBaseImmutableTag):
     @overload
     def __init__(self, value: Any): ...
     @overload

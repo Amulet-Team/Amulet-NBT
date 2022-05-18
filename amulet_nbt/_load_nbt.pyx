@@ -7,7 +7,7 @@ import os
 
 from ._errors import NBTLoadError
 from ._util cimport BufferContext, read_string, read_byte
-from ._value cimport BaseTag
+from ._value cimport AbstractBaseTag
 from ._int cimport (
     ByteTag,
     ShortTag,
@@ -78,7 +78,7 @@ cdef BufferContext get_buffer(
     )
 
 
-cdef BaseTag load_payload(BufferContext buffer, char tag_type, bint little_endian):
+cdef AbstractBaseTag load_payload(BufferContext buffer, char tag_type, bint little_endian):
     if tag_type == 1:
         return ByteTag.read_payload(buffer, little_endian)
     elif tag_type == 2:
@@ -113,7 +113,7 @@ cpdef tuple load_tag(BufferContext buffer, bint little_endian):
     return name, load_payload(buffer, tag_type, little_endian)
 
 
-cdef inline BaseNamedTag wrap_tag(char tag_type, BaseTag tag, str name):
+cdef inline BaseNamedTag wrap_tag(char tag_type, AbstractBaseTag tag, str name):
     """Wrap a tag in its named variant."""
     if tag_type == 1:
         return NamedByteTag(tag, name)
@@ -146,11 +146,11 @@ cdef inline BaseNamedTag wrap_tag(char tag_type, BaseTag tag, str name):
 cdef BaseNamedTag load_named_tag(BufferContext buffer, bint little_endian):
     cdef char tag_type = read_byte(buffer)
     cdef str name = read_string(buffer, little_endian)
-    cdef BaseTag tag = load_payload(buffer, tag_type, little_endian)
+    cdef AbstractBaseTag tag = load_payload(buffer, tag_type, little_endian)
     return wrap_tag(tag_type, tag, name)
 
 
-cpdef BaseNamedTag tag_to_named_tag(BaseTag tag, str name = ""):
+cpdef BaseNamedTag tag_to_named_tag(AbstractBaseTag tag, str name = ""):
     cdef char tag_type = tag.tag_id
     return wrap_tag(tag_type, tag, name)
 

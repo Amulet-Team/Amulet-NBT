@@ -1,7 +1,7 @@
-from ._value import BaseMutableTag
+from ._value import AbstractBaseMutableTag
 import numpy
 
-class BaseArrayTag(BaseMutableTag):
+class BaseArrayTag(AbstractBaseMutableTag):
     def __init__(self, value=()): ...
     def __getitem__(self, item): ...
     def __setitem__(self, item): ...

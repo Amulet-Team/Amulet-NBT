@@ -5,7 +5,7 @@ from copy import copy, deepcopy
 from collections.abc import MutableSequence
 import sys
 
-from ._value cimport BaseTag, BaseMutableTag
+from ._value cimport AbstractBaseTag, AbstractBaseMutableTag
 from ._const cimport ID_LIST, CommaSpace, CommaNewline
 from ._util cimport write_byte, write_int, BufferContext, read_byte, read_int
 from ._load_nbt cimport load_payload
@@ -23,7 +23,7 @@ cdef inline void _read_list_tag_payload(CyListTag tag, BufferContext buffer, bin
         val.append(load_payload(buffer, list_type, little_endian))
 
 
-cdef class CyListTag(BaseMutableTag):
+cdef class CyListTag(AbstractBaseMutableTag):
     """
     This class behaves like a python list.
     All contained data must be of the same NBT data type.
@@ -38,7 +38,7 @@ cdef class CyListTag(BaseMutableTag):
         self._check_tag_iterable(list_value)
         self.value_ = list_value
 
-{{include("BaseMutableTag.pyx", cls_name="CyListTag")}}
+{{include("AbstractBaseMutableTag.pyx", cls_name="CyListTag")}}
 
     @property
     def py_list(CyListTag self) -> List[AnyNBT]:
@@ -53,7 +53,7 @@ cdef class CyListTag(BaseMutableTag):
     def py_data(self):
         return self.py_list
 
-    cdef void _check_tag(CyListTag self, BaseTag value, bint fix_if_empty=True) except *:
+    cdef void _check_tag(CyListTag self, AbstractBaseTag value, bint fix_if_empty=True) except *:
         if value is None:
             raise TypeError("List values must be NBT Tags")
         if fix_if_empty and not self.value_:
@@ -65,7 +65,7 @@ cdef class CyListTag(BaseMutableTag):
 
     cdef void _check_tag_iterable(CyListTag self, list value) except *:
         cdef int i
-        cdef BaseTag tag
+        cdef AbstractBaseTag tag
         for i, tag in enumerate(value):
             self._check_tag(tag, not i)
 
@@ -75,7 +75,7 @@ cdef class CyListTag(BaseMutableTag):
         write_byte(list_type, buffer)
         write_int(<int> len(self.value_), buffer, little_endian)
 
-        cdef BaseTag subtag
+        cdef AbstractBaseTag subtag
         for subtag in self.value_:
             if subtag.tag_id != list_type:
                 raise ValueError(
@@ -90,14 +90,14 @@ cdef class CyListTag(BaseMutableTag):
         return tag
 
     cdef str _to_snbt(CyListTag self):
-        cdef BaseTag elem
+        cdef AbstractBaseTag elem
         cdef list tags = []
         for elem in self.value_:
             tags.append(elem._to_snbt())
         return f"[{CommaSpace.join(tags)}]"
 
     cdef str _pretty_to_snbt(CyListTag self, str indent_chr, int indent_count=0, bint leading_indent=True):
-        cdef BaseTag elem
+        cdef AbstractBaseTag elem
         cdef list tags = []
         for elem in self.value_:
             tags.append(elem._pretty_to_snbt(indent_chr, indent_count + 1))
@@ -110,7 +110,7 @@ cdef class CyListTag(BaseMutableTag):
         return f"{self.__class__.__name__}({repr(self.value_)}, {self.list_data_type})"
 
     def __contains__(CyListTag self, object item) -> bool:
-        return isinstance(item, BaseTag) and item.tag_id == self.list_data_type and self.value_.__contains__(item)
+        return isinstance(item, AbstractBaseTag) and item.tag_id == self.list_data_type and self.value_.__contains__(item)
 
     def __len__(CyListTag self) -> int:
         return self.value_.__len__()
@@ -133,7 +133,7 @@ cdef class CyListTag(BaseMutableTag):
         """Return a shallow copy of the class"""
         return ListTag(self.value_.copy(), self.list_data_type)
 
-    def insert(CyListTag self, object index, BaseTag value not None):
+    def insert(CyListTag self, object index, AbstractBaseTag value not None):
         self._check_tag(value)
         self.value_.insert(index, value)
     insert.__doc__ = list.insert.__doc__

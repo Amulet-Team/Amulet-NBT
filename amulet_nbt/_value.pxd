@@ -6,6 +6,7 @@ cdef class BaseTag:
         object indent=*,
         object indent_chr=*
     )
+cdef class AbstractBaseTag:
     cdef str _to_snbt(self)
 
     cdef str _pretty_to_snbt(
@@ -29,13 +30,13 @@ cdef class BaseTag:
     ) except *
 
     @staticmethod
-    cdef BaseTag read_payload(
+    cdef AbstractBaseTag read_payload(
         BufferContext buffer,
         bint little_endian
     )
 
-cdef class BaseImmutableTag(BaseTag):
+cdef class AbstractBaseImmutableTag(AbstractBaseTag):
     pass
 
-cdef class BaseMutableTag(BaseTag):
+cdef class AbstractBaseMutableTag(AbstractBaseTag):
     pass

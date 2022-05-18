@@ -2,7 +2,7 @@ import unittest
 from typing import Iterable, Tuple, Any, Type
 
 from amulet_nbt import (
-    BaseTag,
+    AbstractBaseTag,
     ByteTag,
     ShortTag,
     IntTag,
@@ -61,7 +61,7 @@ class BaseTypeTest(BaseTagsTest):
         raise NotImplementedError
 
     @property
-    def this_types(self) -> Tuple[Type[BaseTag], ...]:
+    def this_types(self) -> Tuple[Type[AbstractBaseTag], ...]:
         raise NotImplementedError
 
     def _iter_values(self) -> Iterable[Tuple[Any, Any]]:

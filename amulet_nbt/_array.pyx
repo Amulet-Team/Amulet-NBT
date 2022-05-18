@@ -3,12 +3,12 @@ cimport numpy
 from io import BytesIO
 from copy import copy, deepcopy
 
-from ._value cimport BaseMutableTag
+from ._value cimport AbstractBaseMutableTag
 from ._const cimport CommaSpace, ID_BYTE_ARRAY, ID_INT_ARRAY, ID_LONG_ARRAY
 from ._util cimport write_array, BufferContext, read_int, read_data
 
 
-cdef class BaseArrayTag(BaseMutableTag):
+cdef class BaseArrayTag(AbstractBaseMutableTag):
     def __getitem__(BaseArrayTag self, item):
         raise NotImplementedError
 

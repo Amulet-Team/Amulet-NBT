@@ -2,7 +2,7 @@ import unittest
 import pickle
 import numpy
 from amulet_nbt import (
-    BaseTag,
+    AbstractBaseTag,
     BaseIntTag,
     BaseArrayTag,
     ByteTag,
@@ -32,7 +32,7 @@ class PickleNBTTests(unittest.TestCase):
 
         if isinstance(obj, BaseNamedTag):
             tag = obj.tag
-        elif isinstance(obj, BaseTag):
+        elif isinstance(obj, AbstractBaseTag):
             tag = obj
         else:
             raise TypeError

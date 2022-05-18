@@ -1,5 +1,5 @@
 # Base Types
-from ._value cimport BaseTag, BaseImmutableTag, BaseMutableTag
+from ._value cimport AbstractBaseTag, AbstractBaseImmutableTag, AbstractBaseMutableTag
 from ._numeric cimport BaseNumericTag
 
 # Types

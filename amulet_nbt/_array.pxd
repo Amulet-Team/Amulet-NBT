@@ -1,7 +1,7 @@
 cimport numpy
-from ._value cimport BaseMutableTag
+from ._value cimport AbstractBaseMutableTag
 
-cdef class BaseArrayTag(BaseMutableTag):
+cdef class BaseArrayTag(AbstractBaseMutableTag):
     pass
 
 cdef class ByteArrayTag(BaseArrayTag):

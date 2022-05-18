@@ -1,7 +1,7 @@
-from ._value cimport BaseImmutableTag
+from ._value cimport AbstractBaseImmutableTag
 
 
-cdef class BaseNumericTag(BaseImmutableTag):
+cdef class BaseNumericTag(AbstractBaseImmutableTag):
     def __int__(self):
         raise NotImplementedError
 

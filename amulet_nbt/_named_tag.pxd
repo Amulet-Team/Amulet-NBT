@@ -1,8 +1,8 @@
-from ._value cimport BaseTag
+from ._value cimport AbstractBaseTag
 
 
 cdef class BaseNamedTag:
-    cdef readonly BaseTag tag
+    cdef readonly AbstractBaseTag tag
     cdef public str name
 
 

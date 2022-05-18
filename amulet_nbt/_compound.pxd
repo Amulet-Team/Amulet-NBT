@@ -1,5 +1,5 @@
-from ._value cimport BaseMutableTag
+from ._value cimport AbstractBaseMutableTag
 
 
-cdef class CyCompoundTag(BaseMutableTag):
+cdef class CyCompoundTag(AbstractBaseMutableTag):
     cdef dict value_

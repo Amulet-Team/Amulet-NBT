@@ -2,7 +2,7 @@ from typing import Iterator
 from io import BytesIO
 from copy import deepcopy
 
-from ._value cimport BaseImmutableTag
+from ._value cimport AbstractBaseImmutableTag
 from ._const cimport ID_STRING
 from ._util cimport write_bytes, read_bytes, BufferContext
 
@@ -11,7 +11,7 @@ cdef inline escape(str string):
     return string.replace('\\', '\\\\').replace('"', '\\"')
 
 
-cdef class StringTag(BaseImmutableTag):
+cdef class StringTag(AbstractBaseImmutableTag):
     """A class that behaves like a string."""
     tag_id = ID_STRING
 

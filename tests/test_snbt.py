@@ -4,7 +4,7 @@ from string import ascii_lowercase, ascii_uppercase, digits
 from tests.binary_data import binary_data_tuple
 import amulet_nbt
 from amulet_nbt import (
-    BaseTag,
+    AbstractBaseTag,
     ByteTag,
     ShortTag,
     IntTag,
@@ -28,7 +28,7 @@ class SNBTTests(unittest.TestCase):
                 data.named_tag.tag.to_snbt(), data.snbt, msg=str(data.named_tag)
             )
 
-    def _is_same(self, ground: BaseTag, *test: str):
+    def _is_same(self, ground: AbstractBaseTag, *test: str):
         for snbt in test:
             nbt = amulet_nbt.from_snbt(snbt)
             self.assertEqual(ground, nbt, msg=f"{repr(ground)} != {snbt}")

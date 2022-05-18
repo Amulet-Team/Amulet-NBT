@@ -7,7 +7,7 @@ from typing import Any
 from ._util cimport write_byte, write_string, BufferContext
 
 
-cdef class BaseTag:
+cdef class AbstractBaseTag:
     tag_id: int = None
 
     @property
@@ -136,7 +136,7 @@ cdef class BaseTag:
         raise NotImplementedError
 
     @staticmethod
-    cdef BaseTag read_payload(BufferContext buffer, bint little_endian):
+    cdef AbstractBaseTag read_payload(BufferContext buffer, bint little_endian):
         """
         Read the payload from the buffer.
         The calling code must have read up to the start of the payload.
@@ -169,13 +169,13 @@ cdef class BaseTag:
         raise NotImplementedError
 
 
-BaseValueType = BaseTag
+BaseValueType = AbstractBaseTag
 
 
-cdef class BaseImmutableTag(BaseTag):
+cdef class AbstractBaseImmutableTag(AbstractBaseTag):
     def __hash__(self):
         raise NotImplementedError
 
 
-cdef class BaseMutableTag(BaseTag):
+cdef class AbstractBaseMutableTag(AbstractBaseTag):
     __hash__ = None

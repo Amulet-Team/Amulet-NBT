@@ -1,3 +1,3 @@
-from ._value cimport BaseTag
+from ._value cimport AbstractBaseTag
 
-cpdef BaseTag from_snbt(unicode snbt)
+cpdef AbstractBaseTag from_snbt(unicode snbt)

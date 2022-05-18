@@ -7,7 +7,59 @@ from typing import Any
 from ._util cimport write_byte, write_string, BufferContext
 
 
-cdef class AbstractBaseTag:
+cdef class AbstractBase:
+    cpdef str to_snbt(self, object indent=None, object indent_chr=None):
+        """
+        Return the NBT data in Stringified NBT format.
+        
+        :param indent: int, str or None. If int will indent with this many spaces. If string will indent with this string. If None will return on one line.
+        :param indent_chr: Depreciated. Use indent instead.
+        :return: Stringified NBT representation of the data.
+        """
+        raise NotImplementedError
+
+    def to_nbt(
+        self,
+        *,
+        bint compressed=True,
+        bint little_endian=False,
+        str name="",
+    ):
+        """
+        Get the data in binary NBT format.
+
+        :param name: The root tag name.
+        :param compressed: Should the bytes be compressed with gzip.
+        :param little_endian: Should the bytes be saved in little endian format.
+        :return: The binary NBT representation of the class.
+        """
+        raise NotImplementedError
+
+    def save_to(
+        self,
+        object filepath_or_buffer=None,
+        *,
+        bint compressed=True,
+        bint little_endian=False,
+        str name="",
+    ):
+        """
+        Convert the data to the binary NBT format. Optionally write to a file.
+
+        If filepath_or_buffer is a valid file path in string form the data will be written to that file.
+
+        If filepath_or_buffer is a file like object the bytes will be written to it using `write`.
+
+        :param filepath_or_buffer: A path or `write`able object to write the data to.
+        :param compressed: Should the bytes be compressed with gzip.
+        :param little_endian: Should the bytes be saved in little endian format.
+        :param name: The root tag name.
+        :return: The binary NBT representation of the class.
+        """
+        raise NotImplementedError
+
+
+cdef class AbstractBaseTag(AbstractBase):
     tag_id: int = None
 
     @property
@@ -25,13 +77,6 @@ cdef class AbstractBaseTag:
         return self.py_data
 
     cpdef str to_snbt(self, object indent=None, object indent_chr=None):
-        """
-        Return the NBT data in Stringified NBT format.
-        
-        :param indent: int, str or None. If int will indent with this many spaces. If string will indent with this string. If None will return on one line.
-        :param indent_chr: Depreciated. Use indent instead.
-        :return: Stringified NBT representation of the data.
-        """
         if indent_chr is not None:
             warnings.warn("indent_chr is deprecated. Use indent instead.", DeprecationWarning)
             indent = indent_chr
@@ -57,14 +102,6 @@ cdef class AbstractBaseTag:
         bint little_endian=False,
         str name="",
     ):
-        """
-        Get the data in binary NBT format.
-
-        :param name: The root tag name.
-        :param compressed: Should the bytes be compressed with gzip.
-        :param little_endian: Should the bytes be saved in little endian format.
-        :return: The binary NBT representaiton of the class.
-        """
         cdef object buffer = BytesIO()
         cdef object gzip_buffer
         self.write_tag(buffer, name, little_endian)
@@ -84,19 +121,6 @@ cdef class AbstractBaseTag:
         bint little_endian=False,
         str name="",
     ):
-        """
-        Convert the data to the binary NBT format. Optionally write to a file.
-        
-        If filepath_or_buffer is a valid file path in string form the data will be written to that file.
-        
-        If filepath_or_buffer is a file like object the bytes will be written to it using `write`.
-
-        :param filepath_or_buffer: A path or `write`able object to write the data to.
-        :param compressed: Should the bytes be compressed with gzip.
-        :param little_endian: Should the bytes be saved in little endian format.
-        :param name: The root tag name.
-        :return: The binary NBT representation of the class.
-        """
         cdef bytes data = self.to_nbt(
             compressed=compressed,
             little_endian=little_endian,

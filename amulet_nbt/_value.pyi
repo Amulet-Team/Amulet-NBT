@@ -1,10 +1,8 @@
 from typing import Union, Any
 from ._dtype import AnyNBT
 
-class AbstractBaseTag:
-    tag_id: int
-    @property
-    def py_data(self) -> Any: ...
+
+class AbstractBase:
     def to_snbt(self, indent: Union[int, str] = None) -> str: ...
     def to_nbt(
         self,
@@ -16,6 +14,12 @@ class AbstractBaseTag:
     def save_to(
         self, filepath_or_buffer=None, *, compressed=True, little_endian=False, name=""
     ) -> bytes: ...
+
+
+class AbstractBaseTag(AbstractBase):
+    tag_id: int
+    @property
+    def py_data(self) -> Any: ...
     def __repr__(self) -> str:
         raise NotImplementedError
     def __str__(self) -> str:

@@ -140,37 +140,37 @@ cdef _TAG_Value load_tag(char tagID, buffer_context context, bint little_endian)
     if tagID == _ID_BYTE:
         return load_byte(context, little_endian)
 
-    if tagID == _ID_SHORT:
+    elif tagID == _ID_SHORT:
         return load_short(context, little_endian)
 
-    if tagID == _ID_INT:
+    elif tagID == _ID_INT:
         return load_int(context, little_endian)
 
-    if tagID == _ID_LONG:
+    elif tagID == _ID_LONG:
         return load_long(context, little_endian)
 
-    if tagID == _ID_FLOAT:
+    elif tagID == _ID_FLOAT:
         return load_float(context, little_endian)
 
-    if tagID == _ID_DOUBLE:
+    elif tagID == _ID_DOUBLE:
         return load_double(context, little_endian)
 
-    if tagID == _ID_BYTE_ARRAY:
+    elif tagID == _ID_BYTE_ARRAY:
         return load_byte_array(context, little_endian)
 
-    if tagID == _ID_STRING:
         return TAG_String(load_string(context, little_endian))
+    elif tagID == _ID_STRING:
 
-    if tagID == _ID_LIST:
         return load_list(context, little_endian)
+    elif tagID == _ID_LIST:
 
-    if tagID == _ID_COMPOUND:
         return load_compound_tag(context, little_endian)
+    elif tagID == _ID_COMPOUND:
 
-    if tagID == _ID_INT_ARRAY:
+    elif tagID == _ID_INT_ARRAY:
         return load_int_array(context, little_endian)
 
-    if tagID == _ID_LONG_ARRAY:
+    elif tagID == _ID_LONG_ARRAY:
         return load_long_array(context, little_endian)
 
 cpdef bytes safe_gunzip(bytes data):

@@ -104,6 +104,36 @@ class SNBTParseError(NBTError):
     pass
 
 
+def utf8_decoder(b: bytes) -> str:
+    """Standard UTF-8 decoder"""
+    return b.decode()
+
+
+def utf8_encoder(s: str) -> bytes:
+    """Standard UTF-8 encoder"""
+    return s.encode()
+
+
+def _escape_replace(err):
+    if isinstance(err, UnicodeDecodeError):
+        return f"␛x{err.object[err.start]:02X}", err.start+1
+    raise err
+
+
+codecs.register_error("escapereplace", _escape_replace)
+
+
+def utf8_escape_decoder(b: bytes) -> str:
+    """UTF-8 decoder that escapes error bytes to the form ␛xFF"""
+    return b.decode(errors="escapereplace")
+
+EscapePattern = re.compile(b"\xe2\x90\x9bx([0-9a-zA-Z]{2})")  # ␛xFF
+
+def utf8_escape_encoder(s: str) -> bytes:
+    """UTF-8 encoder that converts ␛x[0-9a-fA-F]{2} back to individual bytes"""
+    return EscapePattern.sub(lambda m: bytes([int(m.groups()[0], 16)]), s.encode())
+
+
 cdef class buffer_context:
     cdef size_t offset
     cdef char *buffer
@@ -1033,35 +1063,6 @@ class NBTFile:
     def get(self, k, default=None) -> AnyNBT:
         return self.value.get(k, default)
 
-
-def utf8_decoder(b: bytes) -> str:
-    """Standard UTF-8 decoder"""
-    return b.decode()
-
-
-def utf8_encoder(s: str) -> bytes:
-    """Standard UTF-8 encoder"""
-    return s.encode()
-
-
-def _escape_replace(err):
-    if isinstance(err, UnicodeDecodeError):
-        return f"␛x{err.object[err.start]:02X}", err.start+1
-    raise err
-
-
-codecs.register_error("escapereplace", _escape_replace)
-
-
-def utf8_escape_decoder(b: bytes) -> str:
-    """UTF-8 decoder that escapes error bytes to the form ␛xFF"""
-    return b.decode(errors="escapereplace")
-
-EscapePattern = re.compile(b"\xe2\x90\x9bx([0-9a-zA-Z]{2})")  # ␛xFF
-
-def utf8_escape_encoder(s: str) -> bytes:
-    """UTF-8 encoder that converts ␛x[0-9a-fA-F]{2} back to individual bytes"""
-    return EscapePattern.sub(lambda m: bytes([int(m.groups()[0], 16)]), s.encode())
 
 def load(
     filepath_or_buffer: Union[str, bytes, BinaryIO, None] = None,  # TODO: This should become a required input

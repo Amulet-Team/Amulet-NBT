@@ -24,7 +24,9 @@ try:
         NBTFormatError,
         SNBTParseError,
         utf8_decoder,
-        utf8_escape_decoder
+        utf8_encoder,
+        utf8_escape_decoder,
+        utf8_escape_encoder,
     )
 except (ImportError, ModuleNotFoundError) as e:
     print("Failed to import cython nbt library.")

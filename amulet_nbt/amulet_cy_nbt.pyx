@@ -81,6 +81,7 @@ cdef str CommaNewline = ",\n"
 cdef str CommaSpace = ", "
 
 
+EncoderType = Callable[[str], bytes]
 DecoderType = Callable[[bytes], str]
 
 
@@ -756,42 +757,35 @@ def unescape(string: str):
 
 cdef class TAG_String(_TAG_Value):
     tag_id = _ID_STRING
-    cdef readonly bytes py_bytes
+    cdef readonly unicode py_str
+
+    def __init__(self, value = ""):
+        self.py_str = str(value)
 
     @property
     def value(self) -> str:
         return self.py_str
 
-    @property
-    def py_str(self) -> str:
-        return self.py_bytes.decode("utf-8")
-
-    def __init__(self, value = ""):
-        if isinstance(value, bytes):
-            self.py_bytes = value
-        else:
-            self.py_bytes = str(value).encode("utf-8")
-
     def __eq__(self, other):
         if isinstance(self, TAG_String) and isinstance(other, TAG_String):
-            return self.py_bytes == other.py_bytes
+            return self.py_str == other.py_str
         else:
             return primitive_conversion(self) == primitive_conversion(other)
 
     def __hash__(self):
-        return hash((self.tag_id, self.value))
+        return hash((self.tag_id, self.py_str))
 
     def __len__(self) -> int:
-        return len(self.value)
+        return len(self.py_str)
 
     cpdef str _to_snbt(self):
-        return f"\"{escape(self.value)}\""
+        return f"\"{escape(self.py_str)}\""
 
-    cdef void write_value(self, buffer, little_endian):
-        write_string(self.py_bytes, buffer, little_endian)
+    cdef void write_value(self, buffer, little_endian, string_encoder: EncoderType = utf8_encoder) except *:
+        write_string(self.py_str, buffer, little_endian, string_encoder)
 
     def __getitem__(self, item):
-        return self.value.__getitem__(item)
+        return self.py_str.__getitem__(item)
 
     def __add__(self, other):
         return primitive_conversion(self) + primitive_conversion(other)
@@ -806,7 +800,7 @@ cdef class TAG_String(_TAG_Value):
         return primitive_conversion(other) * primitive_conversion(self)
 
     def __str__(self):
-        return self.value
+        return self.py_str
 
 
 cdef class _TAG_List(_TAG_Value):
@@ -864,7 +858,7 @@ cdef class _TAG_List(_TAG_Value):
         self._check_tag(value)
         self.value.append(value)
 
-    cdef void write_value(self, buffer, little_endian) except *:
+    cdef void write_value(self, buffer, little_endian, string_encoder: EncoderType = utf8_encoder) except *:
         cdef char list_type = self.list_data_type
 
         write_tag_id(list_type, buffer)
@@ -875,7 +869,7 @@ cdef class _TAG_List(_TAG_Value):
             if subtag.tag_id != list_type:
                 raise ValueError("Asked to save TAG_List with different types! Found %s and %s" % (subtag.tag_id,
                                                                                                    list_type))
-            write_tag_value(subtag, buffer, little_endian)
+            write_tag_value(subtag, buffer, little_endian, string_encoder)
 
     cpdef str _to_snbt(self):
         cdef _TAG_Value elem
@@ -941,20 +935,13 @@ cdef class _TAG_Compound(_TAG_Value):
         else:
             return f"{indent_chr * indent_count * leading_indent}{{}}"
 
-    cdef void write_value(self, buffer, little_endian):
+    cdef void write_value(self, buffer, little_endian, string_encoder: EncoderType = utf8_encoder):
         cdef str key
-        cdef _TAG_Value stag
+        cdef _TAG_Value tag
 
-        for key, stag in self.value.items():
-            write_tag_id(stag.tag_id, buffer)
-            write_tag_name(key, buffer, little_endian)
-            stag.write_value(buffer, little_endian)
+        for key, tag in self.value.items():
+            write_named_tag(buffer, key, tag, little_endian, string_encoder)
         write_tag_id(ID_END, buffer)
-
-    def write_payload(self, buffer, name="", little_endian=False):
-        write_tag_id(self.tag_id, buffer)
-        write_tag_name(name, buffer, little_endian)
-        write_tag_value(self, buffer, little_endian)
 
     def __getitem__(self, key: str) -> AnyNBT:
         return self.value[key]
@@ -990,9 +977,9 @@ class NBTFile:
     def to_snbt(self, indent_chr=None) -> str:
         return self.value.to_snbt(indent_chr)
 
-    def save_to(self, filepath_or_buffer=None, compressed=True, little_endian=False) -> Optional[bytes]:
+    def save_to(self, filepath_or_buffer=None, compressed=True, little_endian=False, *, string_encoder: EncoderType = utf8_encoder) -> Optional[bytes]:
         buffer = BytesIO()
-        self.value.write_payload(buffer, self.name, little_endian)
+        write_named_tag(buffer, self.name, self.value, little_endian, string_encoder)
         data = buffer.getvalue()
 
         if compressed:
@@ -1052,6 +1039,11 @@ def utf8_decoder(b: bytes) -> str:
     return b.decode()
 
 
+def utf8_encoder(s: str) -> bytes:
+    """Standard UTF-8 encoder"""
+    return s.encode()
+
+
 def _escape_replace(err):
     if isinstance(err, UnicodeDecodeError):
         return f"␛x{err.object[err.start]:02X}", err.start+1
@@ -1064,6 +1056,12 @@ codecs.register_error("escapereplace", _escape_replace)
 def utf8_escape_decoder(b: bytes) -> str:
     """UTF-8 decoder that escapes error bytes to the form ␛xFF"""
     return b.decode(errors="escapereplace")
+
+EscapePattern = re.compile(b"\xe2\x90\x9bx([0-9a-zA-Z]{2})")  # ␛xFF
+
+def utf8_escape_encoder(s: str) -> bytes:
+    """UTF-8 encoder that converts ␛x[0-9a-fA-F]{2} back to individual bytes"""
+    return EscapePattern.sub(lambda m: bytes([int(m.groups()[0], 16)]), s.encode())
 
 def load(
     filepath_or_buffer: Union[str, bytes, BinaryIO, None] = None,  # TODO: This should become a required input
@@ -1235,15 +1233,13 @@ cdef inline void cwrite(object obj, char*buf, size_t length):
 cdef write_tag_id(char tag_id, object buffer):
     cwrite(buffer, &tag_id, 1)
 
-cdef void write_tag_name(str name, object buffer, bint little_endian):
-    write_string(name.encode("utf-8"), buffer, little_endian)
-
-cdef void write_string(bytes value, object buffer, bint little_endian):
-    cdef short length = <short> len(value)
-    cdef char*s = value
+cdef void write_string(str s, object buffer, bint little_endian, string_encoder: EncoderType):
+    cdef bytes b = string_encoder(s)
+    cdef short length = <short> len(b)
+    cdef char*c = b
     to_little_endian(&length, 2, little_endian)
     cwrite(buffer, <char*> &length, 2)
-    cwrite(buffer, s, len(value))
+    cwrite(buffer, c, len(b))
 
 cdef void write_array(object value, object buffer, char size, bint little_endian):
     value = value.tobytes()
@@ -1276,7 +1272,12 @@ cdef void write_double(double value, object buffer, bint little_endian):
     to_little_endian(&value, 8, little_endian)
     cwrite(buffer, <char*> &value, 8)
 
-cdef void write_tag_value(_TAG_Value tag, object buf, bint little_endian):
+cdef void write_named_tag(object buffer, str name, _TAG_Value tag, bint little_endian, string_encoder: EncoderType):
+    write_tag_id(tag.tag_id, buffer)
+    write_string(name, buffer, little_endian, string_encoder)
+    write_tag_value(tag, buffer, little_endian, string_encoder)
+
+cdef void write_tag_value(_TAG_Value tag, object buf, bint little_endian, string_encoder: EncoderType):
     cdef char tagID = tag.tag_id
     if tagID == _ID_BYTE:
         (<TAG_Byte> tag).write_value(buf, little_endian)
@@ -1299,14 +1300,14 @@ cdef void write_tag_value(_TAG_Value tag, object buf, bint little_endian):
     elif tagID == _ID_BYTE_ARRAY:
         (<TAG_Byte_Array> tag).write_value(buf, little_endian)
 
-        (<TAG_String> tag).write_value(buf, little_endian)
     elif tagID == _ID_STRING:
+        (<TAG_String> tag).write_value(buf, little_endian, string_encoder)
 
-        (<_TAG_List> tag).write_value(buf, little_endian)
     elif tagID == _ID_LIST:
+        (<_TAG_List> tag).write_value(buf, little_endian, string_encoder)
 
-        (<_TAG_Compound> tag).write_value(buf, little_endian)
     elif tagID == _ID_COMPOUND:
+        (<_TAG_Compound> tag).write_value(buf, little_endian, string_encoder)
 
     elif tagID == _ID_INT_ARRAY:
         (<TAG_Int_Array> tag).write_value(buf, little_endian)

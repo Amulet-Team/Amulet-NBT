@@ -3,11 +3,12 @@ from math import trunc, floor, ceil
 import zlib
 from collections.abc import MutableMapping, MutableSequence
 from io import BytesIO
-from typing import Optional, Union, Tuple, List, Iterator, BinaryIO
+from typing import Optional, Union, Tuple, List, Iterator, BinaryIO, Callable
+import codecs
 
 import numpy
 import os
-from cpython cimport PyUnicode_DecodeUTF8, PyList_Append, PyBytes_FromStringAndSize
+from cpython cimport PyList_Append, PyBytes_FromStringAndSize
 
 import re
 
@@ -80,6 +81,9 @@ cdef str CommaNewline = ",\n"
 cdef str CommaSpace = ", "
 
 
+DecoderType = Callable[[bytes], str]
+
+
 class NBTError(Exception):
     """Some error in the NBT library."""
 
@@ -123,20 +127,20 @@ cdef void to_little_endian(void *data_buffer, int num_bytes, bint little_endian 
     for i in range((num_bytes + 1) // 2):
         buf[i], buf[num_bytes - i - 1] = buf[num_bytes - i - 1], buf[i]
 
-cdef str load_name(buffer_context context, bint little_endian):
+cdef str load_string(buffer_context context, bint little_endian, string_decoder: DecoderType):
     cdef unsigned short *pointer = <unsigned short *> read_data(context, 2)
     cdef unsigned short length = pointer[0]
     to_little_endian(&length, 2, little_endian)
-    b = read_data(context, length)
+    c = read_data(context, length)
+    b = PyBytes_FromStringAndSize(c, length)
+    return string_decoder(b)
 
-    return PyUnicode_DecodeUTF8(b, length, "strict")
-
-cdef tuple load_named(buffer_context context, char tagID, bint little_endian):
-    cdef str name = load_name(context, little_endian)
-    cdef _TAG_Value tag = load_tag(tagID, context, little_endian)
+cdef tuple load_named(buffer_context context, char tagID, bint little_endian, string_decoder: DecoderType):
+    cdef str name = load_string(context, little_endian, string_decoder)
+    cdef _TAG_Value tag = load_tag(tagID, context, little_endian, string_decoder)
     return name, tag
 
-cdef _TAG_Value load_tag(char tagID, buffer_context context, bint little_endian):
+cdef _TAG_Value load_tag(char tagID, buffer_context context, bint little_endian, string_decoder: DecoderType):
     if tagID == _ID_BYTE:
         return load_byte(context, little_endian)
 
@@ -158,14 +162,14 @@ cdef _TAG_Value load_tag(char tagID, buffer_context context, bint little_endian)
     elif tagID == _ID_BYTE_ARRAY:
         return load_byte_array(context, little_endian)
 
-        return TAG_String(load_string(context, little_endian))
     elif tagID == _ID_STRING:
+        return TAG_String(load_string(context, little_endian, string_decoder))
 
-        return load_list(context, little_endian)
     elif tagID == _ID_LIST:
+        return load_list(context, little_endian, string_decoder)
 
-        return load_compound_tag(context, little_endian)
     elif tagID == _ID_COMPOUND:
+        return load_compound_tag(context, little_endian, string_decoder)
 
     elif tagID == _ID_INT_ARRAY:
         return load_int_array(context, little_endian)
@@ -1043,6 +1047,24 @@ class NBTFile:
         return self.value.get(k, default)
 
 
+def utf8_decoder(b: bytes) -> str:
+    """Standard UTF-8 decoder"""
+    return b.decode()
+
+
+def _escape_replace(err):
+    if isinstance(err, UnicodeDecodeError):
+        return f"␛x{err.object[err.start]:02X}", err.start+1
+    raise err
+
+
+codecs.register_error("escapereplace", _escape_replace)
+
+
+def utf8_escape_decoder(b: bytes) -> str:
+    """UTF-8 decoder that escapes error bytes to the form ␛xFF"""
+    return b.decode(errors="escapereplace")
+
 def load(
     filepath_or_buffer: Union[str, bytes, BinaryIO, None] = None,  # TODO: This should become a required input
     compressed=True,
@@ -1050,6 +1072,8 @@ def load(
     offset: bool = False,
     little_endian: bool = False,
     buffer=None,  # TODO: this should get depreciated and removed.
+    *,
+    string_decoder: DecoderType = utf8_decoder
 ) -> Union[NBTFile, Tuple[Union[NBTFile, List[NBTFile]], int]]:
     if isinstance(filepath_or_buffer, str):
         # if a string load from the file path
@@ -1092,8 +1116,8 @@ def load(
             raise NBTFormatError(f"Expecting tag type {ID_COMPOUND}, got {tag_type} instead")
         context.offset += 1
 
-        name = load_name(context, little_endian)
-        tag = load_compound_tag(context, little_endian)
+        name = load_string(context, little_endian, string_decoder)
+        tag = load_compound_tag(context, little_endian, string_decoder)
 
         results.append(NBTFile(tag, name))
 
@@ -1144,7 +1168,7 @@ cdef TAG_Double load_double(buffer_context context, bint little_endian):
     to_little_endian(&tag.value, 8, little_endian)
     return tag
 
-cdef _TAG_Compound load_compound_tag(buffer_context context, bint little_endian):
+cdef _TAG_Compound load_compound_tag(buffer_context context, bint little_endian, string_decoder: DecoderType):
     cdef char tagID
     #cdef str name
     cdef _TAG_Compound root_tag = TAG_Compound()
@@ -1156,16 +1180,9 @@ cdef _TAG_Compound load_compound_tag(buffer_context context, bint little_endian)
         if tagID == _ID_END:
             break
         else:
-            tup = load_named(context, tagID, little_endian)
+            tup = load_named(context, tagID, little_endian, string_decoder)
             root_tag[tup[0]] = tup[1]
     return root_tag
-
-cdef bytes load_string(buffer_context context, bint little_endian):
-    cdef unsigned short *pointer = <unsigned short *> read_data(context, 2)
-    cdef unsigned short length = pointer[0]
-    to_little_endian(&length, 2, little_endian)
-    b = read_data(context, length)
-    return PyBytes_FromStringAndSize(b, length)
 
 cdef TAG_Byte_Array load_byte_array(buffer_context context, bint little_endian):
     cdef int*pointer = <int *> read_data(context, 4)
@@ -1198,7 +1215,7 @@ cdef TAG_Long_Array load_long_array(buffer_context context, bint little_endian):
     cdef object data_type = TAG_Long_Array.little_endian_data_type if little_endian else TAG_Long_Array.big_endian_data_type
     return TAG_Long_Array(numpy.frombuffer(arr[:byte_length], dtype=data_type, count=length))
 
-cdef _TAG_List load_list(buffer_context context, bint little_endian):
+cdef _TAG_List load_list(buffer_context context, bint little_endian, string_decoder: DecoderType):
     cdef char list_type = read_data(context, 1)[0]
     cdef int*pointer = <int*> read_data(context, 4)
     cdef int length = pointer[0]
@@ -1208,7 +1225,7 @@ cdef _TAG_List load_list(buffer_context context, bint little_endian):
     cdef list val = tag.value
     cdef int i
     for i in range(length):
-        PyList_Append(val, load_tag(list_type, context, little_endian))
+        PyList_Append(val, load_tag(list_type, context, little_endian, string_decoder))
 
     return tag
 

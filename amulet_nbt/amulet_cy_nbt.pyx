@@ -1281,37 +1281,37 @@ cdef void write_tag_value(_TAG_Value tag, object buf, bint little_endian):
     if tagID == _ID_BYTE:
         (<TAG_Byte> tag).write_value(buf, little_endian)
 
-    if tagID == _ID_SHORT:
+    elif tagID == _ID_SHORT:
         (<TAG_Short> tag).write_value(buf, little_endian)
 
-    if tagID == _ID_INT:
+    elif tagID == _ID_INT:
         (<TAG_Int> tag).write_value(buf, little_endian)
 
-    if tagID == _ID_LONG:
+    elif tagID == _ID_LONG:
         (<TAG_Long> tag).write_value(buf, little_endian)
 
-    if tagID == _ID_FLOAT:
+    elif tagID == _ID_FLOAT:
         (<TAG_Float> tag).write_value(buf, little_endian)
 
-    if tagID == _ID_DOUBLE:
+    elif tagID == _ID_DOUBLE:
         (<TAG_Double> tag).write_value(buf, little_endian)
 
-    if tagID == _ID_BYTE_ARRAY:
+    elif tagID == _ID_BYTE_ARRAY:
         (<TAG_Byte_Array> tag).write_value(buf, little_endian)
 
-    if tagID == _ID_STRING:
         (<TAG_String> tag).write_value(buf, little_endian)
+    elif tagID == _ID_STRING:
 
-    if tagID == _ID_LIST:
         (<_TAG_List> tag).write_value(buf, little_endian)
+    elif tagID == _ID_LIST:
 
-    if tagID == _ID_COMPOUND:
         (<_TAG_Compound> tag).write_value(buf, little_endian)
+    elif tagID == _ID_COMPOUND:
 
-    if tagID == _ID_INT_ARRAY:
+    elif tagID == _ID_INT_ARRAY:
         (<TAG_Int_Array> tag).write_value(buf, little_endian)
 
-    if tagID == _ID_LONG_ARRAY:
+    elif tagID == _ID_LONG_ARRAY:
         (<TAG_Long_Array> tag).write_value(buf, little_endian)
 
 def unpickle_nbt(tag_id, tag_value):

@@ -61,7 +61,8 @@ from ._errors import NBTError, NBTLoadError, NBTFormatError, SNBTParseError
 from ._dtype import SNBTType, IntType, FloatType, NumberType, ArrayType, AnyNBT
 
 from . import _version
-__version__ = _version.get_versions()['version']
+
+__version__ = _version.get_versions()["version"]
 
 
 def __getattr__(name):

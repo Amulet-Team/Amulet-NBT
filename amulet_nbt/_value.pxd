@@ -32,12 +32,6 @@ cdef class AbstractBaseTag(AbstractBase):
         bint little_endian
     ) except *
 
-    @staticmethod
-    cdef AbstractBaseTag read_payload(
-        BufferContext buffer,
-        bint little_endian
-    )
-
 cdef class AbstractBaseImmutableTag(AbstractBaseTag):
     pass
 

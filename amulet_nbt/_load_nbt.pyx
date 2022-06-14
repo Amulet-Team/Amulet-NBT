@@ -6,27 +6,28 @@ from typing import Union, BinaryIO, List, Tuple
 import os
 
 from ._errors import NBTLoadError
-from ._util cimport BufferContext, read_string, read_byte
+from ._util cimport BufferContext, read_string, read_byte, utf8_decoder
 from ._value cimport AbstractBaseTag
 from ._int cimport (
-    ByteTag,
-    ShortTag,
-    IntTag,
-    LongTag,
+    read_byte_tag,
+    read_short_tag,
+    read_int_tag,
+    read_long_tag,
 )
 from ._float cimport (
-    FloatTag,
-    DoubleTag,
+    read_float_tag,
+    read_double_tag,
 )
 from ._array cimport (
-    ByteArrayTag,
-    IntArrayTag,
-    LongArrayTag,
+    read_byte_array_tag,
+    read_int_array_tag,
+    read_long_array_tag,
 )
-from ._string cimport StringTag
-from ._list cimport CyListTag
-from ._compound cimport CyCompoundTag
+from ._string cimport read_string_tag
+from ._list cimport read_list_tag
+from ._compound cimport read_compound_tag
 from ._named_tag cimport NamedTag
+from ._dtype import DecoderType
 
 
 cpdef inline bytes safe_gunzip(bytes data):
@@ -64,45 +65,45 @@ cdef BufferContext get_buffer(
     )
 
 
-cdef AbstractBaseTag load_payload(BufferContext buffer, char tag_type, bint little_endian):
+cdef AbstractBaseTag load_payload(BufferContext buffer, char tag_type, bint little_endian, string_decoder: DecoderType) except *:
     if tag_type == 1:
-        return ByteTag.read_payload(buffer, little_endian)
+        return read_byte_tag(buffer, little_endian)
     elif tag_type == 2:
-        return ShortTag.read_payload(buffer, little_endian)
+        return read_short_tag(buffer, little_endian)
     elif tag_type == 3:
-        return IntTag.read_payload(buffer, little_endian)
+        return read_int_tag(buffer, little_endian)
     elif tag_type == 4:
-        return LongTag.read_payload(buffer, little_endian)
+        return read_long_tag(buffer, little_endian)
     elif tag_type == 5:
-        return FloatTag.read_payload(buffer, little_endian)
+        return read_float_tag(buffer, little_endian)
     elif tag_type == 6:
-        return DoubleTag.read_payload(buffer, little_endian)
+        return read_double_tag(buffer, little_endian)
     elif tag_type == 7:
-        return ByteArrayTag.read_payload(buffer, little_endian)
+        return read_byte_array_tag(buffer, little_endian)
     elif tag_type == 8:
-        return StringTag.read_payload(buffer, little_endian)
+        return read_string_tag(buffer, little_endian, string_decoder)
     elif tag_type == 9:
-        return CyListTag.read_payload(buffer, little_endian)
+        return read_list_tag(buffer, little_endian, string_decoder)
     elif tag_type == 10:
-        return CyCompoundTag.read_payload(buffer, little_endian)
+        return read_compound_tag(buffer, little_endian, string_decoder)
     elif tag_type == 11:
-        return IntArrayTag.read_payload(buffer, little_endian)
+        return read_int_array_tag(buffer, little_endian)
     elif tag_type == 12:
-        return LongArrayTag.read_payload(buffer, little_endian)
+        return read_long_array_tag(buffer, little_endian)
     else:
         raise NBTLoadError(f"Tag {tag_type} does not exist.")
 
 
-cpdef tuple load_tag(BufferContext buffer, bint little_endian):
+cdef inline tuple load_tag(BufferContext buffer, bint little_endian, string_decoder: DecoderType):
     cdef char tag_type = read_byte(buffer)
-    cdef str name = read_string(buffer, little_endian)
-    return name, load_payload(buffer, tag_type, little_endian)
+    cdef str name = read_string(buffer, little_endian, string_decoder)
+    return name, load_payload(buffer, tag_type, little_endian, string_decoder)
 
 
-cdef NamedTag load_named_tag(BufferContext buffer, bint little_endian):
-    cdef char tag_type = read_byte(buffer)
-    cdef str name = read_string(buffer, little_endian)
-    cdef AbstractBaseTag tag = load_payload(buffer, tag_type, little_endian)
+cdef NamedTag load_named_tag(BufferContext buffer, bint little_endian, string_decoder: DecoderType):
+    cdef str name
+    cdef AbstractBaseTag tag
+    name, tag = load_tag(buffer, little_endian, string_decoder)
     return NamedTag(tag, name)
 
 
@@ -116,12 +117,13 @@ def load_one(
     *,
     bint compressed=True,
     bint little_endian: bool = False,
-    ReadContext read_context = None
+    ReadContext read_context = None,
+    string_decoder: DecoderType = utf8_decoder
 ) -> NamedTag:
     cdef BufferContext buffer = get_buffer(filepath_or_buffer, compressed)
     if buffer.size < 1:
         raise EOFError("load_one() was supplied an empty buffer")
-    cdef NamedTag tag = load_named_tag(buffer, little_endian)
+    cdef NamedTag tag = load_named_tag(buffer, little_endian, string_decoder)
     if read_context is not None:
         read_context.offset = buffer.offset
     return tag
@@ -133,7 +135,8 @@ def load_many(
     int count = 1,
     bint compressed=True,
     bint little_endian: bool = False,
-    ReadContext read_context = None
+    ReadContext read_context = None,
+    string_decoder: DecoderType = utf8_decoder
 ) -> List[NamedTag]:
     if count < 1:
         raise ValueError("Count must be 1 or more.")
@@ -144,7 +147,7 @@ def load_many(
     cdef size_t i
     for i in range(count):
         results.append(
-            load_named_tag(buffer, little_endian)
+            load_named_tag(buffer, little_endian, string_decoder)
         )
     if read_context is not None:
         read_context.offset = buffer.offset
@@ -158,6 +161,7 @@ def load(
     object count: int = None,
     bint offset: bool = False,
     bint little_endian: bool = False,
+    string_decoder: DecoderType = utf8_decoder
 ) -> Union[NamedTag, Tuple[Union[NamedTag, List[NamedTag]], int]]:
     warnings.warn("load is depreciated. Use load_one or load_many", DeprecationWarning)
     if offset:
@@ -172,7 +176,8 @@ def load(
             filepath_or_buffer,
             compressed=compressed,
             little_endian=little_endian,
-            read_context=read_context
+            read_context=read_context,
+            string_decoder=string_decoder
         )
     else:
         result = load_many(
@@ -180,7 +185,8 @@ def load(
             count=count,
             compressed=compressed,
             little_endian=little_endian,
-            read_context=read_context
+            read_context=read_context,
+            string_decoder=string_decoder
         )
 
     if read_context is None:

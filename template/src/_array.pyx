@@ -4,7 +4,7 @@
 import numpy
 cimport numpy
 from io import BytesIO
-from copy import copy, deepcopy
+from copy import deepcopy
 
 from ._value cimport AbstractBaseMutableTag
 from ._const cimport CommaSpace, ID_BYTE_ARRAY, ID_INT_ARRAY, ID_LONG_ARRAY

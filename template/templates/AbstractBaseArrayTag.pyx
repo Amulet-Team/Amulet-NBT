@@ -2,12 +2,14 @@
 import numpy
 from template import include
 }}
-cdef inline void _read_{{dtype}}_array_tag_payload({{dtype.capitalize()}}ArrayTag tag, BufferContext buffer, bint little_endian):
+cdef inline {{dtype.capitalize()}}ArrayTag read_{{dtype}}_array_tag(BufferContext buffer, bint little_endian):
+    cdef {{dtype.capitalize()}}ArrayTag tag = {{dtype.capitalize()}}ArrayTag.__new__({{dtype.capitalize()}}ArrayTag)
     cdef int length = read_int(buffer, little_endian)
     cdef int byte_length = length * {{width}}
     cdef char*arr = read_data(buffer, byte_length)
     data_type = {{little_endian_data_type}} if little_endian else {{big_endian_data_type}}
     tag.value_ = numpy.array(numpy.frombuffer(arr[:byte_length], dtype=data_type, count=length), {{native_data_type}}).ravel()
+    return tag
 
 
 cdef class {{dtype.capitalize()}}ArrayTag(AbstractBaseArrayTag):
@@ -31,12 +33,6 @@ cdef class {{dtype.capitalize()}}ArrayTag(AbstractBaseArrayTag):
             {{width}},
             little_endian
         )
-
-    @staticmethod
-    cdef {{dtype.capitalize()}}ArrayTag read_payload(BufferContext buffer, bint little_endian):
-        cdef {{dtype.capitalize()}}ArrayTag tag = {{dtype.capitalize()}}ArrayTag.__new__({{dtype.capitalize()}}ArrayTag)
-        _read_{{dtype}}_array_tag_payload(tag, buffer, little_endian)
-        return tag
 
 {{include("AbstractBaseMutableTag.pyx", cls_name=f"{dtype.capitalize()}ArrayTag")}}
 

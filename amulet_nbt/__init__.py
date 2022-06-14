@@ -60,6 +60,8 @@ from ._errors import NBTError, NBTLoadError, NBTFormatError, SNBTParseError
 
 from ._dtype import SNBTType, IntType, FloatType, NumberType, ArrayType, AnyNBT
 
+from ._util import utf8_decoder, utf8_encoder, utf8_escape_decoder, utf8_escape_encoder
+
 from . import _version
 
 __version__ = _version.get_versions()["version"]

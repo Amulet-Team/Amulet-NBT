@@ -16,14 +16,16 @@ from ._dtype import AnyNBT
 {{py:from template import include}}
 
 
-cdef inline void _read_list_tag_payload(CyListTag tag, BufferContext buffer, bint little_endian):
+cdef inline CyListTag read_list_tag(BufferContext buffer, bint little_endian, string_decoder: DecoderType):
+    cdef CyListTag tag = ListTag()
     cdef char list_type = read_byte(buffer)
     tag.list_data_type = list_type
     cdef int length = read_int(buffer, little_endian)
     cdef list val = tag.value_
     cdef int i
     for i in range(length):
-        val.append(load_payload(buffer, list_type, little_endian))
+        val.append(load_payload(buffer, list_type, little_endian, string_decoder))
+    return tag
 
 
 cdef class CyListTag(AbstractBaseMutableTag):
@@ -85,12 +87,6 @@ cdef class CyListTag(AbstractBaseMutableTag):
                     f"ListTag must only contain one type! Found {subtag.tag_id} in list type {list_type}"
                 )
             subtag.write_payload(buffer, little_endian)
-
-    @staticmethod
-    cdef CyListTag read_payload(BufferContext buffer, bint little_endian):
-        cdef CyListTag tag = ListTag()
-        _read_list_tag_payload(tag, buffer, little_endian)
-        return tag
 
     cdef str _to_snbt(CyListTag self):
         cdef AbstractBaseTag elem

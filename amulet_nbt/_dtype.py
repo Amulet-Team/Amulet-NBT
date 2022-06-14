@@ -1,4 +1,4 @@
-from typing import Union, TYPE_CHECKING
+from typing import Union, Callable, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ._int import (
@@ -44,3 +44,5 @@ AnyNBT = Union[
     "IntArrayTag",
     "LongArrayTag",
 ]
+
+DecoderType = Callable[[bytes], str]

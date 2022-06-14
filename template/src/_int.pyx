@@ -33,8 +33,10 @@ cdef class AbstractBaseIntTag(AbstractBaseNumericTag):
         return self.py_int
 
 
-cdef inline void _read_byte_tag_payload(ByteTag tag, BufferContext buffer, bint little_endian):
+cdef inline ByteTag read_byte_tag(BufferContext buffer, bint little_endian):
+    cdef ByteTag tag = ByteTag.__new__(ByteTag)
     tag.value_ = read_byte(buffer)
+    return tag
 
 
 cdef class ByteTag(AbstractBaseIntTag):
@@ -58,17 +60,13 @@ cdef class ByteTag(AbstractBaseIntTag):
     cdef void write_payload(ByteTag self, object buffer: BytesIO, bint little_endian) except *:
         write_byte(self.value_, buffer)
 
-    @staticmethod
-    cdef ByteTag read_payload(BufferContext buffer, bint little_endian):
-        cdef ByteTag tag = ByteTag.__new__(ByteTag)
-        _read_byte_tag_payload(tag, buffer, little_endian)
-        return tag
 
-
-cdef inline void _read_short_tag_payload(ShortTag tag, BufferContext buffer, bint little_endian):
+cdef inline ShortTag read_short_tag(BufferContext buffer, bint little_endian):
+    cdef ShortTag tag = ShortTag.__new__(ShortTag)
     cdef short *pointer = <short*> read_data(buffer, 2)
     tag.value_ = pointer[0]
     to_little_endian(&tag.value_, 2, little_endian)
+    return tag
 
 
 cdef class ShortTag(AbstractBaseIntTag):
@@ -92,17 +90,13 @@ cdef class ShortTag(AbstractBaseIntTag):
     cdef void write_payload(ShortTag self, object buffer: BytesIO, bint little_endian) except *:
         write_short(self.value_, buffer, little_endian)
 
-    @staticmethod
-    cdef ShortTag read_payload(BufferContext buffer, bint little_endian):
-        cdef ShortTag tag = ShortTag.__new__(ShortTag)
-        _read_short_tag_payload(tag, buffer, little_endian)
-        return tag
 
-
-cdef inline void _read_int_tag_payload(IntTag tag, BufferContext buffer, bint little_endian):
+cdef inline IntTag read_int_tag(BufferContext buffer, bint little_endian):
+    cdef IntTag tag = IntTag.__new__(IntTag)
     cdef int*pointer = <int*> read_data(buffer, 4)
     tag.value_ = pointer[0]
     to_little_endian(&tag.value_, 4, little_endian)
+    return tag
 
 
 cdef class IntTag(AbstractBaseIntTag):
@@ -126,17 +120,13 @@ cdef class IntTag(AbstractBaseIntTag):
     cdef void write_payload(IntTag self, object buffer: BytesIO, bint little_endian) except *:
         write_int(self.value_, buffer, little_endian)
 
-    @staticmethod
-    cdef IntTag read_payload(BufferContext buffer, bint little_endian):
-        cdef IntTag tag = IntTag.__new__(IntTag)
-        _read_int_tag_payload(tag, buffer, little_endian)
-        return tag
 
-
-cdef inline void _read_long_tag_payload(LongTag tag, BufferContext buffer, bint little_endian):
+cdef inline LongTag read_long_tag(BufferContext buffer, bint little_endian):
+    cdef LongTag tag = LongTag.__new__(LongTag)
     cdef long long *pointer = <long long *> read_data(buffer, 8)
     tag.value_ = pointer[0]
     to_little_endian(&tag.value_, 8, little_endian)
+    return tag
 
 
 cdef class LongTag(AbstractBaseIntTag):
@@ -159,9 +149,3 @@ cdef class LongTag(AbstractBaseIntTag):
 
     cdef void write_payload(LongTag self, object buffer: BytesIO, bint little_endian) except *:
         write_long(self.value_, buffer, little_endian)
-
-    @staticmethod
-    cdef LongTag read_payload(BufferContext buffer, bint little_endian):
-        cdef LongTag tag = LongTag.__new__(LongTag)
-        _read_long_tag_payload(tag, buffer, little_endian)
-        return tag

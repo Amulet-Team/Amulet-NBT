@@ -4,7 +4,7 @@
 import numpy
 cimport numpy
 from io import BytesIO
-from copy import copy, deepcopy
+from copy import deepcopy
 
 from ._value cimport AbstractBaseMutableTag
 from ._const cimport CommaSpace, ID_BYTE_ARRAY, ID_INT_ARRAY, ID_LONG_ARRAY
@@ -37,12 +37,14 @@ cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
         return self.np_array
 
 
-cdef inline void _read_byte_array_tag_payload(ByteArrayTag tag, BufferContext buffer, bint little_endian):
+cdef inline ByteArrayTag read_byte_array_tag(BufferContext buffer, bint little_endian):
+    cdef ByteArrayTag tag = ByteArrayTag.__new__(ByteArrayTag)
     cdef int length = read_int(buffer, little_endian)
     cdef int byte_length = length * 1
     cdef char*arr = read_data(buffer, byte_length)
     data_type = numpy.dtype("int8") if little_endian else numpy.dtype("int8")
     tag.value_ = numpy.array(numpy.frombuffer(arr[:byte_length], dtype=data_type, count=length), numpy.dtype("int8")).ravel()
+    return tag
 
 
 cdef class ByteArrayTag(AbstractBaseArrayTag):
@@ -66,12 +68,6 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
             1,
             little_endian
         )
-
-    @staticmethod
-    cdef ByteArrayTag read_payload(BufferContext buffer, bint little_endian):
-        cdef ByteArrayTag tag = ByteArrayTag.__new__(ByteArrayTag)
-        _read_byte_array_tag_payload(tag, buffer, little_endian)
-        return tag
 
     def __str__(ByteArrayTag self):
         return str(self.value_)
@@ -124,12 +120,14 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
 
 
 
-cdef inline void _read_int_array_tag_payload(IntArrayTag tag, BufferContext buffer, bint little_endian):
+cdef inline IntArrayTag read_int_array_tag(BufferContext buffer, bint little_endian):
+    cdef IntArrayTag tag = IntArrayTag.__new__(IntArrayTag)
     cdef int length = read_int(buffer, little_endian)
     cdef int byte_length = length * 4
     cdef char*arr = read_data(buffer, byte_length)
     data_type = numpy.dtype("<i4") if little_endian else numpy.dtype(">i4")
     tag.value_ = numpy.array(numpy.frombuffer(arr[:byte_length], dtype=data_type, count=length), numpy.int32).ravel()
+    return tag
 
 
 cdef class IntArrayTag(AbstractBaseArrayTag):
@@ -153,12 +151,6 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
             4,
             little_endian
         )
-
-    @staticmethod
-    cdef IntArrayTag read_payload(BufferContext buffer, bint little_endian):
-        cdef IntArrayTag tag = IntArrayTag.__new__(IntArrayTag)
-        _read_int_array_tag_payload(tag, buffer, little_endian)
-        return tag
 
     def __str__(IntArrayTag self):
         return str(self.value_)
@@ -211,12 +203,14 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
 
 
 
-cdef inline void _read_long_array_tag_payload(LongArrayTag tag, BufferContext buffer, bint little_endian):
+cdef inline LongArrayTag read_long_array_tag(BufferContext buffer, bint little_endian):
+    cdef LongArrayTag tag = LongArrayTag.__new__(LongArrayTag)
     cdef int length = read_int(buffer, little_endian)
     cdef int byte_length = length * 8
     cdef char*arr = read_data(buffer, byte_length)
     data_type = numpy.dtype("<i8") if little_endian else numpy.dtype(">i8")
     tag.value_ = numpy.array(numpy.frombuffer(arr[:byte_length], dtype=data_type, count=length), numpy.int64).ravel()
+    return tag
 
 
 cdef class LongArrayTag(AbstractBaseArrayTag):
@@ -240,12 +234,6 @@ cdef class LongArrayTag(AbstractBaseArrayTag):
             8,
             little_endian
         )
-
-    @staticmethod
-    cdef LongArrayTag read_payload(BufferContext buffer, bint little_endian):
-        cdef LongArrayTag tag = LongArrayTag.__new__(LongArrayTag)
-        _read_long_array_tag_payload(tag, buffer, little_endian)
-        return tag
 
     def __str__(LongArrayTag self):
         return str(self.value_)

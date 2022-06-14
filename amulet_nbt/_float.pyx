@@ -24,10 +24,12 @@ cdef class AbstractBaseFloatTag(AbstractBaseNumericTag):
 
 
 
-cdef inline void _read_float_tag_payload(FloatTag tag, BufferContext buffer, bint little_endian):
+cdef inline FloatTag read_float_tag(BufferContext buffer, bint little_endian):
+    cdef FloatTag tag = FloatTag.__new__(FloatTag)
     cdef float*pointer = <float*> read_data(buffer, 4)
     tag.value_ = pointer[0]
     to_little_endian(&tag.value_, 4, little_endian)
+    return tag
 
 
 cdef class FloatTag(AbstractBaseFloatTag):
@@ -113,17 +115,13 @@ cdef class FloatTag(AbstractBaseFloatTag):
     cdef void write_payload(FloatTag self, object buffer: BytesIO, bint little_endian) except *:
         write_float(self.value_, buffer, little_endian)
 
-    @staticmethod
-    cdef FloatTag read_payload(BufferContext buffer, bint little_endian):
-        cdef FloatTag tag = FloatTag.__new__(FloatTag)
-        _read_float_tag_payload(tag, buffer, little_endian)
-        return tag
 
-
-cdef inline void _read_double_tag_payload(DoubleTag tag, BufferContext buffer, bint little_endian):
+cdef inline DoubleTag read_double_tag(BufferContext buffer, bint little_endian):
+    cdef DoubleTag tag = DoubleTag.__new__(DoubleTag)
     cdef double *pointer = <double *> read_data(buffer, 8)
     tag.value_ = pointer[0]
     to_little_endian(&tag.value_, 8, little_endian)
+    return tag
 
 
 cdef class DoubleTag(AbstractBaseFloatTag):
@@ -208,9 +206,3 @@ cdef class DoubleTag(AbstractBaseFloatTag):
 
     cdef void write_payload(DoubleTag self, object buffer: BytesIO, bint little_endian) except *:
         write_double(self.value_, buffer, little_endian)
-
-    @staticmethod
-    cdef DoubleTag read_payload(BufferContext buffer, bint little_endian):
-        cdef DoubleTag tag = DoubleTag.__new__(DoubleTag)
-        _read_double_tag_payload(tag, buffer, little_endian)
-        return tag

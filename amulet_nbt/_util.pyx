@@ -1,12 +1,11 @@
-from cpython.unicode cimport PyUnicode_DecodeUTF8, PyUnicode_DecodeCharmap
 from cpython.bytes cimport PyBytes_FromStringAndSize, PyBytes_AsString
 from libc.stdlib cimport malloc, free
 from libc.string cimport memcpy
+import codecs
+import re
 
 from ._errors import NBTFormatError
-
-
-CHAR_MAP = "".join(map(chr, range(256)))
+from ._dtype import DecoderType
 
 
 cdef class BufferContext:
@@ -67,22 +66,15 @@ cdef inline int read_int(BufferContext buffer, bint little_endian):
     return value
 
 
-cdef inline str read_string(BufferContext buffer, bint little_endian):
-    cdef unsigned short *pointer = <unsigned short *> read_data(buffer, 2)
-    cdef unsigned short length = pointer[0]
-    to_little_endian(&length, 2, little_endian)
-    b = read_data(buffer, length)
-    try:
-        return PyUnicode_DecodeUTF8(b, length, "strict")
-    except:
-        return PyUnicode_DecodeCharmap(b, length, CHAR_MAP, "strict")
+cdef inline str read_string(BufferContext buffer, bint little_endian, string_decoder: DecoderType) except *:
+    return string_decoder(read_bytes(buffer, little_endian))
 
 cdef inline bytes read_bytes(BufferContext buffer, bint little_endian):
     cdef unsigned short *pointer = <unsigned short *> read_data(buffer, 2)
     cdef unsigned short length = pointer[0]
     to_little_endian(&length, 2, little_endian)
-    b = read_data(buffer, length)
-    return PyBytes_FromStringAndSize(b, length)
+    cdef char *c = read_data(buffer, length)
+    return PyBytes_FromStringAndSize(c, length)
 
 cdef inline void cwrite(object obj, char*buf, size_t length):
     obj.write(buf[:length])
@@ -127,3 +119,38 @@ cdef inline void write_float(float value, object buffer, bint little_endian):
 cdef inline void write_double(double value, object buffer, bint little_endian):
     to_little_endian(&value, 8, little_endian)
     cwrite(buffer, <char*> &value, 8)
+
+
+# Functions for string encoding
+
+cpdef str utf8_decoder(bytes b):
+    """Standard UTF-8 decoder"""
+    return b.decode()
+
+
+cpdef bytes utf8_encoder(str s):
+    """Standard UTF-8 encoder"""
+    return s.encode()
+
+
+def _escape_replace(err):
+    if isinstance(err, UnicodeDecodeError):
+        return f"␛x{err.object[err.start]:02X}", err.start+1
+    raise err
+
+
+codecs.register_error("escapereplace", _escape_replace)
+
+
+cpdef str utf8_escape_decoder(bytes b):
+    """UTF-8 decoder that escapes error bytes to the form ␛xFF"""
+    return b.decode(errors="escapereplace")
+
+EscapePattern = re.compile(b"\xe2\x90\x9bx([0-9a-zA-Z]{2})")  # ␛xFF
+
+cpdef bytes _utf8_unescape(object m):
+    return bytes([int(m.groups()[0], 16)])
+
+cpdef bytes utf8_escape_encoder(str s):
+    """UTF-8 encoder that converts ␛x[0-9a-fA-F]{2} back to individual bytes"""
+    return EscapePattern.sub(_utf8_unescape, s.encode())

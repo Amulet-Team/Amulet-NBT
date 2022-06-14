@@ -12,13 +12,14 @@ from ._value cimport AbstractBaseTag, AbstractBaseMutableTag
 from ._const cimport ID_END, ID_COMPOUND, CommaSpace, CommaNewline
 from ._util cimport write_byte, BufferContext, read_byte, read_string
 from ._load_nbt cimport load_payload
-from ._dtype import AnyNBT
+from ._dtype import AnyNBT, DecoderType
 {{py:from template import include}}
 
 NON_QUOTED_KEY = re.compile('[A-Za-z0-9._+-]+')
 
 
-cdef inline void _read_compound_tag_payload(CyCompoundTag tag, BufferContext buffer, bint little_endian):
+cdef inline CyCompoundTag read_compound_tag(BufferContext buffer, bint little_endian, string_decoder: DecoderType):
+    cdef CyCompoundTag tag = CompoundTag()
     cdef char tag_type
     cdef str name
     cdef AbstractBaseTag child_tag
@@ -28,9 +29,10 @@ cdef inline void _read_compound_tag_payload(CyCompoundTag tag, BufferContext buf
         if tag_type == ID_END:
             break
         else:
-            name = read_string(buffer, little_endian)
-            child_tag = load_payload(buffer, tag_type, little_endian)
+            name = read_string(buffer, little_endian, string_decoder)
+            child_tag = load_payload(buffer, tag_type, little_endian, string_decoder)
             tag[name] = child_tag
+    return tag
 
 
 cdef inline void _check_dict(dict value) except *:
@@ -105,12 +107,6 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         for key, tag in self.value_.items():
             tag.write_tag(buffer, key, little_endian)
         write_byte(ID_END, buffer)
-
-    @staticmethod
-    cdef CyCompoundTag read_payload(BufferContext buffer, bint little_endian):
-        cdef CyCompoundTag tag = CompoundTag()
-        _read_compound_tag_payload(tag, buffer, little_endian)
-        return tag
 
     def __repr__(CyCompoundTag self):
         return f"{self.__class__.__name__}({repr(self.value_)})"

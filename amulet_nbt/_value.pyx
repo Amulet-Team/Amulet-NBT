@@ -159,17 +159,6 @@ cdef class AbstractBaseTag(AbstractBase):
         """
         raise NotImplementedError
 
-    @staticmethod
-    cdef AbstractBaseTag read_payload(BufferContext buffer, bint little_endian):
-        """
-        Read the payload from the buffer.
-        The calling code must have read up to the start of the payload.
-        
-        :param buffer: The buffer to read from.
-        :param little_endian: Is the data in little endian format.
-        """
-        raise NotImplementedError
-
     def __repr__(self):
         raise NotImplementedError
 

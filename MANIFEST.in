@@ -1,0 +1,1 @@
+recursive-include amulet_nbt *.py *.pyi *.pyx *.pxd

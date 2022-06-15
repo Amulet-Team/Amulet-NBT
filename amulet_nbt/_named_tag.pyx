@@ -1,6 +1,7 @@
 from typing import Type, TypeVar
 import warnings
 
+from . import __major__
 from ._value cimport AbstractBaseTag, AbstractBase
 from ._int cimport (
     ByteTag,
@@ -20,7 +21,7 @@ from ._array cimport (
 from ._string cimport StringTag
 from ._list import ListTag
 from ._compound import CompoundTag
-from ._dtype import EncoderType
+from ._dtype import EncoderType, AnyNBT
 from ._util import utf8_encoder
 
 
@@ -108,11 +109,19 @@ cdef class NamedTag(AbstractBase):
     def save_to(
         self,
         object filepath_or_buffer=None,
-        *,
+        *args,
         bint compressed=True,
         bint little_endian=False,
         string_encoder: EncoderType = utf8_encoder,
     ):
+        if args:
+            if __major__ <= 2:
+                warnings.warn("save_to arguments are going to become keyword only", FutureWarning)
+                compressed, *args = args
+                if args:
+                    little_endian, *args = args
+            else:
+                raise TypeError(f"save_to() takes 1 to 2 positional arguments but {2+len(args)} were given")
         return self.tag.save_to(
             filepath_or_buffer,
             compressed=compressed,
@@ -129,9 +138,50 @@ cdef class NamedTag(AbstractBase):
     def __repr__(self):
         return f'NamedTag({repr(self.tag)}, "{self.name}")'
 
-    def __iter__(self):
-        yield self.name
-        yield self.value
+    if __major__ >= 3:
+        def __iter__(self):
+            yield self.name
+            yield self.value
 
-    def __getitem__(self, int item):
-        return (self.name, self.value)[item]
+        def __getitem__(self, int item):
+            return (self.name, self.value)[item]
+    else:
+        def __len__(self) -> int:
+            warnings.warn("len on NamedTag is depreciated. access the tag to get the same behaviour", DeprecationWarning)
+            return len(self.get_compound())
+
+        def keys(self):
+            warnings.warn("keys on NamedTag is depreciated. access the tag to get the same behaviour", DeprecationWarning)
+            return self.get_compound().keys()
+
+        def values(self):
+            warnings.warn("values on NamedTag is depreciated. access the tag to get the same behaviour", DeprecationWarning)
+            self.get_compound().values()
+
+        def items(self):
+            warnings.warn("items on NamedTag is depreciated. access the tag to get the same behaviour", DeprecationWarning)
+            return self.get_compound().items()
+
+        def __getitem__(self, key: str) -> AnyNBT:
+            warnings.warn("The behaviour of __getitem__ is changing to make NamedTag behave like a named tuple. access the tag to get the same behaviour", FutureWarning)
+            return self.get_compound()[key]
+
+        def __setitem__(self, key: str, tag: AnyNBT):
+            warnings.warn("setitem on NamedTag is depreciated. access the tag to get the same behaviour", DeprecationWarning)
+            self.get_compound()[key] = tag
+
+        def __delitem__(self, key: str):
+            warnings.warn("delitem on NamedTag is depreciated. access the tag to get the same behaviour", DeprecationWarning)
+            del self.get_compound()[key]
+
+        def __contains__(self, key: str) -> bool:
+            warnings.warn("contains on NamedTag is depreciated. access the tag to get the same behaviour", DeprecationWarning)
+            return key in self.get_compound()
+
+        def pop(self, k, default=None) -> AnyNBT:
+            warnings.warn("pop on NamedTag is depreciated. access the tag to get the same behaviour", DeprecationWarning)
+            return self.get_compound().pop(k, default)
+
+        def get(self, k, default=None) -> AnyNBT:
+            warnings.warn("get on NamedTag is depreciated. access the tag to get the same behaviour", DeprecationWarning)
+            return self.get_compound().get(k, default)

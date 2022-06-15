@@ -9,7 +9,6 @@ class AbstractBase:
         *,
         compressed=True,
         little_endian=False,
-        name="",
         string_encoder: EncoderType = utf8_encoder,
     ) -> bytes: ...
     def save_to(
@@ -18,7 +17,6 @@ class AbstractBase:
         *,
         compressed=True,
         little_endian=False,
-        name="",
         string_encoder: EncoderType = utf8_encoder,
     ) -> bytes: ...
 
@@ -26,6 +24,23 @@ class AbstractBaseTag(AbstractBase):
     tag_id: int
     @property
     def py_data(self) -> Any: ...
+    def to_nbt(
+        self,
+        *,
+        compressed=True,
+        little_endian=False,
+        string_encoder: EncoderType = utf8_encoder,
+        name="",
+    ) -> bytes: ...
+    def save_to(
+        self,
+        filepath_or_buffer=None,
+        *,
+        compressed=True,
+        little_endian=False,
+        string_encoder: EncoderType = utf8_encoder,
+        name="",
+    ) -> bytes: ...
     def __repr__(self) -> str:
         raise NotImplementedError
     def __str__(self) -> str:

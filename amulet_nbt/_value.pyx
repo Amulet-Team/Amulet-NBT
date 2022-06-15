@@ -25,13 +25,11 @@ cdef class AbstractBase:
         *,
         bint compressed=True,
         bint little_endian=False,
-        str name="",
         string_encoder: EncoderType = utf8_encoder,
     ):
         """
         Get the data in binary NBT format.
 
-        :param name: The root tag name.
         :param compressed: Should the bytes be compressed with gzip.
         :param little_endian: Should the bytes be saved in little endian format.
         :param string_encoder: A function to encode strings to bytes.
@@ -45,7 +43,6 @@ cdef class AbstractBase:
         *,
         bint compressed=True,
         bint little_endian=False,
-        str name="",
         string_encoder: EncoderType = utf8_encoder,
     ):
         """
@@ -58,7 +55,6 @@ cdef class AbstractBase:
         :param filepath_or_buffer: A path or `write`able object to write the data to.
         :param compressed: Should the bytes be compressed with gzip.
         :param little_endian: Should the bytes be saved in little endian format.
-        :param name: The root tag name.
         :param string_encoder: A function to encode strings to bytes.
         :return: The binary NBT representation of the class.
         """
@@ -106,9 +102,18 @@ cdef class AbstractBaseTag(AbstractBase):
         *,
         bint compressed=True,
         bint little_endian=False,
-        str name="",
         string_encoder: EncoderType = utf8_encoder,
+        str name="",
     ):
+        """
+        Get the data in binary NBT format.
+
+        :param compressed: Should the bytes be compressed with gzip.
+        :param little_endian: Should the bytes be saved in little endian format.
+        :param string_encoder: A function to encode strings to bytes.
+        :param name: The root tag name.
+        :return: The binary NBT representation of the class.
+        """
         cdef object buffer = BytesIO()
         cdef object gzip_buffer
         self.write_tag(buffer, name, little_endian, string_encoder)
@@ -126,14 +131,28 @@ cdef class AbstractBaseTag(AbstractBase):
         *,
         bint compressed=True,
         bint little_endian=False,
-        str name="",
         string_encoder: EncoderType = utf8_encoder,
+        str name="",
     ):
+        """
+        Convert the data to the binary NBT format. Optionally write to a file.
+
+        If filepath_or_buffer is a valid file path in string form the data will be written to that file.
+
+        If filepath_or_buffer is a file like object the bytes will be written to it using `write`.
+
+        :param filepath_or_buffer: A path or `write`able object to write the data to.
+        :param compressed: Should the bytes be compressed with gzip.
+        :param little_endian: Should the bytes be saved in little endian format.
+        :param name: The root tag name.
+        :param string_encoder: A function to encode strings to bytes.
+        :return: The binary NBT representation of the class.
+        """
         cdef bytes data = self.to_nbt(
             compressed=compressed,
             little_endian=little_endian,
-            name=name,
             string_encoder=string_encoder,
+            name=name,
         )
 
         if filepath_or_buffer is None:

@@ -96,14 +96,13 @@ cdef class NamedTag(AbstractBase):
         *,
         bint compressed=True,
         bint little_endian=False,
-        str name="",
         string_encoder: EncoderType = utf8_encoder,
     ):
         return self.tag.to_nbt(
             compressed=compressed,
             little_endian=little_endian,
-            name=name or self.name,
-            string_encoder=string_encoder
+            string_encoder=string_encoder,
+            name = self.name,
         )
 
     def save_to(
@@ -112,15 +111,14 @@ cdef class NamedTag(AbstractBase):
         *,
         bint compressed=True,
         bint little_endian=False,
-        str name="",
         string_encoder: EncoderType = utf8_encoder,
     ):
         return self.tag.save_to(
             filepath_or_buffer,
             compressed=compressed,
             little_endian=little_endian,
-            name=name or self.name,
-            string_encoder=string_encoder
+            string_encoder=string_encoder,
+            name=self.name,
         )
 
     def __eq__(self, other):

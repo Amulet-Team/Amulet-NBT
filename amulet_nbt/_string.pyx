@@ -14,7 +14,7 @@ cdef inline escape(str string):
     return string.replace('\\', '\\\\').replace('"', '\\"')
 
 
-cdef StringTag read_string_tag(BufferContext buffer, bint little_endian, string_decoder: DecoderType):
+cdef inline StringTag read_string_tag(BufferContext buffer, bint little_endian, string_decoder: DecoderType):
     cdef StringTag tag = StringTag.__new__(StringTag)
     tag.value_ = read_string(buffer, little_endian, string_decoder)
     return tag

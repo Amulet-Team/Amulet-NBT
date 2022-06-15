@@ -6,7 +6,8 @@ from typing import Union, BinaryIO, List, Tuple
 import os
 
 from ._errors import NBTLoadError
-from ._util cimport BufferContext, read_string, read_byte, utf8_decoder
+from ._util cimport BufferContext, read_string, read_byte
+from ._util import utf8_decoder
 from ._value cimport AbstractBaseTag
 from ._int cimport (
     read_byte_tag,

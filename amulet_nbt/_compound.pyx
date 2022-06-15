@@ -12,7 +12,7 @@ from ._value cimport AbstractBaseTag, AbstractBaseMutableTag
 from ._const cimport ID_END, ID_COMPOUND, CommaSpace, CommaNewline
 from ._util cimport write_byte, BufferContext, read_byte, read_string
 from ._load_nbt cimport load_payload
-from ._dtype import AnyNBT, DecoderType
+from ._dtype import AnyNBT, DecoderType, EncoderType
 
 NON_QUOTED_KEY = re.compile('[A-Za-z0-9._+-]+')
 
@@ -116,12 +116,17 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         else:
             return f"{indent_chr * indent_count * leading_indent}{{}}"
 
-    cdef void write_payload(CyCompoundTag self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(
+        CyCompoundTag self,
+        object buffer: BytesIO,
+        bint little_endian,
+        string_encoder: EncoderType
+    ) except *:
         cdef str key
         cdef AbstractBaseTag tag
 
         for key, tag in self.value_.items():
-            tag.write_tag(buffer, key, little_endian)
+            tag.write_tag(buffer, key, little_endian, string_encoder)
         write_byte(ID_END, buffer)
 
     def __repr__(CyCompoundTag self):

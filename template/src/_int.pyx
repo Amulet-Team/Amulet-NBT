@@ -16,6 +16,7 @@ from ._util cimport (
     to_little_endian,
     read_byte,
 )
+from ._dtype import EncoderType
 {{py:from template import include}}
 
 
@@ -57,7 +58,12 @@ cdef class ByteTag(AbstractBaseIntTag):
     cdef str _to_snbt(ByteTag self):
         return f"{self.value_}b"
 
-    cdef void write_payload(ByteTag self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(
+        ByteTag self,
+        object buffer: BytesIO,
+        bint little_endian,
+        string_encoder: EncoderType,
+    ) except *:
         write_byte(self.value_, buffer)
 
 
@@ -87,7 +93,12 @@ cdef class ShortTag(AbstractBaseIntTag):
     cdef str _to_snbt(ShortTag self):
         return f"{self.value_}s"
 
-    cdef void write_payload(ShortTag self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(
+        ShortTag self,
+        object buffer: BytesIO,
+        bint little_endian,
+        string_encoder: EncoderType,
+    ) except *:
         write_short(self.value_, buffer, little_endian)
 
 
@@ -117,7 +128,12 @@ cdef class IntTag(AbstractBaseIntTag):
     cdef str _to_snbt(IntTag self):
         return f"{self.value_}"
 
-    cdef void write_payload(IntTag self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(
+        IntTag self,
+        object buffer: BytesIO,
+        bint little_endian,
+        string_encoder: EncoderType,
+    ) except *:
         write_int(self.value_, buffer, little_endian)
 
 
@@ -147,5 +163,10 @@ cdef class LongTag(AbstractBaseIntTag):
     cdef str _to_snbt(LongTag self):
         return f"{self.value_}L"
 
-    cdef void write_payload(LongTag self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(
+        LongTag self,
+        object buffer: BytesIO,
+        bint little_endian,
+        string_encoder: EncoderType,
+    ) except *:
         write_long(self.value_, buffer, little_endian)

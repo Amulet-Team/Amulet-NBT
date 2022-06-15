@@ -6,7 +6,8 @@ from copy import deepcopy
 
 from ._numeric cimport AbstractBaseNumericTag
 from ._const cimport ID_FLOAT, ID_DOUBLE
-from ._util cimport write_float, write_double, BufferContext, read_data, to_little_endian, read_string
+from ._util cimport write_float, write_double, BufferContext, read_data, to_little_endian
+from ._dtype import EncoderType
 {{py:from template import include}}
 
 
@@ -45,7 +46,12 @@ cdef class FloatTag(AbstractBaseFloatTag):
     cdef str _to_snbt(FloatTag self):
         return f"{self.value_}f"
 
-    cdef void write_payload(FloatTag self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(
+        FloatTag self,
+        object buffer: BytesIO,
+        bint little_endian,
+        string_encoder: EncoderType,
+    ) except *:
         write_float(self.value_, buffer, little_endian)
 
 
@@ -69,5 +75,10 @@ cdef class DoubleTag(AbstractBaseFloatTag):
     cdef str _to_snbt(DoubleTag self):
         return f"{self.value_}d"
 
-    cdef void write_payload(DoubleTag self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(
+        DoubleTag self,
+        object buffer: BytesIO,
+        bint little_endian,
+        string_encoder: EncoderType,
+    ) except *:
         write_double(self.value_, buffer, little_endian)

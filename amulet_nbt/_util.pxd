@@ -1,4 +1,4 @@
-from ._dtype import DecoderType
+from ._dtype import DecoderType, EncoderType
 
 cdef class BufferContext:
     cdef char *buffer
@@ -16,7 +16,7 @@ cdef str read_string(BufferContext buffer, bint little_endian, string_decoder: D
 cdef bytes read_bytes(BufferContext buffer, bint little_endian)
 
 cdef void cwrite(object obj, char*buf, size_t length)
-cdef void write_string(str s, object buffer, bint little_endian)
+cdef void write_string(str s, object buffer, bint little_endian, string_encoder: EncoderType)
 cdef void write_bytes(bytes b, object buffer, bint little_endian)
 cdef void write_array(object value, object buffer, char size, bint little_endian)
 cdef void write_byte(char value, object buffer)

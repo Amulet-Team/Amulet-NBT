@@ -26,7 +26,12 @@ cdef class {{dtype.capitalize()}}ArrayTag(AbstractBaseArrayTag):
             tags.append(f"{elem}{{snbt_suffix}}")
         return f"[{{snbt_prefix}};{CommaSpace.join(tags)}]"
 
-    cdef void write_payload({{dtype.capitalize()}}ArrayTag self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(
+        {{dtype.capitalize()}}ArrayTag self,
+        object buffer: BytesIO,
+        bint little_endian,
+        string_encoder: EncoderType,
+    ) except *:
         write_array(
             numpy.asarray(self.value_, {{little_endian_data_type}} if little_endian else {{big_endian_data_type}}),
             buffer,

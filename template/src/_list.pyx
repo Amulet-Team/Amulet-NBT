@@ -12,7 +12,7 @@ from ._value cimport AbstractBaseTag, AbstractBaseMutableTag
 from ._const cimport ID_LIST, CommaSpace, CommaNewline
 from ._util cimport write_byte, write_int, BufferContext, read_byte, read_int
 from ._load_nbt cimport load_payload
-from ._dtype import AnyNBT
+from ._dtype import AnyNBT, EncoderType
 {{py:from template import include}}
 
 
@@ -74,7 +74,12 @@ cdef class CyListTag(AbstractBaseMutableTag):
         for i, tag in enumerate(value):
             self._check_tag(tag, not i)
 
-    cdef void write_payload(CyListTag self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(
+        CyListTag self,
+        object buffer: BytesIO,
+        bint little_endian,
+        string_encoder: EncoderType,
+    ) except *:
         cdef char list_type = self.list_data_type
 
         write_byte(list_type, buffer)
@@ -86,7 +91,7 @@ cdef class CyListTag(AbstractBaseMutableTag):
                 raise ValueError(
                     f"ListTag must only contain one type! Found {subtag.tag_id} in list type {list_type}"
                 )
-            subtag.write_payload(buffer, little_endian)
+            subtag.write_payload(buffer, little_endian, string_encoder)
 
     cdef str _to_snbt(CyListTag self):
         cdef AbstractBaseTag elem

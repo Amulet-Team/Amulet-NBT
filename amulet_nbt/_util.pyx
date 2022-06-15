@@ -5,7 +5,7 @@ import codecs
 import re
 
 from ._errors import NBTFormatError
-from ._dtype import DecoderType
+from ._dtype import DecoderType, EncoderType
 
 
 cdef class BufferContext:
@@ -79,8 +79,8 @@ cdef inline bytes read_bytes(BufferContext buffer, bint little_endian):
 cdef inline void cwrite(object obj, char*buf, size_t length):
     obj.write(buf[:length])
 
-cdef inline void write_string(str s, object buffer, bint little_endian):
-    cdef bytes b = s.encode("utf-8")
+cdef inline void write_string(str s, object buffer, bint little_endian, string_encoder: EncoderType):
+    cdef bytes b = string_encoder(s)
     write_bytes(b, buffer, little_endian)
 
 cdef inline void write_bytes(bytes b, object buffer, bint little_endian):

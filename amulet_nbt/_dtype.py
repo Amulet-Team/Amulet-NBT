@@ -45,4 +45,5 @@ AnyNBT = Union[
     "LongArrayTag",
 ]
 
+EncoderType = Callable[[str], bytes]
 DecoderType = Callable[[bytes], str]

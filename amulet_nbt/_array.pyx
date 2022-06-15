@@ -9,6 +9,7 @@ from copy import deepcopy
 from ._value cimport AbstractBaseMutableTag
 from ._const cimport CommaSpace, ID_BYTE_ARRAY, ID_INT_ARRAY, ID_LONG_ARRAY
 from ._util cimport write_array, BufferContext, read_int, read_data
+from ._dtype import EncoderType
 
 
 cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
@@ -61,7 +62,12 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
             tags.append(f"{elem}B")
         return f"[B;{CommaSpace.join(tags)}]"
 
-    cdef void write_payload(ByteArrayTag self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(
+        ByteArrayTag self,
+        object buffer: BytesIO,
+        bint little_endian,
+        string_encoder: EncoderType,
+    ) except *:
         write_array(
             numpy.asarray(self.value_, numpy.dtype("int8") if little_endian else numpy.dtype("int8")),
             buffer,
@@ -144,7 +150,12 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
             tags.append(f"{elem}")
         return f"[I;{CommaSpace.join(tags)}]"
 
-    cdef void write_payload(IntArrayTag self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(
+        IntArrayTag self,
+        object buffer: BytesIO,
+        bint little_endian,
+        string_encoder: EncoderType,
+    ) except *:
         write_array(
             numpy.asarray(self.value_, numpy.dtype("<i4") if little_endian else numpy.dtype(">i4")),
             buffer,
@@ -227,7 +238,12 @@ cdef class LongArrayTag(AbstractBaseArrayTag):
             tags.append(f"{elem}L")
         return f"[L;{CommaSpace.join(tags)}]"
 
-    cdef void write_payload(LongArrayTag self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(
+        LongArrayTag self,
+        object buffer: BytesIO,
+        bint little_endian,
+        string_encoder: EncoderType,
+    ) except *:
         write_array(
             numpy.asarray(self.value_, numpy.dtype("<i8") if little_endian else numpy.dtype(">i8")),
             buffer,

@@ -4,7 +4,9 @@ import warnings
 import gzip
 from typing import Any
 
-from ._util cimport write_byte, write_string, BufferContext
+from ._util cimport write_byte, write_string
+from ._util import utf8_encoder
+from ._dtype import EncoderType
 
 
 cdef class AbstractBase:
@@ -24,6 +26,7 @@ cdef class AbstractBase:
         bint compressed=True,
         bint little_endian=False,
         str name="",
+        string_encoder: EncoderType = utf8_encoder,
     ):
         """
         Get the data in binary NBT format.
@@ -31,6 +34,7 @@ cdef class AbstractBase:
         :param name: The root tag name.
         :param compressed: Should the bytes be compressed with gzip.
         :param little_endian: Should the bytes be saved in little endian format.
+        :param string_encoder: A function to encode strings to bytes.
         :return: The binary NBT representation of the class.
         """
         raise NotImplementedError
@@ -42,6 +46,7 @@ cdef class AbstractBase:
         bint compressed=True,
         bint little_endian=False,
         str name="",
+        string_encoder: EncoderType = utf8_encoder,
     ):
         """
         Convert the data to the binary NBT format. Optionally write to a file.
@@ -54,6 +59,7 @@ cdef class AbstractBase:
         :param compressed: Should the bytes be compressed with gzip.
         :param little_endian: Should the bytes be saved in little endian format.
         :param name: The root tag name.
+        :param string_encoder: A function to encode strings to bytes.
         :return: The binary NBT representation of the class.
         """
         raise NotImplementedError
@@ -101,10 +107,11 @@ cdef class AbstractBaseTag(AbstractBase):
         bint compressed=True,
         bint little_endian=False,
         str name="",
+        string_encoder: EncoderType = utf8_encoder,
     ):
         cdef object buffer = BytesIO()
         cdef object gzip_buffer
-        self.write_tag(buffer, name, little_endian)
+        self.write_tag(buffer, name, little_endian, string_encoder)
         cdef bytes data = buffer.getvalue()
         if compressed:
             gzip_buffer = BytesIO()
@@ -120,11 +127,13 @@ cdef class AbstractBaseTag(AbstractBase):
         bint compressed=True,
         bint little_endian=False,
         str name="",
+        string_encoder: EncoderType = utf8_encoder,
     ):
         cdef bytes data = self.to_nbt(
             compressed=compressed,
             little_endian=little_endian,
-            name=name
+            name=name,
+            string_encoder=string_encoder,
         )
 
         if filepath_or_buffer is None:
@@ -136,7 +145,13 @@ cdef class AbstractBaseTag(AbstractBase):
             filepath_or_buffer.write(data)
         return data
 
-    cdef void write_tag(self, object buffer: BytesIO, str name, bint little_endian) except *:
+    cdef void write_tag(
+        self,
+        object buffer: BytesIO,
+        str name,
+        bint little_endian,
+        string_encoder: EncoderType
+    ) except *:
         """
         Write the header and payload to the buffer.
         type_byte, name_len, name, payload
@@ -144,18 +159,25 @@ cdef class AbstractBaseTag(AbstractBase):
         :param buffer: The buffer to write to.
         :param name: The name of the tag in the header.
         :param little_endian: Should the data be written in little endian format.
+        :param string_encoder: A function to encode strings to bytes.
         """
         write_byte(self.tag_id, buffer)
-        write_string(name, buffer, little_endian)
-        self.write_payload(buffer, little_endian)
+        write_string(name, buffer, little_endian, string_encoder)
+        self.write_payload(buffer, little_endian, string_encoder)
 
-    cdef void write_payload(self, object buffer: BytesIO, bint little_endian) except *:
+    cdef void write_payload(
+        self,
+        object buffer: BytesIO,
+        bint little_endian,
+        string_encoder: EncoderType,
+    ) except *:
         """
         Write the payload to the buffer.
         This is only the data contained in the class and does not include the header.
         
         :param buffer: The buffer to write to.
         :param little_endian: Should the data be written in little endian format.
+        :param string_encoder: A function to encode strings to bytes.
         """
         raise NotImplementedError
 

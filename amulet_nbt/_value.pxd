@@ -1,4 +1,5 @@
-from ._util cimport BufferContext
+from ._util cimport utf8_encoder
+from ._dtype import EncoderType
 
 
 cdef class AbstractBase:
@@ -23,13 +24,15 @@ cdef class AbstractBaseTag(AbstractBase):
         self,
         object buffer,
         str name,
-        bint little_endian
+        bint little_endian,
+        string_encoder: EncoderType,
     ) except *
 
     cdef void write_payload(
         self,
         object buffer,
-        bint little_endian
+        bint little_endian,
+        string_encoder: EncoderType,
     ) except *
 
 cdef class AbstractBaseImmutableTag(AbstractBaseTag):

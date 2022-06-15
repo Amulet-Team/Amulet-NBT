@@ -1,5 +1,6 @@
 from typing import Union, Any
-from ._dtype import AnyNBT
+from ._dtype import AnyNBT, EncoderType
+from ._util import utf8_encoder
 
 class AbstractBase:
     def to_snbt(self, indent: Union[int, str] = None) -> str: ...
@@ -9,9 +10,16 @@ class AbstractBase:
         compressed=True,
         little_endian=False,
         name="",
+        string_encoder: EncoderType = utf8_encoder,
     ) -> bytes: ...
     def save_to(
-        self, filepath_or_buffer=None, *, compressed=True, little_endian=False, name=""
+        self,
+        filepath_or_buffer=None,
+        *,
+        compressed=True,
+        little_endian=False,
+        name="",
+        string_encoder: EncoderType = utf8_encoder,
     ) -> bytes: ...
 
 class AbstractBaseTag(AbstractBase):

@@ -20,6 +20,8 @@ from ._array cimport (
 from ._string cimport StringTag
 from ._list import ListTag
 from ._compound import CompoundTag
+from ._dtype import EncoderType
+from ._util import utf8_encoder
 
 
 T = TypeVar("T")
@@ -95,11 +97,13 @@ cdef class NamedTag(AbstractBase):
         bint compressed=True,
         bint little_endian=False,
         str name="",
+        string_encoder: EncoderType = utf8_encoder,
     ):
         return self.tag.to_nbt(
             compressed=compressed,
             little_endian=little_endian,
-            name=name or self.name
+            name=name or self.name,
+            string_encoder=string_encoder
         )
 
     def save_to(
@@ -109,12 +113,14 @@ cdef class NamedTag(AbstractBase):
         bint compressed=True,
         bint little_endian=False,
         str name="",
+        string_encoder: EncoderType = utf8_encoder,
     ):
         return self.tag.save_to(
             filepath_or_buffer,
             compressed=compressed,
             little_endian=little_endian,
-            name=name or self.name
+            name=name or self.name,
+            string_encoder=string_encoder
         )
 
     def __eq__(self, other):

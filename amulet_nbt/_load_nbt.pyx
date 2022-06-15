@@ -157,11 +157,11 @@ def load_many(
 
 def load(
     object filepath_or_buffer: Union[str, bytes, BinaryIO, None],
-    *,
     bint compressed=True,
     object count: int = None,
     bint offset: bool = False,
     bint little_endian: bool = False,
+    *,
     string_decoder: DecoderType = utf8_decoder
 ) -> Union[NamedTag, Tuple[Union[NamedTag, List[NamedTag]], int]]:
     warnings.warn("load is depreciated. Use load_one or load_many", DeprecationWarning)

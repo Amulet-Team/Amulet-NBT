@@ -79,7 +79,7 @@ cdef class AbstractBaseTag(AbstractBase):
 
     @property
     def value(self):
-        warnings.warn("value property is depreciated. Use py_data instead", DeprecationWarning)
+        warnings.warn("value property is depreciated. Use py_{type} instead", DeprecationWarning)
         return self.py_data
 
     cpdef str to_snbt(self, object indent=None, object indent_chr=None):

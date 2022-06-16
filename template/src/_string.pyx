@@ -9,6 +9,8 @@ from . import __major__
 from ._value cimport AbstractBaseImmutableTag
 from ._const cimport ID_STRING
 from ._util cimport write_string, read_string, BufferContext
+if __major__ <= 2:
+    from ._util import primitive_conversion
 from ._dtype import EncoderType
 {{py:from template import include}}
 
@@ -28,10 +30,11 @@ cdef class StringTag(AbstractBaseImmutableTag):
     tag_id = ID_STRING
 
     def __init__(StringTag self, value = ""):
+        if isinstance(value, bytes):
+            warnings.warn("StringTag no longer takes bytes as input. You will need to decode this to a string before giving it here. The string of the object will be used instead.", DeprecationWarning)
         self.value_ = str(value)
 
 {{include("AbstractBaseImmutableTag.pyx", cls_name="StringTag")}}
-
 
     @property
     def py_str(StringTag self) -> str:
@@ -58,5 +61,26 @@ cdef class StringTag(AbstractBaseImmutableTag):
     ) except *:
         write_string(self.value_, buffer, little_endian, string_encoder)
 
-    def __str__(StringTag self):
-        return self.py_str
+    def __len__(self) -> int:
+        return len(self.value_)
+
+    if __major__ <= 2:
+        def __getitem__(self, item) -> str:
+            warnings.warn(f"__getitem__ is depreciated on StringTag and will be removed in the future. Please use .py_str to achieve the same behaviour.", DeprecationWarning)
+            return self.value_[item]
+
+        def __add__(self, other):
+            warnings.warn(f"__add__ is depreciated on StringTag and will be removed in the future. Please use .py_str to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) + primitive_conversion(other)
+
+        def __radd__(self, other):
+            warnings.warn(f"__radd__ is depreciated on StringTag and will be removed in the future. Please use .py_str to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) + primitive_conversion(self)
+
+        def __mul__(self, other):
+            warnings.warn(f"__mul__ is depreciated on StringTag and will be removed in the future. Please use .py_str to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) * primitive_conversion(other)
+
+        def __rmul__(self, other):
+            warnings.warn(f"__rmul__ is depreciated on StringTag and will be removed in the future. Please use .py_str to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) * primitive_conversion(self)

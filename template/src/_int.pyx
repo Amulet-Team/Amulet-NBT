@@ -18,6 +18,7 @@ from ._util cimport (
     to_little_endian,
     read_byte,
 )
+from ._util import primitive_conversion
 from ._dtype import EncoderType
 {{py:from template import include}}
 

@@ -18,6 +18,7 @@ from ._util cimport (
     to_little_endian,
     read_byte,
 )
+from ._util import primitive_conversion
 from ._dtype import EncoderType
 
 
@@ -122,6 +123,127 @@ cdef class ByteTag(AbstractBaseIntTag):
         The returned data is immutable so changes will not mirror the instance.
         """
         return self.value_
+
+    if __major__ <= 2:
+        def __add__(self, other):
+            warnings.warn(f"__add__ is depreciated on ByteTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) + primitive_conversion(other)
+
+        def __sub__(self, other):
+            warnings.warn(f"__sub__ is depreciated on ByteTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) - primitive_conversion(other)
+
+        def __mul__(self, other):
+            warnings.warn(f"__mul__ is depreciated on ByteTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) * primitive_conversion(other)
+
+        def __truediv__(self, other):
+            warnings.warn(f"__truediv__ is depreciated on ByteTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) / primitive_conversion(other)
+
+        def __floordiv__(self, other):
+            warnings.warn(f"__floordiv__ is depreciated on ByteTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) // primitive_conversion(other)
+
+        def __mod__(self, other):
+            warnings.warn(f"__mod__ is depreciated on ByteTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) % primitive_conversion(other)
+
+        def __divmod__(self, other):
+            warnings.warn(f"__divmod__ is depreciated on ByteTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return divmod(primitive_conversion(self), primitive_conversion(other))
+
+        def __pow__(self, power, modulo):
+            warnings.warn(f"__pow__ is depreciated on ByteTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return pow(primitive_conversion(self), power, modulo)
+
+        def __lshift__(self, other):
+            warnings.warn(f"__lshift__ is depreciated on ByteTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) << primitive_conversion(other)
+
+        def __rshift__(self, other):
+            warnings.warn(f"__rshift__ is depreciated on ByteTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) >> primitive_conversion(other)
+
+        def __and__(self, other):
+            warnings.warn(f"__and__ is depreciated on ByteTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) & primitive_conversion(other)
+
+        def __xor__(self, other):
+            warnings.warn(f"__xor__ is depreciated on ByteTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) ^ primitive_conversion(other)
+
+        def __or__(self, other):
+            warnings.warn(f"__or__ is depreciated on ByteTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) | primitive_conversion(other)
+
+        def __radd__(self, other):
+            warnings.warn(f"__radd__ is depreciated on ByteTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) + primitive_conversion(self)
+
+        def __rsub__(self, other):
+            warnings.warn(f"__rsub__ is depreciated on ByteTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) - primitive_conversion(self)
+
+        def __rmul__(self, other):
+            warnings.warn(f"__rmul__ is depreciated on ByteTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) * primitive_conversion(self)
+
+        def __rtruediv__(self, other):
+            warnings.warn(f"__rtruediv__ is depreciated on ByteTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) / primitive_conversion(self)
+
+        def __rfloordiv__(self, other):
+            warnings.warn(f"__rfloordiv__ is depreciated on ByteTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) // primitive_conversion(self)
+
+        def __rmod__(self, other):
+            warnings.warn(f"__rmod__ is depreciated on ByteTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) % primitive_conversion(self)
+
+        def __rdivmod__(self, other):
+            warnings.warn(f"__rdivmod__ is depreciated on ByteTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return divmod(primitive_conversion(other), primitive_conversion(self))
+
+        def __rpow__(self, other, modulo):
+            warnings.warn(f"__rpow__ is depreciated on ByteTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return pow(primitive_conversion(other), primitive_conversion(self), modulo)
+
+        def __rlshift__(self, other):
+            warnings.warn(f"__rlshift__ is depreciated on ByteTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) << primitive_conversion(self)
+
+        def __rrshift__(self, other):
+            warnings.warn(f"__rrshift__ is depreciated on ByteTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) >> primitive_conversion(self)
+
+        def __rand__(self, other):
+            warnings.warn(f"__rand__ is depreciated on ByteTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) & primitive_conversion(self)
+
+        def __rxor__(self, other):
+            warnings.warn(f"__rxor__ is depreciated on ByteTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) ^ primitive_conversion(self)
+
+        def __ror__(self, other):
+            warnings.warn(f"__ror__ is depreciated on ByteTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) | primitive_conversion(self)
+
+        def __neg__(self):
+            warnings.warn(f"__neg__ is depreciated on ByteTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return -self.value_
+
+        def __pos__(self):
+            warnings.warn(f"__pos__ is depreciated on ByteTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return +self.value_
+
+        def __abs__(self):
+            warnings.warn(f"__abs__ is depreciated on ByteTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return abs(self.value_)
+
+        def __invert__(self):
+            warnings.warn(f"__invert__ is depreciated on ByteTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return ~self.value_
 
     cdef char _sanitise_value(ByteTag self, value):
         return (value & 0x7F) - (value & 0x80)
@@ -228,6 +350,127 @@ cdef class ShortTag(AbstractBaseIntTag):
         """
         return self.value_
 
+    if __major__ <= 2:
+        def __add__(self, other):
+            warnings.warn(f"__add__ is depreciated on ShortTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) + primitive_conversion(other)
+
+        def __sub__(self, other):
+            warnings.warn(f"__sub__ is depreciated on ShortTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) - primitive_conversion(other)
+
+        def __mul__(self, other):
+            warnings.warn(f"__mul__ is depreciated on ShortTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) * primitive_conversion(other)
+
+        def __truediv__(self, other):
+            warnings.warn(f"__truediv__ is depreciated on ShortTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) / primitive_conversion(other)
+
+        def __floordiv__(self, other):
+            warnings.warn(f"__floordiv__ is depreciated on ShortTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) // primitive_conversion(other)
+
+        def __mod__(self, other):
+            warnings.warn(f"__mod__ is depreciated on ShortTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) % primitive_conversion(other)
+
+        def __divmod__(self, other):
+            warnings.warn(f"__divmod__ is depreciated on ShortTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return divmod(primitive_conversion(self), primitive_conversion(other))
+
+        def __pow__(self, power, modulo):
+            warnings.warn(f"__pow__ is depreciated on ShortTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return pow(primitive_conversion(self), power, modulo)
+
+        def __lshift__(self, other):
+            warnings.warn(f"__lshift__ is depreciated on ShortTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) << primitive_conversion(other)
+
+        def __rshift__(self, other):
+            warnings.warn(f"__rshift__ is depreciated on ShortTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) >> primitive_conversion(other)
+
+        def __and__(self, other):
+            warnings.warn(f"__and__ is depreciated on ShortTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) & primitive_conversion(other)
+
+        def __xor__(self, other):
+            warnings.warn(f"__xor__ is depreciated on ShortTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) ^ primitive_conversion(other)
+
+        def __or__(self, other):
+            warnings.warn(f"__or__ is depreciated on ShortTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) | primitive_conversion(other)
+
+        def __radd__(self, other):
+            warnings.warn(f"__radd__ is depreciated on ShortTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) + primitive_conversion(self)
+
+        def __rsub__(self, other):
+            warnings.warn(f"__rsub__ is depreciated on ShortTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) - primitive_conversion(self)
+
+        def __rmul__(self, other):
+            warnings.warn(f"__rmul__ is depreciated on ShortTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) * primitive_conversion(self)
+
+        def __rtruediv__(self, other):
+            warnings.warn(f"__rtruediv__ is depreciated on ShortTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) / primitive_conversion(self)
+
+        def __rfloordiv__(self, other):
+            warnings.warn(f"__rfloordiv__ is depreciated on ShortTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) // primitive_conversion(self)
+
+        def __rmod__(self, other):
+            warnings.warn(f"__rmod__ is depreciated on ShortTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) % primitive_conversion(self)
+
+        def __rdivmod__(self, other):
+            warnings.warn(f"__rdivmod__ is depreciated on ShortTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return divmod(primitive_conversion(other), primitive_conversion(self))
+
+        def __rpow__(self, other, modulo):
+            warnings.warn(f"__rpow__ is depreciated on ShortTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return pow(primitive_conversion(other), primitive_conversion(self), modulo)
+
+        def __rlshift__(self, other):
+            warnings.warn(f"__rlshift__ is depreciated on ShortTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) << primitive_conversion(self)
+
+        def __rrshift__(self, other):
+            warnings.warn(f"__rrshift__ is depreciated on ShortTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) >> primitive_conversion(self)
+
+        def __rand__(self, other):
+            warnings.warn(f"__rand__ is depreciated on ShortTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) & primitive_conversion(self)
+
+        def __rxor__(self, other):
+            warnings.warn(f"__rxor__ is depreciated on ShortTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) ^ primitive_conversion(self)
+
+        def __ror__(self, other):
+            warnings.warn(f"__ror__ is depreciated on ShortTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) | primitive_conversion(self)
+
+        def __neg__(self):
+            warnings.warn(f"__neg__ is depreciated on ShortTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return -self.value_
+
+        def __pos__(self):
+            warnings.warn(f"__pos__ is depreciated on ShortTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return +self.value_
+
+        def __abs__(self):
+            warnings.warn(f"__abs__ is depreciated on ShortTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return abs(self.value_)
+
+        def __invert__(self):
+            warnings.warn(f"__invert__ is depreciated on ShortTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return ~self.value_
+
     cdef short _sanitise_value(ShortTag self, value):
         return (value & 0x7FFF) - (value & 0x8000)
 
@@ -333,6 +576,127 @@ cdef class IntTag(AbstractBaseIntTag):
         """
         return self.value_
 
+    if __major__ <= 2:
+        def __add__(self, other):
+            warnings.warn(f"__add__ is depreciated on IntTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) + primitive_conversion(other)
+
+        def __sub__(self, other):
+            warnings.warn(f"__sub__ is depreciated on IntTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) - primitive_conversion(other)
+
+        def __mul__(self, other):
+            warnings.warn(f"__mul__ is depreciated on IntTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) * primitive_conversion(other)
+
+        def __truediv__(self, other):
+            warnings.warn(f"__truediv__ is depreciated on IntTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) / primitive_conversion(other)
+
+        def __floordiv__(self, other):
+            warnings.warn(f"__floordiv__ is depreciated on IntTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) // primitive_conversion(other)
+
+        def __mod__(self, other):
+            warnings.warn(f"__mod__ is depreciated on IntTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) % primitive_conversion(other)
+
+        def __divmod__(self, other):
+            warnings.warn(f"__divmod__ is depreciated on IntTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return divmod(primitive_conversion(self), primitive_conversion(other))
+
+        def __pow__(self, power, modulo):
+            warnings.warn(f"__pow__ is depreciated on IntTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return pow(primitive_conversion(self), power, modulo)
+
+        def __lshift__(self, other):
+            warnings.warn(f"__lshift__ is depreciated on IntTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) << primitive_conversion(other)
+
+        def __rshift__(self, other):
+            warnings.warn(f"__rshift__ is depreciated on IntTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) >> primitive_conversion(other)
+
+        def __and__(self, other):
+            warnings.warn(f"__and__ is depreciated on IntTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) & primitive_conversion(other)
+
+        def __xor__(self, other):
+            warnings.warn(f"__xor__ is depreciated on IntTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) ^ primitive_conversion(other)
+
+        def __or__(self, other):
+            warnings.warn(f"__or__ is depreciated on IntTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) | primitive_conversion(other)
+
+        def __radd__(self, other):
+            warnings.warn(f"__radd__ is depreciated on IntTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) + primitive_conversion(self)
+
+        def __rsub__(self, other):
+            warnings.warn(f"__rsub__ is depreciated on IntTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) - primitive_conversion(self)
+
+        def __rmul__(self, other):
+            warnings.warn(f"__rmul__ is depreciated on IntTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) * primitive_conversion(self)
+
+        def __rtruediv__(self, other):
+            warnings.warn(f"__rtruediv__ is depreciated on IntTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) / primitive_conversion(self)
+
+        def __rfloordiv__(self, other):
+            warnings.warn(f"__rfloordiv__ is depreciated on IntTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) // primitive_conversion(self)
+
+        def __rmod__(self, other):
+            warnings.warn(f"__rmod__ is depreciated on IntTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) % primitive_conversion(self)
+
+        def __rdivmod__(self, other):
+            warnings.warn(f"__rdivmod__ is depreciated on IntTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return divmod(primitive_conversion(other), primitive_conversion(self))
+
+        def __rpow__(self, other, modulo):
+            warnings.warn(f"__rpow__ is depreciated on IntTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return pow(primitive_conversion(other), primitive_conversion(self), modulo)
+
+        def __rlshift__(self, other):
+            warnings.warn(f"__rlshift__ is depreciated on IntTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) << primitive_conversion(self)
+
+        def __rrshift__(self, other):
+            warnings.warn(f"__rrshift__ is depreciated on IntTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) >> primitive_conversion(self)
+
+        def __rand__(self, other):
+            warnings.warn(f"__rand__ is depreciated on IntTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) & primitive_conversion(self)
+
+        def __rxor__(self, other):
+            warnings.warn(f"__rxor__ is depreciated on IntTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) ^ primitive_conversion(self)
+
+        def __ror__(self, other):
+            warnings.warn(f"__ror__ is depreciated on IntTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) | primitive_conversion(self)
+
+        def __neg__(self):
+            warnings.warn(f"__neg__ is depreciated on IntTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return -self.value_
+
+        def __pos__(self):
+            warnings.warn(f"__pos__ is depreciated on IntTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return +self.value_
+
+        def __abs__(self):
+            warnings.warn(f"__abs__ is depreciated on IntTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return abs(self.value_)
+
+        def __invert__(self):
+            warnings.warn(f"__invert__ is depreciated on IntTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return ~self.value_
+
     cdef int _sanitise_value(IntTag self, value):
         return (value & 0x7FFF_FFFF) - (value & 0x8000_0000)
 
@@ -437,6 +801,127 @@ cdef class LongTag(AbstractBaseIntTag):
         The returned data is immutable so changes will not mirror the instance.
         """
         return self.value_
+
+    if __major__ <= 2:
+        def __add__(self, other):
+            warnings.warn(f"__add__ is depreciated on LongTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) + primitive_conversion(other)
+
+        def __sub__(self, other):
+            warnings.warn(f"__sub__ is depreciated on LongTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) - primitive_conversion(other)
+
+        def __mul__(self, other):
+            warnings.warn(f"__mul__ is depreciated on LongTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) * primitive_conversion(other)
+
+        def __truediv__(self, other):
+            warnings.warn(f"__truediv__ is depreciated on LongTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) / primitive_conversion(other)
+
+        def __floordiv__(self, other):
+            warnings.warn(f"__floordiv__ is depreciated on LongTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) // primitive_conversion(other)
+
+        def __mod__(self, other):
+            warnings.warn(f"__mod__ is depreciated on LongTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) % primitive_conversion(other)
+
+        def __divmod__(self, other):
+            warnings.warn(f"__divmod__ is depreciated on LongTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return divmod(primitive_conversion(self), primitive_conversion(other))
+
+        def __pow__(self, power, modulo):
+            warnings.warn(f"__pow__ is depreciated on LongTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return pow(primitive_conversion(self), power, modulo)
+
+        def __lshift__(self, other):
+            warnings.warn(f"__lshift__ is depreciated on LongTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) << primitive_conversion(other)
+
+        def __rshift__(self, other):
+            warnings.warn(f"__rshift__ is depreciated on LongTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) >> primitive_conversion(other)
+
+        def __and__(self, other):
+            warnings.warn(f"__and__ is depreciated on LongTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) & primitive_conversion(other)
+
+        def __xor__(self, other):
+            warnings.warn(f"__xor__ is depreciated on LongTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) ^ primitive_conversion(other)
+
+        def __or__(self, other):
+            warnings.warn(f"__or__ is depreciated on LongTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(self) | primitive_conversion(other)
+
+        def __radd__(self, other):
+            warnings.warn(f"__radd__ is depreciated on LongTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) + primitive_conversion(self)
+
+        def __rsub__(self, other):
+            warnings.warn(f"__rsub__ is depreciated on LongTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) - primitive_conversion(self)
+
+        def __rmul__(self, other):
+            warnings.warn(f"__rmul__ is depreciated on LongTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) * primitive_conversion(self)
+
+        def __rtruediv__(self, other):
+            warnings.warn(f"__rtruediv__ is depreciated on LongTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) / primitive_conversion(self)
+
+        def __rfloordiv__(self, other):
+            warnings.warn(f"__rfloordiv__ is depreciated on LongTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) // primitive_conversion(self)
+
+        def __rmod__(self, other):
+            warnings.warn(f"__rmod__ is depreciated on LongTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) % primitive_conversion(self)
+
+        def __rdivmod__(self, other):
+            warnings.warn(f"__rdivmod__ is depreciated on LongTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return divmod(primitive_conversion(other), primitive_conversion(self))
+
+        def __rpow__(self, other, modulo):
+            warnings.warn(f"__rpow__ is depreciated on LongTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return pow(primitive_conversion(other), primitive_conversion(self), modulo)
+
+        def __rlshift__(self, other):
+            warnings.warn(f"__rlshift__ is depreciated on LongTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) << primitive_conversion(self)
+
+        def __rrshift__(self, other):
+            warnings.warn(f"__rrshift__ is depreciated on LongTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) >> primitive_conversion(self)
+
+        def __rand__(self, other):
+            warnings.warn(f"__rand__ is depreciated on LongTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) & primitive_conversion(self)
+
+        def __rxor__(self, other):
+            warnings.warn(f"__rxor__ is depreciated on LongTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) ^ primitive_conversion(self)
+
+        def __ror__(self, other):
+            warnings.warn(f"__ror__ is depreciated on LongTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return primitive_conversion(other) | primitive_conversion(self)
+
+        def __neg__(self):
+            warnings.warn(f"__neg__ is depreciated on LongTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return -self.value_
+
+        def __pos__(self):
+            warnings.warn(f"__pos__ is depreciated on LongTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return +self.value_
+
+        def __abs__(self):
+            warnings.warn(f"__abs__ is depreciated on LongTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return abs(self.value_)
+
+        def __invert__(self):
+            warnings.warn(f"__invert__ is depreciated on LongTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
+            return ~self.value_
 
     cdef long long _sanitise_value(LongTag self, value):
         return (value & 0x7FFF_FFFF_FFFF_FFFF) - (value & 0x8000_0000_0000_0000)

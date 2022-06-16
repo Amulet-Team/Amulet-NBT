@@ -13,6 +13,8 @@ from . import __major__
 from ._value cimport AbstractBaseTag, AbstractBaseMutableTag
 from ._const cimport ID_LIST, CommaSpace, CommaNewline
 from ._util cimport write_byte, write_int, BufferContext, read_byte, read_int
+if __major__ <= 2:
+    from ._util import primitive_conversion
 from ._load_nbt cimport load_payload
 from ._dtype import AnyNBT, EncoderType
 
@@ -54,6 +56,7 @@ cdef class CyListTag(AbstractBaseMutableTag):
             return self.value_ == other_.value_
         elif __major__ <= 2:
             warnings.warn("NBT comparison operator (a == b) will only return True between classes of the same type.", FutureWarning)
+            return self.value_ == primitive_conversion(other)
         return NotImplemented
 
     def __reduce__(CyListTag self):

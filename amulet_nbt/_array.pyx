@@ -107,6 +107,9 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
         if isinstance(other, ByteArrayTag):
             other_ = other
             return numpy.array_equal(self.value_, other_.value_)
+        elif __major__ <= 2 and isinstance(other, AbstractBaseArrayTag):
+            warnings.warn("NBT comparison operator (a == b) will only return True between classes of the same type.", FutureWarning)
+            return numpy.array_equal(self.value_, primitive_conversion(other))
         return NotImplemented
 
     def __getitem__(ByteArrayTag self, item):
@@ -308,6 +311,9 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
         if isinstance(other, IntArrayTag):
             other_ = other
             return numpy.array_equal(self.value_, other_.value_)
+        elif __major__ <= 2 and isinstance(other, AbstractBaseArrayTag):
+            warnings.warn("NBT comparison operator (a == b) will only return True between classes of the same type.", FutureWarning)
+            return numpy.array_equal(self.value_, primitive_conversion(other))
         return NotImplemented
 
     def __getitem__(IntArrayTag self, item):
@@ -509,6 +515,9 @@ cdef class LongArrayTag(AbstractBaseArrayTag):
         if isinstance(other, LongArrayTag):
             other_ = other
             return numpy.array_equal(self.value_, other_.value_)
+        elif __major__ <= 2 and isinstance(other, AbstractBaseArrayTag):
+            warnings.warn("NBT comparison operator (a == b) will only return True between classes of the same type.", FutureWarning)
+            return numpy.array_equal(self.value_, primitive_conversion(other))
         return NotImplemented
 
     def __getitem__(LongArrayTag self, item):

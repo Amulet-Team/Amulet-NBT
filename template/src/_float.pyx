@@ -10,7 +10,8 @@ from . import __major__
 from ._numeric cimport AbstractBaseNumericTag
 from ._const cimport ID_FLOAT, ID_DOUBLE
 from ._util cimport write_float, write_double, BufferContext, read_data, to_little_endian
-from ._util import primitive_conversion
+if __major__ <= 2:
+    from ._util import primitive_conversion
 from ._dtype import EncoderType
 {{py:from template import include}}
 

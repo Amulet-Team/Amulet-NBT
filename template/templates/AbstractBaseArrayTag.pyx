@@ -56,6 +56,9 @@ cdef class {{dtype.capitalize()}}ArrayTag(AbstractBaseArrayTag):
         if isinstance(other, {{dtype.capitalize()}}ArrayTag):
             other_ = other
             return numpy.array_equal(self.value_, other_.value_)
+        elif __major__ <= 2 and isinstance(other, AbstractBaseArrayTag):
+            warnings.warn("NBT comparison operator (a == b) will only return True between classes of the same type.", FutureWarning)
+            return numpy.array_equal(self.value_, primitive_conversion(other))
         return NotImplemented
 
     def __getitem__({{dtype.capitalize()}}ArrayTag self, item):

@@ -10,7 +10,8 @@ from . import __major__
 from ._numeric cimport AbstractBaseNumericTag
 from ._const cimport ID_FLOAT, ID_DOUBLE
 from ._util cimport write_float, write_double, BufferContext, read_data, to_little_endian
-from ._util import primitive_conversion
+if __major__ <= 2:
+    from ._util import primitive_conversion
 from ._dtype import EncoderType
 
 
@@ -54,6 +55,7 @@ cdef class FloatTag(AbstractBaseFloatTag):
             return self.value_ == other_.value_
         elif __major__ <= 2:
             warnings.warn("NBT comparison operator (a == b) will only return True between classes of the same type.", FutureWarning)
+            return self.value_ == primitive_conversion(other)
         return NotImplemented
 
     def __reduce__(FloatTag self):
@@ -73,6 +75,9 @@ cdef class FloatTag(AbstractBaseFloatTag):
         if isinstance(other, FloatTag):
             other_ = other
             return self.value_ >= other_.value_
+        elif __major__ <= 2:
+            warnings.warn("NBT comparison operator (a >= b) will only return True between classes of the same type.", FutureWarning)
+            return self.value_ >= primitive_conversion(other)
         return NotImplemented
 
     def __gt__(FloatTag self, other):
@@ -80,6 +85,9 @@ cdef class FloatTag(AbstractBaseFloatTag):
         if isinstance(other, FloatTag):
             other_ = other
             return self.value_ > other_.value_
+        elif __major__ <= 2:
+            warnings.warn("NBT comparison operator (a > b) will only return True between classes of the same type.", FutureWarning)
+            return self.value_ > primitive_conversion(other)
         return NotImplemented
 
     def __le__(FloatTag self, other):
@@ -87,6 +95,9 @@ cdef class FloatTag(AbstractBaseFloatTag):
         if isinstance(other, FloatTag):
             other_ = other
             return self.value_ <= other_.value_
+        elif __major__ <= 2:
+            warnings.warn("NBT comparison operator (a <= b) will only return True between classes of the same type.", FutureWarning)
+            return self.value_ <= primitive_conversion(other)
         return NotImplemented
 
     def __lt__(FloatTag self, other):
@@ -94,6 +105,9 @@ cdef class FloatTag(AbstractBaseFloatTag):
         if isinstance(other, FloatTag):
             other_ = other
             return self.value_ < other_.value_
+        elif __major__ <= 2:
+            warnings.warn("NBT comparison operator (a == b) will only return True between classes of the same type.", FutureWarning)
+            return self.value_ < primitive_conversion(other)
         return NotImplemented
 
     def __repr__(FloatTag self):
@@ -286,6 +300,7 @@ cdef class DoubleTag(AbstractBaseFloatTag):
             return self.value_ == other_.value_
         elif __major__ <= 2:
             warnings.warn("NBT comparison operator (a == b) will only return True between classes of the same type.", FutureWarning)
+            return self.value_ == primitive_conversion(other)
         return NotImplemented
 
     def __reduce__(DoubleTag self):
@@ -305,6 +320,9 @@ cdef class DoubleTag(AbstractBaseFloatTag):
         if isinstance(other, DoubleTag):
             other_ = other
             return self.value_ >= other_.value_
+        elif __major__ <= 2:
+            warnings.warn("NBT comparison operator (a >= b) will only return True between classes of the same type.", FutureWarning)
+            return self.value_ >= primitive_conversion(other)
         return NotImplemented
 
     def __gt__(DoubleTag self, other):
@@ -312,6 +330,9 @@ cdef class DoubleTag(AbstractBaseFloatTag):
         if isinstance(other, DoubleTag):
             other_ = other
             return self.value_ > other_.value_
+        elif __major__ <= 2:
+            warnings.warn("NBT comparison operator (a > b) will only return True between classes of the same type.", FutureWarning)
+            return self.value_ > primitive_conversion(other)
         return NotImplemented
 
     def __le__(DoubleTag self, other):
@@ -319,6 +340,9 @@ cdef class DoubleTag(AbstractBaseFloatTag):
         if isinstance(other, DoubleTag):
             other_ = other
             return self.value_ <= other_.value_
+        elif __major__ <= 2:
+            warnings.warn("NBT comparison operator (a <= b) will only return True between classes of the same type.", FutureWarning)
+            return self.value_ <= primitive_conversion(other)
         return NotImplemented
 
     def __lt__(DoubleTag self, other):
@@ -326,6 +350,9 @@ cdef class DoubleTag(AbstractBaseFloatTag):
         if isinstance(other, DoubleTag):
             other_ = other
             return self.value_ < other_.value_
+        elif __major__ <= 2:
+            warnings.warn("NBT comparison operator (a == b) will only return True between classes of the same type.", FutureWarning)
+            return self.value_ < primitive_conversion(other)
         return NotImplemented
 
     def __repr__(DoubleTag self):

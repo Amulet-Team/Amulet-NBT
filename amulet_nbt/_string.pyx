@@ -43,6 +43,7 @@ cdef class StringTag(AbstractBaseImmutableTag):
             return self.value_ == other_.value_
         elif __major__ <= 2:
             warnings.warn("NBT comparison operator (a == b) will only return True between classes of the same type.", FutureWarning)
+            return self.value_ == primitive_conversion(other)
         return NotImplemented
 
     def __reduce__(StringTag self):
@@ -62,6 +63,9 @@ cdef class StringTag(AbstractBaseImmutableTag):
         if isinstance(other, StringTag):
             other_ = other
             return self.value_ >= other_.value_
+        elif __major__ <= 2:
+            warnings.warn("NBT comparison operator (a >= b) will only return True between classes of the same type.", FutureWarning)
+            return self.value_ >= primitive_conversion(other)
         return NotImplemented
 
     def __gt__(StringTag self, other):
@@ -69,6 +73,9 @@ cdef class StringTag(AbstractBaseImmutableTag):
         if isinstance(other, StringTag):
             other_ = other
             return self.value_ > other_.value_
+        elif __major__ <= 2:
+            warnings.warn("NBT comparison operator (a > b) will only return True between classes of the same type.", FutureWarning)
+            return self.value_ > primitive_conversion(other)
         return NotImplemented
 
     def __le__(StringTag self, other):
@@ -76,6 +83,9 @@ cdef class StringTag(AbstractBaseImmutableTag):
         if isinstance(other, StringTag):
             other_ = other
             return self.value_ <= other_.value_
+        elif __major__ <= 2:
+            warnings.warn("NBT comparison operator (a <= b) will only return True between classes of the same type.", FutureWarning)
+            return self.value_ <= primitive_conversion(other)
         return NotImplemented
 
     def __lt__(StringTag self, other):
@@ -83,6 +93,9 @@ cdef class StringTag(AbstractBaseImmutableTag):
         if isinstance(other, StringTag):
             other_ = other
             return self.value_ < other_.value_
+        elif __major__ <= 2:
+            warnings.warn("NBT comparison operator (a == b) will only return True between classes of the same type.", FutureWarning)
+            return self.value_ < primitive_conversion(other)
         return NotImplemented
 
     @property

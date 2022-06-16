@@ -29,24 +29,43 @@ T = TypeVar("T")
 
 
 cdef class NamedTag(AbstractBase):
-    tag: AbstractBaseTag
-
     def __init__(self, AbstractBaseTag tag = None, str name not None = ""):
         if tag is None:
-            self.tag = CompoundTag()
+            self._tag = CompoundTag()
         else:
-            self.tag = tag
-        self.name = name
+            self._tag = tag
+        self._name = name
 
     @property
-    def value(self):
-        warnings.warn("value property is depreciated. Use tag attribute instead.")
-        return self.tag
+    def tag(self) -> AbstractBaseTag:
+        return self._tag
 
-    @value.setter
-    def value(self, AbstractBaseTag value):
-        warnings.warn("value property is depreciated.")
-        self.tag = value
+    if __major__ <= 2:
+        @tag.setter
+        def tag(self, AbstractBaseTag tag):
+            warnings.warn("NamedTag.tag setter is depreciated. In the future tag will be immutable.", DeprecationWarning)
+            self._tag = tag
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    if __major__ <= 2:
+        @name.setter
+        def name(self, str name):
+            warnings.warn("NamedTag.name setter is depreciated. In the future name will be immutable.", DeprecationWarning)
+            self._name = name
+
+    if __major__ <= 2:
+        @property
+        def value(self):
+            warnings.warn("value property is depreciated. Use tag attribute instead.", DeprecationWarning)
+            return self.tag
+
+        @value.setter
+        def value(self, AbstractBaseTag value):
+            warnings.warn("value property is depreciated.", DeprecationWarning)
+            self.tag = value
 
     def _get_tag(self, t: Type[T]) -> T:
         if not isinstance(self.tag, t):
@@ -141,10 +160,10 @@ cdef class NamedTag(AbstractBase):
     if __major__ >= 3:
         def __iter__(self):
             yield self.name
-            yield self.value
+            yield self.tag
 
         def __getitem__(self, int item):
-            return (self.name, self.value)[item]
+            return (self.name, self.tag)[item]
     else:
         def __len__(self) -> int:
             warnings.warn("len on NamedTag is depreciated. access the tag to get the same behaviour", DeprecationWarning)

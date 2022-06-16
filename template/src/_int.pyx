@@ -3,7 +3,9 @@
 
 from io import BytesIO
 from copy import deepcopy
+import warnings
 
+from . import __major__
 from ._numeric cimport AbstractBaseNumericTag
 from ._const cimport ID_BYTE, ID_SHORT, ID_INT, ID_LONG
 from ._util cimport (

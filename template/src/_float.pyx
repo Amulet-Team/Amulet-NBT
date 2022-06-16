@@ -3,7 +3,9 @@
 
 from io import BytesIO
 from copy import deepcopy
+import warnings
 
+from . import __major__
 from ._numeric cimport AbstractBaseNumericTag
 from ._const cimport ID_FLOAT, ID_DOUBLE
 from ._util cimport write_float, write_double, BufferContext, read_data, to_little_endian

@@ -7,7 +7,9 @@ from typing import Iterator, Dict
 from copy import copy, deepcopy
 from collections.abc import MutableMapping
 import sys
+import warnings
 
+from . import __major__
 from ._value cimport AbstractBaseTag, AbstractBaseMutableTag
 from ._const cimport ID_END, ID_COMPOUND, CommaSpace, CommaNewline
 from ._util cimport write_byte, BufferContext, read_byte, read_string

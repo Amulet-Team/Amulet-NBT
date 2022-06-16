@@ -56,7 +56,7 @@ cdef class {{dtype.capitalize()}}ArrayTag(AbstractBaseArrayTag):
         if isinstance(other, {{dtype.capitalize()}}ArrayTag):
             other_ = other
             return numpy.array_equal(self.value_, other_.value_)
-        return False
+        return NotImplemented
 
     def __getitem__({{dtype.capitalize()}}ArrayTag self, item):
         return self.value_.__getitem__(item)

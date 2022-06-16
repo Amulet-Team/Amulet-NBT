@@ -7,7 +7,9 @@ from io import BytesIO
 from copy import copy, deepcopy
 from collections.abc import MutableSequence
 import sys
+import warnings
 
+from . import __major__
 from ._value cimport AbstractBaseTag, AbstractBaseMutableTag
 from ._const cimport ID_LIST, CommaSpace, CommaNewline
 from ._util cimport write_byte, write_int, BufferContext, read_byte, read_int

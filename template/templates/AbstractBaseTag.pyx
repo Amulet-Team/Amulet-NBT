@@ -1,13 +1,13 @@
+{{py:
+from template import include
+try:
+    show_eq
+except:
+    show_eq = True
+}}
     def __str__({{cls_name}} self):
         return str(self.value_)
-
-    def __eq__({{cls_name}} self, other):
-        cdef {{cls_name}} other_
-        if isinstance(other, {{cls_name}}):
-            other_ = other
-            return self.value_ == other_.value_
-        return False
-
+{{include("Eq.pyx", **locals()) if show_eq else ""}}
     def __reduce__({{cls_name}} self):
         return self.__class__, (self.value_,)
 

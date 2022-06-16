@@ -7,7 +7,9 @@ from typing import Iterator, Dict
 from copy import copy, deepcopy
 from collections.abc import MutableMapping
 import sys
+import warnings
 
+from . import __major__
 from ._value cimport AbstractBaseTag, AbstractBaseMutableTag
 from ._const cimport ID_END, ID_COMPOUND, CommaSpace, CommaNewline
 from ._util cimport write_byte, BufferContext, read_byte, read_string
@@ -63,7 +65,9 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         if isinstance(other, CyCompoundTag):
             other_ = other
             return self.value_ == other_.value_
-        return False
+        elif __major__ <= 2:
+            warnings.warn("NBT comparison operator (a == b) will only return True between classes of the same type.", FutureWarning)
+        return NotImplemented
 
     def __reduce__(CyCompoundTag self):
         return self.__class__, (self.value_,)

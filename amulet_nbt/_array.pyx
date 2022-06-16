@@ -78,13 +78,6 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
     def __str__(ByteArrayTag self):
         return str(self.value_)
 
-    def __eq__(ByteArrayTag self, other):
-        cdef ByteArrayTag other_
-        if isinstance(other, ByteArrayTag):
-            other_ = other
-            return self.value_ == other_.value_
-        return False
-
     def __reduce__(ByteArrayTag self):
         return self.__class__, (self.value_,)
 
@@ -110,7 +103,7 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
         if isinstance(other, ByteArrayTag):
             other_ = other
             return numpy.array_equal(self.value_, other_.value_)
-        return False
+        return NotImplemented
 
     def __getitem__(ByteArrayTag self, item):
         return self.value_.__getitem__(item)
@@ -166,13 +159,6 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
     def __str__(IntArrayTag self):
         return str(self.value_)
 
-    def __eq__(IntArrayTag self, other):
-        cdef IntArrayTag other_
-        if isinstance(other, IntArrayTag):
-            other_ = other
-            return self.value_ == other_.value_
-        return False
-
     def __reduce__(IntArrayTag self):
         return self.__class__, (self.value_,)
 
@@ -198,7 +184,7 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
         if isinstance(other, IntArrayTag):
             other_ = other
             return numpy.array_equal(self.value_, other_.value_)
-        return False
+        return NotImplemented
 
     def __getitem__(IntArrayTag self, item):
         return self.value_.__getitem__(item)
@@ -254,13 +240,6 @@ cdef class LongArrayTag(AbstractBaseArrayTag):
     def __str__(LongArrayTag self):
         return str(self.value_)
 
-    def __eq__(LongArrayTag self, other):
-        cdef LongArrayTag other_
-        if isinstance(other, LongArrayTag):
-            other_ = other
-            return self.value_ == other_.value_
-        return False
-
     def __reduce__(LongArrayTag self):
         return self.__class__, (self.value_,)
 
@@ -286,7 +265,7 @@ cdef class LongArrayTag(AbstractBaseArrayTag):
         if isinstance(other, LongArrayTag):
             other_ = other
             return numpy.array_equal(self.value_, other_.value_)
-        return False
+        return NotImplemented
 
     def __getitem__(LongArrayTag self, item):
         return self.value_.__getitem__(item)

@@ -3,7 +3,9 @@
 
 from io import BytesIO
 from copy import deepcopy
+import warnings
 
+from . import __major__
 from ._numeric cimport AbstractBaseNumericTag
 from ._const cimport ID_FLOAT, ID_DOUBLE
 from ._util cimport write_float, write_double, BufferContext, read_data, to_little_endian
@@ -48,7 +50,9 @@ cdef class FloatTag(AbstractBaseFloatTag):
         if isinstance(other, FloatTag):
             other_ = other
             return self.value_ == other_.value_
-        return False
+        elif __major__ <= 2:
+            warnings.warn("NBT comparison operator (a == b) will only return True between classes of the same type.", FutureWarning)
+        return NotImplemented
 
     def __reduce__(FloatTag self):
         return self.__class__, (self.value_,)
@@ -145,7 +149,9 @@ cdef class DoubleTag(AbstractBaseFloatTag):
         if isinstance(other, DoubleTag):
             other_ = other
             return self.value_ == other_.value_
-        return False
+        elif __major__ <= 2:
+            warnings.warn("NBT comparison operator (a == b) will only return True between classes of the same type.", FutureWarning)
+        return NotImplemented
 
     def __reduce__(DoubleTag self):
         return self.__class__, (self.value_,)

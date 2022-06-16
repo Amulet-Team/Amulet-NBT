@@ -3,7 +3,9 @@
 
 from io import BytesIO
 from copy import deepcopy
+import warnings
 
+from . import __major__
 from ._value cimport AbstractBaseImmutableTag
 from ._const cimport ID_STRING
 from ._util cimport write_string, read_string, BufferContext
@@ -35,7 +37,9 @@ cdef class StringTag(AbstractBaseImmutableTag):
         if isinstance(other, StringTag):
             other_ = other
             return self.value_ == other_.value_
-        return False
+        elif __major__ <= 2:
+            warnings.warn("NBT comparison operator (a == b) will only return True between classes of the same type.", FutureWarning)
+        return NotImplemented
 
     def __reduce__(StringTag self):
         return self.__class__, (self.value_,)

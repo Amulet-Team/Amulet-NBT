@@ -3,7 +3,9 @@
 
 from io import BytesIO
 from copy import deepcopy
+import warnings
 
+from . import __major__
 from ._value cimport AbstractBaseImmutableTag
 from ._const cimport ID_STRING
 from ._util cimport write_string, read_string, BufferContext

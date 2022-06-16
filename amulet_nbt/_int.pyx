@@ -3,7 +3,9 @@
 
 from io import BytesIO
 from copy import deepcopy
+import warnings
 
+from . import __major__
 from ._numeric cimport AbstractBaseNumericTag
 from ._const cimport ID_BYTE, ID_SHORT, ID_INT, ID_LONG
 from ._util cimport (
@@ -57,7 +59,9 @@ cdef class ByteTag(AbstractBaseIntTag):
         if isinstance(other, ByteTag):
             other_ = other
             return self.value_ == other_.value_
-        return False
+        elif __major__ <= 2:
+            warnings.warn("NBT comparison operator (a == b) will only return True between classes of the same type.", FutureWarning)
+        return NotImplemented
 
     def __reduce__(ByteTag self):
         return self.__class__, (self.value_,)
@@ -160,7 +164,9 @@ cdef class ShortTag(AbstractBaseIntTag):
         if isinstance(other, ShortTag):
             other_ = other
             return self.value_ == other_.value_
-        return False
+        elif __major__ <= 2:
+            warnings.warn("NBT comparison operator (a == b) will only return True between classes of the same type.", FutureWarning)
+        return NotImplemented
 
     def __reduce__(ShortTag self):
         return self.__class__, (self.value_,)
@@ -263,7 +269,9 @@ cdef class IntTag(AbstractBaseIntTag):
         if isinstance(other, IntTag):
             other_ = other
             return self.value_ == other_.value_
-        return False
+        elif __major__ <= 2:
+            warnings.warn("NBT comparison operator (a == b) will only return True between classes of the same type.", FutureWarning)
+        return NotImplemented
 
     def __reduce__(IntTag self):
         return self.__class__, (self.value_,)
@@ -366,7 +374,9 @@ cdef class LongTag(AbstractBaseIntTag):
         if isinstance(other, LongTag):
             other_ = other
             return self.value_ == other_.value_
-        return False
+        elif __major__ <= 2:
+            warnings.warn("NBT comparison operator (a == b) will only return True between classes of the same type.", FutureWarning)
+        return NotImplemented
 
     def __reduce__(LongTag self):
         return self.__class__, (self.value_,)

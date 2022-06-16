@@ -7,7 +7,9 @@ from io import BytesIO
 from copy import copy, deepcopy
 from collections.abc import MutableSequence
 import sys
+import warnings
 
+from . import __major__
 from ._value cimport AbstractBaseTag, AbstractBaseMutableTag
 from ._const cimport ID_LIST, CommaSpace, CommaNewline
 from ._util cimport write_byte, write_int, BufferContext, read_byte, read_int
@@ -50,7 +52,9 @@ cdef class CyListTag(AbstractBaseMutableTag):
         if isinstance(other, CyListTag):
             other_ = other
             return self.value_ == other_.value_
-        return False
+        elif __major__ <= 2:
+            warnings.warn("NBT comparison operator (a == b) will only return True between classes of the same type.", FutureWarning)
+        return NotImplemented
 
     def __reduce__(CyListTag self):
         return self.__class__, (self.value_,)

@@ -1,5 +1,5 @@
 {{py:from template import include}}
-{{include("AbstractBaseImmutableTag.pyx", cls_name=cls_name)}}
+{{include("AbstractBaseImmutableTag.pyx", **locals())}}
 
     def __repr__({{cls_name}} self):
         return f"{self.__class__.__name__}({self.value_})"

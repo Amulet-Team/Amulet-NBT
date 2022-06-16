@@ -1,5 +1,4 @@
 {{py:
-import numpy
 from template import include
 }}
 cdef inline {{dtype.capitalize()}}ArrayTag read_{{dtype}}_array_tag(BufferContext buffer, bint little_endian):
@@ -39,7 +38,7 @@ cdef class {{dtype.capitalize()}}ArrayTag(AbstractBaseArrayTag):
             little_endian
         )
 
-{{include("AbstractBaseMutableTag.pyx", cls_name=f"{dtype.capitalize()}ArrayTag")}}
+{{include("AbstractBaseMutableTag.pyx", cls_name=f"{dtype.capitalize()}ArrayTag", show_eq=False, **locals())}}
 
     @property
     def np_array({{dtype.capitalize()}}ArrayTag self):

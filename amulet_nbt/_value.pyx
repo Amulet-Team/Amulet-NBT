@@ -10,6 +10,8 @@ from ._dtype import EncoderType
 
 
 cdef class AbstractBase:
+    """Abstract Base class for all Tags and the NamedTag"""
+
     cpdef str to_snbt(self, object indent=None, object indent_chr=None):
         """
         Return the NBT data in Stringified NBT format.
@@ -50,9 +52,9 @@ cdef class AbstractBase:
 
         If filepath_or_buffer is a valid file path in string form the data will be written to that file.
 
-        If filepath_or_buffer is a file like object the bytes will be written to it using `write`.
+        If filepath_or_buffer is a file like object the bytes will be written to it using .write method.
 
-        :param filepath_or_buffer: A path or `write`able object to write the data to.
+        :param filepath_or_buffer: A path or writeable object to write the data to.
         :param compressed: Should the bytes be compressed with gzip.
         :param little_endian: Should the bytes be saved in little endian format.
         :param string_encoder: A function to encode strings to bytes.
@@ -62,6 +64,7 @@ cdef class AbstractBase:
 
 
 cdef class AbstractBaseTag(AbstractBase):
+    """Abstract Base Class for all Tag classes"""
     tag_id: int = None
 
     @property
@@ -75,6 +78,7 @@ cdef class AbstractBaseTag(AbstractBase):
 
     @property
     def value(self):
+        """Legacy property to access the python data. Depreciated. Use :attr:`py_data` or typed py_{type} instead."""
         warnings.warn("value property is depreciated. Use py_{type} instead", DeprecationWarning)
         return self.py_data
 
@@ -139,13 +143,13 @@ cdef class AbstractBaseTag(AbstractBase):
 
         If filepath_or_buffer is a valid file path in string form the data will be written to that file.
 
-        If filepath_or_buffer is a file like object the bytes will be written to it using `write`.
+        If filepath_or_buffer is a file like object the bytes will be written to it using .write method.
 
-        :param filepath_or_buffer: A path or `write`able object to write the data to.
+        :param filepath_or_buffer: A path or writeable object to write the data to.
         :param compressed: Should the bytes be compressed with gzip.
         :param little_endian: Should the bytes be saved in little endian format.
-        :param name: The root tag name.
         :param string_encoder: A function to encode strings to bytes.
+        :param name: The root tag name.
         :return: The binary NBT representation of the class.
         """
         cdef bytes data = self.to_nbt(
@@ -224,9 +228,11 @@ cdef class AbstractBaseTag(AbstractBase):
 
 
 cdef class AbstractBaseImmutableTag(AbstractBaseTag):
+    """Abstract Base Class for all immutable Tag classes"""
     def __hash__(self):
         raise NotImplementedError
 
 
 cdef class AbstractBaseMutableTag(AbstractBaseTag):
+    """Abstract Base Class for all mutable Tag classes"""
     __hash__ = None

@@ -17,6 +17,8 @@ from ._dtype import EncoderType
 
 
 cdef class AbstractBaseFloatTag(AbstractBaseNumericTag):
+    """Abstract Base Class for all float Tag classes"""
+
     @property
     def py_float(AbstractBaseNumericTag self) -> float:
         """
@@ -27,6 +29,11 @@ cdef class AbstractBaseFloatTag(AbstractBaseNumericTag):
 
     @property
     def py_data(self):
+        """
+        A python representation of the class. Note that the return type is undefined and may change in the future.
+        You would be better off using the py_{type} or np_array properties if you require a fixed type.
+        This is here for convenience to get a python representation under the same property name.
+        """
         return self.py_float
 
 
@@ -40,7 +47,7 @@ cdef inline FloatTag read_float_tag(BufferContext buffer, bint little_endian):
 
 
 cdef class FloatTag(AbstractBaseFloatTag):
-    """A class that behaves like a float but is stored as a single precision float."""
+    """A single precision float class."""
     tag_id = ID_FLOAT
 
     def __init__(FloatTag self, value = 0):
@@ -69,7 +76,7 @@ cdef inline DoubleTag read_double_tag(BufferContext buffer, bint little_endian):
 
 
 cdef class DoubleTag(AbstractBaseFloatTag):
-    """A class that behaves like a float but is stored as a double precision float."""
+    """A double precision float class."""
     tag_id = ID_DOUBLE
 
     def __init__(DoubleTag self, value = 0):

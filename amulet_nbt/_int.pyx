@@ -24,6 +24,8 @@ from ._dtype import EncoderType
 
 
 cdef class AbstractBaseIntTag(AbstractBaseNumericTag):
+    """Abstract Base Class for all int Tag classes"""
+
     @property
     def py_int(AbstractBaseNumericTag self) -> int:
         """
@@ -34,6 +36,11 @@ cdef class AbstractBaseIntTag(AbstractBaseNumericTag):
 
     @property
     def py_data(self):
+        """
+        A python representation of the class. Note that the return type is undefined and may change in the future.
+        You would be better off using the py_{type} or np_array properties if you require a fixed type.
+        This is here for convenience to get a python representation under the same property name.
+        """
         return self.py_int
 
 
@@ -45,7 +52,7 @@ cdef inline ByteTag read_byte_tag(BufferContext buffer, bint little_endian):
 
 cdef class ByteTag(AbstractBaseIntTag):
     """
-    A class that behaves like an int but is stored in 1 byte.
+    A 1 byte integer class.
     Can Store numbers between -(2^7) and (2^7 - 1)
     """
     tag_id = ID_BYTE
@@ -284,7 +291,7 @@ cdef inline ShortTag read_short_tag(BufferContext buffer, bint little_endian):
 
 cdef class ShortTag(AbstractBaseIntTag):
     """
-    A class that behaves like an int but is stored in 2 bytes.
+    A 2 byte integer class.
     Can Store numbers between -(2^15) and (2^15 - 1)
     """
     tag_id = ID_SHORT
@@ -523,7 +530,7 @@ cdef inline IntTag read_int_tag(BufferContext buffer, bint little_endian):
 
 cdef class IntTag(AbstractBaseIntTag):
     """
-    A class that behaves like an int but is stored in 4 bytes.
+    A 4 byte integer class.
     Can Store numbers between -(2^31) and (2^31 - 1)
     """
     tag_id = ID_INT
@@ -762,7 +769,7 @@ cdef inline LongTag read_long_tag(BufferContext buffer, bint little_endian):
 
 cdef class LongTag(AbstractBaseIntTag):
     """
-    A class that behaves like an int but is stored in 8 bytes.
+    An 8 byte integer class.
     Can Store numbers between -(2^63) and (2^63 - 1)
     """
     tag_id = ID_LONG

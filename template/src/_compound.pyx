@@ -72,6 +72,11 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
 
     @property
     def py_data(self):
+        """
+        A python representation of the class. Note that the return type is undefined and may change in the future.
+        You would be better off using the py_{type} or np_array properties if you require a fixed type.
+        This is here for convenience to get a python representation under the same property name.
+        """
         return self.py_dict
 
     @staticmethod

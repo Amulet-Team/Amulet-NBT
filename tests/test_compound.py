@@ -18,6 +18,7 @@ from amulet_nbt import (
     ByteArrayTag,
     IntArrayTag,
     LongArrayTag,
+    __major__,
 )
 
 
@@ -41,7 +42,9 @@ class TestCompound(base_type_test.BaseTypeTest):
         self._test_init(dict, {})
 
         for t in self.nbt_types:
-            self.assertNotEqual(CompoundTag({t.__name__: t()}), {t.__name__: t()})
+            (self.assertEqual if __major__ <= 2 else self.assertNotEqual)(
+                CompoundTag({t.__name__: t()}), {t.__name__: t()}
+            )
             self.assertEqual(
                 CompoundTag({t.__name__: t()}), CompoundTag({t.__name__: t()})
             )

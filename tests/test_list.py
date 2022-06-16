@@ -6,6 +6,7 @@ from amulet_nbt import (
     AbstractBaseArrayTag,
     StringTag,
     ListTag,
+    __major__,
 )
 
 
@@ -32,6 +33,16 @@ class TestList(base_type_test.BaseTypeTest):
                 tag1 = ListTag([tag_cls1() for _ in range(5)])
                 tag2 = ListTag([tag_cls2() for _ in range(5)])
                 if tag_cls1 is tag_cls2:
+                    self.assertEqual(tag1, tag2)
+                elif __major__ > 2:
+                    self.assertNotEqual(tag1, tag2)
+                elif (
+                    issubclass(tag_cls1, AbstractBaseNumericTag)
+                    and issubclass(tag_cls2, AbstractBaseNumericTag)
+                ) or (
+                    issubclass(tag_cls1, (AbstractBaseArrayTag))
+                    and issubclass(tag_cls2, AbstractBaseArrayTag)
+                ):
                     self.assertEqual(tag1, tag2)
                 else:
                     self.assertNotEqual(tag1, tag2)

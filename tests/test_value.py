@@ -2,9 +2,12 @@ import unittest
 
 import numpy
 from amulet_nbt import (
+    AbstractBaseNumericTag,
+    AbstractBaseArrayTag,
     StringTag,
     ListTag,
     CompoundTag,
+    __major__,
 )
 from tests.base_type_test import BaseTagsTest
 
@@ -131,6 +134,16 @@ class TestPyData(BaseTagsTest):
         for tag1 in self.nbt_types:
             for tag2 in self.nbt_types:
                 if tag1 is tag2:
+                    self.assertEqual(tag1(), tag2())
+                elif __major__ > 2:
+                    self.assertNotEqual(tag1(), tag2())
+                elif (
+                    issubclass(tag1, AbstractBaseNumericTag)
+                    and issubclass(tag2, AbstractBaseNumericTag)
+                ) or (
+                    issubclass(tag1, (AbstractBaseArrayTag))
+                    and issubclass(tag2, AbstractBaseArrayTag)
+                ):
                     self.assertEqual(tag1(), tag2())
                 else:
                     self.assertNotEqual(tag1(), tag2())

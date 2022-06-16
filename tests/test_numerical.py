@@ -1,7 +1,6 @@
 import unittest
 from typing import Union, Callable
 import operator
-import math
 
 from tests import base_type_test
 
@@ -10,6 +9,8 @@ from amulet_nbt import (
     AbstractBaseNumericTag,
     AbstractBaseIntTag,
     AbstractBaseFloatTag,
+    AbstractBaseArrayTag,
+    __major__,
 )
 
 AnyNum = Union[int, float, AbstractBaseNumericTag]
@@ -47,6 +48,16 @@ class TestNumerical(base_type_test.BaseTypeTest):
             for tag1, tag2 in self._iter_two_tags(value):
                 if tag1.__class__ is tag2.__class__:
                     self.assertEqual(tag1, tag2, msg=f"{tag1} == {tag2}")
+                elif __major__ > 2:
+                    self.assertNotEqual(tag1, tag2, msg=f"{tag1} == {tag2}")
+                elif (
+                    isinstance(tag1, (AbstractBaseNumericTag, int, float))
+                    and isinstance(tag2, (AbstractBaseNumericTag, int, float))
+                ) or (
+                    isinstance(tag1, (AbstractBaseArrayTag))
+                    and isinstance(tag2, AbstractBaseArrayTag)
+                ):
+                    self.assertEqual(tag1, tag2, msg=f"{tag1} == {tag2}")
                 else:
                     self.assertNotEqual(tag1, tag2, msg=f"{tag1} == {tag2}")
 
@@ -81,12 +92,27 @@ class TestNumerical(base_type_test.BaseTypeTest):
                     and not isinstance(tag2, AbstractBaseTag)
                 ):
                     test = op(tag1, tag2)
+                elif __major__ > 2:
+                    with self.assertRaises(
+                        TypeError, msg=f"{op}, {tag1.__class__}, {tag2.__class__}"
+                    ):
+                        op(tag1, tag2)
+                    continue
+                elif (
+                    isinstance(tag1, (AbstractBaseNumericTag, int, float))
+                    and isinstance(tag2, (AbstractBaseNumericTag, int, float))
+                ) or (
+                    isinstance(tag1, (AbstractBaseArrayTag))
+                    and isinstance(tag2, AbstractBaseArrayTag)
+                ):
+                    test = op(tag1, tag2)
                 else:
                     with self.assertRaises(
                         TypeError, msg=f"{op}, {tag1.__class__}, {tag2.__class__}"
                     ):
                         op(tag1, tag2)
                     continue
+
                 val1_ = self._fix_type(tag1, val1)
                 val2_ = self._fix_type(tag2, val2)
                 ground = op(val1_, val2_)

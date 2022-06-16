@@ -4,6 +4,8 @@ from libc.string cimport memcpy
 import codecs
 import re
 
+from . import __major__
+from ._value cimport AbstractBaseTag
 from ._errors import NBTFormatError
 from ._dtype import DecoderType, EncoderType
 
@@ -154,3 +156,7 @@ cpdef bytes _utf8_unescape(object m):
 cpdef bytes utf8_escape_encoder(str s):
     """UTF-8 encoder that converts ␛x[0-9a-fA-F]{2} back to individual bytes"""
     return EscapePattern.sub(_utf8_unescape, s.encode())
+
+if __major__ <= 2:
+    def primitive_conversion(obj):
+        return obj.py_data if isinstance(obj, AbstractBaseTag) else obj

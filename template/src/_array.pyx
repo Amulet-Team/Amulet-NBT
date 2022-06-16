@@ -8,19 +8,16 @@ from copy import deepcopy
 import warnings
 
 from . import __major__
-from ._value cimport AbstractBaseMutableTag, AbstractBaseTag
+from ._value cimport AbstractBaseMutableTag
 from ._const cimport CommaSpace, ID_BYTE_ARRAY, ID_INT_ARRAY, ID_LONG_ARRAY
 from ._util cimport write_array, BufferContext, read_int, read_data
+if __major__ <= 2:
+    from ._util import primitive_conversion
 from ._dtype import EncoderType
 {{py:
 import numpy
 from template import include
 }}
-
-
-if __major__ <= 2:
-    def primitive_conversion(obj):
-        return obj.py_data if isinstance(obj, AbstractBaseTag) else obj
 
 
 cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):

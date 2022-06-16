@@ -5,11 +5,18 @@ import numpy
 cimport numpy
 from io import BytesIO
 from copy import deepcopy
+import warnings
 
-from ._value cimport AbstractBaseMutableTag
+from . import __major__
+from ._value cimport AbstractBaseMutableTag, AbstractBaseTag
 from ._const cimport CommaSpace, ID_BYTE_ARRAY, ID_INT_ARRAY, ID_LONG_ARRAY
 from ._util cimport write_array, BufferContext, read_int, read_data
 from ._dtype import EncoderType
+
+
+if __major__ <= 2:
+    def primitive_conversion(obj):
+        return obj.py_data if isinstance(obj, AbstractBaseTag) else obj
 
 
 cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
@@ -112,11 +119,131 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
         self.value_.__setitem__(key, value)
 
     def __array__(ByteArrayTag self, dtype=None):
-        return numpy.array(self.value_, dtype=dtype)
+        return numpy.asarray(self.value_, dtype=dtype)
 
     def __len__(ByteArrayTag self):
         return len(self.value_)
 
+    if __major__ <= 2:
+        def __add__(self, other):
+            warnings.warn(f"__add__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) + primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __sub__(self, other):
+            warnings.warn(f"__sub__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) - primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __mul__(self, other):
+            warnings.warn(f"__mul__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) - primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __matmul__(self, other):
+            warnings.warn(f"__matmul__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) @ primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __truediv__(self, other):
+            warnings.warn(f"__truediv__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) / primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __floordiv__(self, other):
+            warnings.warn(f"__floordiv__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) // primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __mod__(self, other):
+            warnings.warn(f"__mod__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) % primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __divmod__(self, other):
+            warnings.warn(f"__divmod__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return divmod(primitive_conversion(self), primitive_conversion(other))
+
+        def __pow__(self, power, modulo):
+            warnings.warn(f"__pow__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return pow(primitive_conversion(self), power, modulo).astype(self.big_endian_data_type)
+
+        def __lshift__(self, other):
+            warnings.warn(f"__lshift__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) << primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __rshift__(self, other):
+            warnings.warn(f"__rshift__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) >> primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __and__(self, other):
+            warnings.warn(f"__and__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) & primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __xor__(self, other):
+            warnings.warn(f"__xor__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) ^ primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __or__(self, other):
+            warnings.warn(f"__or__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) | primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __radd__(self, other):
+            warnings.warn(f"__radd__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(other) + primitive_conversion(self)).astype(self.big_endian_data_type)
+
+        def __rsub__(self, other):
+            warnings.warn(f"__rsub__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(other) - primitive_conversion(self)).astype(self.big_endian_data_type)
+
+        def __rmul__(self, other):
+            warnings.warn(f"__rmul__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(other) * primitive_conversion(self)).astype(self.big_endian_data_type)
+
+        def __rtruediv__(self, other):
+            warnings.warn(f"__rtruediv__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(other) / primitive_conversion(self)).astype(self.big_endian_data_type)
+
+        def __rfloordiv__(self, other):
+            warnings.warn(f"__rfloordiv__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(other) // primitive_conversion(self)).astype(self.big_endian_data_type)
+
+        def __rmod__(self, other):
+            warnings.warn(f"__rmod__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(other) % primitive_conversion(self)).astype(self.big_endian_data_type)
+
+        def __rdivmod__(self, other):
+            warnings.warn(f"__rdivmod__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return divmod(primitive_conversion(other), primitive_conversion(self))
+
+        def __rpow__(self, other, modulo):
+            warnings.warn(f"__rpow__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return pow(primitive_conversion(other), primitive_conversion(self), modulo).astype(self.big_endian_data_type)
+
+        def __rlshift__(self, other):
+            warnings.warn(f"__rlshift__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(other) << primitive_conversion(self)).astype(self.big_endian_data_type)
+
+        def __rrshift__(self, other):
+            warnings.warn(f"__rrshift__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(other) >> primitive_conversion(self)).astype(self.big_endian_data_type)
+
+        def __rand__(self, other):
+            warnings.warn(f"__rand__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(other) & primitive_conversion(self)).astype(self.big_endian_data_type)
+
+        def __rxor__(self, other):
+            warnings.warn(f"__rxor__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(other) ^ primitive_conversion(self)).astype(self.big_endian_data_type)
+
+        def __ror__(self, other):
+            warnings.warn(f"__ror__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(other) | primitive_conversion(self)).astype(self.big_endian_data_type)
+
+        def __neg__(self):
+            warnings.warn(f"__neg__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (-self.value_).astype(self.big_endian_data_type)
+
+        def __pos__(self):
+            warnings.warn(f"__pos__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (+self.value_).astype(self.big_endian_data_type)
+
+        def __abs__(self):
+            warnings.warn(f"__abs__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return abs(self.value_).astype(self.big_endian_data_type)
 
 
 cdef inline IntArrayTag read_int_array_tag(BufferContext buffer, bint little_endian):
@@ -193,11 +320,131 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
         self.value_.__setitem__(key, value)
 
     def __array__(IntArrayTag self, dtype=None):
-        return numpy.array(self.value_, dtype=dtype)
+        return numpy.asarray(self.value_, dtype=dtype)
 
     def __len__(IntArrayTag self):
         return len(self.value_)
 
+    if __major__ <= 2:
+        def __add__(self, other):
+            warnings.warn(f"__add__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) + primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __sub__(self, other):
+            warnings.warn(f"__sub__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) - primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __mul__(self, other):
+            warnings.warn(f"__mul__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) - primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __matmul__(self, other):
+            warnings.warn(f"__matmul__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) @ primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __truediv__(self, other):
+            warnings.warn(f"__truediv__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) / primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __floordiv__(self, other):
+            warnings.warn(f"__floordiv__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) // primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __mod__(self, other):
+            warnings.warn(f"__mod__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) % primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __divmod__(self, other):
+            warnings.warn(f"__divmod__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return divmod(primitive_conversion(self), primitive_conversion(other))
+
+        def __pow__(self, power, modulo):
+            warnings.warn(f"__pow__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return pow(primitive_conversion(self), power, modulo).astype(self.big_endian_data_type)
+
+        def __lshift__(self, other):
+            warnings.warn(f"__lshift__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) << primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __rshift__(self, other):
+            warnings.warn(f"__rshift__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) >> primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __and__(self, other):
+            warnings.warn(f"__and__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) & primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __xor__(self, other):
+            warnings.warn(f"__xor__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) ^ primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __or__(self, other):
+            warnings.warn(f"__or__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) | primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __radd__(self, other):
+            warnings.warn(f"__radd__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(other) + primitive_conversion(self)).astype(self.big_endian_data_type)
+
+        def __rsub__(self, other):
+            warnings.warn(f"__rsub__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(other) - primitive_conversion(self)).astype(self.big_endian_data_type)
+
+        def __rmul__(self, other):
+            warnings.warn(f"__rmul__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(other) * primitive_conversion(self)).astype(self.big_endian_data_type)
+
+        def __rtruediv__(self, other):
+            warnings.warn(f"__rtruediv__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(other) / primitive_conversion(self)).astype(self.big_endian_data_type)
+
+        def __rfloordiv__(self, other):
+            warnings.warn(f"__rfloordiv__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(other) // primitive_conversion(self)).astype(self.big_endian_data_type)
+
+        def __rmod__(self, other):
+            warnings.warn(f"__rmod__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(other) % primitive_conversion(self)).astype(self.big_endian_data_type)
+
+        def __rdivmod__(self, other):
+            warnings.warn(f"__rdivmod__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return divmod(primitive_conversion(other), primitive_conversion(self))
+
+        def __rpow__(self, other, modulo):
+            warnings.warn(f"__rpow__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return pow(primitive_conversion(other), primitive_conversion(self), modulo).astype(self.big_endian_data_type)
+
+        def __rlshift__(self, other):
+            warnings.warn(f"__rlshift__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(other) << primitive_conversion(self)).astype(self.big_endian_data_type)
+
+        def __rrshift__(self, other):
+            warnings.warn(f"__rrshift__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(other) >> primitive_conversion(self)).astype(self.big_endian_data_type)
+
+        def __rand__(self, other):
+            warnings.warn(f"__rand__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(other) & primitive_conversion(self)).astype(self.big_endian_data_type)
+
+        def __rxor__(self, other):
+            warnings.warn(f"__rxor__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(other) ^ primitive_conversion(self)).astype(self.big_endian_data_type)
+
+        def __ror__(self, other):
+            warnings.warn(f"__ror__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(other) | primitive_conversion(self)).astype(self.big_endian_data_type)
+
+        def __neg__(self):
+            warnings.warn(f"__neg__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (-self.value_).astype(self.big_endian_data_type)
+
+        def __pos__(self):
+            warnings.warn(f"__pos__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (+self.value_).astype(self.big_endian_data_type)
+
+        def __abs__(self):
+            warnings.warn(f"__abs__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return abs(self.value_).astype(self.big_endian_data_type)
 
 
 cdef inline LongArrayTag read_long_array_tag(BufferContext buffer, bint little_endian):
@@ -274,7 +521,128 @@ cdef class LongArrayTag(AbstractBaseArrayTag):
         self.value_.__setitem__(key, value)
 
     def __array__(LongArrayTag self, dtype=None):
-        return numpy.array(self.value_, dtype=dtype)
+        return numpy.asarray(self.value_, dtype=dtype)
 
     def __len__(LongArrayTag self):
         return len(self.value_)
+
+    if __major__ <= 2:
+        def __add__(self, other):
+            warnings.warn(f"__add__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) + primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __sub__(self, other):
+            warnings.warn(f"__sub__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) - primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __mul__(self, other):
+            warnings.warn(f"__mul__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) - primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __matmul__(self, other):
+            warnings.warn(f"__matmul__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) @ primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __truediv__(self, other):
+            warnings.warn(f"__truediv__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) / primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __floordiv__(self, other):
+            warnings.warn(f"__floordiv__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) // primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __mod__(self, other):
+            warnings.warn(f"__mod__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) % primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __divmod__(self, other):
+            warnings.warn(f"__divmod__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return divmod(primitive_conversion(self), primitive_conversion(other))
+
+        def __pow__(self, power, modulo):
+            warnings.warn(f"__pow__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return pow(primitive_conversion(self), power, modulo).astype(self.big_endian_data_type)
+
+        def __lshift__(self, other):
+            warnings.warn(f"__lshift__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) << primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __rshift__(self, other):
+            warnings.warn(f"__rshift__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) >> primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __and__(self, other):
+            warnings.warn(f"__and__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) & primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __xor__(self, other):
+            warnings.warn(f"__xor__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) ^ primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __or__(self, other):
+            warnings.warn(f"__or__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(self) | primitive_conversion(other)).astype(self.big_endian_data_type)
+
+        def __radd__(self, other):
+            warnings.warn(f"__radd__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(other) + primitive_conversion(self)).astype(self.big_endian_data_type)
+
+        def __rsub__(self, other):
+            warnings.warn(f"__rsub__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(other) - primitive_conversion(self)).astype(self.big_endian_data_type)
+
+        def __rmul__(self, other):
+            warnings.warn(f"__rmul__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(other) * primitive_conversion(self)).astype(self.big_endian_data_type)
+
+        def __rtruediv__(self, other):
+            warnings.warn(f"__rtruediv__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(other) / primitive_conversion(self)).astype(self.big_endian_data_type)
+
+        def __rfloordiv__(self, other):
+            warnings.warn(f"__rfloordiv__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(other) // primitive_conversion(self)).astype(self.big_endian_data_type)
+
+        def __rmod__(self, other):
+            warnings.warn(f"__rmod__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(other) % primitive_conversion(self)).astype(self.big_endian_data_type)
+
+        def __rdivmod__(self, other):
+            warnings.warn(f"__rdivmod__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return divmod(primitive_conversion(other), primitive_conversion(self))
+
+        def __rpow__(self, other, modulo):
+            warnings.warn(f"__rpow__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return pow(primitive_conversion(other), primitive_conversion(self), modulo).astype(self.big_endian_data_type)
+
+        def __rlshift__(self, other):
+            warnings.warn(f"__rlshift__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(other) << primitive_conversion(self)).astype(self.big_endian_data_type)
+
+        def __rrshift__(self, other):
+            warnings.warn(f"__rrshift__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(other) >> primitive_conversion(self)).astype(self.big_endian_data_type)
+
+        def __rand__(self, other):
+            warnings.warn(f"__rand__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(other) & primitive_conversion(self)).astype(self.big_endian_data_type)
+
+        def __rxor__(self, other):
+            warnings.warn(f"__rxor__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(other) ^ primitive_conversion(self)).astype(self.big_endian_data_type)
+
+        def __ror__(self, other):
+            warnings.warn(f"__ror__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (primitive_conversion(other) | primitive_conversion(self)).astype(self.big_endian_data_type)
+
+        def __neg__(self):
+            warnings.warn(f"__neg__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (-self.value_).astype(self.big_endian_data_type)
+
+        def __pos__(self):
+            warnings.warn(f"__pos__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return (+self.value_).astype(self.big_endian_data_type)
+
+        def __abs__(self):
+            warnings.warn(f"__abs__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
+            return abs(self.value_).astype(self.big_endian_data_type)

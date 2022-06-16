@@ -51,9 +51,8 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
     """
     tag_id = ID_COMPOUND
 
-    def __init__(CyCompoundTag self, object value = (), **kwvals):
-        cdef dict dict_value = dict(value)
-        dict_value.update(kwvals)
+    def __init__(CyCompoundTag self, object value = (), **kwargs):
+        cdef dict dict_value = dict(value, **kwargs)
         _check_dict(dict_value)
         self.value_ = dict_value
 

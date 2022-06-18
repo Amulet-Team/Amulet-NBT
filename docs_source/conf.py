@@ -185,6 +185,9 @@ intersphinx_mapping = {
 
 autodoc_member_order = "bysource"
 
+inheritance_graph_attrs = dict(rankdir="TB")
+graphviz_output_format = "svg"
+
 
 def skip(app, what, name, obj, would_skip, options):
     if name == "__init__":

@@ -1,8 +1,9 @@
 ##########################################
- :class:`amulet_nbt.LongArrayTag` class
+ :class:`amulet_nbt.ByteArrayTag` class
 ##########################################
 
-.. autoclass:: amulet_nbt.LongArrayTag
+.. autoclass:: amulet_nbt.ByteArrayTag
    :members:
    :inherited-members:
    :undoc-members:
+   :show-inheritance:

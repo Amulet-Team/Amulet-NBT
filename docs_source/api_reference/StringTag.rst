@@ -1,8 +1,9 @@
 ######################################
- :class:`amulet_nbt.DoubleTag` class
+ :class:`amulet_nbt.StringTag` class
 ######################################
 
-.. autoclass:: amulet_nbt.DoubleTag
+.. autoclass:: amulet_nbt.StringTag
    :members:
    :inherited-members:
    :undoc-members:
+   :show-inheritance:

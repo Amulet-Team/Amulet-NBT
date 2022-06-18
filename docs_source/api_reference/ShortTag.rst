@@ -1,8 +1,9 @@
 #####################################
- :class:`amulet_nbt.FloatTag` class
+ :class:`amulet_nbt.ShortTag` class
 #####################################
 
-.. autoclass:: amulet_nbt.FloatTag
+.. autoclass:: amulet_nbt.ShortTag
    :members:
    :inherited-members:
    :undoc-members:
+   :show-inheritance:

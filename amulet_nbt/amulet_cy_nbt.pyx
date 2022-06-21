@@ -804,6 +804,12 @@ cdef class TAG_String(_TAG_Value):
     def __str__(self):
         return self.value
 
+    def __reduce__(self):
+        return unpickle_nbt, (self.tag_id, self.py_bytes)
+
+    def copy(self):
+        return self.__class__(self.py_bytes)
+
 
 cdef class _TAG_List(_TAG_Value):
     tag_id = _ID_LIST

@@ -1,6 +1,8 @@
 from typing import Type, TypeVar
 import warnings
 
+from mutf8 import encode_modified_utf8
+
 from . import __major__
 from ._value cimport AbstractBaseTag, AbstractBase
 from ._int cimport (
@@ -22,7 +24,6 @@ from ._string cimport StringTag
 from ._list import ListTag
 from ._compound import CompoundTag
 from ._dtype import EncoderType, AnyNBT
-from ._util import utf8_encoder
 
 
 T = TypeVar("T")
@@ -179,7 +180,7 @@ cdef class NamedTag(AbstractBase):
         *,
         bint compressed=True,
         bint little_endian=False,
-        string_encoder: EncoderType = utf8_encoder,
+        string_encoder: EncoderType = encode_modified_utf8,
     ):
         return self.tag.to_nbt(
             compressed=compressed,
@@ -194,7 +195,7 @@ cdef class NamedTag(AbstractBase):
         *args,
         bint compressed=True,
         bint little_endian=False,
-        string_encoder: EncoderType = utf8_encoder,
+        string_encoder: EncoderType = encode_modified_utf8,
     ):
         if args:
             if __major__ <= 2:

@@ -1,4 +1,3 @@
-from ._util cimport utf8_encoder
 from ._dtype import EncoderType
 
 

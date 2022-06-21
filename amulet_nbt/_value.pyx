@@ -4,8 +4,8 @@ import warnings
 import gzip
 from typing import Any
 
+from mutf8 import encode_modified_utf8
 from ._util cimport write_byte, write_string
-from ._util import utf8_encoder
 from ._dtype import EncoderType
 
 
@@ -27,7 +27,7 @@ cdef class AbstractBase:
         *,
         bint compressed=True,
         bint little_endian=False,
-        string_encoder: EncoderType = utf8_encoder,
+        string_encoder: EncoderType = encode_modified_utf8,
     ):
         """
         Get the data in binary NBT format.
@@ -45,7 +45,7 @@ cdef class AbstractBase:
         *,
         bint compressed=True,
         bint little_endian=False,
-        string_encoder: EncoderType = utf8_encoder,
+        string_encoder: EncoderType = encode_modified_utf8,
     ):
         """
         Convert the data to the binary NBT format. Optionally write to a file.
@@ -106,7 +106,7 @@ cdef class AbstractBaseTag(AbstractBase):
         *,
         bint compressed=True,
         bint little_endian=False,
-        string_encoder: EncoderType = utf8_encoder,
+        string_encoder: EncoderType = encode_modified_utf8,
         str name="",
     ):
         """
@@ -135,7 +135,7 @@ cdef class AbstractBaseTag(AbstractBase):
         *,
         bint compressed=True,
         bint little_endian=False,
-        string_encoder: EncoderType = utf8_encoder,
+        string_encoder: EncoderType = encode_modified_utf8,
         str name="",
     ):
         """

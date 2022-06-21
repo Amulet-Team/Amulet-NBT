@@ -5,9 +5,10 @@ from io import BytesIO
 from typing import Union, BinaryIO, List, Tuple
 import os
 
+from mutf8 import decode_modified_utf8
+
 from ._errors import NBTLoadError
 from ._util cimport BufferContext, read_string, read_byte
-from ._util import utf8_decoder
 from ._value cimport AbstractBaseTag
 from ._int cimport (
     read_byte_tag,
@@ -119,7 +120,7 @@ def load_one(
     bint compressed=True,
     bint little_endian: bool = False,
     ReadContext read_context = None,
-    string_decoder: DecoderType = utf8_decoder
+    string_decoder: DecoderType = decode_modified_utf8
 ) -> NamedTag:
     cdef BufferContext buffer = get_buffer(filepath_or_buffer, compressed)
     if buffer.size < 1:
@@ -137,7 +138,7 @@ def load_many(
     bint compressed=True,
     bint little_endian: bool = False,
     ReadContext read_context = None,
-    string_decoder: DecoderType = utf8_decoder
+    string_decoder: DecoderType = decode_modified_utf8
 ) -> List[NamedTag]:
     if count < 1:
         raise ValueError("Count must be 1 or more.")
@@ -162,7 +163,7 @@ def load(
     bint offset: bool = False,
     bint little_endian: bool = False,
     *,
-    string_decoder: DecoderType = utf8_decoder
+    string_decoder: DecoderType = decode_modified_utf8
 ) -> Union[NamedTag, Tuple[Union[NamedTag, List[NamedTag]], int]]:
     warnings.warn("load is depreciated. Use load_one or load_many", DeprecationWarning)
     if offset:

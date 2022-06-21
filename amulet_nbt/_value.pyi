@@ -1,6 +1,6 @@
 from typing import Union, Any
+from mutf8 import encode_modified_utf8
 from ._dtype import AnyNBT, EncoderType
-from ._util import utf8_encoder
 
 class AbstractBase:
     def to_snbt(self, indent: Union[int, str] = None) -> str: ...
@@ -9,7 +9,7 @@ class AbstractBase:
         *,
         compressed=True,
         little_endian=False,
-        string_encoder: EncoderType = utf8_encoder,
+        string_encoder: EncoderType = encode_modified_utf8,
     ) -> bytes: ...
     def save_to(
         self,
@@ -17,7 +17,7 @@ class AbstractBase:
         *,
         compressed=True,
         little_endian=False,
-        string_encoder: EncoderType = utf8_encoder,
+        string_encoder: EncoderType = encode_modified_utf8,
     ) -> bytes: ...
 
 class AbstractBaseTag(AbstractBase):
@@ -29,7 +29,7 @@ class AbstractBaseTag(AbstractBase):
         *,
         compressed=True,
         little_endian=False,
-        string_encoder: EncoderType = utf8_encoder,
+        string_encoder: EncoderType = encode_modified_utf8,
         name="",
     ) -> bytes: ...
     def save_to(
@@ -38,7 +38,7 @@ class AbstractBaseTag(AbstractBase):
         *,
         compressed=True,
         little_endian=False,
-        string_encoder: EncoderType = utf8_encoder,
+        string_encoder: EncoderType = encode_modified_utf8,
         name="",
     ) -> bytes: ...
     def __repr__(self) -> str:

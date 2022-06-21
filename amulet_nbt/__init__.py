@@ -59,7 +59,7 @@ from ._compound import (
 )
 
 # Load functions
-from ._load_nbt import load, load_one, load_many
+from ._load_nbt import load, load_one, load_many, ReadContext
 from ._load_snbt import from_snbt
 
 from ._errors import NBTError, NBTLoadError, NBTFormatError, SNBTParseError

@@ -22,7 +22,7 @@ See our [readthedocs site](https://amulet-nbt.readthedocs.io/en/stable/) for the
 
 To develop the library you will need to download the source and run this command from the root directory.
 
-`pip install -e .`
+`pip install -e .[dev]`
 
 This will build the library in-place and expose it to python.
 Since this code is compiled you will need to run it again each time you change cython code.

@@ -181,7 +181,7 @@ cdef class NamedTag(AbstractBase):
         bint compressed=True,
         bint little_endian=False,
         string_encoder: EncoderType = encode_modified_utf8,
-    ):
+    ) -> bytes:
         return self.tag.to_nbt(
             compressed=compressed,
             little_endian=little_endian,
@@ -196,7 +196,7 @@ cdef class NamedTag(AbstractBase):
         bint compressed=True,
         bint little_endian=False,
         string_encoder: EncoderType = encode_modified_utf8,
-    ):
+    ) -> bytes:
         if args:
             if __major__ <= 2:
                 warnings.warn("save_to arguments are going to become keyword only", FutureWarning)

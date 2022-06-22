@@ -137,7 +137,7 @@ cdef class AbstractBaseTag(AbstractBase):
         bint little_endian=False,
         string_encoder: EncoderType = encode_modified_utf8,
         str name="",
-    ):
+    ) -> bytes:
         """
         Convert the data to the binary NBT format. Optionally write to a file.
 

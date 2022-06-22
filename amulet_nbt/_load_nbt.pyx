@@ -135,7 +135,7 @@ def load_many(
     object filepath_or_buffer: Union[str, bytes, BinaryIO, None],
     *,
     int count = 1,
-    bint compressed=True,
+    bint compressed: bool=True,
     bint little_endian: bool = False,
     ReadContext read_context = None,
     string_decoder: DecoderType = decode_modified_utf8
@@ -158,7 +158,7 @@ def load_many(
 
 def load(
     object filepath_or_buffer: Union[str, bytes, BinaryIO, None],
-    bint compressed=True,
+    bint compressed: bool=True,
     object count: int = None,
     bint offset: bool = False,
     bint little_endian: bool = False,

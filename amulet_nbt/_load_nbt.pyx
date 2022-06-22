@@ -117,7 +117,7 @@ cdef class ReadContext:
 def load_one(
     object filepath_or_buffer: Union[str, bytes, BinaryIO, None],
     *,
-    bint compressed=True,
+    bint compressed: bool=True,
     bint little_endian: bool = False,
     ReadContext read_context = None,
     string_decoder: DecoderType = decode_modified_utf8

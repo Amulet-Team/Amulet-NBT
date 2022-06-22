@@ -3,9 +3,7 @@ from ._value import AbstractBaseImmutableTag
 
 class StringTag(AbstractBaseImmutableTag):
     @overload
-    def __init__(self, value: Any): ...
-    @overload
-    def __init__(self, value: str): ...
+    def __init__(self, value: Any = ""): ...
     def __contains__(self, o: str) -> bool:
         raise NotImplementedError
     def __eq__(self, x: object) -> bool:

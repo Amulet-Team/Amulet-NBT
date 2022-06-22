@@ -9,6 +9,7 @@ from ._util import EncoderType
 from mutf8 import encode_modified_utf8
 
 class NamedTag:
+    def __init__(self, tag: AbstractBaseTag = None, name: str = ""): ...
     @property
     def name(self) -> str: ...
     @property

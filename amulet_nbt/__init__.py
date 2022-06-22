@@ -71,12 +71,12 @@ from ._util import utf8_decoder, utf8_encoder, utf8_escape_decoder, utf8_escape_
 
 def __getattr__(name):
     if name == "NBTFile":
-        warnings.warn("NBTFile is depreciated. Use NamedTag instead.")
+        warnings.warn("NBTFile is depreciated. Use NamedTag instead.", DeprecationWarning, stacklevel=2)
         return NamedTag
     elif name == "BaseArrayType":
-        warnings.warn("BaseArrayType is depreciated. Use AbstractBaseArrayTag instead.")
+        warnings.warn("BaseArrayType is depreciated. Use AbstractBaseArrayTag instead.", DeprecationWarning, stacklevel=2)
         return AbstractBaseArrayTag
     elif name == "BaseValueType":
-        warnings.warn("BaseValueType is depreciated. Use AbstractBaseTag instead.")
+        warnings.warn("BaseValueType is depreciated. Use AbstractBaseTag instead.", DeprecationWarning, stacklevel=2)
         return AbstractBaseTag
     raise AttributeError(f"module {__name__} has no attribute {name}")

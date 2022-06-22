@@ -623,7 +623,6 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         return val
 
 
-
 if sys.version_info >= (3, 9):
     class CompoundTag(CyCompoundTag, MutableMapping[str, AnyNBT]):
         pass

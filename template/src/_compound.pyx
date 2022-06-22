@@ -172,7 +172,6 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
 {{include("CompoundGetSetdefault.pyx", tag_cls_name="IntArrayTag", tag_name="int_array")}}
 {{include("CompoundGetSetdefault.pyx", tag_cls_name="LongArrayTag", tag_name="long_array")}}
 
-
 if sys.version_info >= (3, 9):
     class CompoundTag(CyCompoundTag, MutableMapping[str, AnyNBT]):
         pass

@@ -33,32 +33,10 @@ T = TypeVar("T")
 cdef class NamedTag(AbstractBase):
     def __init__(self, AbstractBaseTag tag = None, str name not None = ""):
         if tag is None:
-            self._tag = CompoundTag()
+            self.tag = CompoundTag()
         else:
-            self._tag = tag
-        self._name = name
-
-    @property
-    def tag(self) -> AbstractBaseTag:
-        """The NBT Tag stored in this NamedTag."""
-        return self._tag
-
-    if __major__ <= 2:
-        @tag.setter
-        def tag(self, AbstractBaseTag tag):
-            warnings.warn("NamedTag.tag setter is depreciated. In the future tag will be immutable.", DeprecationWarning)
-            self._tag = tag
-
-    @property
-    def name(self) -> str:
-        """The name stored in this NamedTag"""
-        return self._name
-
-    if __major__ <= 2:
-        @name.setter
-        def name(self, str name):
-            warnings.warn("NamedTag.name setter is depreciated. In the future name will be immutable.", DeprecationWarning)
-            self._name = name
+            self.tag = tag
+        self.name = name
 
     if __major__ <= 2:
         @property

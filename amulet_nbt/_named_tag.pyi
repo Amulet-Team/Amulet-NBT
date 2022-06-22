@@ -9,11 +9,9 @@ from ._util import EncoderType
 from mutf8 import encode_modified_utf8
 
 class NamedTag:
+    name: str
+    tag: AbstractBaseTag
     def __init__(self, tag: AbstractBaseTag = None, name: str = ""): ...
-    @property
-    def name(self) -> str: ...
-    @property
-    def tag(self) -> AbstractBaseTag: ...
     def to_nbt(
         self,
         *,

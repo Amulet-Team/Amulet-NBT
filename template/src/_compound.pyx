@@ -33,13 +33,13 @@ from ._array cimport (
     LongArrayTag,
 )
 from ._string cimport StringTag
-from ._list import ListTag
-from ._compound import CompoundTag
+from ._list cimport CyListTag
 {{py:from template import include}}
 
 NON_QUOTED_KEY = re.compile('[A-Za-z0-9._+-]+')
 
 T = TypeVar("T")
+Error = object()
 
 
 cdef inline CyCompoundTag read_compound_tag(BufferContext buffer, bint little_endian, string_decoder: DecoderType):
@@ -159,119 +159,18 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
     def __len__(CyCompoundTag self) -> int:
         return self.value_.__len__()
 
-    def _get_tag(self, key: str, t: Type[T]) -> T:
-        tag = self[key]
-        if not isinstance(tag, t):
-            raise TypeError(f"Expected tag to be of type {t} but got {type(tag)}")
-        return tag
-
-    def get_byte(self, key: str) -> ByteTag:
-        """Get the tag stored in key if it is a ByteTag.
-
-        :return: The ByteTag.
-        :raises: KeyError if the key does not exist
-        :raises: TypeError if the stored type is not a ByteTag
-        """
-        return self._get_tag(key, ByteTag)
-
-    def get_short(self, key: str) -> ShortTag:
-        """Get the tag stored in key if it is a ShortTag.
-
-        :return: The ShortTag.
-        :raises: KeyError if the key does not exist
-        :raises: TypeError if the stored type is not a ShortTag
-        """
-        return self._get_tag(key, ShortTag)
-
-    def get_int(self, key: str) -> IntTag:
-        """Get the tag stored in key if it is a IntTag.
-
-        :return: The IntTag.
-        :raises: KeyError if the key does not exist
-        :raises: TypeError if the stored type is not a IntTag
-        """
-        return self._get_tag(key, IntTag)
-
-    def get_long(self, key: str) -> LongTag:
-        """Get the tag stored in key if it is a LongTag.
-
-        :return: The LongTag.
-        :raises: KeyError if the key does not exist
-        :raises: TypeError if the stored type is not a LongTag
-        """
-        return self._get_tag(key, LongTag)
-
-    def get_float(self, key: str) -> FloatTag:
-        """Get the tag stored in key if it is a FloatTag.
-
-        :return: The FloatTag.
-        :raises: KeyError if the key does not exist
-        :raises: TypeError if the stored type is not a FloatTag
-        """
-        return self._get_tag(key, FloatTag)
-
-    def get_double(self, key: str) -> DoubleTag:
-        """Get the tag stored in key if it is a DoubleTag.
-
-        :return: The DoubleTag.
-        :raises: KeyError if the key does not exist
-        :raises: TypeError if the stored type is not a DoubleTag
-        """
-        return self._get_tag(key, DoubleTag)
-
-    def get_string(self, key: str) -> StringTag:
-        """Get the tag stored in key if it is a StringTag.
-
-        :return: The StringTag.
-        :raises: KeyError if the key does not exist
-        :raises: TypeError if the stored type is not a StringTag
-        """
-        return self._get_tag(key, StringTag)
-
-    def get_list(self, key: str) -> ListTag:
-        """Get the tag stored in key if it is a ListTag.
-
-        :return: The ListTag.
-        :raises: KeyError if the key does not exist
-        :raises: TypeError if the stored type is not a ListTag
-        """
-        return self._get_tag(key, ListTag)
-
-    def get_compound(self, key: str) -> CompoundTag:
-        """Get the tag stored in key if it is a CompoundTag.
-
-        :return: The CompoundTag.
-        :raises: KeyError if the key does not exist
-        :raises: TypeError if the stored type is not a CompoundTag
-        """
-        return self._get_tag(key, CompoundTag)
-
-    def get_byte_array(self, key: str) -> ByteArrayTag:
-        """Get the tag stored in key if it is a ByteArrayTag.
-
-        :return: The ByteArrayTag.
-        :raises: KeyError if the key does not exist
-        :raises: TypeError if the stored type is not a ByteArrayTag
-        """
-        return self._get_tag(key, ByteArrayTag)
-
-    def get_int_array(self, key: str) -> IntArrayTag:
-        """Get the tag stored in key if it is a IntArrayTag.
-
-        :return: The IntArrayTag.
-        :raises: KeyError if the key does not exist
-        :raises: TypeError if the stored type is not a IntArrayTag
-        """
-        return self._get_tag(key, IntArrayTag)
-
-    def get_long_array(self, key: str) -> LongArrayTag:
-        """Get the tag stored in key if it is a LongArrayTag.
-
-        :return: The LongArrayTag.
-        :raises: KeyError if the key does not exist
-        :raises: TypeError if the stored type is not a LongArrayTag
-        """
-        return self._get_tag(key, LongArrayTag)
+{{include("CompoundGetSetdefault.pyx", tag_cls_name="ByteTag", tag_name="byte")}}
+{{include("CompoundGetSetdefault.pyx", tag_cls_name="ShortTag", tag_name="short")}}
+{{include("CompoundGetSetdefault.pyx", tag_cls_name="IntTag", tag_name="int")}}
+{{include("CompoundGetSetdefault.pyx", tag_cls_name="LongTag", tag_name="long")}}
+{{include("CompoundGetSetdefault.pyx", tag_cls_name="FloatTag", tag_name="float")}}
+{{include("CompoundGetSetdefault.pyx", tag_cls_name="DoubleTag", tag_name="double")}}
+{{include("CompoundGetSetdefault.pyx", tag_cls_name="StringTag", tag_name="string")}}
+{{include("CompoundGetSetdefault.pyx", tag_cls_name="CyListTag", tag_name="list")}}
+{{include("CompoundGetSetdefault.pyx", tag_cls_name="CyCompoundTag", tag_name="compound")}}
+{{include("CompoundGetSetdefault.pyx", tag_cls_name="ByteArrayTag", tag_name="byte_array")}}
+{{include("CompoundGetSetdefault.pyx", tag_cls_name="IntArrayTag", tag_name="int_array")}}
+{{include("CompoundGetSetdefault.pyx", tag_cls_name="LongArrayTag", tag_name="long_array")}}
 
 
 if sys.version_info >= (3, 9):

@@ -25,6 +25,7 @@ from ._list cimport CyListTag
 from ._compound import CompoundTag
 from ._compound cimport CyCompoundTag
 from ._dtype import EncoderType, AnyNBT
+{{py:from template import include}}
 
 
 T = TypeVar("T")
@@ -43,11 +44,9 @@ cdef class NamedTag(AbstractBase):
         """The NBT Tag stored in this NamedTag."""
         return self._tag
 
-    if __major__ <= 2:
-        @tag.setter
-        def tag(self, AbstractBaseTag tag):
-            warnings.warn("NamedTag.tag setter is depreciated. In the future tag will be immutable.", DeprecationWarning)
-            self._tag = tag
+    @tag.setter
+    def tag(self, AbstractBaseTag tag):
+        self._tag = tag
 
     @property
     def name(self) -> str:
@@ -72,126 +71,18 @@ cdef class NamedTag(AbstractBase):
             warnings.warn("value property is depreciated.", DeprecationWarning)
             self.tag = value
 
-    @property
-    def byte(self) -> ByteTag:
-        """Get the tag if it is a ByteTag.
-
-        :return: The ByteTag.
-        :raises: TypeError if the stored type is not a ByteTag
-        """
-        cdef ByteTag tag = self.tag
-        return tag
-
-    @property
-    def short(self) -> ShortTag:
-        """Get the tag if it is a ShortTag.
-
-        :return: The ShortTag.
-        :raises: TypeError if the stored type is not a ShortTag
-        """
-        cdef ShortTag tag = self.tag
-        return tag
-
-    @property
-    def int(self) -> IntTag:
-        """Get the tag if it is a IntTag.
-
-        :return: The IntTag.
-        :raises: TypeError if the stored type is not a IntTag
-        """
-        cdef IntTag tag = self.tag
-        return tag
-
-    @property
-    def long(self) -> LongTag:
-        """Get the tag if it is a LongTag.
-
-        :return: The LongTag.
-        :raises: TypeError if the stored type is not a LongTag
-        """
-        cdef LongTag tag = self.tag
-        return tag
-
-    @property
-    def float(self) -> FloatTag:
-        """Get the tag if it is a FloatTag.
-
-        :return: The FloatTag.
-        :raises: TypeError if the stored type is not a FloatTag
-        """
-        cdef FloatTag tag = self.tag
-        return tag
-
-    @property
-    def double(self) -> DoubleTag:
-        """Get the tag if it is a DoubleTag.
-
-        :return: The DoubleTag.
-        :raises: TypeError if the stored type is not a DoubleTag
-        """
-        cdef DoubleTag tag = self.tag
-        return tag
-
-    @property
-    def string(self) -> StringTag:
-        """Get the tag if it is a StringTag.
-
-        :return: The StringTag.
-        :raises: TypeError if the stored type is not a StringTag
-        """
-        cdef StringTag tag = self.tag
-        return tag
-
-    @property
-    def list(self) -> CyListTag:
-        """Get the tag if it is a CyListTag.
-
-        :return: The CyListTag.
-        :raises: TypeError if the stored type is not a CyListTag
-        """
-        cdef CyListTag tag = self.tag
-        return tag
-
-    @property
-    def compound(self) -> CyCompoundTag:
-        """Get the tag if it is a CyCompoundTag.
-
-        :return: The CyCompoundTag.
-        :raises: TypeError if the stored type is not a CyCompoundTag
-        """
-        cdef CyCompoundTag tag = self.tag
-        return tag
-
-    @property
-    def byte_array(self) -> ByteArrayTag:
-        """Get the tag if it is a ByteArrayTag.
-
-        :return: The ByteArrayTag.
-        :raises: TypeError if the stored type is not a ByteArrayTag
-        """
-        cdef ByteArrayTag tag = self.tag
-        return tag
-
-    @property
-    def int_array(self) -> IntArrayTag:
-        """Get the tag if it is a IntArrayTag.
-
-        :return: The IntArrayTag.
-        :raises: TypeError if the stored type is not a IntArrayTag
-        """
-        cdef IntArrayTag tag = self.tag
-        return tag
-
-    @property
-    def long_array(self) -> LongArrayTag:
-        """Get the tag if it is a LongArrayTag.
-
-        :return: The LongArrayTag.
-        :raises: TypeError if the stored type is not a LongArrayTag
-        """
-        cdef LongArrayTag tag = self.tag
-        return tag
-
+{{include("NamedTagGet.pyx", tag_cls_name="ByteTag", tag_name="byte")}}
+{{include("NamedTagGet.pyx", tag_cls_name="ShortTag", tag_name="short")}}
+{{include("NamedTagGet.pyx", tag_cls_name="IntTag", tag_name="int")}}
+{{include("NamedTagGet.pyx", tag_cls_name="LongTag", tag_name="long")}}
+{{include("NamedTagGet.pyx", tag_cls_name="FloatTag", tag_name="float")}}
+{{include("NamedTagGet.pyx", tag_cls_name="DoubleTag", tag_name="double")}}
+{{include("NamedTagGet.pyx", tag_cls_name="StringTag", tag_name="string")}}
+{{include("NamedTagGet.pyx", tag_cls_name="CyListTag", tag_name="list")}}
+{{include("NamedTagGet.pyx", tag_cls_name="CyCompoundTag", tag_name="compound")}}
+{{include("NamedTagGet.pyx", tag_cls_name="ByteArrayTag", tag_name="byte_array")}}
+{{include("NamedTagGet.pyx", tag_cls_name="IntArrayTag", tag_name="int_array")}}
+{{include("NamedTagGet.pyx", tag_cls_name="LongArrayTag", tag_name="long_array")}}
     cpdef str to_snbt(self, object indent=None, object indent_chr=None):
         return self.tag.to_snbt(indent=indent, indent_chr=indent_chr)
 

@@ -1,3 +1,9 @@
+{{py:
+try:
+    py_tag_cls_name
+except:
+    py_tag_cls_name = tag_cls_name
+}}
     cpdef {{tag_cls_name}} get_{{tag_name}}(self, str key, {{tag_cls_name}} default=None):
         """Get the tag stored in key if it is a {{tag_cls_name}}.
     
@@ -8,7 +14,7 @@
         :raises: TypeError if the stored type is not a {{tag_cls_name}}
         """
         if key not in self:
-            if default is Error:
+            if default is None:
                 raise KeyError(key)
             else:
                 return default
@@ -16,7 +22,7 @@
         tag = self[key]
         if isinstance(tag, {{tag_cls_name}}):
             return tag
-        elif default is Error:
+        elif default is None:
             raise TypeError(f"Expected tag to be of type {{tag_cls_name}} but got {type(tag)}")
         else:
             return default
@@ -31,6 +37,6 @@
         :raises: TypeError if the input types are incorrect
         """
         val = self[key] if key in self else None
-        if not isinstance(self[key], {{tag_cls_name}}):
-            val = self[key] = {{tag_cls_name}}() if default is None else default
+        if not isinstance(val, {{tag_cls_name}}):
+            val = self[key] = {{py_tag_cls_name}}() if default is None else default
         return val

@@ -34,12 +34,12 @@ from ._array cimport (
 )
 from ._string cimport StringTag
 from ._list cimport CyListTag
+from . import _list
 {{py:from template import include}}
 
 NON_QUOTED_KEY = re.compile('[A-Za-z0-9._+-]+')
 
 T = TypeVar("T")
-Error = object()
 
 
 cdef inline CyCompoundTag read_compound_tag(BufferContext buffer, bint little_endian, string_decoder: DecoderType):
@@ -166,8 +166,8 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
 {{include("CompoundGetSetdefault.pyx", tag_cls_name="FloatTag", tag_name="float")}}
 {{include("CompoundGetSetdefault.pyx", tag_cls_name="DoubleTag", tag_name="double")}}
 {{include("CompoundGetSetdefault.pyx", tag_cls_name="StringTag", tag_name="string")}}
-{{include("CompoundGetSetdefault.pyx", tag_cls_name="CyListTag", tag_name="list")}}
-{{include("CompoundGetSetdefault.pyx", tag_cls_name="CyCompoundTag", tag_name="compound")}}
+{{include("CompoundGetSetdefault.pyx", tag_cls_name="CyListTag", py_tag_cls_name="_list.ListTag", tag_name="list")}}
+{{include("CompoundGetSetdefault.pyx", tag_cls_name="CyCompoundTag", py_tag_cls_name="CompoundTag", tag_name="compound")}}
 {{include("CompoundGetSetdefault.pyx", tag_cls_name="ByteArrayTag", tag_name="byte_array")}}
 {{include("CompoundGetSetdefault.pyx", tag_cls_name="IntArrayTag", tag_name="int_array")}}
 {{include("CompoundGetSetdefault.pyx", tag_cls_name="LongArrayTag", tag_name="long_array")}}

@@ -34,11 +34,11 @@ from ._array cimport (
 )
 from ._string cimport StringTag
 from ._list cimport CyListTag
+from . import _list
 
 NON_QUOTED_KEY = re.compile('[A-Za-z0-9._+-]+')
 
 T = TypeVar("T")
-Error = object()
 
 
 cdef inline CyCompoundTag read_compound_tag(BufferContext buffer, bint little_endian, string_decoder: DecoderType):
@@ -188,7 +188,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         :raises: TypeError if the stored type is not a ByteTag
         """
         if key not in self:
-            if default is Error:
+            if default is None:
                 raise KeyError(key)
             else:
                 return default
@@ -196,7 +196,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         tag = self[key]
         if isinstance(tag, ByteTag):
             return tag
-        elif default is Error:
+        elif default is None:
             raise TypeError(f"Expected tag to be of type ByteTag but got {type(tag)}")
         else:
             return default
@@ -211,7 +211,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         :raises: TypeError if the input types are incorrect
         """
         val = self[key] if key in self else None
-        if not isinstance(self[key], ByteTag):
+        if not isinstance(val, ByteTag):
             val = self[key] = ByteTag() if default is None else default
         return val
 
@@ -225,7 +225,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         :raises: TypeError if the stored type is not a ShortTag
         """
         if key not in self:
-            if default is Error:
+            if default is None:
                 raise KeyError(key)
             else:
                 return default
@@ -233,7 +233,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         tag = self[key]
         if isinstance(tag, ShortTag):
             return tag
-        elif default is Error:
+        elif default is None:
             raise TypeError(f"Expected tag to be of type ShortTag but got {type(tag)}")
         else:
             return default
@@ -248,7 +248,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         :raises: TypeError if the input types are incorrect
         """
         val = self[key] if key in self else None
-        if not isinstance(self[key], ShortTag):
+        if not isinstance(val, ShortTag):
             val = self[key] = ShortTag() if default is None else default
         return val
 
@@ -262,7 +262,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         :raises: TypeError if the stored type is not a IntTag
         """
         if key not in self:
-            if default is Error:
+            if default is None:
                 raise KeyError(key)
             else:
                 return default
@@ -270,7 +270,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         tag = self[key]
         if isinstance(tag, IntTag):
             return tag
-        elif default is Error:
+        elif default is None:
             raise TypeError(f"Expected tag to be of type IntTag but got {type(tag)}")
         else:
             return default
@@ -285,7 +285,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         :raises: TypeError if the input types are incorrect
         """
         val = self[key] if key in self else None
-        if not isinstance(self[key], IntTag):
+        if not isinstance(val, IntTag):
             val = self[key] = IntTag() if default is None else default
         return val
 
@@ -299,7 +299,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         :raises: TypeError if the stored type is not a LongTag
         """
         if key not in self:
-            if default is Error:
+            if default is None:
                 raise KeyError(key)
             else:
                 return default
@@ -307,7 +307,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         tag = self[key]
         if isinstance(tag, LongTag):
             return tag
-        elif default is Error:
+        elif default is None:
             raise TypeError(f"Expected tag to be of type LongTag but got {type(tag)}")
         else:
             return default
@@ -322,7 +322,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         :raises: TypeError if the input types are incorrect
         """
         val = self[key] if key in self else None
-        if not isinstance(self[key], LongTag):
+        if not isinstance(val, LongTag):
             val = self[key] = LongTag() if default is None else default
         return val
 
@@ -336,7 +336,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         :raises: TypeError if the stored type is not a FloatTag
         """
         if key not in self:
-            if default is Error:
+            if default is None:
                 raise KeyError(key)
             else:
                 return default
@@ -344,7 +344,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         tag = self[key]
         if isinstance(tag, FloatTag):
             return tag
-        elif default is Error:
+        elif default is None:
             raise TypeError(f"Expected tag to be of type FloatTag but got {type(tag)}")
         else:
             return default
@@ -359,7 +359,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         :raises: TypeError if the input types are incorrect
         """
         val = self[key] if key in self else None
-        if not isinstance(self[key], FloatTag):
+        if not isinstance(val, FloatTag):
             val = self[key] = FloatTag() if default is None else default
         return val
 
@@ -373,7 +373,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         :raises: TypeError if the stored type is not a DoubleTag
         """
         if key not in self:
-            if default is Error:
+            if default is None:
                 raise KeyError(key)
             else:
                 return default
@@ -381,7 +381,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         tag = self[key]
         if isinstance(tag, DoubleTag):
             return tag
-        elif default is Error:
+        elif default is None:
             raise TypeError(f"Expected tag to be of type DoubleTag but got {type(tag)}")
         else:
             return default
@@ -396,7 +396,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         :raises: TypeError if the input types are incorrect
         """
         val = self[key] if key in self else None
-        if not isinstance(self[key], DoubleTag):
+        if not isinstance(val, DoubleTag):
             val = self[key] = DoubleTag() if default is None else default
         return val
 
@@ -410,7 +410,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         :raises: TypeError if the stored type is not a StringTag
         """
         if key not in self:
-            if default is Error:
+            if default is None:
                 raise KeyError(key)
             else:
                 return default
@@ -418,7 +418,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         tag = self[key]
         if isinstance(tag, StringTag):
             return tag
-        elif default is Error:
+        elif default is None:
             raise TypeError(f"Expected tag to be of type StringTag but got {type(tag)}")
         else:
             return default
@@ -433,7 +433,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         :raises: TypeError if the input types are incorrect
         """
         val = self[key] if key in self else None
-        if not isinstance(self[key], StringTag):
+        if not isinstance(val, StringTag):
             val = self[key] = StringTag() if default is None else default
         return val
 
@@ -447,7 +447,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         :raises: TypeError if the stored type is not a CyListTag
         """
         if key not in self:
-            if default is Error:
+            if default is None:
                 raise KeyError(key)
             else:
                 return default
@@ -455,7 +455,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         tag = self[key]
         if isinstance(tag, CyListTag):
             return tag
-        elif default is Error:
+        elif default is None:
             raise TypeError(f"Expected tag to be of type CyListTag but got {type(tag)}")
         else:
             return default
@@ -470,8 +470,8 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         :raises: TypeError if the input types are incorrect
         """
         val = self[key] if key in self else None
-        if not isinstance(self[key], CyListTag):
-            val = self[key] = CyListTag() if default is None else default
+        if not isinstance(val, CyListTag):
+            val = self[key] = _list.ListTag() if default is None else default
         return val
 
     cpdef CyCompoundTag get_compound(self, str key, CyCompoundTag default=None):
@@ -484,7 +484,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         :raises: TypeError if the stored type is not a CyCompoundTag
         """
         if key not in self:
-            if default is Error:
+            if default is None:
                 raise KeyError(key)
             else:
                 return default
@@ -492,7 +492,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         tag = self[key]
         if isinstance(tag, CyCompoundTag):
             return tag
-        elif default is Error:
+        elif default is None:
             raise TypeError(f"Expected tag to be of type CyCompoundTag but got {type(tag)}")
         else:
             return default
@@ -507,8 +507,8 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         :raises: TypeError if the input types are incorrect
         """
         val = self[key] if key in self else None
-        if not isinstance(self[key], CyCompoundTag):
-            val = self[key] = CyCompoundTag() if default is None else default
+        if not isinstance(val, CyCompoundTag):
+            val = self[key] = CompoundTag() if default is None else default
         return val
 
     cpdef ByteArrayTag get_byte_array(self, str key, ByteArrayTag default=None):
@@ -521,7 +521,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         :raises: TypeError if the stored type is not a ByteArrayTag
         """
         if key not in self:
-            if default is Error:
+            if default is None:
                 raise KeyError(key)
             else:
                 return default
@@ -529,7 +529,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         tag = self[key]
         if isinstance(tag, ByteArrayTag):
             return tag
-        elif default is Error:
+        elif default is None:
             raise TypeError(f"Expected tag to be of type ByteArrayTag but got {type(tag)}")
         else:
             return default
@@ -544,7 +544,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         :raises: TypeError if the input types are incorrect
         """
         val = self[key] if key in self else None
-        if not isinstance(self[key], ByteArrayTag):
+        if not isinstance(val, ByteArrayTag):
             val = self[key] = ByteArrayTag() if default is None else default
         return val
 
@@ -558,7 +558,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         :raises: TypeError if the stored type is not a IntArrayTag
         """
         if key not in self:
-            if default is Error:
+            if default is None:
                 raise KeyError(key)
             else:
                 return default
@@ -566,7 +566,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         tag = self[key]
         if isinstance(tag, IntArrayTag):
             return tag
-        elif default is Error:
+        elif default is None:
             raise TypeError(f"Expected tag to be of type IntArrayTag but got {type(tag)}")
         else:
             return default
@@ -581,7 +581,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         :raises: TypeError if the input types are incorrect
         """
         val = self[key] if key in self else None
-        if not isinstance(self[key], IntArrayTag):
+        if not isinstance(val, IntArrayTag):
             val = self[key] = IntArrayTag() if default is None else default
         return val
 
@@ -595,7 +595,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         :raises: TypeError if the stored type is not a LongArrayTag
         """
         if key not in self:
-            if default is Error:
+            if default is None:
                 raise KeyError(key)
             else:
                 return default
@@ -603,7 +603,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         tag = self[key]
         if isinstance(tag, LongArrayTag):
             return tag
-        elif default is Error:
+        elif default is None:
             raise TypeError(f"Expected tag to be of type LongArrayTag but got {type(tag)}")
         else:
             return default
@@ -618,7 +618,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         :raises: TypeError if the input types are incorrect
         """
         val = self[key] if key in self else None
-        if not isinstance(self[key], LongArrayTag):
+        if not isinstance(val, LongArrayTag):
             val = self[key] = LongArrayTag() if default is None else default
         return val
 

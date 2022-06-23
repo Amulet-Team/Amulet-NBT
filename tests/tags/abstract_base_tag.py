@@ -16,6 +16,21 @@ from amulet_nbt import (
     CompoundTag,
 )
 
+Tags = (
+    (ByteTag, "byte"),
+    (ShortTag, "short"),
+    (IntTag, "int"),
+    (LongTag, "long"),
+    (FloatTag, "float"),
+    (DoubleTag, "double"),
+    (StringTag, "string"),
+    (ListTag, "list"),
+    (CompoundTag, "compound"),
+    (ByteArrayTag, "byte_array"),
+    (IntArrayTag, "int_array"),
+    (LongArrayTag, "long_array"),
+)
+
 
 class AbstractBaseTagTest:
     class AbstractBaseTagTest(unittest.TestCase, ABC):

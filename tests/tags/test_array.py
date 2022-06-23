@@ -38,9 +38,7 @@ class TestArray(AbstractBaseTagTest.AbstractBaseTagTest):
                 with self.subTest(cls1=cls1, cls2=cls2, arg1=arg1, arg2=arg2):
                     a = cls1(arg1)
                     b = cls2(arg2)
-                    if arg1 == arg2 and cls1 is cls2:
-                        self.assertEqual(a, b)
-                    elif __major__ <= 2 and arg1 == arg2:
+                    if arg1 == arg2 and (cls1 is cls2 or __major__ <= 2):
                         self.assertEqual(a, b)
                     else:
                         self.assertNotEqual(a, b)
@@ -104,9 +102,7 @@ class TestArray(AbstractBaseTagTest.AbstractBaseTagTest):
                     a = cls1(arg1)
                     dump = pickle.dumps(cls2(arg2))
                     b = pickle.loads(dump)
-                    if arg1 == arg2 and cls1 is cls2:
-                        self.assertEqual(a, b)
-                    elif __major__ <= 2 and arg1 == arg2:
+                    if arg1 == arg2 and (cls1 is cls2 or __major__ <= 2):
                         self.assertEqual(a, b)
                     else:
                         self.assertNotEqual(a, b)

@@ -16,7 +16,7 @@ cdef class {{dtype.capitalize()}}ArrayTag(AbstractBaseArrayTag):
     tag_id = ID_{{dtype.upper()}}_ARRAY
 
     def __init__({{dtype.capitalize()}}ArrayTag self, object value = ()):
-        self.value_ = numpy.array(value, {{native_data_type}}).ravel()
+        self.value_ = numpy.asarray(value, {{native_data_type}}).ravel()
 
     cdef str _to_snbt({{dtype.capitalize()}}ArrayTag self):
         cdef long long elem

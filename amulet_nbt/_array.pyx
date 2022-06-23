@@ -62,7 +62,7 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
     tag_id = ID_BYTE_ARRAY
 
     def __init__(ByteArrayTag self, object value = ()):
-        self.value_ = numpy.array(value, numpy.dtype("int8")).ravel()
+        self.value_ = numpy.asarray(value, numpy.dtype("int8")).ravel()
 
     cdef str _to_snbt(ByteArrayTag self):
         cdef long long elem
@@ -266,7 +266,7 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
     tag_id = ID_INT_ARRAY
 
     def __init__(IntArrayTag self, object value = ()):
-        self.value_ = numpy.array(value, numpy.int32).ravel()
+        self.value_ = numpy.asarray(value, numpy.int32).ravel()
 
     cdef str _to_snbt(IntArrayTag self):
         cdef long long elem
@@ -470,7 +470,7 @@ cdef class LongArrayTag(AbstractBaseArrayTag):
     tag_id = ID_LONG_ARRAY
 
     def __init__(LongArrayTag self, object value = ()):
-        self.value_ = numpy.array(value, numpy.int64).ravel()
+        self.value_ = numpy.asarray(value, numpy.int64).ravel()
 
     cdef str _to_snbt(LongArrayTag self):
         cdef long long elem

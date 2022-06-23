@@ -1,7 +1,7 @@
-from typing import Any, Dict
+from typing import Any, Dict, Iterable
 from collections.abc import MutableMapping
 
-from ._value import AbstractBaseMutableTag
+from ._value import AbstractBaseMutableTag, AbstractBaseTag
 from ._dtype import AnyNBT
 from ._int import ByteTag, ShortTag, IntTag, LongTag
 from ._float import FloatTag, DoubleTag
@@ -12,6 +12,8 @@ from ._array import ByteArrayTag, IntArrayTag, LongArrayTag
 class CompoundTag(AbstractBaseMutableTag, MutableMapping[str, AnyNBT]):
     tag_id: int
     def __init__(self, value: Any = (), **kwvals: AnyNBT): ...
+    @staticmethod
+    def fromkeys(keys: Iterable[str], value: AbstractBaseTag = None): ...
     @property
     def py_dict(self) -> Dict[str, AnyNBT]: ...
     def get_byte(self, key: str, default: ByteTag = None) -> ByteTag: ...

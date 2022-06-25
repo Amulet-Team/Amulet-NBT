@@ -219,60 +219,69 @@ cdef class NamedTag(AbstractBase):
     def __repr__(self):
         return f'NamedTag({repr(self.tag)}, "{self.name}")'
 
+    def __getitem__(self, object item):
+        if isinstance(item, int):
+            return (self.name, self.tag)[item]
+        elif isinstance(item, str):
+            warnings.warn("The behaviour of __getitem__ is changing to make NamedTag behave like a named tuple. access the tag to get the same behaviour", DeprecationWarning)
+            return self.compound[item]
+        else:
+            raise TypeError("Item must be an int")
+
+    # def __getitem__(self, int item):
+    #     return (self.name, self.tag)[item]
+
     if __major__ >= 3:
         def __iter__(self):
             yield self.name
             yield self.tag
 
-        def __getitem__(self, int item):
-            return (self.name, self.tag)[item]
     else:
+        def __iter__(self):
+            warnings.warn("iter behaviour on NamedTag is changing. Use the compound property to implement the same behaviour.", FutureWarning)
+            yield from self.compound
+
         def __len__(self) -> int:
             """Depreciated. Do not use."""
-            warnings.warn("len on NamedTag is depreciated. access the tag to get the same behaviour", DeprecationWarning)
-            return len(self.get_compound())
+            warnings.warn("len on NamedTag is depreciated. Use the compound property to implement the same behaviour.", DeprecationWarning)
+            return len(self.compound)
 
         def keys(self):
             """Depreciated. Do not use."""
-            warnings.warn("keys on NamedTag is depreciated. access the tag to get the same behaviour", DeprecationWarning)
+            warnings.warn("keys on NamedTag is depreciated. Use the compound property to implement the same behaviour.", DeprecationWarning)
             return self.compound.keys()
 
         def values(self):
             """Depreciated. Do not use."""
-            warnings.warn("values on NamedTag is depreciated. access the tag to get the same behaviour", DeprecationWarning)
+            warnings.warn("values on NamedTag is depreciated. Use the compound property to implement the same behaviour.", DeprecationWarning)
             self.compound.values()
 
         def items(self):
             """Depreciated. Do not use."""
-            warnings.warn("items on NamedTag is depreciated. access the tag to get the same behaviour", DeprecationWarning)
+            warnings.warn("items on NamedTag is depreciated. Use the compound property to implement the same behaviour.", DeprecationWarning)
             return self.compound.items()
-
-        def __getitem__(self, key: str) -> AnyNBT:
-            """Depreciated. Do not use."""
-            warnings.warn("The behaviour of __getitem__ is changing to make NamedTag behave like a named tuple. access the tag to get the same behaviour", FutureWarning)
-            return self.compound[key]
 
         def __setitem__(self, key: str, tag: AnyNBT):
             """Depreciated. Do not use."""
-            warnings.warn("setitem on NamedTag is depreciated. access the tag to get the same behaviour", DeprecationWarning)
+            warnings.warn("setitem on NamedTag is depreciated. Use the compound property to implement the same behaviour.", DeprecationWarning)
             self.compound[key] = tag
 
         def __delitem__(self, key: str):
             """Depreciated. Do not use."""
-            warnings.warn("delitem on NamedTag is depreciated. access the tag to get the same behaviour", DeprecationWarning)
+            warnings.warn("delitem on NamedTag is depreciated. Use the compound property to implement the same behaviour.", DeprecationWarning)
             del self.compound[key]
 
         def __contains__(self, key: str) -> bool:
             """Depreciated. Do not use."""
-            warnings.warn("contains on NamedTag is depreciated. access the tag to get the same behaviour", DeprecationWarning)
+            warnings.warn("contains on NamedTag is depreciated. Use the compound property to implement the same behaviour.", DeprecationWarning)
             return key in self.compound
 
         def pop(self, k, default=None) -> AnyNBT:
             """Depreciated. Do not use."""
-            warnings.warn("pop on NamedTag is depreciated. access the tag to get the same behaviour", DeprecationWarning)
+            warnings.warn("pop on NamedTag is depreciated. Use the compound property to implement the same behaviour.", DeprecationWarning)
             return self.compound.pop(k, default)
 
         def get(self, k, default=None) -> AnyNBT:
             """Depreciated. Do not use."""
-            warnings.warn("get on NamedTag is depreciated. access the tag to get the same behaviour", DeprecationWarning)
+            warnings.warn("get on NamedTag is depreciated. Use the compound property to implement the same behaviour.", DeprecationWarning)
             return self.compound.get(k, default)

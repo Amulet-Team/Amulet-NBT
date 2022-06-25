@@ -14,16 +14,26 @@ from amulet_nbt import (
     StringTag,
 )
 
-from tests.tags.abstract_base_tag import AbstractBaseTagTest, Tags
+from tests.tags.abstract_base_tag import AbstractBaseTagTest, TagNameMap
 
 
 class TestCompound(AbstractBaseTagTest.AbstractBaseTagTest):
     def test_constructor(self):
         for cls in self.nbt_types:
             with self.subTest(cls=cls):
+                # empty
+                CompoundTag()
+
+                # from dictionary
                 CompoundTag({"key": cls()})
                 CompoundTag(key=cls())
                 CompoundTag((("key", cls()),))
+
+                # from compound tag
+                CompoundTag(CompoundTag())
+                CompoundTag(CompoundTag({"key": cls()}))
+                CompoundTag(CompoundTag(key=cls()))
+                CompoundTag(CompoundTag((("key", cls()),)))
 
             for key in (None, 0, cls()):
                 with self.subTest("Key test", cls=cls, key=key):
@@ -69,18 +79,13 @@ class TestCompound(AbstractBaseTagTest.AbstractBaseTagTest):
                             self.assertNotEqual(ground, other)
 
         c = CompoundTag()
-        for tag_cls, tag_name in Tags:
-            c[tag_name] = tag_cls()
+        for tag_cls in self.nbt_types:
+            c[TagNameMap[tag_cls]] = tag_cls()
 
         self.assertEqual(
             c,
-            CompoundTag({tag_name: tag_cls() for tag_cls, tag_name in Tags}),
+            CompoundTag({TagNameMap[tag_cls]: tag_cls() for tag_cls in self.nbt_types}),
         )
-
-    def test_instance(self):
-        self.assertIsInstance(CompoundTag(), AbstractBaseTag)
-        self.assertIsInstance(CompoundTag(), AbstractBaseMutableTag)
-        self.assertIsInstance(CompoundTag(), CompoundTag)
 
     def test_py_data(self):
         tag = CompoundTag()
@@ -91,6 +96,63 @@ class TestCompound(AbstractBaseTagTest.AbstractBaseTagTest):
         self.assertEqual({"byte": ByteTag()}, tag.py_dict)
 
         self.assertIsNot(tag.py_dict, tag.py_dict)
+
+    def test_copy(self):
+        with self.subTest("Shallow Copy"):
+            tag = CompoundTag(key=CompoundTag())
+            tag2 = copy.copy(tag)
+
+            # check the root data is copied
+            self.assertIsNot(tag, tag2)
+            tag["key2"] = CompoundTag()
+            self.assertNotEqual(tag, tag2)
+
+            # check the contained data is not copied
+            self.assertIs(tag.get_compound("key"), tag2.get_compound("key"))
+            tag.get_compound("key")["key2"] = ByteTag()
+            self.assertEqual(tag.get_compound("key"), tag2.get_compound("key"))
+
+        with self.subTest("Deep Copy"):
+            tag = CompoundTag(key=CompoundTag())
+            tag2 = copy.deepcopy(tag)
+
+            # check the root data is copied
+            self.assertIsNot(tag, tag2)
+            tag["key2"] = CompoundTag()
+            self.assertNotEqual(tag, tag2)
+
+            # check the contained data is copied
+            self.assertIsNot(tag.get_compound("key"), tag2.get_compound("key"))
+            tag.get_compound("key")["key2"] = ByteTag()
+            self.assertNotEqual(tag, tag2)
+            self.assertNotEqual(tag.get_compound("key"), tag2.get_compound("key"))
+
+    def test_pickle(self):
+        for cls in self.nbt_types:
+            with self.subTest(cls=cls):
+                tag = CompoundTag(key=cls())
+                dump = pickle.dumps(tag)
+                tag2 = pickle.loads(dump)
+                self.assertEqual(tag, tag2)
+
+    def test_instance(self):
+        self.assertIsInstance(CompoundTag(), AbstractBaseTag)
+        self.assertIsInstance(CompoundTag(), AbstractBaseMutableTag)
+        self.assertIsInstance(CompoundTag(), CompoundTag)
+
+    def test_hash(self):
+        with self.assertRaises(TypeError):
+            hash(CompoundTag())
+
+    def test_repr(self):
+        self.assertEqual("CompoundTag({})", repr(CompoundTag()))
+        self.assertEqual(
+            "CompoundTag({'key': ByteTag(0)})", repr(CompoundTag(key=ByteTag()))
+        )
+        self.assertEqual(
+            "CompoundTag({'key': StringTag(\"\")})",
+            repr(CompoundTag(key=StringTag())),
+        )
 
     def test_fromkeys(self):
         tag = CompoundTag.fromkeys(("a", "b"), StringTag("test"))
@@ -106,7 +168,7 @@ class TestCompound(AbstractBaseTagTest.AbstractBaseTagTest):
             CompoundTag.fromkeys(("a", "b"), None)
 
     def test_clear(self):
-        c = CompoundTag({tag_name: tag_cls() for tag_cls, tag_name in Tags})
+        c = CompoundTag({TagNameMap[tag_cls]: tag_cls() for tag_cls in self.nbt_types})
         c.clear()
         self.assertEqual(c, CompoundTag({}))
 
@@ -150,7 +212,8 @@ class TestCompound(AbstractBaseTagTest.AbstractBaseTagTest):
         self.assertIs(value, c.get("key3", value))
 
     def test_get_typed(self):
-        for cls, tag_name in Tags:
+        for cls in self.nbt_types:
+            tag_name = TagNameMap[cls]
             tag = cls()
             comp = CompoundTag(key=tag)
             with self.subTest(cls=cls):
@@ -159,12 +222,12 @@ class TestCompound(AbstractBaseTagTest.AbstractBaseTagTest):
                 with self.assertRaises(KeyError):
                     getattr(comp, f"get_{tag_name}")("key2")
                 self.assertIs(tag, getattr(comp, f"get_{tag_name}")("key2", tag))
-            for cls2, tag_name2 in Tags:
+            for cls2 in self.nbt_types:
+                tag_name2 = TagNameMap[cls2]
                 if cls is cls2:
                     continue
-                with self.subTest(cls=cls, cls2=cls2):
-                    with self.assertRaises(TypeError):
-                        getattr(comp, f"get_{tag_name2}")("key")
+                with self.subTest(cls=cls, cls2=cls2), self.assertRaises(TypeError):
+                    getattr(comp, f"get_{tag_name2}")("key")
 
     def test_pop(self):
         tag = CompoundTag(
@@ -224,7 +287,8 @@ class TestCompound(AbstractBaseTagTest.AbstractBaseTagTest):
         self.assertEqual(StringTag("val2"), c["key2"])
 
     def test_setdefault_typed(self):
-        for (cls, _), (cls2, tag_name) in itertools.product(Tags, repeat=2):
+        for cls, cls2 in itertools.product(self.nbt_types, repeat=2):
+            tag_name = TagNameMap[cls2]
             with self.subTest(cls=cls, cls2=cls2):
                 tag = cls()
                 tag2 = cls2()
@@ -373,41 +437,6 @@ class TestCompound(AbstractBaseTagTest.AbstractBaseTagTest):
         }
         c = CompoundTag(d)
         self.assertEqual(d.items(), c.items())
-
-    def test_copy(self):
-        with self.subTest("Shallow Copy"):
-            tag = CompoundTag(key=CompoundTag())
-            tag2 = copy.copy(tag)
-            tag.get_compound("key")["key2"] = ByteTag()
-            self.assertEqual(tag.get_compound("key"), tag2.get_compound("key"))
-
-        with self.subTest("Deep Copy"):
-            tag = CompoundTag(key=CompoundTag())
-            tag2 = copy.deepcopy(tag)
-            tag.get_compound("key")["key2"] = ByteTag()
-            self.assertNotEqual(tag.get_compound("key"), tag2.get_compound("key"))
-
-    def test_pickle(self):
-        for cls in self.nbt_types:
-            with self.subTest(cls=cls):
-                tag = CompoundTag(key=cls())
-                dump = pickle.dumps(tag)
-                tag2 = pickle.loads(dump)
-                self.assertEqual(tag, tag2)
-
-    def test_hash(self):
-        with self.assertRaises(TypeError):
-            hash(CompoundTag())
-
-    def test_repr(self):
-        self.assertEqual("CompoundTag({})", repr(CompoundTag()))
-        self.assertEqual(
-            "CompoundTag({'key': ByteTag(0)})", repr(CompoundTag(key=ByteTag()))
-        )
-        self.assertEqual(
-            "CompoundTag({'key': StringTag(\"\")})",
-            repr(CompoundTag(key=StringTag())),
-        )
 
     def test_len(self):
         self.assertEqual(

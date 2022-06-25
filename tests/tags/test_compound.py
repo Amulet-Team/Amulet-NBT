@@ -56,8 +56,8 @@ class TestCompound(TestWrapper.AbstractBaseTagTest):
             for ground in ({"key": cls1()}, CompoundTag({"key": cls1()})):
                 for other in (
                     CompoundTag({"key": cls2()}),
-                    CompoundTag(key=cls1()),
-                    CompoundTag((("key", cls1()),)),
+                    CompoundTag(key=cls2()),
+                    CompoundTag((("key", cls2()),)),
                 ):
                     with self.subTest(cls1=cls1, cls2=cls2, ground=ground, other=other):
                         if cls1 is cls2 and (

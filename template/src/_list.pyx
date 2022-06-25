@@ -74,7 +74,7 @@ cdef class CyListTag(AbstractBaseMutableTag):
             self.list_data_type = value.tag_id
         elif value.tag_id != self.list_data_type:
             raise TypeError(
-                f"Invalid type {value.__class__.__name__} for ListTag({self.list_data_type})"
+                f"Invalid type {value.__class__.__name__} for ListTag(list_data_type={self.list_data_type})"
             )
 
     cdef void _check_tag_iterable(CyListTag self, list value) except *:

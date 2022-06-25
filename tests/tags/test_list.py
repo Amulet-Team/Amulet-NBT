@@ -13,7 +13,7 @@ from amulet_nbt import (
     ShortTag,
 )
 
-from tests.tags.abstract_base_tag import AbstractBaseTagTest
+from tests.tags.abstract_base_tag import TestWrapper
 
 
 def is_iterable(obj):
@@ -24,7 +24,7 @@ def is_iterable(obj):
     return True
 
 
-class TestList(AbstractBaseTagTest.AbstractBaseTagTest):
+class TestList(TestWrapper.AbstractBaseTagTest):
     def test_constructor(self):
         for cls in self.nbt_types:
             with self.subTest(cls=cls):

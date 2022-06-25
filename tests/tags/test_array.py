@@ -13,10 +13,10 @@ from amulet_nbt import (
     AbstractBaseArrayTag,
 )
 
-from tests.tags.abstract_base_tag import AbstractBaseTagTest
+from tests.tags.abstract_base_tag import TestWrapper
 
 
-class TestArray(AbstractBaseTagTest.AbstractBaseTagTest):
+class TestArray(TestWrapper.AbstractBaseTagTest):
     def test_constructor(self):
         for cls in self.array_types:
             with self.subTest(cls=cls):

@@ -33,8 +33,8 @@ TagNameMap = {
 }
 
 
-class AbstractBaseTagTest:
-    class AbstractBaseTagTest(unittest.TestCase, ABC):
+class TestWrapper:
+    class AbstractBaseTest(unittest.TestCase, ABC):
         def setUp(self):
             self.int_types = (
                 ByteTag,
@@ -75,10 +75,6 @@ class AbstractBaseTagTest:
             raise NotImplementedError
 
         @abstractmethod
-        def test_py_data(self):
-            raise NotImplementedError
-
-        @abstractmethod
         def test_copy(self):
             raise NotImplementedError
 
@@ -96,6 +92,11 @@ class AbstractBaseTagTest:
 
         @abstractmethod
         def test_repr(self):
+            raise NotImplementedError
+
+    class AbstractBaseTagTest(AbstractBaseTest):
+        @abstractmethod
+        def test_py_data(self):
             raise NotImplementedError
 
 

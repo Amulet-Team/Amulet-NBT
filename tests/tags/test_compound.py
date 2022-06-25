@@ -14,10 +14,10 @@ from amulet_nbt import (
     StringTag,
 )
 
-from tests.tags.abstract_base_tag import AbstractBaseTagTest, TagNameMap
+from tests.tags.abstract_base_tag import TestWrapper, TagNameMap
 
 
-class TestCompound(AbstractBaseTagTest.AbstractBaseTagTest):
+class TestCompound(TestWrapper.AbstractBaseTagTest):
     def test_constructor(self):
         for cls in self.nbt_types:
             with self.subTest(cls=cls):

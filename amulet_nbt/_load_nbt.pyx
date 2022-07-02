@@ -67,7 +67,7 @@ cdef BufferContext get_buffer(
     )
 
 
-cdef AbstractBaseTag load_payload(BufferContext buffer, char tag_type, bint little_endian, string_decoder: DecoderType) except *:
+cdef AbstractBaseTag load_payload(BufferContext buffer, char tag_type, bint little_endian, string_decoder: DecoderType):
     if tag_type == 1:
         return read_byte_tag(buffer, little_endian)
     elif tag_type == 2:

@@ -68,7 +68,7 @@ cdef inline int read_int(BufferContext buffer, bint little_endian):
     return value
 
 
-cdef inline str read_string(BufferContext buffer, bint little_endian, string_decoder: DecoderType) except *:
+cdef inline str read_string(BufferContext buffer, bint little_endian, string_decoder: DecoderType):
     return string_decoder(read_bytes(buffer, little_endian))
 
 cdef inline bytes read_bytes(BufferContext buffer, bint little_endian):

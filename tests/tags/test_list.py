@@ -46,6 +46,9 @@ class TestList(TestWrapper.AbstractBaseTagTest):
 
                 self.assertEqual(cls.tag_id, ListTag([cls()]).list_data_type)
 
+                with self.assertRaises(TypeError):
+                    ListTag(None)
+
             for cls2 in self.nbt_types:
                 if cls is not cls2:
                     with self.subTest(cls=cls, cls2=cls2), self.assertRaises(TypeError):

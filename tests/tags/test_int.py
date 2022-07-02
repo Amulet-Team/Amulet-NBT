@@ -21,6 +21,8 @@ class TestInt(TestWrapper.AbstractBaseTagTest):
                 int_cls()
                 int_cls(5)
                 int_cls(5.0)
+                with self.assertRaises(TypeError):
+                    int_cls(None)
 
         for cls in self.nbt_types:
             tag = cls()

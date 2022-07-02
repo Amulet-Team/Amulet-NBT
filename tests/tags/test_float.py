@@ -23,6 +23,8 @@ class TestFloat(TestWrapper.AbstractBaseTagTest):
                 float_cls()
                 float_cls(5)
                 float_cls(5.0)
+                with self.assertRaises(TypeError):
+                    float_cls(None)
 
         for cls in self.nbt_types:
             tag = cls()

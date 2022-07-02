@@ -35,6 +35,9 @@ class TestCompound(TestWrapper.AbstractBaseTagTest):
                 CompoundTag(CompoundTag(key=cls()))
                 CompoundTag(CompoundTag((("key", cls()),)))
 
+                with self.assertRaises(TypeError):
+                    CompoundTag(None)
+
             for key in (None, 0, cls()):
                 with self.subTest("Key test", cls=cls, key=key):
                     with self.assertRaises(TypeError):

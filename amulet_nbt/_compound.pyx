@@ -34,7 +34,6 @@ from ._array cimport (
 )
 from ._string cimport StringTag
 from ._list cimport CyListTag
-from . import _list
 
 NON_QUOTED_KEY = re.compile('[A-Za-z0-9._+-]+')
 
@@ -77,6 +76,10 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         cdef dict dict_value = dict(value, **kwargs)
         _check_dict(dict_value)
         self.value_ = dict_value
+
+    @classmethod
+    def create(cls, object value = (), **kwargs) -> CompoundTag:
+        return CompoundTag(value, **kwargs)
 
     def __str__(CyCompoundTag self):
         return str(self.value_)
@@ -121,7 +124,6 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
     @staticmethod
     def fromkeys(object keys, AbstractBaseTag value=None):
         return CompoundTag(dict.fromkeys(keys, value))
-    fromkeys.__func__.__doc__ = dict.fromkeys.__doc__
 
     cdef str _to_snbt(CyCompoundTag self):
         cdef str name
@@ -471,7 +473,7 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         """
         val = self[key] if key in self else None
         if not isinstance(val, CyListTag):
-            val = self[key] = _list.ListTag() if default is None else default
+            val = self[key] = CyListTag.create() if default is None else default
         return val
 
     cpdef CyCompoundTag get_compound(self, str key, CyCompoundTag default=None):
@@ -623,10 +625,5 @@ cdef class CyCompoundTag(AbstractBaseMutableTag):
         return val
 
 
-if sys.version_info >= (3, 9):
-    class CompoundTag(CyCompoundTag, MutableMapping[str, AnyNBT]):
-        pass
-
-else:
-    class CompoundTag(CyCompoundTag, MutableMapping):
-        pass
+class CompoundTag(CyCompoundTag, MutableMapping):
+    pass

@@ -45,6 +45,10 @@ cdef class CyListTag(AbstractBaseMutableTag):
         self._check_tag_iterable(list_value)
         self.value_ = list_value
 
+    @classmethod
+    def create(cls, object value = (), char list_data_type = 1) -> ListTag:
+        return ListTag(value, list_data_type)
+
     def __str__(CyListTag self):
         return str(self.value_)
 
@@ -167,15 +171,7 @@ cdef class CyListTag(AbstractBaseMutableTag):
     def insert(CyListTag self, object index, AbstractBaseTag value not None):
         self._check_tag(value)
         self.value_.insert(index, value)
-    insert.__doc__ = list.insert.__doc__
 
 
-AnyNBTT = TypeVar("AnyNBTT", bound=AnyNBT)
-if sys.version_info >= (3, 9):
-    class ListTag(CyListTag, MutableSequence[AnyNBT]):
-        pass
-
-else:
-    # Before 3.9 MutableSequence was not Generic
-    class ListTag(CyListTag, Generic[AnyNBTT], MutableSequence):
-        pass
+class ListTag(CyListTag, MutableSequence):
+    pass

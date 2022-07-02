@@ -6,8 +6,8 @@ from ._int cimport ByteTag, ShortTag, IntTag, LongTag
 from ._float cimport FloatTag, DoubleTag
 from ._array cimport ByteArrayTag, IntArrayTag, LongArrayTag
 from ._string cimport StringTag
-from ._list import ListTag
-from ._compound import CompoundTag
+from ._list cimport CyListTag
+from ._compound cimport CyCompoundTag
 
 whitespace = re.compile('[ \t\r\n]*')
 int_numeric = re.compile('-?[0-9]+[bBsSlL]?')
@@ -103,7 +103,7 @@ cdef tuple _parse_snbt_recursive(unicode snbt, int index=0):
             data_[key] = nested_data
 
             index = _strip_comma(snbt, index, '}')
-        data = CompoundTag(data_)
+        data = CyCompoundTag.create(data_)
         # skip the }
         index += 1
 
@@ -154,9 +154,9 @@ cdef tuple _parse_snbt_recursive(unicode snbt, int index=0):
                 index = _strip_comma(snbt, index, ']')
 
             if first_data_type is None:
-                data = ListTag()
+                data = CyListTag.create()
             else:
-                data = ListTag(array, first_data_type().tag_id)
+                data = CyListTag.create(array, first_data_type().tag_id)
 
         # skip the ]
         index += 1

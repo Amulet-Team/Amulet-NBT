@@ -22,7 +22,6 @@ from ._array cimport (
 )
 from ._string cimport StringTag
 from ._list cimport CyListTag
-from ._compound import CompoundTag
 from ._compound cimport CyCompoundTag
 from ._dtype import EncoderType, AnyNBT
 
@@ -33,7 +32,7 @@ T = TypeVar("T")
 cdef class NamedTag(AbstractBase):
     def __init__(self, AbstractBaseTag tag = None, str name not None = ""):
         if tag is None:
-            self.tag = CompoundTag()
+            self.tag = CyCompoundTag.create()
         else:
             self.tag = tag
         self.name = name

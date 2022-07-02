@@ -2,7 +2,7 @@
 ## To edit this file edit the template in template/src
 
 from __future__ import annotations
-from typing import List
+from typing import List, TypeVar, Generic
 from io import BytesIO
 from copy import copy, deepcopy
 from collections.abc import MutableSequence
@@ -152,10 +152,12 @@ cdef class CyListTag(AbstractBaseMutableTag):
     insert.__doc__ = list.insert.__doc__
 
 
+AnyNBTT = TypeVar("AnyNBTT", bound=AnyNBT)
 if sys.version_info >= (3, 9):
     class ListTag(CyListTag, MutableSequence[AnyNBT]):
         pass
 
 else:
-    class ListTag(CyListTag, MutableSequence):
+    # Before 3.9 MutableSequence was not Generic
+    class ListTag(CyListTag, Generic[AnyNBTT], MutableSequence):
         pass

@@ -9,8 +9,6 @@ from amulet_nbt import (
     AbstractBaseImmutableTag,
     AbstractBaseNumericTag,
     AbstractBaseFloatTag,
-    FloatTag,
-    DoubleTag,
 )
 
 from tests.tags.abstract_base_tag import TestWrapper
@@ -22,7 +20,9 @@ class TestFloat(TestWrapper.AbstractBaseTagTest):
             with self.subTest(float_cls=float_cls):
                 float_cls()
                 float_cls(5)
+                float_cls(-5)
                 float_cls(5.0)
+                float_cls(-5.0)
                 with self.assertRaises(TypeError):
                     float_cls(None)
 

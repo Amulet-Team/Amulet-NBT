@@ -20,7 +20,9 @@ class TestInt(TestWrapper.AbstractBaseTagTest):
             with self.subTest(int_cls=int_cls):
                 int_cls()
                 int_cls(5)
+                int_cls(-5)
                 int_cls(5.0)
+                int_cls(-5.0)
                 with self.assertRaises(TypeError):
                     int_cls(None)
 

@@ -53,7 +53,7 @@ cdef class StringTag(AbstractBaseImmutableTag):
         return self.py_str
 
     def __repr__(StringTag self):
-        return f"{self.__class__.__name__}(\"{self.py_str}\")"
+        return f"{self.__class__.__name__}(\"{escape(self.py_str)}\")"
 
     cdef str _to_snbt(StringTag self):
         return f"\"{escape(self.py_str)}\""

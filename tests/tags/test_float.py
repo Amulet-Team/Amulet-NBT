@@ -9,6 +9,9 @@ from amulet_nbt import (
     AbstractBaseImmutableTag,
     AbstractBaseNumericTag,
     AbstractBaseFloatTag,
+    FloatTag,
+    DoubleTag,
+    from_snbt,
 )
 
 from tests.tags.abstract_base_tag import TestWrapper
@@ -124,6 +127,48 @@ class TestFloat(TestWrapper.AbstractBaseTagTest):
                 self.assertEqual(f"{cls.__name__}(0.0)", repr(cls()))
                 self.assertEqual(f"{cls.__name__}(5.5)", repr(cls(5.5)))
                 self.assertEqual(f"{cls.__name__}(-5.5)", repr(cls(-5.5)))
+
+    def test_to_snbt(self):
+        with self.subTest():
+            self.assertEqual("-5.0f", FloatTag(-5).to_snbt())
+            self.assertEqual("0.0f", FloatTag(0).to_snbt())
+            self.assertEqual("5.0f", FloatTag(5).to_snbt())
+
+        with self.subTest():
+            self.assertEqual("-5.0d", DoubleTag(-5).to_snbt())
+            self.assertEqual("0.0d", DoubleTag(0).to_snbt())
+            self.assertEqual("5.0d", DoubleTag(5).to_snbt())
+
+    def test_from_snbt(self):
+        with self.subTest():
+            self.assertStrictEqual(FloatTag(-5), from_snbt("-5.0f"))
+            self.assertStrictEqual(FloatTag(-5), from_snbt("-5.0F"))
+            self.assertStrictEqual(FloatTag(-5), from_snbt("-5f"))
+            self.assertStrictEqual(FloatTag(-5), from_snbt("-5F"))
+            self.assertStrictEqual(FloatTag(-5), from_snbt("-5.f"))
+            self.assertStrictEqual(FloatTag(-5), from_snbt("-5.F"))
+            self.assertStrictEqual(FloatTag(5), from_snbt("5.0f"))
+            self.assertStrictEqual(FloatTag(5), from_snbt("5.0F"))
+            self.assertStrictEqual(FloatTag(5), from_snbt("5f"))
+            self.assertStrictEqual(FloatTag(5), from_snbt("5F"))
+            self.assertStrictEqual(FloatTag(5), from_snbt("5.f"))
+            self.assertStrictEqual(FloatTag(5), from_snbt("5.F"))
+
+        with self.subTest():
+            self.assertStrictEqual(DoubleTag(-5), from_snbt("-5.0d"))
+            self.assertStrictEqual(DoubleTag(-5), from_snbt("-5.0D"))
+            self.assertStrictEqual(DoubleTag(-5), from_snbt("-5.0"))
+            self.assertStrictEqual(DoubleTag(-5), from_snbt("-5d"))
+            self.assertStrictEqual(DoubleTag(-5), from_snbt("-5D"))
+            self.assertStrictEqual(DoubleTag(-5), from_snbt("-5.d"))
+            self.assertStrictEqual(DoubleTag(-5), from_snbt("-5.D"))
+            self.assertStrictEqual(DoubleTag(5), from_snbt("5.0d"))
+            self.assertStrictEqual(DoubleTag(5), from_snbt("5.0D"))
+            self.assertStrictEqual(DoubleTag(5), from_snbt("5.0"))
+            self.assertStrictEqual(DoubleTag(5), from_snbt("5d"))
+            self.assertStrictEqual(DoubleTag(5), from_snbt("5D"))
+            self.assertStrictEqual(DoubleTag(5), from_snbt("5.d"))
+            self.assertStrictEqual(DoubleTag(5), from_snbt("5.D"))
 
     def test_numerical_operators(self):
         for cls1, cls2 in itertools.product(self.float_types, repeat=2):

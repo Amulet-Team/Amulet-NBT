@@ -19,6 +19,8 @@ from amulet_nbt import (
     ByteArrayTag,
     IntArrayTag,
     LongArrayTag,
+    from_snbt,
+    SNBTParseError,
 )
 
 from tests.tags.abstract_base_tag import TestWrapper
@@ -345,6 +347,56 @@ class TestList(TestWrapper.AbstractBaseTagTest):
                 )
             ),
         )
+
+    def test_to_snbt(self):
+        self.assertEqual("[]", ListTag().to_snbt())
+
+        for cls in self.nbt_types:
+            with self.subTest(cls=cls):
+                tag = cls()
+                self.assertEqual(f"[{tag.to_snbt()}]", ListTag([tag]).to_snbt())
+                self.assertEqual(
+                    f"[{tag.to_snbt()}, {tag.to_snbt()}]", ListTag([tag, tag]).to_snbt()
+                )
+
+    def test_from_snbt(self):
+        with self.subTest("Formatting"):
+            self.assertEqual(ListTag(), from_snbt("[]"))
+            self.assertEqual(ListTag([IntTag(5)]), from_snbt("[5]"))
+            self.assertEqual(ListTag([IntTag(5)]), from_snbt("[5,]"))
+            self.assertEqual(ListTag([IntTag(5)]), from_snbt("[  5  ]"))
+            self.assertEqual(ListTag([IntTag(5)]), from_snbt("[  5  ,  ]"))
+
+            self.assertEqual(ListTag([IntTag(5), IntTag(-5)]), from_snbt("[5, -5]"))
+            self.assertEqual(ListTag([IntTag(5), IntTag(-5)]), from_snbt("[5, -5, ]"))
+            self.assertEqual(ListTag([IntTag(5), IntTag(-5)]), from_snbt("[5,-5]"))
+            self.assertEqual(ListTag([IntTag(5), IntTag(-5)]), from_snbt("[5,-5,]"))
+            self.assertEqual(
+                ListTag([IntTag(5), IntTag(-5)]), from_snbt("[  5  ,  -5  ]")
+            )
+            self.assertEqual(
+                ListTag([IntTag(5), IntTag(-5)]), from_snbt("[  5  ,  -5  ,  ]")
+            )
+
+        for cls in self.nbt_types:
+            with self.subTest(cls=cls):
+                tag = cls()
+                self.assertEqual(ListTag([tag]), from_snbt(f"[{tag.to_snbt()}]"))
+                self.assertEqual(
+                    ListTag([tag, tag]),
+                    from_snbt(f"[{tag.to_snbt()}, {tag.to_snbt()}]"),
+                )
+
+        with self.assertRaises(SNBTParseError):
+            from_snbt("[")
+        with self.assertRaises(SNBTParseError):
+            from_snbt("]")
+        with self.assertRaises(SNBTParseError):
+            from_snbt("[,]")
+        with self.assertRaises(SNBTParseError):
+            from_snbt("[,1]")
+        with self.assertRaises(SNBTParseError):
+            from_snbt("[1 1]")
 
     def test_append(self):
         for cls1 in self.nbt_types:

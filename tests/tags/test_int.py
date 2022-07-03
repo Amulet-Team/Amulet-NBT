@@ -9,6 +9,11 @@ from amulet_nbt import (
     AbstractBaseImmutableTag,
     AbstractBaseNumericTag,
     AbstractBaseIntTag,
+    ByteTag,
+    ShortTag,
+    IntTag,
+    LongTag,
+    from_snbt,
 )
 
 from tests.tags.abstract_base_tag import TestWrapper
@@ -123,6 +128,61 @@ class TestInt(TestWrapper.AbstractBaseTagTest):
             for v in (-5, 0, 5):
                 with self.subTest(cls=cls, v=v):
                     self.assertEqual(f"{cls.__name__}({v})", repr(cls(v)))
+
+    def test_to_snbt(self):
+        with self.subTest():
+            self.assertEqual("-5b", ByteTag(-5).to_snbt())
+            self.assertEqual("0b", ByteTag(0).to_snbt())
+            self.assertEqual("5b", ByteTag(5).to_snbt())
+
+        with self.subTest():
+            self.assertEqual("-5s", ShortTag(-5).to_snbt())
+            self.assertEqual("0s", ShortTag(0).to_snbt())
+            self.assertEqual("5s", ShortTag(5).to_snbt())
+
+        with self.subTest():
+            self.assertEqual("-5", IntTag(-5).to_snbt())
+            self.assertEqual("0", IntTag(0).to_snbt())
+            self.assertEqual("5", IntTag(5).to_snbt())
+
+        with self.subTest():
+            self.assertEqual("-5L", LongTag(-5).to_snbt())
+            self.assertEqual("0L", LongTag(0).to_snbt())
+            self.assertEqual("5L", LongTag(5).to_snbt())
+
+    def test_from_snbt(self):
+        with self.subTest():
+            self.assertStrictEqual(ByteTag(-5), from_snbt("-5b"))
+            self.assertStrictEqual(ByteTag(-5), from_snbt("-5B"))
+            self.assertStrictEqual(ByteTag(0), from_snbt("0b"))
+            self.assertStrictEqual(ByteTag(0), from_snbt("0B"))
+            self.assertStrictEqual(ByteTag(0), from_snbt("false"))
+            self.assertStrictEqual(ByteTag(0), from_snbt("False"))
+            self.assertStrictEqual(ByteTag(1), from_snbt("true"))
+            self.assertStrictEqual(ByteTag(1), from_snbt("True"))
+            self.assertStrictEqual(ByteTag(5), from_snbt("5b"))
+            self.assertStrictEqual(ByteTag(5), from_snbt("5B"))
+
+        with self.subTest():
+            self.assertStrictEqual(ShortTag(-5), from_snbt("-5s"))
+            self.assertStrictEqual(ShortTag(-5), from_snbt("-5S"))
+            self.assertStrictEqual(ShortTag(0), from_snbt("0s"))
+            self.assertStrictEqual(ShortTag(0), from_snbt("0S"))
+            self.assertStrictEqual(ShortTag(5), from_snbt("5s"))
+            self.assertStrictEqual(ShortTag(5), from_snbt("5S"))
+
+        with self.subTest():
+            self.assertStrictEqual(IntTag(-5), from_snbt("-5"))
+            self.assertStrictEqual(IntTag(0), from_snbt("0"))
+            self.assertStrictEqual(IntTag(5), from_snbt("5"))
+
+        with self.subTest():
+            self.assertStrictEqual(LongTag(-5), from_snbt("-5l"))
+            self.assertStrictEqual(LongTag(-5), from_snbt("-5L"))
+            self.assertStrictEqual(LongTag(0), from_snbt("0l"))
+            self.assertStrictEqual(LongTag(0), from_snbt("0L"))
+            self.assertStrictEqual(LongTag(5), from_snbt("5l"))
+            self.assertStrictEqual(LongTag(5), from_snbt("5L"))
 
     def test_numerical_operators(self):
         for cls1, cls2 in itertools.product(self.int_types, repeat=2):

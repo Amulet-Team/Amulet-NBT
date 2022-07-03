@@ -21,9 +21,26 @@ from amulet_nbt import (
     ByteArrayTag,
     IntArrayTag,
     LongArrayTag,
+    from_snbt,
+    SNBTParseError,
 )
 
 from tests.tags.abstract_base_tag import TestWrapper, TagNameMap
+
+FullCompound = CompoundTag(
+    byte=ByteTag(),
+    short=ShortTag(),
+    int=IntTag(),
+    long=LongTag(),
+    float=FloatTag(),
+    double=DoubleTag(),
+    string=StringTag(),
+    list=ListTag(),
+    compound=CompoundTag(),
+    byte_array=ByteArrayTag(),
+    int_array=IntArrayTag(),
+    long_array=LongArrayTag(),
+)
 
 
 class TestCompound(TestWrapper.AbstractBaseTagTest):
@@ -322,6 +339,69 @@ class TestCompound(TestWrapper.AbstractBaseTagTest):
             ),
             "CompoundTag({'b': LongArrayTag([-3, -2, -1, 0, 1, 2, 3]), 'a': LongArrayTag([-3, -2, -1, 0, 1, 2, 3])})",
         )
+
+    def test_to_snbt(self):
+        self.assertEqual("{}", CompoundTag().to_snbt())
+        self.assertEqual("{key: 0b}", CompoundTag(key=ByteTag()).to_snbt())
+        self.assertEqual("{key: 0s}", CompoundTag(key=ShortTag()).to_snbt())
+        self.assertEqual("{key: 0}", CompoundTag(key=IntTag()).to_snbt())
+        self.assertEqual("{key: 0L}", CompoundTag(key=LongTag()).to_snbt())
+        self.assertEqual("{key: 0.0f}", CompoundTag(key=FloatTag()).to_snbt())
+        self.assertEqual("{key: 0.0d}", CompoundTag(key=DoubleTag()).to_snbt())
+        self.assertEqual('{key: ""}', CompoundTag(key=StringTag()).to_snbt())
+        self.assertEqual("{key: []}", CompoundTag(key=ListTag()).to_snbt())
+        self.assertEqual("{key: {}}", CompoundTag(key=CompoundTag()).to_snbt())
+        self.assertEqual("{key: [B;]}", CompoundTag(key=ByteArrayTag()).to_snbt())
+        self.assertEqual("{key: [I;]}", CompoundTag(key=IntArrayTag()).to_snbt())
+        self.assertEqual("{key: [L;]}", CompoundTag(key=LongArrayTag()).to_snbt())
+        self.assertEqual(
+            '{byte: 0b, byte_array: [B;], compound: {}, double: 0.0d, float: 0.0f, int: 0, int_array: [I;], list: [], long: 0L, long_array: [L;], short: 0s, string: ""}',
+            FullCompound.to_snbt(),
+        )
+        self.assertEqual(
+            "{\n"
+            '\t"byte": 0b,\n'
+            '\t"byte_array": [B;],\n'
+            '\t"compound": {},\n'
+            '\t"double": 0.0d,\n'
+            '\t"float": 0.0f,\n'
+            '\t"int": 0,\n'
+            '\t"int_array": [I;],\n'
+            '\t"list": [],\n'
+            '\t"long": 0L,\n'
+            '\t"long_array": [L;],\n'
+            '\t"short": 0s,\n'
+            '\t"string": ""\n'
+            "}",
+            FullCompound.to_snbt("\t"),
+        )
+
+    def test_from_snbt(self):
+        self.assertStrictEqual(CompoundTag(), from_snbt("{}"))
+
+        with self.subTest("Formatting"):
+            self.assertStrictEqual(CompoundTag({"1": IntTag(5)}), from_snbt("{1: 5}"))
+            self.assertStrictEqual(CompoundTag({"1": IntTag(5)}), from_snbt('{"1": 5}'))
+            self.assertStrictEqual(CompoundTag({"1": IntTag(5)}), from_snbt("{'1': 5}"))
+            self.assertStrictEqual(
+                CompoundTag({"1": IntTag(5)}), from_snbt("{  '1'  :  5  }")
+            )
+            self.assertStrictEqual(
+                CompoundTag({"1": IntTag(5)}), from_snbt("\n{ \n '1' \n : \n 5 \n }\n")
+            )
+
+        with self.assertRaises(SNBTParseError):
+            from_snbt("{")
+        with self.assertRaises(SNBTParseError):
+            from_snbt("}")
+        with self.assertRaises(SNBTParseError):
+            from_snbt("{a:}")
+        with self.assertRaises(SNBTParseError):
+            from_snbt("{a 5}")
+        with self.assertRaises(SNBTParseError):
+            from_snbt("{a:5, b:}")
+        with self.assertRaises(SNBTParseError):
+            from_snbt("{a:5 b:6}")
 
     def test_fromkeys(self):
         tag = CompoundTag.fromkeys(("a", "b"), StringTag("test"))

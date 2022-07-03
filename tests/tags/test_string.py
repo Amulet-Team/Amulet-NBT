@@ -1,12 +1,15 @@
 import unittest
 import copy
 import pickle
+from string import ascii_lowercase, ascii_uppercase, digits
 
 from amulet_nbt import (
     __major__,
     AbstractBaseTag,
     AbstractBaseImmutableTag,
     StringTag,
+    from_snbt,
+    SNBTParseError,
 )
 
 from tests.tags.abstract_base_tag import TestWrapper
@@ -67,6 +70,78 @@ class TestString(TestWrapper.AbstractBaseTagTest):
         self.assertEqual('StringTag("value")', repr(StringTag("value")))
         self.assertEqual('StringTag("quote\\"value")', repr(StringTag('quote"value')))
         self.assertEqual('StringTag("quote\'value")', repr(StringTag("quote'value")))
+
+    def test_to_snbt(self):
+        self.assertEqual('""', StringTag().to_snbt())
+        self.assertEqual('"value"', StringTag("value").to_snbt())
+        self.assertEqual('"quote\\"value"', StringTag('quote"value').to_snbt())
+        self.assertEqual('"quote\'value"', StringTag("quote'value").to_snbt())
+
+    def test_from_snbt(self):
+        self.assertStrictEqual(StringTag(), from_snbt("''"))
+        self.assertStrictEqual(StringTag(), from_snbt('""'))
+
+        self.assertStrictEqual(StringTag('a"b'), from_snbt('"a\\"b"'))
+        self.assertStrictEqual(StringTag('a"b'), from_snbt("'a\"b'"))
+
+        self.assertStrictEqual(StringTag(ascii_lowercase), from_snbt(ascii_lowercase))
+        self.assertStrictEqual(
+            StringTag(ascii_lowercase), from_snbt(f"'{ascii_lowercase}'")
+        )
+        self.assertStrictEqual(
+            StringTag(ascii_lowercase), from_snbt(f'"{ascii_lowercase}"')
+        )
+
+        self.assertStrictEqual(StringTag(ascii_uppercase), from_snbt(ascii_uppercase))
+        self.assertStrictEqual(
+            StringTag(ascii_uppercase), from_snbt(f"'{ascii_uppercase}'")
+        )
+        self.assertStrictEqual(
+            StringTag(ascii_uppercase), from_snbt(f'"{ascii_uppercase}"')
+        )
+
+        self.assertStrictEqual(StringTag(digits), from_snbt(f"'{digits}'"))
+        self.assertStrictEqual(StringTag(digits), from_snbt(f'"{digits}"'))
+
+        self.assertStrictEqual(
+            StringTag(digits + ascii_lowercase), from_snbt(digits + ascii_lowercase)
+        )
+        self.assertStrictEqual(
+            StringTag(digits + ascii_lowercase),
+            from_snbt(f"'{digits + ascii_lowercase}'"),
+        )
+        self.assertStrictEqual(
+            StringTag(digits + ascii_lowercase),
+            from_snbt(f'"{digits + ascii_lowercase}"'),
+        )
+
+        self.assertStrictEqual(
+            StringTag(ascii_lowercase + digits), from_snbt(ascii_lowercase + digits)
+        )
+        self.assertStrictEqual(
+            StringTag(ascii_lowercase + digits),
+            from_snbt(f"'{ascii_lowercase + digits}'"),
+        )
+        self.assertStrictEqual(
+            StringTag(ascii_lowercase + digits),
+            from_snbt(f'"{ascii_lowercase + digits}"'),
+        )
+
+        self.assertStrictEqual(
+            StringTag(ascii_uppercase + ascii_lowercase + digits + "._+-"),
+            from_snbt(ascii_uppercase + ascii_lowercase + digits + "._+-"),
+        )
+        self.assertStrictEqual(
+            StringTag(ascii_uppercase + ascii_lowercase + digits + "._+-"),
+            from_snbt(f"'{ascii_uppercase + ascii_lowercase + digits + '._+-'}'"),
+        )
+        self.assertStrictEqual(
+            StringTag(ascii_uppercase + ascii_lowercase + digits + "._+-"),
+            from_snbt(f'"{ascii_uppercase + ascii_lowercase + digits + "._+-"}"'),
+        )
+
+        with self.assertRaises(SNBTParseError):
+            from_snbt("")
 
     def test_comp(self):
         self.assertFalse(StringTag("val1") < StringTag("val0"))

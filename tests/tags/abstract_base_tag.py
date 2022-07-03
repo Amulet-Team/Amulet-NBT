@@ -94,9 +94,21 @@ class TestWrapper:
         def test_repr(self):
             raise NotImplementedError
 
+        def assertStrictEqual(self, a, b):
+            self.assertIs(a.__class__, b.__class__, msg="Classes do not match")
+            self.assertEqual(a, b)
+
     class AbstractBaseTagTest(AbstractBaseTest):
         @abstractmethod
         def test_py_data(self):
+            raise NotImplementedError
+
+        @abstractmethod
+        def test_to_snbt(self):
+            raise NotImplementedError
+
+        @abstractmethod
+        def test_from_snbt(self):
             raise NotImplementedError
 
 

@@ -7,10 +7,18 @@ from amulet_nbt import (
     __major__,
     AbstractBaseTag,
     AbstractBaseMutableTag,
-    StringTag,
-    ListTag,
     ByteTag,
     ShortTag,
+    IntTag,
+    LongTag,
+    FloatTag,
+    DoubleTag,
+    StringTag,
+    ListTag,
+    CompoundTag,
+    ByteArrayTag,
+    IntArrayTag,
+    LongArrayTag,
 )
 
 from tests.tags.abstract_base_tag import TestWrapper
@@ -143,11 +151,199 @@ class TestList(TestWrapper.AbstractBaseTagTest):
             hash(ListTag())
 
     def test_repr(self):
+        # empty list
         self.assertEqual("ListTag([], 1)", repr(ListTag()))
+
+        # byte tag list
         self.assertEqual("ListTag([ByteTag(0)], 1)", repr(ListTag([ByteTag()])))
+        self.assertEqual("ListTag([ByteTag(-5)], 1)", repr(ListTag([ByteTag(-5)])))
         self.assertEqual(
-            'ListTag([StringTag("")], 8)',
-            repr(ListTag([StringTag()])),
+            "ListTag([ByteTag(-5), ByteTag(-5)], 1)",
+            repr(ListTag([ByteTag(-5), ByteTag(-5)])),
+        )
+        self.assertEqual(
+            "ListTag([ByteTag(5)], 1)",
+            repr(ListTag([ByteTag(5)])),
+        )
+        self.assertEqual(
+            "ListTag([ByteTag(5), ByteTag(5)], 1)",
+            repr(ListTag([ByteTag(5), ByteTag(5)])),
+        )
+
+        # short tag list
+        self.assertEqual("ListTag([ShortTag(0)], 2)", repr(ListTag([ShortTag()])))
+        self.assertEqual(
+            "ListTag([ShortTag(-5)], 2)",
+            repr(ListTag([ShortTag(-5)])),
+        )
+        self.assertEqual(
+            "ListTag([ShortTag(-5), ShortTag(-5)], 2)",
+            repr(ListTag([ShortTag(-5), ShortTag(-5)])),
+        )
+        self.assertEqual(
+            "ListTag([ShortTag(5)], 2)",
+            repr(ListTag([ShortTag(5)])),
+        )
+        self.assertEqual(
+            "ListTag([ShortTag(5), ShortTag(5)], 2)",
+            repr(ListTag([ShortTag(5), ShortTag(5)])),
+        )
+
+        # int tag list
+        self.assertEqual("ListTag([IntTag(0)], 3)", repr(ListTag([IntTag()])))
+        self.assertEqual(
+            "ListTag([IntTag(-5)], 3)",
+            repr(ListTag([IntTag(-5)])),
+        )
+        self.assertEqual(
+            "ListTag([IntTag(-5), IntTag(-5)], 3)",
+            repr(ListTag([IntTag(-5), IntTag(-5)])),
+        )
+        self.assertEqual(
+            "ListTag([IntTag(5)], 3)",
+            repr(ListTag([IntTag(5)])),
+        )
+        self.assertEqual(
+            "ListTag([IntTag(5), IntTag(5)], 3)",
+            repr(ListTag([IntTag(5), IntTag(5)])),
+        )
+
+        # long tag list
+        self.assertEqual("ListTag([LongTag(0)], 4)", repr(ListTag([LongTag()])))
+        self.assertEqual(
+            "ListTag([LongTag(-5)], 4)",
+            repr(ListTag([LongTag(-5)])),
+        )
+        self.assertEqual(
+            "ListTag([LongTag(-5), LongTag(-5)], 4)",
+            repr(ListTag([LongTag(-5), LongTag(-5)])),
+        )
+        self.assertEqual(
+            "ListTag([LongTag(5)], 4)",
+            repr(ListTag([LongTag(5)])),
+        )
+        self.assertEqual(
+            "ListTag([LongTag(5), LongTag(5)], 4)",
+            repr(ListTag([LongTag(5), LongTag(5)])),
+        )
+
+        # float tag list
+        self.assertEqual("ListTag([FloatTag(0.0)], 5)", repr(ListTag([FloatTag()])))
+        self.assertEqual(
+            "ListTag([FloatTag(-5.0)], 5)",
+            repr(ListTag([FloatTag(-5)])),
+        )
+        self.assertEqual(
+            "ListTag([FloatTag(-5.0), FloatTag(-5.0)], 5)",
+            repr(ListTag([FloatTag(-5), FloatTag(-5)])),
+        )
+        self.assertEqual(
+            "ListTag([FloatTag(5.0)], 5)",
+            repr(ListTag([FloatTag(5)])),
+        )
+        self.assertEqual(
+            "ListTag([FloatTag(5.0), FloatTag(5.0)], 5)",
+            repr(ListTag([FloatTag(5), FloatTag(5)])),
+        )
+
+        # double tag list
+        self.assertEqual("ListTag([DoubleTag(0.0)], 6)", repr(ListTag([DoubleTag()])))
+        self.assertEqual(
+            "ListTag([DoubleTag(-5.0)], 6)",
+            repr(ListTag([DoubleTag(-5)])),
+        )
+        self.assertEqual(
+            "ListTag([DoubleTag(-5.0), DoubleTag(-5.0)], 6)",
+            repr(ListTag([DoubleTag(-5), DoubleTag(-5)])),
+        )
+        self.assertEqual(
+            "ListTag([DoubleTag(5.0)], 6)",
+            repr(ListTag([DoubleTag(5)])),
+        )
+        self.assertEqual(
+            "ListTag([DoubleTag(5.0), DoubleTag(5.0)], 6)",
+            repr(ListTag([DoubleTag(5), DoubleTag(5)])),
+        )
+
+        # byte array tag list
+        self.assertEqual(
+            "ListTag([ByteArrayTag([-3, -2, -1, 0, 1, 2, 3])], 7)",
+            repr(ListTag([ByteArrayTag([-3, -2, -1, 0, 1, 2, 3])])),
+        )
+        self.assertEqual(
+            "ListTag([ByteArrayTag([-3, -2, -1, 0, 1, 2, 3]), ByteArrayTag([-3, -2, -1, 0, 1, 2, 3])], 7)",
+            repr(
+                ListTag(
+                    [
+                        ByteArrayTag([-3, -2, -1, 0, 1, 2, 3]),
+                        ByteArrayTag([-3, -2, -1, 0, 1, 2, 3]),
+                    ]
+                )
+            ),
+        )
+
+        # string tag list
+        self.assertEqual(
+            'ListTag([StringTag("value")], 8)',
+            repr(ListTag([StringTag("value")])),
+        )
+        self.assertEqual(
+            'ListTag([StringTag("value"), StringTag("value")], 8)',
+            repr(ListTag([StringTag("value"), StringTag("value")])),
+        )
+
+        # list tag list
+        self.assertEqual(
+            "ListTag([ListTag([], 1)], 9)",
+            repr(ListTag([ListTag([])])),
+        )
+        self.assertEqual(
+            "ListTag([ListTag([], 1), ListTag([], 1)], 9)",
+            repr(ListTag([ListTag([]), ListTag([])])),
+        )
+
+        # compound tag list
+        self.assertEqual(
+            "ListTag([CompoundTag({})], 10)",
+            repr(ListTag([CompoundTag({})])),
+        )
+        self.assertEqual(
+            "ListTag([CompoundTag({}), CompoundTag({})], 10)",
+            repr(ListTag([CompoundTag({}), CompoundTag({})])),
+        )
+
+        # int array tag list
+        self.assertEqual(
+            "ListTag([IntArrayTag([-3, -2, -1, 0, 1, 2, 3])], 11)",
+            repr(ListTag([IntArrayTag([-3, -2, -1, 0, 1, 2, 3])])),
+        )
+        self.assertEqual(
+            "ListTag([IntArrayTag([-3, -2, -1, 0, 1, 2, 3]), IntArrayTag([-3, -2, -1, 0, 1, 2, 3])], 11)",
+            repr(
+                ListTag(
+                    [
+                        IntArrayTag([-3, -2, -1, 0, 1, 2, 3]),
+                        IntArrayTag([-3, -2, -1, 0, 1, 2, 3]),
+                    ]
+                )
+            ),
+        )
+
+        # long array tag list
+        self.assertEqual(
+            "ListTag([LongArrayTag([-3, -2, -1, 0, 1, 2, 3])], 12)",
+            repr(ListTag([LongArrayTag([-3, -2, -1, 0, 1, 2, 3])])),
+        )
+        self.assertEqual(
+            "ListTag([LongArrayTag([-3, -2, -1, 0, 1, 2, 3]), LongArrayTag([-3, -2, -1, 0, 1, 2, 3])], 12)",
+            repr(
+                ListTag(
+                    [
+                        LongArrayTag([-3, -2, -1, 0, 1, 2, 3]),
+                        LongArrayTag([-3, -2, -1, 0, 1, 2, 3]),
+                    ]
+                )
+            ),
         )
 
     def test_append(self):

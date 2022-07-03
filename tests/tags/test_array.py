@@ -130,7 +130,10 @@ class TestArray(TestWrapper.AbstractBaseTagTest):
         for cls in self.array_types:
             with self.subTest(cls=cls):
                 self.assertEqual(f"{cls.__name__}([])", repr(cls()))
-                self.assertEqual(f"{cls.__name__}([1, 2, 3])", repr(cls([1, 2, 3])))
+                self.assertEqual(
+                    f"{cls.__name__}([-3, -2, -1, 0, 1, 2, 3])",
+                    repr(cls([-3, -2, -1, 0, 1, 2, 3])),
+                )
 
     def test_len(self):
         for cls in self.array_types:

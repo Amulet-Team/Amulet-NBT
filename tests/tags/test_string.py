@@ -63,6 +63,7 @@ class TestString(TestWrapper.AbstractBaseTagTest):
         self.assertNotEqual(hash(StringTag("value")), hash(StringTag("value2")))
 
     def test_repr(self):
+        self.assertEqual('StringTag("")', repr(StringTag()))
         self.assertEqual('StringTag("value")', repr(StringTag("value")))
         self.assertEqual('StringTag("quote\\"value")', repr(StringTag('quote"value')))
         self.assertEqual('StringTag("quote\'value")', repr(StringTag("quote'value")))

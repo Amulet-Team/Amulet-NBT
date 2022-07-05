@@ -8,9 +8,9 @@ from tests.binary_data import binary_data_tuple
 class NBTTests(unittest.TestCase):
     def _load(self, b: bytes, little_endian: bool = False):
         b_copy = copy(b)
-        named_tag = amulet_nbt.load_one(b_copy, little_endian=little_endian)
+        named_tag = amulet_nbt.load(b_copy, little_endian=little_endian)
         self.assertEqual(b, b_copy, msg="The buffer changed.")
-        named_tag2 = amulet_nbt.load_one(b_copy, little_endian=little_endian)
+        named_tag2 = amulet_nbt.load(b_copy, little_endian=little_endian)
         self.assertEqual(named_tag.name, named_tag2.name)
         self.assertEqual(named_tag.tag, named_tag2.tag)
         return named_tag
@@ -25,7 +25,7 @@ class NBTTests(unittest.TestCase):
         for data in binary_data_tuple:
             self.assertEqual(
                 data.named_tag,
-                amulet_nbt.load_one(data.big_endian_compressed),
+                amulet_nbt.load(data.big_endian_compressed),
                 msg=str(data.named_tag),
             )
 
@@ -41,7 +41,7 @@ class NBTTests(unittest.TestCase):
         for data in binary_data_tuple:
             self.assertEqual(
                 data.named_tag,
-                amulet_nbt.load_one(data.little_endian_compressed, little_endian=True),
+                amulet_nbt.load(data.little_endian_compressed, little_endian=True),
                 msg=str(data.named_tag),
             )
 

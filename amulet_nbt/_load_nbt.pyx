@@ -114,7 +114,7 @@ cdef class ReadContext:
         self.offset = 0
 
 
-def load_one(
+def _load_one(
     object filepath_or_buffer: Union[str, bytes, BinaryIO, None],
     *,
     bint compressed: bool=True,
@@ -124,7 +124,7 @@ def load_one(
 ) -> NamedTag:
     cdef BufferContext buffer = get_buffer(filepath_or_buffer, compressed)
     if buffer.size < 1:
-        raise EOFError("load_one() was supplied an empty buffer")
+        raise EOFError("buffer is empty")
     cdef NamedTag tag = load_named_tag(buffer, little_endian, string_decoder)
     if read_context is not None:
         read_context.offset = buffer.offset
@@ -144,7 +144,7 @@ def load_many(
         raise ValueError("Count must be 1 or more.")
     cdef BufferContext buffer = get_buffer(filepath_or_buffer, compressed)
     if buffer.size < 1:
-        raise EOFError("load_many() was supplied an empty buffer")
+        raise EOFError("buffer is empty")
     cdef list results = []
     cdef size_t i
     for i in range(count):
@@ -158,23 +158,32 @@ def load_many(
 
 def load(
     object filepath_or_buffer: Union[str, bytes, BinaryIO, None],
+    *args,
     bint compressed: bool=True,
     object count: int = None,
     bint offset: bool = False,
     bint little_endian: bool = False,
-    *,
-    string_decoder: DecoderType = decode_modified_utf8
+    string_decoder: DecoderType = decode_modified_utf8,
+    ReadContext read_context = None,
 ) -> Union[NamedTag, Tuple[Union[NamedTag, List[NamedTag]], int]]:
-    warnings.warn("load is depreciated. Use load_one or load_many", DeprecationWarning)
-    if offset:
+    if args:
+        warnings.warn("load arguments are going to be keyword only in the future. This function passes the inputs positionally.", FutureWarning)
+        compressed, *args = args
+        if args:
+            count, *args = args
+        if args:
+            offset, *args = args
+        if args:
+            little_endian, *args = args
+
+    if offset and read_context is None:
+        warnings.warn("load with offset is depreciated. In future versions this function will only return the result. To get the offset pass a ReadContext instance to read_context input.", FutureWarning)
         read_context = ReadContext()
-    else:
-        read_context = None
 
     cdef object result
 
     if count is None:
-        result = load_one(
+        result = _load_one(
             filepath_or_buffer,
             compressed=compressed,
             little_endian=little_endian,
@@ -182,6 +191,7 @@ def load(
             string_decoder=string_decoder
         )
     else:
+        warnings.warn("load with count is depreciated. Use load_many", DeprecationWarning)
         result = load_many(
             filepath_or_buffer,
             count=count,

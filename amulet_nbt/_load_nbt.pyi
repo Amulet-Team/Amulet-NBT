@@ -6,13 +6,13 @@ from ._named_tag import NamedTag
 class ReadContext:
     offset: int
 
-def load_one(
+def load(
     filepath_or_buffer: Union[str, bytes, BinaryIO, None],
     *,
     compressed: bool = True,
     little_endian: bool = False,
     read_context: ReadContext = None,
-    string_decoder: DecoderType = decode_modified_utf8
+    string_decoder: DecoderType = decode_modified_utf8,
 ) -> NamedTag: ...
 def load_many(
     filepath_or_buffer: Union[str, bytes, BinaryIO, None],
@@ -21,5 +21,5 @@ def load_many(
     compressed: bool = True,
     little_endian: bool = False,
     read_context: ReadContext = None,
-    string_decoder: DecoderType = decode_modified_utf8
+    string_decoder: DecoderType = decode_modified_utf8,
 ) -> List[NamedTag]: ...

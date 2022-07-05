@@ -1,6 +1,6 @@
 import os
 import unittest
-from amulet_nbt import CompoundTag, load_one, from_snbt, NamedTag
+from amulet_nbt import CompoundTag, load, from_snbt, NamedTag
 
 TESTS_DIR = os.path.dirname(__file__)
 DATA_DIR = os.path.join(TESTS_DIR, "src")
@@ -21,17 +21,17 @@ class FileNBTTests(unittest.TestCase):
         self._groups = (
             (
                 "big_endian_compressed_nbt",
-                lambda path_: load_one(path_, compressed=True, little_endian=False),
+                lambda path_: load(path_, compressed=True, little_endian=False),
                 lambda obj_: obj_.save_to(compressed=True, little_endian=False),
             ),
             (
                 "big_endian_nbt",
-                lambda path_: load_one(path_, compressed=False, little_endian=False),
+                lambda path_: load(path_, compressed=False, little_endian=False),
                 lambda obj_: obj_.save_to(compressed=False, little_endian=False),
             ),
             (
                 "little_endian_nbt",
-                lambda path_: load_one(path_, compressed=False, little_endian=True),
+                lambda path_: load(path_, compressed=False, little_endian=True),
                 lambda obj_: obj_.save_to(compressed=False, little_endian=True),
             ),
             (

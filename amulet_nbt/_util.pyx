@@ -137,7 +137,7 @@ cpdef bytes utf8_encoder(str s):
 
 def _escape_replace(err):
     if isinstance(err, UnicodeDecodeError):
-        return f"␛x{err.object[err.start]:02X}", err.start+1
+        return f"␛x{err.object[err.start]:02x}", err.start+1
     raise err
 
 

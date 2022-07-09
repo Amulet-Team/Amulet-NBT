@@ -172,6 +172,138 @@ cdef class CyListTag(AbstractBaseMutableTag):
         self._check_tag(value)
         self.value_.insert(index, value)
 
+    cpdef ByteTag get_byte(self, int index):
+        """Get the tag at index if it is a ByteTag.
+    
+        :param index: The index to get
+        :return: The ByteTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a ByteTag
+        """
+        cdef ByteTag tag = self[index]
+        return tag
+
+    cpdef ShortTag get_short(self, int index):
+        """Get the tag at index if it is a ShortTag.
+    
+        :param index: The index to get
+        :return: The ShortTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a ShortTag
+        """
+        cdef ShortTag tag = self[index]
+        return tag
+
+    cpdef IntTag get_int(self, int index):
+        """Get the tag at index if it is a IntTag.
+    
+        :param index: The index to get
+        :return: The IntTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a IntTag
+        """
+        cdef IntTag tag = self[index]
+        return tag
+
+    cpdef LongTag get_long(self, int index):
+        """Get the tag at index if it is a LongTag.
+    
+        :param index: The index to get
+        :return: The LongTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a LongTag
+        """
+        cdef LongTag tag = self[index]
+        return tag
+
+    cpdef FloatTag get_float(self, int index):
+        """Get the tag at index if it is a FloatTag.
+    
+        :param index: The index to get
+        :return: The FloatTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a FloatTag
+        """
+        cdef FloatTag tag = self[index]
+        return tag
+
+    cpdef DoubleTag get_double(self, int index):
+        """Get the tag at index if it is a DoubleTag.
+    
+        :param index: The index to get
+        :return: The DoubleTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a DoubleTag
+        """
+        cdef DoubleTag tag = self[index]
+        return tag
+
+    cpdef StringTag get_string(self, int index):
+        """Get the tag at index if it is a StringTag.
+    
+        :param index: The index to get
+        :return: The StringTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a StringTag
+        """
+        cdef StringTag tag = self[index]
+        return tag
+
+    cpdef CyListTag get_list(self, int index):
+        """Get the tag at index if it is a CyListTag.
+    
+        :param index: The index to get
+        :return: The CyListTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a CyListTag
+        """
+        cdef CyListTag tag = self[index]
+        return tag
+
+    cpdef CyCompoundTag get_compound(self, int index):
+        """Get the tag at index if it is a CyCompoundTag.
+    
+        :param index: The index to get
+        :return: The CyCompoundTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a CyCompoundTag
+        """
+        cdef CyCompoundTag tag = self[index]
+        return tag
+
+    cpdef ByteArrayTag get_byte_array(self, int index):
+        """Get the tag at index if it is a ByteArrayTag.
+    
+        :param index: The index to get
+        :return: The ByteArrayTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a ByteArrayTag
+        """
+        cdef ByteArrayTag tag = self[index]
+        return tag
+
+    cpdef IntArrayTag get_int_array(self, int index):
+        """Get the tag at index if it is a IntArrayTag.
+    
+        :param index: The index to get
+        :return: The IntArrayTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a IntArrayTag
+        """
+        cdef IntArrayTag tag = self[index]
+        return tag
+
+    cpdef LongArrayTag get_long_array(self, int index):
+        """Get the tag at index if it is a LongArrayTag.
+    
+        :param index: The index to get
+        :return: The LongArrayTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a LongArrayTag
+        """
+        cdef LongArrayTag tag = self[index]
+        return tag
+
 
 class ListTag(CyListTag, MutableSequence):
     pass

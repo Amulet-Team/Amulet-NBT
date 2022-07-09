@@ -153,6 +153,18 @@ cdef class CyListTag(AbstractBaseMutableTag):
         self._check_tag(value)
         self.value_.insert(index, value)
 
+{{include("ListGet.pyx", tag_cls_name="ByteTag", tag_name="byte")}}
+{{include("ListGet.pyx", tag_cls_name="ShortTag", tag_name="short")}}
+{{include("ListGet.pyx", tag_cls_name="IntTag", tag_name="int")}}
+{{include("ListGet.pyx", tag_cls_name="LongTag", tag_name="long")}}
+{{include("ListGet.pyx", tag_cls_name="FloatTag", tag_name="float")}}
+{{include("ListGet.pyx", tag_cls_name="DoubleTag", tag_name="double")}}
+{{include("ListGet.pyx", tag_cls_name="StringTag", tag_name="string")}}
+{{include("ListGet.pyx", tag_cls_name="CyListTag", tag_name="list")}}
+{{include("ListGet.pyx", tag_cls_name="CyCompoundTag", tag_name="compound")}}
+{{include("ListGet.pyx", tag_cls_name="ByteArrayTag", tag_name="byte_array")}}
+{{include("ListGet.pyx", tag_cls_name="IntArrayTag", tag_name="int_array")}}
+{{include("ListGet.pyx", tag_cls_name="LongArrayTag", tag_name="long_array")}}
 
 class ListTag(CyListTag, MutableSequence):
     pass

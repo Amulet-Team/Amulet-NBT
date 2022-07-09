@@ -10,6 +10,10 @@ from amulet_nbt import (
     StringTag,
     from_snbt,
     SNBTParseError,
+    utf8_escape_encoder,
+    utf8_escape_decoder,
+    load as load_nbt,
+    NBTFormatError,
 )
 
 from tests.tags.abstract_base_tag import TestWrapper
@@ -142,6 +146,103 @@ class TestString(TestWrapper.AbstractBaseTagTest):
 
         with self.assertRaises(SNBTParseError):
             from_snbt("")
+
+    def test_to_nbt(self):
+        self.assertEqual(
+            b"\x08\x00\x00\x00\x00",
+            StringTag().to_nbt(compressed=False, little_endian=False),
+        )
+        self.assertEqual(
+            b"\x08\x00\x00\x00\x00",
+            StringTag().to_nbt(compressed=False, little_endian=True),
+        )
+        self.assertEqual(
+            b"\x08\x00\x00\x00\x04test",
+            StringTag("test").to_nbt(compressed=False, little_endian=False),
+        )
+        self.assertEqual(
+            b"\x08\x00\x00\x04\x00test",
+            StringTag("test").to_nbt(compressed=False, little_endian=True),
+        )
+        # default string encoder is the Java Modified UTF-8 encoder
+        self.assertEqual(
+            b"\x08\x00\x00\x00\x06\xed\xa1\xbc\xed\xbf\xb9",
+            StringTag("🏹").to_nbt(compressed=False, little_endian=False),
+        )
+        self.assertEqual(
+            b"\x08\x00\x00\x04\x00\xf0\x9f\x8f\xb9",
+            StringTag("🏹").to_nbt(
+                compressed=False, little_endian=True, string_encoder=utf8_escape_encoder
+            ),
+        )
+        self.assertEqual(
+            b"\x08\x00\x00\x04\x00\xff\xfe\xfd\xfc",
+            StringTag("␛xff␛xfe␛xfd␛xfc").to_nbt(
+                compressed=False, little_endian=True, string_encoder=utf8_escape_encoder
+            ),
+        )
+        self.assertEqual(
+            b"\x08\x00\x00\x04\x00\xff\xfe\xfd\xfc",
+            StringTag("␛xFF␛xFE␛xFD␛xFC").to_nbt(
+                compressed=False, little_endian=True, string_encoder=utf8_escape_encoder
+            ),
+        )
+
+    def test_from_nbt(self):
+        self.assertStrictEqual(
+            StringTag(),
+            load_nbt(
+                b"\x08\x00\x00\x00\x00", compressed=False, little_endian=False
+            ).string,
+        )
+        self.assertStrictEqual(
+            StringTag(),
+            load_nbt(
+                b"\x08\x00\x00\x00\x00", compressed=False, little_endian=True
+            ).string,
+        )
+        self.assertStrictEqual(
+            StringTag("test"),
+            load_nbt(
+                b"\x08\x00\x00\x00\x04test", compressed=False, little_endian=False
+            ).string,
+        )
+        self.assertStrictEqual(
+            StringTag("test"),
+            load_nbt(
+                b"\x08\x00\x00\x04\x00test", compressed=False, little_endian=True
+            ).string,
+        )
+        self.assertStrictEqual(
+            StringTag("🏹"),
+            load_nbt(
+                b"\x08\x00\x00\x00\x06\xed\xa1\xbc\xed\xbf\xb9",
+                compressed=False,
+                little_endian=False,
+            ).string,
+        )
+        self.assertStrictEqual(
+            StringTag("🏹"),
+            load_nbt(
+                b"\x08\x00\x00\x04\x00\xf0\x9f\x8f\xb9",
+                compressed=False,
+                little_endian=True,
+                string_decoder=utf8_escape_decoder,
+            ).string,
+        )
+        # test invalid utf-8 string
+        self.assertStrictEqual(
+            StringTag("␛xff␛xfe␛xfd␛xfc"),
+            load_nbt(
+                b"\x08\x00\x00\x04\x00\xff\xfe\xfd\xfc",
+                compressed=False,
+                little_endian=True,
+                string_decoder=utf8_escape_decoder,
+            ).string,
+        )
+
+        with self.assertRaises(NBTFormatError):
+            load_nbt(b"\x08\x00\x00\x00\x05abcd")
 
     def test_comp(self):
         self.assertFalse(StringTag("val1") < StringTag("val0"))

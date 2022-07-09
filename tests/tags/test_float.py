@@ -12,6 +12,7 @@ from amulet_nbt import (
     FloatTag,
     DoubleTag,
     from_snbt,
+    load as load_nbt,
 )
 
 from tests.tags.abstract_base_tag import TestWrapper
@@ -169,6 +170,46 @@ class TestFloat(TestWrapper.AbstractBaseTagTest):
             self.assertStrictEqual(DoubleTag(5), from_snbt("5D"))
             self.assertStrictEqual(DoubleTag(5), from_snbt("5.d"))
             self.assertStrictEqual(DoubleTag(5), from_snbt("5.D"))
+
+    def test_to_nbt(self):
+        self.assertEqual(
+            b"\x05\x00\x00\x40\xa0\x00\x00",
+            FloatTag(5).to_nbt(compressed=False, little_endian=False),
+        )
+        self.assertEqual(
+            b"\x05\x00\x00\x00\x00\xa0\x40",
+            FloatTag(5).to_nbt(compressed=False, little_endian=True),
+        )
+        self.assertEqual(
+            b"\x06\x00\x00\x40\x14\x00\x00\x00\x00\x00\x00",
+            DoubleTag(5).to_nbt(compressed=False, little_endian=False),
+        )
+        self.assertEqual(
+            b"\x06\x00\x00\x00\x00\x00\x00\x00\x00\x14\x40",
+            DoubleTag(5).to_nbt(compressed=False, little_endian=True),
+        )
+
+    def test_from_nbt(self):
+        self.assertStrictEqual(
+            FloatTag(5),
+            load_nbt(b"\x05\x00\x00\x40\xa0\x00\x00", little_endian=False).float,
+        )
+        self.assertStrictEqual(
+            FloatTag(5),
+            load_nbt(b"\x05\x00\x00\x00\x00\xa0\x40", little_endian=True).float,
+        )
+        self.assertStrictEqual(
+            DoubleTag(5),
+            load_nbt(
+                b"\x06\x00\x00\x40\x14\x00\x00\x00\x00\x00\x00", little_endian=False
+            ).double,
+        )
+        self.assertStrictEqual(
+            DoubleTag(5),
+            load_nbt(
+                b"\x06\x00\x00\x00\x00\x00\x00\x00\x00\x14\x40", little_endian=True
+            ).double,
+        )
 
     def test_numerical_operators(self):
         for cls1, cls2 in itertools.product(self.float_types, repeat=2):

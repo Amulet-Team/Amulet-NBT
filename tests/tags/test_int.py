@@ -14,6 +14,7 @@ from amulet_nbt import (
     IntTag,
     LongTag,
     from_snbt,
+    load as load_nbt,
 )
 
 from tests.tags.abstract_base_tag import TestWrapper
@@ -183,6 +184,78 @@ class TestInt(TestWrapper.AbstractBaseTagTest):
             self.assertStrictEqual(LongTag(0), from_snbt("0L"))
             self.assertStrictEqual(LongTag(5), from_snbt("5l"))
             self.assertStrictEqual(LongTag(5), from_snbt("5L"))
+
+    def test_to_nbt(self):
+        self.assertEqual(
+            b"\x01\x00\x00\x05",
+            ByteTag(5).to_nbt(compressed=False, little_endian=False),
+        )
+        self.assertEqual(
+            b"\x01\x00\x00\x05",
+            ByteTag(5).to_nbt(compressed=False, little_endian=True),
+        )
+        self.assertEqual(
+            b"\x02\x00\x00\x00\x05",
+            ShortTag(5).to_nbt(compressed=False, little_endian=False),
+        )
+        self.assertEqual(
+            b"\x02\x00\x00\x05\x00",
+            ShortTag(5).to_nbt(compressed=False, little_endian=True),
+        )
+        self.assertEqual(
+            b"\x03\x00\x00\x00\x00\x00\x05",
+            IntTag(5).to_nbt(compressed=False, little_endian=False),
+        )
+        self.assertEqual(
+            b"\x03\x00\x00\x05\x00\x00\x00",
+            IntTag(5).to_nbt(compressed=False, little_endian=True),
+        )
+        self.assertEqual(
+            b"\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x05",
+            LongTag(5).to_nbt(compressed=False, little_endian=False),
+        )
+        self.assertEqual(
+            b"\x04\x00\x00\x05\x00\x00\x00\x00\x00\x00\x00",
+            LongTag(5).to_nbt(compressed=False, little_endian=True),
+        )
+
+    def test_from_nbt(self):
+        self.assertStrictEqual(
+            ByteTag(5),
+            load_nbt(b"\x01\x00\x00\x05", little_endian=False).byte,
+        )
+        self.assertStrictEqual(
+            ByteTag(5),
+            load_nbt(b"\x01\x00\x00\x05", little_endian=True).byte,
+        )
+        self.assertStrictEqual(
+            ShortTag(5),
+            load_nbt(b"\x02\x00\x00\x00\x05", little_endian=False).short,
+        )
+        self.assertStrictEqual(
+            ShortTag(5),
+            load_nbt(b"\x02\x00\x00\x05\x00", little_endian=True).short,
+        )
+        self.assertStrictEqual(
+            IntTag(5),
+            load_nbt(b"\x03\x00\x00\x00\x00\x00\x05", little_endian=False).int,
+        )
+        self.assertStrictEqual(
+            IntTag(5),
+            load_nbt(b"\x03\x00\x00\x05\x00\x00\x00", little_endian=True).int,
+        )
+        self.assertStrictEqual(
+            LongTag(5),
+            load_nbt(
+                b"\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x05", little_endian=False
+            ).long,
+        )
+        self.assertStrictEqual(
+            LongTag(5),
+            load_nbt(
+                b"\x04\x00\x00\x05\x00\x00\x00\x00\x00\x00\x00", little_endian=True
+            ).long,
+        )
 
     def test_numerical_operators(self):
         for cls1, cls2 in itertools.product(self.int_types, repeat=2):

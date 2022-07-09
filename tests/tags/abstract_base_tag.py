@@ -111,6 +111,14 @@ class TestWrapper:
         def test_from_snbt(self):
             raise NotImplementedError
 
+        @abstractmethod
+        def test_to_nbt(self):
+            raise NotImplementedError
+
+        @abstractmethod
+        def test_from_nbt(self):
+            raise NotImplementedError
+
 
 if __name__ == "__main__":
     unittest.main()

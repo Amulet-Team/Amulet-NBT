@@ -16,6 +16,8 @@ from amulet_nbt import (
     LongArrayTag,
     from_snbt,
     SNBTParseError,
+    load,
+    NBTFormatError,
 )
 
 from tests.tags.abstract_base_tag import TestWrapper
@@ -215,6 +217,192 @@ class TestArray(TestWrapper.AbstractBaseTagTest):
                 from_snbt(
                     "[L;-5.0L, 5.0L]",
                 )
+
+    def test_to_nbt(self):
+        self.assertEqual(
+            b"\x07\x00\x00\x00\x00\x00\x00",
+            ByteArrayTag().to_nbt(compressed=False, little_endian=False),
+        )
+        self.assertEqual(
+            b"\x07\x00\x00\x00\x00\x00\x07\xFD\xFE\xFF\x00\x01\x02\x03",
+            ByteArrayTag([-3, -2, -1, 0, 1, 2, 3]).to_nbt(
+                compressed=False, little_endian=False
+            ),
+        )
+        self.assertEqual(
+            b"\x07\x00\x00\x07\x00\x00\x00\xFD\xFE\xFF\x00\x01\x02\x03",
+            ByteArrayTag([-3, -2, -1, 0, 1, 2, 3]).to_nbt(
+                compressed=False, little_endian=True
+            ),
+        )
+        self.assertEqual(
+            b"\x0B\x00\x00\x00\x00\x00\x00",
+            IntArrayTag().to_nbt(compressed=False, little_endian=False),
+        )
+        self.assertEqual(
+            b"\x0B\x00\x00\x00\x00\x00\x07\xFF\xFF\xFF\xFD\xFF\xFF\xFF\xFE\xFF\xFF\xFF\xFF\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x02\x00\x00\x00\x03",
+            IntArrayTag([-3, -2, -1, 0, 1, 2, 3]).to_nbt(
+                compressed=False, little_endian=False
+            ),
+        )
+        self.assertEqual(
+            b"\x0B\x00\x00\x07\x00\x00\x00\xFD\xFF\xFF\xFF\xFE\xFF\xFF\xFF\xFF\xFF\xFF\xFF\x00\x00\x00\x00\x01\x00\x00\x00\x02\x00\x00\x00\x03\x00\x00\x00",
+            IntArrayTag([-3, -2, -1, 0, 1, 2, 3]).to_nbt(
+                compressed=False, little_endian=True
+            ),
+        )
+        self.assertEqual(
+            b"\x0C\x00\x00\x00\x00\x00\x00",
+            LongArrayTag().to_nbt(compressed=False, little_endian=False),
+        )
+        self.assertEqual(
+            b"\x0C\x00\x00\x00\x00\x00\x07\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFD\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFE\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\x03",
+            LongArrayTag([-3, -2, -1, 0, 1, 2, 3]).to_nbt(
+                compressed=False, little_endian=False
+            ),
+        )
+        self.assertEqual(
+            b"\x0C\x00\x00\x07\x00\x00\x00\xFD\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFE\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00",
+            LongArrayTag([-3, -2, -1, 0, 1, 2, 3]).to_nbt(
+                compressed=False, little_endian=True
+            ),
+        )
+
+    def test_from_nbt(self):
+        self.assertStrictEqual(
+            ByteArrayTag(),
+            load(
+                b"\x07\x00\x00\x00\x00\x00\x00",
+                compressed=False,
+                little_endian=False,
+            ).byte_array,
+        )
+        self.assertStrictEqual(
+            ByteArrayTag([-3, -2, -1, 0, 1, 2, 3]),
+            load(
+                b"\x07\x00\x00\x00\x00\x00\x07\xFD\xFE\xFF\x00\x01\x02\x03",
+                compressed=False,
+                little_endian=False,
+            ).byte_array,
+        )
+        self.assertStrictEqual(
+            ByteArrayTag([-3, -2, -1, 0, 1, 2, 3]),
+            load(
+                b"\x07\x00\x00\x07\x00\x00\x00\xFD\xFE\xFF\x00\x01\x02\x03",
+                compressed=False,
+                little_endian=True,
+            ).byte_array,
+        )
+        with self.assertRaises(NBTFormatError):
+            load(
+                b"\x07",
+            )
+        with self.assertRaises(NBTFormatError):
+            load(
+                b"\x07\x00\x00",
+            )
+        with self.assertRaises(NBTFormatError):
+            load(
+                b"\x07\x00\x00\x00\x00\x00",
+            )
+        with self.assertRaises(NBTFormatError):
+            load(
+                b"\x07\x00\x00\x00\x00\x00\x01",
+            )
+        with self.assertRaises(NBTFormatError):
+            load(
+                b"\x07\x00\x00\x00\x00\x00\x02\x00",
+            )
+
+        self.assertStrictEqual(
+            IntArrayTag(),
+            load(
+                b"\x0B\x00\x00\x00\x00\x00\x00",
+                compressed=False,
+                little_endian=False,
+            ).int_array,
+        )
+        self.assertStrictEqual(
+            IntArrayTag([-3, -2, -1, 0, 1, 2, 3]),
+            load(
+                b"\x0B\x00\x00\x00\x00\x00\x07\xFF\xFF\xFF\xFD\xFF\xFF\xFF\xFE\xFF\xFF\xFF\xFF\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x02\x00\x00\x00\x03",
+                compressed=False,
+                little_endian=False,
+            ).int_array,
+        )
+        self.assertStrictEqual(
+            IntArrayTag([-3, -2, -1, 0, 1, 2, 3]),
+            load(
+                b"\x0B\x00\x00\x07\x00\x00\x00\xFD\xFF\xFF\xFF\xFE\xFF\xFF\xFF\xFF\xFF\xFF\xFF\x00\x00\x00\x00\x01\x00\x00\x00\x02\x00\x00\x00\x03\x00\x00\x00",
+                compressed=False,
+                little_endian=True,
+            ).int_array,
+        )
+        with self.assertRaises(NBTFormatError):
+            load(
+                b"\x0B",
+            )
+        with self.assertRaises(NBTFormatError):
+            load(
+                b"\x0B\x00\x00",
+            )
+        with self.assertRaises(NBTFormatError):
+            load(
+                b"\x0B\x00\x00\x00\x00\x00",
+            )
+        with self.assertRaises(NBTFormatError):
+            load(
+                b"\x0B\x00\x00\x00\x00\x00\x01",
+            )
+        with self.assertRaises(NBTFormatError):
+            load(
+                b"\x0B\x00\x00\x00\x00\x00\x02\x00",
+            )
+
+        self.assertStrictEqual(
+            LongArrayTag(),
+            load(
+                b"\x0C\x00\x00\x00\x00\x00\x00",
+                compressed=False,
+                little_endian=False,
+            ).long_array,
+        )
+        self.assertStrictEqual(
+            LongArrayTag([-3, -2, -1, 0, 1, 2, 3]),
+            load(
+                b"\x0C\x00\x00\x00\x00\x00\x07\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFD\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFE\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\x03",
+                compressed=False,
+                little_endian=False,
+            ).long_array,
+        )
+        self.assertStrictEqual(
+            LongArrayTag([-3, -2, -1, 0, 1, 2, 3]),
+            load(
+                b"\x0C\x00\x00\x07\x00\x00\x00\xFD\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFE\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00",
+                compressed=False,
+                little_endian=True,
+            ).long_array,
+        )
+        with self.assertRaises(NBTFormatError):
+            load(
+                b"\x0C",
+            )
+        with self.assertRaises(NBTFormatError):
+            load(
+                b"\x0C\x00\x00",
+            )
+        with self.assertRaises(NBTFormatError):
+            load(
+                b"\x0C\x00\x00\x00\x00\x00",
+            )
+        with self.assertRaises(NBTFormatError):
+            load(
+                b"\x0C\x00\x00\x00\x00\x00\x01",
+            )
+        with self.assertRaises(NBTFormatError):
+            load(
+                b"\x0C\x00\x00\x00\x00\x00\x02\x00",
+            )
 
 
 if __name__ == "__main__":

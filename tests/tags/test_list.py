@@ -21,6 +21,8 @@ from amulet_nbt import (
     LongArrayTag,
     from_snbt,
     SNBTParseError,
+    load as load_nbt,
+    NBTFormatError,
 )
 
 from tests.tags.abstract_base_tag import TestWrapper
@@ -397,6 +399,86 @@ class TestList(TestWrapper.AbstractBaseTagTest):
             from_snbt("[,1]")
         with self.assertRaises(SNBTParseError):
             from_snbt("[1 1]")
+
+    def test_to_nbt(self):
+        self.assertEqual(
+            b"\x09\x00\x00\x00\x00\x00\x00\x00",
+            ListTag(list_data_type=0).to_nbt(compressed=False, little_endian=False),
+        )
+        self.assertEqual(
+            b"\x09\x00\x00\x00\x00\x00\x00\x00",
+            ListTag(list_data_type=0).to_nbt(compressed=False, little_endian=True),
+        )
+
+        self.assertEqual(
+            b"\x09\x00\x00\x01\x00\x00\x00\x03\xFF\x00\x01",
+            ListTag([ByteTag(-1), ByteTag(0), ByteTag(1)]).to_nbt(
+                compressed=False, little_endian=False
+            ),
+        )
+        self.assertEqual(
+            b"\x09\x00\x00\x01\x03\x00\x00\x00\xFF\x00\x01",
+            ListTag([ByteTag(-1), ByteTag(0), ByteTag(1)]).to_nbt(
+                compressed=False, little_endian=True
+            ),
+        )
+
+        self.assertEqual(
+            b"\x09\x00\x00\x02\x00\x00\x00\x03\xFF\xFF\x00\x00\x00\x01",
+            ListTag([ShortTag(-1), ShortTag(0), ShortTag(1)]).to_nbt(
+                compressed=False, little_endian=False
+            ),
+        )
+        self.assertEqual(
+            b"\x09\x00\x00\x02\x03\x00\x00\x00\xFF\xFF\x00\x00\x01\x00",
+            ListTag([ShortTag(-1), ShortTag(0), ShortTag(1)]).to_nbt(
+                compressed=False, little_endian=True
+            ),
+        )
+
+        self.assertEqual(
+            b"\x09\x00\x00\x03\x00\x00\x00\x03\xFF\xFF\xFF\xFF\x00\x00\x00\x00\x00\x00\x00\x01",
+            ListTag([IntTag(-1), IntTag(0), IntTag(1)]).to_nbt(
+                compressed=False, little_endian=False
+            ),
+        )
+        self.assertEqual(
+            b"\x09\x00\x00\x03\x03\x00\x00\x00\xFF\xFF\xFF\xFF\x00\x00\x00\x00\x01\x00\x00\x00",
+            ListTag([IntTag(-1), IntTag(0), IntTag(1)]).to_nbt(
+                compressed=False, little_endian=True
+            ),
+        )
+
+        self.assertEqual(
+            b"\x09\x00\x00\x04\x00\x00\x00\x03\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01",
+            ListTag([LongTag(-1), LongTag(0), LongTag(1)]).to_nbt(
+                compressed=False, little_endian=False
+            ),
+        )
+        self.assertEqual(
+            b"\x09\x00\x00\x04\x03\x00\x00\x00\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00",
+            ListTag([LongTag(-1), LongTag(0), LongTag(1)]).to_nbt(
+                compressed=False, little_endian=True
+            ),
+        )
+
+    def test_from_nbt(self):
+        self.assertStrictEqual(
+            ListTag([], 1), load_nbt(b"\x09\x00\x00\x01\xFF\xFF\xFF\xFF").list
+        )
+
+        with self.assertRaises(NBTFormatError):
+            load_nbt(b"\x09")
+        with self.assertRaises(NBTFormatError):
+            load_nbt(b"\x09\x00\x00")
+        with self.assertRaises(NBTFormatError):
+            load_nbt(b"\x09\x00\x00\x00")
+        with self.assertRaises(NBTFormatError):
+            load_nbt(b"\x09\x00\x00\x00\x00")
+        with self.assertRaises(NBTFormatError):
+            load_nbt(b"\x09\x00\x00\x00\x00\x00")
+        with self.assertRaises(NBTFormatError):
+            load_nbt(b"\x09\x00\x00\x00\x00\x00\x00")
 
     def test_append(self):
         for cls1 in self.nbt_types:

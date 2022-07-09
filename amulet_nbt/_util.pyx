@@ -37,7 +37,7 @@ cdef class BufferContext:
             free(self.buffer)
 
 
-cdef char *read_data(BufferContext buffer, size_t tag_size) except *:
+cdef char *read_data(BufferContext buffer, size_t tag_size) except NULL:
     cdef char *value = buffer.buffer + buffer.offset
     buffer.offset += tag_size
     if buffer.offset > buffer.size:
@@ -61,7 +61,7 @@ cdef inline char read_byte(BufferContext buffer):
     return read_data(buffer, 1)[0]
 
 
-cdef inline int read_int(BufferContext buffer, bint little_endian):
+cdef inline int read_int(BufferContext buffer, bint little_endian) except? -1:
     cdef int*pointer = <int*> read_data(buffer, 4)
     cdef int value = pointer[0]
     to_little_endian(&value, 4, little_endian)

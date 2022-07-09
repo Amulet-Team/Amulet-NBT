@@ -7,11 +7,11 @@ cdef class BufferContext:
 
     cpdef bytes get_buffer(self)
 
-cdef char *read_data(BufferContext buffer, size_t tag_size) except *
+cdef char *read_data(BufferContext buffer, size_t tag_size) except NULL
 cdef void to_little_endian(void *data_buffer, int num_bytes, bint little_endian=*)
 
 cdef char read_byte(BufferContext buffer)
-cdef int read_int(BufferContext buffer, bint little_endian)
+cdef int read_int(BufferContext buffer, bint little_endian) except? -1
 cdef str read_string(BufferContext buffer, bint little_endian, string_decoder: DecoderType)
 cdef bytes read_bytes(BufferContext buffer, bint little_endian)
 

@@ -57,7 +57,7 @@ cdef void to_little_endian(void *data_buffer, int num_bytes, bint little_endian 
         buf[i], buf[num_bytes - i - 1] = buf[num_bytes - i - 1], buf[i]
 
 
-cdef inline char read_byte(BufferContext buffer):
+cdef inline char read_byte(BufferContext buffer) except? -1:
     return read_data(buffer, 1)[0]
 
 

@@ -12,6 +12,7 @@ class NamedTag:
     name: str
     tag: AbstractBaseTag
     def __init__(self, tag: AbstractBaseTag = None, name: str = ""): ...
+    def to_snbt(self, indent=None, indent_chr=None) -> str:...
     def to_nbt(
         self,
         *,

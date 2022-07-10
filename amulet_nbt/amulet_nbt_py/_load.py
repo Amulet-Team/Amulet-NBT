@@ -41,7 +41,7 @@ TAG_COMPOUND = 10
 
 @overload
 def load(
-    filepath_or_buffer: Union[str, bytes, BinaryIO],
+    filepath_or_buffer: Union[str, bytes, memoryview, BinaryIO],
     compressed: bool = True,
     count: None = None,
     offset=False,  # Literal[False] = False,
@@ -52,7 +52,7 @@ def load(
 
 @overload
 def load(
-    filepath_or_buffer: Union[str, bytes, BinaryIO],
+    filepath_or_buffer: Union[str, bytes, memoryview, BinaryIO],
     compressed: bool = True,
     count: None = None,
     offset=False,  # Literal[True] = False,
@@ -63,7 +63,7 @@ def load(
 
 @overload
 def load(
-    filepath_or_buffer: Union[str, bytes, BinaryIO],
+    filepath_or_buffer: Union[str, bytes, memoryview, BinaryIO],
     compressed: bool = True,
     count: int = None,
     offset=False,  # Literal[False] = False,
@@ -74,7 +74,7 @@ def load(
 
 @overload
 def load(
-    filepath_or_buffer: Union[str, bytes, BinaryIO],
+    filepath_or_buffer: Union[str, bytes, memoryview, BinaryIO],
     compressed: bool = True,
     count: int = None,
     offset=False,  # Literal[True] = False,
@@ -84,7 +84,7 @@ def load(
 
 
 def load(
-    filepath_or_buffer: Union[str, bytes, BinaryIO],
+    filepath_or_buffer: Union[str, bytes, memoryview, BinaryIO],
     compressed: bool = True,
     count: Optional[int] = None,
     offset: bool = False,
@@ -108,6 +108,10 @@ def load(
 
     elif isinstance(filepath_or_buffer, bytes):
         data_in = filepath_or_buffer
+
+    elif isinstance(filepath_or_buffer, memoryview):
+        data_in = filepath_or_buffer
+
     elif hasattr(filepath_or_buffer, "read"):
         data_in = filepath_or_buffer.read()
         if not isinstance(data_in, bytes):
@@ -122,11 +126,11 @@ def load(
             )
     else:
         raise NBTLoadError(
-            "filepath_or_buffer must be a file path, bytes or file like object."
+            "filepath_or_buffer must be a file path, bytes, memoryview or file like object."
         )
 
-    if not type(data_in) is bytes:
-        raise ValueError("Expected a bytes object.")
+    if not type(data_in) is bytes and not type(data_in) is memoryview:
+        raise ValueError("Expected a bytes or memoryview object.")
 
     if compressed and data_in[:2] == b"\x1f\x8b":
         # if the first two bytes are this it should be gzipped

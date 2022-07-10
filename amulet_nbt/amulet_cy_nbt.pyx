@@ -1050,7 +1050,7 @@ class NBTFile:
 
 
 def load(
-    filepath_or_buffer: Union[str, bytes, BinaryIO, None] = None,  # TODO: This should become a required input
+    filepath_or_buffer: Union[str, bytes, memoryview, BinaryIO, None] = None,  # TODO: This should become a required input
     compressed=True,
     count: int = None,
     offset: bool = False,
@@ -1071,6 +1071,8 @@ def load(
             filepath_or_buffer = buffer
 
         if isinstance(filepath_or_buffer, bytes):
+            data_in = filepath_or_buffer
+        elif isinstance(filepath_or_buffer, memoryview):
             data_in = filepath_or_buffer
         elif hasattr(filepath_or_buffer, "read"):
             data_in = filepath_or_buffer.read()

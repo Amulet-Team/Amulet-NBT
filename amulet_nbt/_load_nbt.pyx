@@ -42,9 +42,10 @@ cpdef inline bytes safe_gunzip(bytes data):
 
 
 cdef BufferContext get_buffer(
-    object filepath_or_buffer: Union[str, bytes, BinaryIO, None],
+    object filepath_or_buffer: Union[str, bytes, BinaryIO, memoryview, None],
     bint compressed=True,
 ):
+    cdef bytes data
     if isinstance(filepath_or_buffer, str):
         # if a string load from the file path
         if not os.path.isfile(filepath_or_buffer):
@@ -53,18 +54,19 @@ cdef BufferContext get_buffer(
             data = f.read()
     elif isinstance(filepath_or_buffer, bytes):
         data = filepath_or_buffer
+    elif isinstance(filepath_or_buffer, memoryview):
+        data = filepath_or_buffer.tobytes()
     elif hasattr(filepath_or_buffer, "read"):
-        data = filepath_or_buffer.read()
-        if not isinstance(data, bytes):
-            raise NBTLoadError(f"buffer.read() must return a bytes object. Got {type(data)} instead.")
+        buffer_data = filepath_or_buffer.read()
+        if not isinstance(buffer_data, bytes):
+            raise NBTLoadError(f"buffer.read() must return a bytes object. Got {type(buffer_data)} instead.")
+        data = buffer_data
     else:
         raise NBTLoadError("buffer did not have a read method.")
 
     if compressed:
         data = safe_gunzip(data)
-    return BufferContext(
-        data
-    )
+    return BufferContext(data)
 
 
 cdef AbstractBaseTag load_payload(BufferContext buffer, char tag_type, bint little_endian, string_decoder: DecoderType):
@@ -115,7 +117,7 @@ cdef class ReadContext:
 
 
 def _load_one(
-    object filepath_or_buffer: Union[str, bytes, BinaryIO, None],
+    object filepath_or_buffer: Union[str, bytes, BinaryIO, memoryview, None],
     *,
     bint compressed: bool=True,
     bint little_endian: bool = False,
@@ -132,7 +134,7 @@ def _load_one(
 
 
 def load_many(
-    object filepath_or_buffer: Union[str, bytes, BinaryIO, None],
+    object filepath_or_buffer: Union[str, bytes, BinaryIO, memoryview, None],
     *,
     int count = 1,
     bint compressed: bool=True,
@@ -157,7 +159,7 @@ def load_many(
 
 
 def load(
-    object filepath_or_buffer: Union[str, bytes, BinaryIO, None],
+    object filepath_or_buffer: Union[str, bytes, BinaryIO, memoryview, None],
     *args,
     bint compressed: bool=True,
     object count: int = None,

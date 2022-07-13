@@ -7,7 +7,7 @@ class ReadContext:
     offset: int
 
 def load(
-    filepath_or_buffer: Union[str, bytes, BinaryIO, None],
+    filepath_or_buffer: Union[str, bytes, BinaryIO, memoryview, None],
     *,
     compressed: bool = True,
     little_endian: bool = False,
@@ -15,7 +15,7 @@ def load(
     string_decoder: DecoderType = decode_modified_utf8,
 ) -> NamedTag: ...
 def load_many(
-    filepath_or_buffer: Union[str, bytes, BinaryIO, None],
+    filepath_or_buffer: Union[str, bytes, BinaryIO, memoryview, None],
     *,
     count: int = 1,
     compressed: bool = True,

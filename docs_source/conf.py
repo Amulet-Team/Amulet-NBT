@@ -12,10 +12,6 @@ import datetime
 import inspect
 import importlib.machinery
 import re
-
-sys.path.insert(0, os.path.abspath("."))
-sys.path.insert(0, os.path.abspath(".."))
-
 import amulet_nbt
 
 ROOT = os.path.dirname(amulet_nbt.__path__[0])

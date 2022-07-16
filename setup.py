@@ -1,17 +1,16 @@
 from setuptools import setup
-from Cython.Build import cythonize
+import sys
+import os
 import versioneer
-import numpy
+cmdclass=versioneer.get_cmdclass()
 
-# Note this will error if no pyx files are present
-ext = cythonize(
-    f"amulet_nbt/**/*.pyx",
-    language_level=3,
-)
+sys.path.append(os.path.join(os.path.dirname(__file__), "build_tools"))
+
+# build tools import
+import cythonise
+cythonise.register(cmdclass)
 
 setup(
     version=versioneer.get_version(),
-    cmdclass=versioneer.get_cmdclass(),
-    include_dirs=[numpy.get_include()],
-    ext_modules=ext,
+    cmdclass=cmdclass,
 )

@@ -1,1 +1,2 @@
 recursive-include amulet_nbt *.py *.pyi *.pyx *.pxd
+recursive-include build_tools *.py

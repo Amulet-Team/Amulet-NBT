@@ -31,3 +31,4 @@ Since this code is compiled you will need to run it again each time you change c
 - Documentation - https://amulet-nbt.readthedocs.io/en/stable/
 - Github - https://github.com/Amulet-Team/Amulet-NBT
 - Website - https://www.amuletmc.com/
+

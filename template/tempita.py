@@ -11,8 +11,7 @@ from Cython import Tempita as tempita
 TEMPLATE_ROOT_PATH = os.path.dirname(pkgutil.get_loader("template").get_filename())
 TEMPLATES_PATH = os.path.join(TEMPLATE_ROOT_PATH, "templates")
 SRC_PATH = os.path.join(TEMPLATE_ROOT_PATH, "src")
-
-NBT_ROOT_PATH = os.path.dirname(pkgutil.get_loader("amulet_nbt").get_filename())
+DST_PATH = os.path.abspath(f"{__file__}/../../src")
 
 
 def include(rel_path, **kwargs):
@@ -31,7 +30,7 @@ class TempitaManager:
         self.files: List[TempitaFile] = []
         for path in glob.glob(os.path.join(SRC_PATH, "**", "*.*"), recursive=True):
             rel_path = os.path.relpath(path, SRC_PATH)
-            save_path = os.path.join(NBT_ROOT_PATH, rel_path)
+            save_path = os.path.join(DST_PATH, rel_path)
             self.files.append(TempitaFile(path, rel_path, save_path))
 
     def changed(self):

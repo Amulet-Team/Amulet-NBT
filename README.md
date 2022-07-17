@@ -12,7 +12,7 @@ SNBT (or Stringified-NBT) is the JSON like format used in Java commands.
 
 Run this command to install from PyPi.
 
-`pip install amulet-nbt`
+`pip install amulet-nbt~=2.0`
 
 ## Documentation
 

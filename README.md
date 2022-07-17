@@ -16,7 +16,7 @@ Run this command to install from PyPi.
 
 ## Documentation
 
-See our [readthedocs site](https://amulet-nbt.readthedocs.io/en/stable/) for the full documentation of this library.
+See our [readthedocs site](https://amulet-nbt.readthedocs.io) for the full documentation of this library.
 
 ## Development
 
@@ -28,6 +28,6 @@ This will build the library in-place and expose it to python.
 Since this code is compiled you will need to run it again each time you change cython code.
 
 ## Links
-- Documentation - https://amulet-nbt.readthedocs.io/en/stable/
+- Documentation - https://amulet-nbt.readthedocs.io
 - Github - https://github.com/Amulet-Team/Amulet-NBT
 - Website - https://www.amuletmc.com/

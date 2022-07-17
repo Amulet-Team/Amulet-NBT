@@ -53,22 +53,22 @@
    bedrock_named_tag: NamedTag
 
    # Load binary NBT
-   named_tag = amulet_nbt.load_one(
+   named_tag = amulet_nbt.load(
       "the/path/to/your/binary/nbt/file",
       compressed=True,  # These inputs must be specified as keyword inputs like this.
       little_endian=False,  # If you do not define them they will default to these values
       string_decoder=utf8_decoder
    )  # from a file
-   named_tag = amulet_nbt.load_one(b'<nbt file bytes>')  # from a bytes object
+   named_tag = amulet_nbt.load(b'<nbt file bytes>')  # from a bytes object
 
    # Note that Java Edition usually uses compressed modified UTF-8.
-   java_named_tag = amulet_nbt.load_one(
+   java_named_tag = amulet_nbt.load(
       "the/path/to/your/binary/java/nbt/file",
       string_decoder=decode_modified_utf8
    )
 
    # Bedrock edition data is stored in little endian format and uses non-compressed UTF-8 but can also have arbitrary bytes.
-   bedrock_named_tag = amulet_nbt.load_one(
+   bedrock_named_tag = amulet_nbt.load(
       "the/path/to/your/binary/bedrock/nbt/file",
       compressed=False,
       little_endian=True,

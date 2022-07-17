@@ -25,9 +25,9 @@ author = "The Amulet Team"
 
 
 # The short X.Y version
-version = ""
+version = ".".join(amulet_nbt.__version__.split(".")[:2])
 # The full version, including alpha/beta/rc tags
-release = ""
+release = amulet_nbt.__version__
 
 
 # -- General configuration ---------------------------------------------------

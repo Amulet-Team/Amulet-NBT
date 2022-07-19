@@ -404,6 +404,15 @@ class TestArray(TestWrapper.AbstractBaseTagTest):
                 b"\x0C\x00\x00\x00\x00\x00\x02\x00",
             )
 
+    def test_asarray(self):
+        for cls in self.array_types:
+            with self.subTest(cls=cls):
+                numpy.testing.assert_array_equal([], numpy.asarray(cls()))
+                numpy.testing.assert_array_equal(
+                    [-3, -2, -1, 0, 1, 2, 3],
+                    numpy.asarray(cls([-3, -2, -1, 0, 1, 2, 3])),
+                )
+
 
 if __name__ == "__main__":
     unittest.main()

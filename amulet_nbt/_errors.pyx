@@ -1,3 +1,5 @@
+from typing import Optional
+
 class NBTError(Exception):
     """Some error in the NBT library."""
 
@@ -14,4 +16,9 @@ class NBTFormatError(NBTLoadError):
 
 class SNBTParseError(NBTError):
     """Indicates the SNBT format is invalid."""
-    pass
+
+    index: Optional[int]  # The index at which the error occurred
+
+    def __init__(self, *args, index=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.index = index

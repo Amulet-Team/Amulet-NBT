@@ -33,7 +33,10 @@ cdef int _strip_comma(unicode snbt, int index, unicode end_chr) except -1:
     if match is None:
         index = _strip_whitespace(snbt, index)
         if snbt[index] != end_chr:
-            raise SNBTParseError(f'Expected a comma or {end_chr} at {index} but got ->{snbt[index:index + 10]} instead')
+            raise SNBTParseError(
+                f'Expected a comma or {end_chr} at {index} but got ->{snbt[index:index + 10]} instead',
+                index=index
+            )
     else:
         index = match.end()
     return index
@@ -43,7 +46,10 @@ cdef int _strip_colon(unicode snbt, int index) except -1:
 
     match = colon.match(snbt, index)
     if match is None:
-        raise SNBTParseError(f'Expected : at {index} but got ->{snbt[index:index + 10]} instead')
+        raise SNBTParseError(
+            f'Expected : at {index} but got ->{snbt[index:index + 10]} instead',
+            index=index
+        )
     else:
         return match.end()
 
@@ -70,7 +76,8 @@ cdef tuple _capture_string(unicode snbt, int index):
         match = alnumplus.match(snbt, index)
         if match is None:
             raise SNBTParseError(
-                f'Expected a string at {index} but got ->{snbt[index:index + 10]} instead'
+                f'Expected a string at {index} but got ->{snbt[index:index + 10]} instead',
+                index=index
             )
         val = match.group()
         index = match.end()
@@ -122,7 +129,8 @@ cdef tuple _parse_snbt_recursive(unicode snbt, int index=0):
                 match = int_numeric.match(snbt, index)
                 if match is None:
                     raise SNBTParseError(
-                        f'Expected an integer value or ] at {index} but got ->{snbt[index:index + 10]} instead'
+                        f'Expected an integer value or ] at {index} but got ->{snbt[index:index + 10]} instead',
+                        index=index
                     )
                 else:
                     val = match.group()
@@ -131,7 +139,9 @@ cdef tuple _parse_snbt_recursive(unicode snbt, int index=0):
                             val = val[:-1]
                         else:
                             raise SNBTParseError(
-                                f'Expected the datatype marker "{array_type_chr}" at {index} but got ->{snbt[index:index + 10]} instead')
+                                f'Expected the datatype marker "{array_type_chr}" at {index} but got ->{snbt[index:index + 10]} instead',
+                                index=index
+                            )
                     array.append(int(val))
                     index = match.end()
 
@@ -147,7 +157,9 @@ cdef tuple _parse_snbt_recursive(unicode snbt, int index=0):
                     first_data_type = nested_data.__class__
                 if not isinstance(nested_data, first_data_type):
                     raise SNBTParseError(
-                        f'Expected type {first_data_type.__name__} but got {nested_data.__class__.__name__} at {index}')
+                        f'Expected type {first_data_type.__name__} but got {nested_data.__class__.__name__} at {index}',
+                        index=index
+                    )
                 else:
                     index = index_
                 array.append(nested_data)

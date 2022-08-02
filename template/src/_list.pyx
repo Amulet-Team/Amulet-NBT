@@ -131,7 +131,7 @@ cdef class CyListTag(AbstractBaseMutableTag):
     def __len__(CyListTag self) -> int:
         return self.value_.__len__()
 
-    def __getitem__(CyListTag self, index: int) -> AnyNBT:
+    def __getitem__(CyListTag self, index) -> AnyNBT:
         return self.value_[index]
 
     def __setitem__(CyListTag self, index, value):

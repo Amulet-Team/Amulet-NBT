@@ -203,7 +203,8 @@ def load(
             string_decoder=string_decoder
         )
 
-    if read_context is None:
-        return result
-    else:
+    if offset:
+        # depreciated
         return result, read_context.offset
+    else:
+        return result

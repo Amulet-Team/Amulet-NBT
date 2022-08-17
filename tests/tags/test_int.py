@@ -13,6 +13,7 @@ from amulet_nbt import (
     ShortTag,
     IntTag,
     LongTag,
+    StringTag,
     from_snbt,
     load as load_nbt,
 )
@@ -157,33 +158,54 @@ class TestInt(TestWrapper.AbstractBaseTagTest):
             self.assertStrictEqual(ByteTag(-5), from_snbt("-5B"))
             self.assertStrictEqual(ByteTag(0), from_snbt("0b"))
             self.assertStrictEqual(ByteTag(0), from_snbt("0B"))
+            self.assertStrictEqual(ByteTag(0), from_snbt("+0b"))
+            self.assertStrictEqual(ByteTag(0), from_snbt("+0B"))
             self.assertStrictEqual(ByteTag(0), from_snbt("false"))
             self.assertStrictEqual(ByteTag(0), from_snbt("False"))
             self.assertStrictEqual(ByteTag(1), from_snbt("true"))
             self.assertStrictEqual(ByteTag(1), from_snbt("True"))
             self.assertStrictEqual(ByteTag(5), from_snbt("5b"))
             self.assertStrictEqual(ByteTag(5), from_snbt("5B"))
+            self.assertStrictEqual(ByteTag(5), from_snbt("+5b"))
+            self.assertStrictEqual(ByteTag(5), from_snbt("+5B"))
 
         with self.subTest():
             self.assertStrictEqual(ShortTag(-5), from_snbt("-5s"))
             self.assertStrictEqual(ShortTag(-5), from_snbt("-5S"))
             self.assertStrictEqual(ShortTag(0), from_snbt("0s"))
             self.assertStrictEqual(ShortTag(0), from_snbt("0S"))
+            self.assertStrictEqual(ShortTag(0), from_snbt("+0s"))
+            self.assertStrictEqual(ShortTag(0), from_snbt("+0S"))
             self.assertStrictEqual(ShortTag(5), from_snbt("5s"))
             self.assertStrictEqual(ShortTag(5), from_snbt("5S"))
+            self.assertStrictEqual(ShortTag(5), from_snbt("+5s"))
+            self.assertStrictEqual(ShortTag(5), from_snbt("+5S"))
 
         with self.subTest():
             self.assertStrictEqual(IntTag(-5), from_snbt("-5"))
             self.assertStrictEqual(IntTag(0), from_snbt("0"))
+            self.assertStrictEqual(IntTag(0), from_snbt("+0"))
             self.assertStrictEqual(IntTag(5), from_snbt("5"))
+            self.assertStrictEqual(IntTag(5), from_snbt("+5"))
+
+            self.assertStrictEqual(StringTag("-5i"), from_snbt("-5i"))
+            self.assertStrictEqual(StringTag("-5I"), from_snbt("-5I"))
+            self.assertStrictEqual(StringTag("5i"), from_snbt("5i"))
+            self.assertStrictEqual(StringTag("5I"), from_snbt("5I"))
+            self.assertStrictEqual(StringTag("+5i"), from_snbt("+5i"))
+            self.assertStrictEqual(StringTag("+5I"), from_snbt("+5I"))
 
         with self.subTest():
             self.assertStrictEqual(LongTag(-5), from_snbt("-5l"))
             self.assertStrictEqual(LongTag(-5), from_snbt("-5L"))
             self.assertStrictEqual(LongTag(0), from_snbt("0l"))
             self.assertStrictEqual(LongTag(0), from_snbt("0L"))
+            self.assertStrictEqual(LongTag(0), from_snbt("+0l"))
+            self.assertStrictEqual(LongTag(0), from_snbt("+0L"))
             self.assertStrictEqual(LongTag(5), from_snbt("5l"))
             self.assertStrictEqual(LongTag(5), from_snbt("5L"))
+            self.assertStrictEqual(LongTag(5), from_snbt("+5l"))
+            self.assertStrictEqual(LongTag(5), from_snbt("+5L"))
 
     def test_to_nbt(self):
         self.assertEqual(

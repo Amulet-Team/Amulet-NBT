@@ -2,6 +2,7 @@ import unittest
 import itertools
 import copy
 import pickle
+from typing import List, Tuple
 
 from amulet_nbt import (
     __major__,
@@ -11,6 +12,7 @@ from amulet_nbt import (
     AbstractBaseFloatTag,
     FloatTag,
     DoubleTag,
+    StringTag,
     from_snbt,
     load as load_nbt,
 )
@@ -141,35 +143,339 @@ class TestFloat(TestWrapper.AbstractBaseTagTest):
             self.assertEqual("5.0d", DoubleTag(5).to_snbt())
 
     def test_from_snbt(self):
-        with self.subTest():
-            self.assertStrictEqual(FloatTag(-5), from_snbt("-5.0f"))
-            self.assertStrictEqual(FloatTag(-5), from_snbt("-5.0F"))
-            self.assertStrictEqual(FloatTag(-5), from_snbt("-5f"))
-            self.assertStrictEqual(FloatTag(-5), from_snbt("-5F"))
-            self.assertStrictEqual(FloatTag(-5), from_snbt("-5.f"))
-            self.assertStrictEqual(FloatTag(-5), from_snbt("-5.F"))
-            self.assertStrictEqual(FloatTag(5), from_snbt("5.0f"))
-            self.assertStrictEqual(FloatTag(5), from_snbt("5.0F"))
-            self.assertStrictEqual(FloatTag(5), from_snbt("5f"))
-            self.assertStrictEqual(FloatTag(5), from_snbt("5F"))
-            self.assertStrictEqual(FloatTag(5), from_snbt("5.f"))
-            self.assertStrictEqual(FloatTag(5), from_snbt("5.F"))
+        float_data: List[Tuple[AbstractBaseTag, str]] = [
+            # FloatTag Normal
+            # no decimal
+            (FloatTag(-5), "-5f"),
+            (FloatTag(-5), "-5F"),
+            (FloatTag(5), "5f"),
+            (FloatTag(5), "5F"),
+            (FloatTag(5), "+5f"),
+            (FloatTag(5), "+5F"),
+            # leading decimal only
+            (FloatTag(-5), "-5.f"),
+            (FloatTag(-5), "-5.F"),
+            (FloatTag(5), "5.f"),
+            (FloatTag(5), "5.F"),
+            (FloatTag(5), "+5.f"),
+            (FloatTag(5), "+5.F"),
+            # full decimal
+            (FloatTag(-5), "-5.0f"),
+            (FloatTag(-5), "-5.0F"),
+            (FloatTag(5), "5.0f"),
+            (FloatTag(5), "5.0F"),
+            (FloatTag(5), "+5.0f"),
+            (FloatTag(5), "+5.0F"),
+            # trailing decimal only
+            (FloatTag(-0), "-.0f"),
+            (FloatTag(-0), "-.0F"),
+            (FloatTag(0), ".0f"),
+            (FloatTag(0), ".0F"),
+            (FloatTag(0), "+.0f"),
+            (FloatTag(0), "+.0F"),
+            # FloatTag Positive Standard Form
+            # no decimal
+            (FloatTag(-500), "-5e2f"),
+            (FloatTag(-500), "-5e2F"),
+            (FloatTag(500), "5e2f"),
+            (FloatTag(500), "5e2F"),
+            (FloatTag(500), "+5e2f"),
+            (FloatTag(500), "+5e2F"),
+            (FloatTag(-500), "-5E2f"),
+            (FloatTag(-500), "-5E2F"),
+            (FloatTag(500), "5E2f"),
+            (FloatTag(500), "5E2F"),
+            (FloatTag(500), "+5E2f"),
+            (FloatTag(500), "+5E2F"),
+            # leading decimal only
+            (FloatTag(-500), "-5.e2f"),
+            (FloatTag(-500), "-5.e2F"),
+            (FloatTag(500), "5.e2f"),
+            (FloatTag(500), "5.e2F"),
+            (FloatTag(500), "+5.e2f"),
+            (FloatTag(500), "+5.e2F"),
+            (FloatTag(-500), "-5.E2f"),
+            (FloatTag(-500), "-5.E2F"),
+            (FloatTag(500), "5.E2f"),
+            (FloatTag(500), "5.E2F"),
+            (FloatTag(500), "+5.E2f"),
+            (FloatTag(500), "+5.E2F"),
+            # full decimal
+            (FloatTag(-500), "-5.0e2f"),
+            (FloatTag(-500), "-5.0e2F"),
+            (FloatTag(500), "5.0e2f"),
+            (FloatTag(500), "5.0e2F"),
+            (FloatTag(500), "+5.0e2f"),
+            (FloatTag(500), "+5.0e2F"),
+            (FloatTag(-500), "-5.0E2f"),
+            (FloatTag(-500), "-5.0E2F"),
+            (FloatTag(500), "5.0E2f"),
+            (FloatTag(500), "5.0E2F"),
+            (FloatTag(500), "+5.0E2f"),
+            (FloatTag(500), "+5.0E2F"),
+            # trailing decimal only
+            (FloatTag(-0), "-.0e2f"),
+            (FloatTag(-0), "-.0e2F"),
+            (FloatTag(0), ".0e2f"),
+            (FloatTag(0), ".0e2F"),
+            (FloatTag(0), "+.0e2f"),
+            (FloatTag(0), "+.0e2F"),
+            (FloatTag(-0), "-.0E2f"),
+            (FloatTag(-0), "-.0E2F"),
+            (FloatTag(0), ".0E2f"),
+            (FloatTag(0), ".0E2F"),
+            (FloatTag(0), "+.0E2f"),
+            (FloatTag(0), "+.0E2F"),
+            # FloatTag Negative Standard Form
+            # no decimal
+            (FloatTag(-0.05), "-5e-2f"),
+            (FloatTag(-0.05), "-5e-2F"),
+            (FloatTag(0.05), "5e-2f"),
+            (FloatTag(0.05), "5e-2F"),
+            (FloatTag(0.05), "+5e-2f"),
+            (FloatTag(0.05), "+5e-2F"),
+            (FloatTag(-0.05), "-5E-2f"),
+            (FloatTag(-0.05), "-5E-2F"),
+            (FloatTag(0.05), "5E-2f"),
+            (FloatTag(0.05), "5E-2F"),
+            (FloatTag(0.05), "+5E-2f"),
+            (FloatTag(0.05), "+5E-2F"),
+            # leading decimal only
+            (FloatTag(-0.05), "-5.e-2f"),
+            (FloatTag(-0.05), "-5.e-2F"),
+            (FloatTag(0.05), "5.e-2f"),
+            (FloatTag(0.05), "5.e-2F"),
+            (FloatTag(0.05), "+5.e-2f"),
+            (FloatTag(0.05), "+5.e-2F"),
+            (FloatTag(-0.05), "-5.E-2f"),
+            (FloatTag(-0.05), "-5.E-2F"),
+            (FloatTag(0.05), "5.E-2f"),
+            (FloatTag(0.05), "5.E-2F"),
+            (FloatTag(0.05), "+5.E-2f"),
+            (FloatTag(0.05), "+5.E-2F"),
+            # full decimal
+            (FloatTag(-0.05), "-5.0e-2f"),
+            (FloatTag(-0.05), "-5.0e-2F"),
+            (FloatTag(0.05), "5.0e-2f"),
+            (FloatTag(0.05), "5.0e-2F"),
+            (FloatTag(0.05), "+5.0e-2f"),
+            (FloatTag(0.05), "+5.0e-2F"),
+            (FloatTag(-0.05), "-5.0E-2f"),
+            (FloatTag(-0.05), "-5.0E-2F"),
+            (FloatTag(0.05), "5.0E-2f"),
+            (FloatTag(0.05), "5.0E-2F"),
+            (FloatTag(0.05), "+5.0E-2f"),
+            (FloatTag(0.05), "+5.0E-2F"),
+            # trailing decimal only
+            (FloatTag(-0), "-.0e-2f"),
+            (FloatTag(-0), "-.0e-2F"),
+            (FloatTag(0), ".0e-2f"),
+            (FloatTag(0), ".0e-2F"),
+            (FloatTag(0), "+.0e-2f"),
+            (FloatTag(0), "+.0e-2F"),
+            (FloatTag(-0), "-.0E-2f"),
+            (FloatTag(-0), "-.0E-2F"),
+            (FloatTag(0), ".0E-2f"),
+            (FloatTag(0), ".0E-2F"),
+            (FloatTag(0), "+.0E-2f"),
+            (FloatTag(0), "+.0E-2F"),
+            # DoubleTag Normal
+            # no decimal
+            (DoubleTag(-5), "-5d"),
+            (DoubleTag(-5), "-5D"),
+            (DoubleTag(5), "5d"),
+            (DoubleTag(5), "5D"),
+            (DoubleTag(5), "+5d"),
+            (DoubleTag(5), "+5D"),
+            # leading decimal only
+            (DoubleTag(-5), "-5."),
+            (DoubleTag(-5), "-5.d"),
+            (DoubleTag(-5), "-5.D"),
+            (DoubleTag(5), "5."),
+            (DoubleTag(5), "5.d"),
+            (DoubleTag(5), "5.D"),
+            (DoubleTag(5), "+5."),
+            (DoubleTag(5), "+5.d"),
+            (DoubleTag(5), "+5.D"),
+            # full decimal
+            (DoubleTag(-5), "-5.0"),
+            (DoubleTag(-5), "-5.0d"),
+            (DoubleTag(-5), "-5.0D"),
+            (DoubleTag(5), "5.0"),
+            (DoubleTag(5), "5.0d"),
+            (DoubleTag(5), "5.0D"),
+            (DoubleTag(5), "+5.0"),
+            (DoubleTag(5), "+5.0d"),
+            (DoubleTag(5), "+5.0D"),
+            # trailing decimal only
+            (DoubleTag(-0), "-.0"),
+            (DoubleTag(-0), "-.0d"),
+            (DoubleTag(-0), "-.0D"),
+            (DoubleTag(0), ".0"),
+            (DoubleTag(0), ".0d"),
+            (DoubleTag(0), ".0D"),
+            (DoubleTag(0), "+.0"),
+            (DoubleTag(0), "+.0d"),
+            (DoubleTag(0), "+.0D"),
+            # DoubleTag Positive Standard Form
+            # no decimal
+            (StringTag("-5e2"), "-5e2"),
+            (DoubleTag(-500), "-5e2d"),
+            (DoubleTag(-500), "-5e2D"),
+            (StringTag("5e2"), "5e2"),
+            (DoubleTag(500), "5e2d"),
+            (DoubleTag(500), "5e2D"),
+            (StringTag("+5e2"), "+5e2"),
+            (DoubleTag(500), "+5e2d"),
+            (DoubleTag(500), "+5e2D"),
+            (StringTag("-5E2"), "-5E2"),
+            (DoubleTag(-500), "-5E2d"),
+            (DoubleTag(-500), "-5E2D"),
+            (StringTag("5E2"), "5E2"),
+            (DoubleTag(500), "5E2d"),
+            (DoubleTag(500), "5E2D"),
+            (StringTag("+5E2"), "+5E2"),
+            (DoubleTag(500), "+5E2d"),
+            (DoubleTag(500), "+5E2D"),
+            # leading decimal only
+            (DoubleTag(-500), "-5.e2"),
+            (DoubleTag(-500), "-5.e2d"),
+            (DoubleTag(-500), "-5.e2D"),
+            (DoubleTag(500), "5.e2"),
+            (DoubleTag(500), "5.e2d"),
+            (DoubleTag(500), "5.e2D"),
+            (DoubleTag(500), "+5.e2"),
+            (DoubleTag(500), "+5.e2d"),
+            (DoubleTag(500), "+5.e2D"),
+            (DoubleTag(-500), "-5.E2"),
+            (DoubleTag(-500), "-5.E2d"),
+            (DoubleTag(-500), "-5.E2D"),
+            (DoubleTag(500), "5.E2"),
+            (DoubleTag(500), "5.E2d"),
+            (DoubleTag(500), "5.E2D"),
+            (DoubleTag(500), "+5.E2"),
+            (DoubleTag(500), "+5.E2d"),
+            (DoubleTag(500), "+5.E2D"),
+            # full decimal
+            (DoubleTag(-500), "-5.0e2"),
+            (DoubleTag(-500), "-5.0e2d"),
+            (DoubleTag(-500), "-5.0e2D"),
+            (DoubleTag(500), "5.0e2"),
+            (DoubleTag(500), "5.0e2d"),
+            (DoubleTag(500), "5.0e2D"),
+            (DoubleTag(500), "+5.0e2"),
+            (DoubleTag(500), "+5.0e2d"),
+            (DoubleTag(500), "+5.0e2D"),
+            (DoubleTag(-500), "-5.0E2"),
+            (DoubleTag(-500), "-5.0E2d"),
+            (DoubleTag(-500), "-5.0E2D"),
+            (DoubleTag(500), "5.0E2"),
+            (DoubleTag(500), "5.0E2d"),
+            (DoubleTag(500), "5.0E2D"),
+            (DoubleTag(500), "+5.0E2"),
+            (DoubleTag(500), "+5.0E2d"),
+            (DoubleTag(500), "+5.0E2D"),
+            # trailing decimal only
+            (DoubleTag(-0), "-.0e2"),
+            (DoubleTag(-0), "-.0e2d"),
+            (DoubleTag(-0), "-.0e2D"),
+            (DoubleTag(0), ".0e2"),
+            (DoubleTag(0), ".0e2d"),
+            (DoubleTag(0), ".0e2D"),
+            (DoubleTag(0), "+.0e2"),
+            (DoubleTag(0), "+.0e2d"),
+            (DoubleTag(0), "+.0e2D"),
+            (DoubleTag(-0), "-.0E2"),
+            (DoubleTag(-0), "-.0E2d"),
+            (DoubleTag(-0), "-.0E2D"),
+            (DoubleTag(0), ".0E2"),
+            (DoubleTag(0), ".0E2d"),
+            (DoubleTag(0), ".0E2D"),
+            (DoubleTag(0), "+.0E2"),
+            (DoubleTag(0), "+.0E2d"),
+            (DoubleTag(0), "+.0E2D"),
+            # DoubleTag Negative Standard Form
+            # no decimal
+            (StringTag("-5e-2"), "-5e-2"),
+            (DoubleTag(-0.05), "-5e-2d"),
+            (DoubleTag(-0.05), "-5e-2D"),
+            (StringTag("5e-2"), "5e-2"),
+            (DoubleTag(0.05), "5e-2d"),
+            (DoubleTag(0.05), "5e-2D"),
+            (StringTag("+5e-2"), "+5e-2"),
+            (DoubleTag(0.05), "+5e-2d"),
+            (DoubleTag(0.05), "+5e-2D"),
+            (StringTag("-5E-2"), "-5E-2"),
+            (DoubleTag(-0.05), "-5E-2d"),
+            (DoubleTag(-0.05), "-5E-2D"),
+            (StringTag("5E-2"), "5E-2"),
+            (DoubleTag(0.05), "5E-2d"),
+            (DoubleTag(0.05), "5E-2D"),
+            (StringTag("+5E-2"), "+5E-2"),
+            (DoubleTag(0.05), "+5E-2d"),
+            (DoubleTag(0.05), "+5E-2D"),
+            # leading decimal only
+            (DoubleTag(-0.05), "-5.e-2"),
+            (DoubleTag(-0.05), "-5.e-2d"),
+            (DoubleTag(-0.05), "-5.e-2D"),
+            (DoubleTag(0.05), "5.e-2"),
+            (DoubleTag(0.05), "5.e-2d"),
+            (DoubleTag(0.05), "5.e-2D"),
+            (DoubleTag(0.05), "+5.e-2"),
+            (DoubleTag(0.05), "+5.e-2d"),
+            (DoubleTag(0.05), "+5.e-2D"),
+            (DoubleTag(-0.05), "-5.E-2"),
+            (DoubleTag(-0.05), "-5.E-2d"),
+            (DoubleTag(-0.05), "-5.E-2D"),
+            (DoubleTag(0.05), "5.E-2"),
+            (DoubleTag(0.05), "5.E-2d"),
+            (DoubleTag(0.05), "5.E-2D"),
+            (DoubleTag(0.05), "+5.E-2"),
+            (DoubleTag(0.05), "+5.E-2d"),
+            (DoubleTag(0.05), "+5.E-2D"),
+            # full decimal
+            (DoubleTag(-0.05), "-5.0e-2"),
+            (DoubleTag(-0.05), "-5.0e-2d"),
+            (DoubleTag(-0.05), "-5.0e-2D"),
+            (DoubleTag(0.05), "5.0e-2"),
+            (DoubleTag(0.05), "5.0e-2d"),
+            (DoubleTag(0.05), "5.0e-2D"),
+            (DoubleTag(0.05), "+5.0e-2"),
+            (DoubleTag(0.05), "+5.0e-2d"),
+            (DoubleTag(0.05), "+5.0e-2D"),
+            (DoubleTag(-0.05), "-5.0E-2"),
+            (DoubleTag(-0.05), "-5.0E-2d"),
+            (DoubleTag(-0.05), "-5.0E-2D"),
+            (DoubleTag(0.05), "5.0E-2"),
+            (DoubleTag(0.05), "5.0E-2d"),
+            (DoubleTag(0.05), "5.0E-2D"),
+            (DoubleTag(0.05), "+5.0E-2"),
+            (DoubleTag(0.05), "+5.0E-2d"),
+            (DoubleTag(0.05), "+5.0E-2D"),
+            # trailing decimal only
+            (DoubleTag(-0), "-.0e-2"),
+            (DoubleTag(-0), "-.0e-2d"),
+            (DoubleTag(-0), "-.0e-2D"),
+            (DoubleTag(0), ".0e-2"),
+            (DoubleTag(0), ".0e-2d"),
+            (DoubleTag(0), ".0e-2D"),
+            (DoubleTag(0), "+.0e-2"),
+            (DoubleTag(0), "+.0e-2d"),
+            (DoubleTag(0), "+.0e-2D"),
+            (DoubleTag(-0), "-.0E-2"),
+            (DoubleTag(-0), "-.0E-2d"),
+            (DoubleTag(-0), "-.0E-2D"),
+            (DoubleTag(0), ".0E-2"),
+            (DoubleTag(0), ".0E-2d"),
+            (DoubleTag(0), ".0E-2D"),
+            (DoubleTag(0), "+.0E-2"),
+            (DoubleTag(0), "+.0E-2d"),
+            (DoubleTag(0), "+.0E-2D"),
+        ]
 
-        with self.subTest():
-            self.assertStrictEqual(DoubleTag(-5), from_snbt("-5.0d"))
-            self.assertStrictEqual(DoubleTag(-5), from_snbt("-5.0D"))
-            self.assertStrictEqual(DoubleTag(-5), from_snbt("-5.0"))
-            self.assertStrictEqual(DoubleTag(-5), from_snbt("-5d"))
-            self.assertStrictEqual(DoubleTag(-5), from_snbt("-5D"))
-            self.assertStrictEqual(DoubleTag(-5), from_snbt("-5.d"))
-            self.assertStrictEqual(DoubleTag(-5), from_snbt("-5.D"))
-            self.assertStrictEqual(DoubleTag(5), from_snbt("5.0d"))
-            self.assertStrictEqual(DoubleTag(5), from_snbt("5.0D"))
-            self.assertStrictEqual(DoubleTag(5), from_snbt("5.0"))
-            self.assertStrictEqual(DoubleTag(5), from_snbt("5d"))
-            self.assertStrictEqual(DoubleTag(5), from_snbt("5D"))
-            self.assertStrictEqual(DoubleTag(5), from_snbt("5.d"))
-            self.assertStrictEqual(DoubleTag(5), from_snbt("5.D"))
+        for tag, snbt in float_data:
+            with self.subTest(snbt):
+                self.assertStrictEqual(tag, from_snbt(snbt))
 
     def test_to_nbt(self):
         self.assertEqual(

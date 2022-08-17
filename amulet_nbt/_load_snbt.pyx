@@ -9,12 +9,13 @@ from ._string cimport StringTag
 from ._list cimport CyListTag
 from ._compound cimport CyCompoundTag
 
-whitespace = re.compile('[ \t\r\n]*')
-int_numeric = re.compile('-?[0-9]+[bBsSlL]?')
-float_numeric = re.compile('-?[0-9]+\.?[0-9]*[fFdD]?')
-alnumplus = re.compile('[A-Za-z0-9._+-]+')
-comma = re.compile('[ \t\r\n]*,[ \t\r\n]*')
-colon = re.compile('[ \t\r\n]*:[ \t\r\n]*')
+whitespace = re.compile(r"[ \t\r\n]*")
+int_numeric = re.compile(r"[+-]?\d+[bBsSlL]?")
+# If the letter code and decimal do not exist it is parsed as a string tag.
+float_numeric = re.compile(r"[+-]?((((\d+\.\d*)|(\d*\.\d+))([eE][+-]?\d+)?)|((\d+|(\d+\.\d*)|(\d*\.\d+))([eE][+-]?\d+)?[fFdD]))")
+alnumplus = re.compile(r"[A-Za-z0-9._+-]+")
+comma = re.compile(r"[ \t\r\n]*,[ \t\r\n]*")
+colon = re.compile(r"[ \t\r\n]*:[ \t\r\n]*")
 array_lookup = {'B': ByteArrayTag, 'I': IntArrayTag, 'L': LongArrayTag}
 
 cdef int _strip_whitespace(unicode snbt, int index):
@@ -191,11 +192,11 @@ cdef tuple _parse_snbt_recursive(unicode snbt, int index=0):
             elif float_numeric.fullmatch(val) is not None:
                 # we have a float type
                 if val[-1] in {'f', 'F'}:
-                    data = FloatTag(float(val[:-1]))
+                    data = FloatTag(val[:-1])
                 elif val[-1] in {'d', 'D'}:
-                    data = DoubleTag(float(val[:-1]))
+                    data = DoubleTag(val[:-1])
                 else:
-                    data = DoubleTag(float(val))
+                    data = DoubleTag(val)
             elif val.lower() == "false":
                 data = ByteTag(0)
             elif val.lower() == "true":

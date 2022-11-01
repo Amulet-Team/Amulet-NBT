@@ -3,6 +3,7 @@
 
 import numpy
 cimport numpy
+numpy.import_array()
 from io import BytesIO
 from copy import deepcopy
 import warnings

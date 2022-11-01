@@ -1,4 +1,6 @@
+import numpy
 cimport numpy
+numpy.import_array()
 from ._value cimport AbstractBaseMutableTag
 from ._util cimport BufferContext
 

@@ -266,7 +266,7 @@ cdef class ByteTag(AbstractBaseIntTag):
             warnings.warn(f"__invert__ is depreciated on ByteTag and will be removed in the future. Please use .py_int to achieve the same behaviour.", DeprecationWarning)
             return ~self.value_
 
-    cdef char _sanitise_value(ByteTag self, value):
+    cdef signed char _sanitise_value(ByteTag self, value):
         return (value & 0x7F) - (value & 0x80)
 
     cdef str _to_snbt(ByteTag self):

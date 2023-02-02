@@ -7,8 +7,8 @@ cdef class AbstractBaseIntTag(AbstractBaseNumericTag):
 cdef ByteTag read_byte_tag(BufferContext buffer, bint little_endian)
 
 cdef class ByteTag(AbstractBaseIntTag):
-    cdef char value_
-    cdef char _sanitise_value(self, value)
+    cdef signed char value_
+    cdef signed char _sanitise_value(self, value)
 
 cdef ShortTag read_short_tag(BufferContext buffer, bint little_endian)
 

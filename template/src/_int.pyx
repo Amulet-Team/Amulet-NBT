@@ -63,7 +63,7 @@ cdef class ByteTag(AbstractBaseIntTag):
 
 {{include("AbstractBaseIntTag.pyx", cls_name="ByteTag")}}
 
-    cdef char _sanitise_value(ByteTag self, value):
+    cdef signed char _sanitise_value(ByteTag self, value):
         return (value & 0x7F) - (value & 0x80)
 
     cdef str _to_snbt(ByteTag self):

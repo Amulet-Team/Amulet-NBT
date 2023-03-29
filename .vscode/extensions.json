@@ -1,6 +1,5 @@
 {
 	"recommendations": [
-		"ms-python.python",
-		"ms-python.isort"
+		"ms-python.python"
 	]
 }

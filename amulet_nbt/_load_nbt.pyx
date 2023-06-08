@@ -173,7 +173,14 @@ def load_many(
     string_decoder: DecoderType = decode_modified_utf8
 ):
     warnings.warn("load_many is depreciated. Use load_array instead.", DeprecationWarning)
-    return load_array(filepath_or_buffer, count, compressed, little_endian, read_context, string_decoder)
+    return load_array(
+        filepath_or_buffer,
+        count=count,
+        compressed=compressed,
+        little_endian=little_endian,
+        read_context=read_context,
+        string_decoder=string_decoder
+    )
 
 
 def load(

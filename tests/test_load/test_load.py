@@ -8,7 +8,7 @@ from amulet_nbt import (
     load_array as load_nbt_array,
     NBTLoadError,
     NamedTag,
-    load_many
+    load_many,
 )
 
 DirPath = os.path.dirname(__file__)

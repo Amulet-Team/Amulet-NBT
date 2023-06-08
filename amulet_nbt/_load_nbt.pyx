@@ -133,7 +133,7 @@ def _load_one(
     return tag
 
 
-def load_many(
+def load_array(
     object filepath_or_buffer: Union[str, bytes, BinaryIO, memoryview, None],
     *,
     int count = 1,
@@ -142,20 +142,38 @@ def load_many(
     ReadContext read_context = None,
     string_decoder: DecoderType = decode_modified_utf8
 ) -> List[NamedTag]:
-    if count < 1:
-        raise ValueError("Count must be 1 or more.")
+    if count < -1:
+        raise ValueError("Count must be -1 or higher")
     cdef BufferContext buffer = get_buffer(filepath_or_buffer, compressed)
-    if buffer.size < 1:
-        raise EOFError("buffer is empty")
     cdef list results = []
     cdef size_t i
-    for i in range(count):
-        results.append(
-            load_named_tag(buffer, little_endian, string_decoder)
-        )
+    if count == -1:
+        while buffer.offset < buffer.size:
+            results.append(
+                load_named_tag(buffer, little_endian, string_decoder)
+            )
+    else:
+        for i in range(count):
+            results.append(
+                load_named_tag(buffer, little_endian, string_decoder)
+            )
+
     if read_context is not None:
         read_context.offset = buffer.offset
     return results
+
+
+def load_many(
+    object filepath_or_buffer: Union[str, bytes, BinaryIO, memoryview, None],
+    *,
+    int count = 1,
+    bint compressed: bool=True,
+    bint little_endian: bool = False,
+    ReadContext read_context = None,
+    string_decoder: DecoderType = decode_modified_utf8
+):
+    warnings.warn("load_many is depreciated. Use load_array instead.", DeprecationWarning)
+    return load_array(filepath_or_buffer, count, compressed, little_endian, read_context, string_decoder)
 
 
 def load(
@@ -193,8 +211,8 @@ def load(
             string_decoder=string_decoder
         )
     else:
-        warnings.warn("load with count is depreciated. Use load_many", DeprecationWarning)
-        result = load_many(
+        warnings.warn("load with count is depreciated. Use load_array", DeprecationWarning)
+        result = load_array(
             filepath_or_buffer,
             count=count,
             compressed=compressed,

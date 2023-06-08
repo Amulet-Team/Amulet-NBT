@@ -52,7 +52,7 @@ __all__ = [
     "CompoundTag",
     "TAG_Compound",
     "load",
-    "load_many",
+    "load_array",
     "ReadContext",
     "from_snbt",
     "NBTError",
@@ -123,7 +123,7 @@ from ._compound import (
 )
 
 # Load functions
-from ._load_nbt import load, load_many, ReadContext
+from ._load_nbt import load, load_many, load_array, ReadContext
 from ._load_snbt import from_snbt
 
 from ._errors import NBTError, NBTLoadError, NBTFormatError, SNBTParseError

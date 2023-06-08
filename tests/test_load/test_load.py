@@ -1,7 +1,14 @@
 import unittest
 import os
 
-from amulet_nbt import ListTag, IntTag, load as load_nbt, load_array as load_nbt_array, NBTLoadError, NamedTag
+from amulet_nbt import (
+    ListTag,
+    IntTag,
+    load as load_nbt,
+    load_array as load_nbt_array,
+    NBTLoadError,
+    NamedTag,
+)
 
 DirPath = os.path.dirname(__file__)
 EmptyPath = os.path.join(DirPath, "empty.nbt")
@@ -18,34 +25,64 @@ class LoadTests(unittest.TestCase):
         self.assertEqual([], load_nbt_array(EmptyPath, count=0))
         self.assertEqual([], load_nbt_array(EmptyPath, count=-1))
 
-        self.assertEqual(NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)])), load_nbt(OnePath))
-        self.assertEqual([NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)]))], load_nbt_array(OnePath))
-        self.assertEqual([NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)]))], load_nbt_array(OnePath, count=1))
-        self.assertEqual([NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)]))], load_nbt_array(OnePath, count=-1))
+        self.assertEqual(
+            NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)])),
+            load_nbt(OnePath),
+        )
+        self.assertEqual(
+            [NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)]))],
+            load_nbt_array(OnePath),
+        )
+        self.assertEqual(
+            [NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)]))],
+            load_nbt_array(OnePath, count=1),
+        )
+        self.assertEqual(
+            [NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)]))],
+            load_nbt_array(OnePath, count=-1),
+        )
         with self.assertRaises(NBTLoadError):
             load_nbt_array(OnePath, count=2)
 
-        self.assertEqual(NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)])), load_nbt(ArrayPath))
-        self.assertEqual([NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)]))], load_nbt_array(ArrayPath))
-        self.assertEqual([NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)]))], load_nbt_array(ArrayPath, count=1))
-        self.assertEqual([
+        self.assertEqual(
             NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)])),
-            NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)])),
-        ], load_nbt_array(ArrayPath, count=2))
-        self.assertEqual([
-            NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)])),
-            NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)])),
-            NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)])),
-            NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)])),
-            NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)])),
-        ], load_nbt_array(ArrayPath, count=5))
-        self.assertEqual([
-            NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)])),
-            NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)])),
-            NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)])),
-            NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)])),
-            NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)])),
-        ], load_nbt_array(ArrayPath, count=-1))
+            load_nbt(ArrayPath),
+        )
+        self.assertEqual(
+            [NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)]))],
+            load_nbt_array(ArrayPath),
+        )
+        self.assertEqual(
+            [NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)]))],
+            load_nbt_array(ArrayPath, count=1),
+        )
+        self.assertEqual(
+            [
+                NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)])),
+                NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)])),
+            ],
+            load_nbt_array(ArrayPath, count=2),
+        )
+        self.assertEqual(
+            [
+                NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)])),
+                NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)])),
+                NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)])),
+                NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)])),
+                NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)])),
+            ],
+            load_nbt_array(ArrayPath, count=5),
+        )
+        self.assertEqual(
+            [
+                NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)])),
+                NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)])),
+                NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)])),
+                NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)])),
+                NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)])),
+            ],
+            load_nbt_array(ArrayPath, count=-1),
+        )
         with self.assertRaises(NBTLoadError):
             load_nbt_array(ArrayPath, count=6)
 

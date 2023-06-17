@@ -111,7 +111,8 @@ venv*
 .mypy_cache/
 
 # Cython Files
-*.c
+src/amulet_nbt/*.c
+src/amulet_nbt/*.cpp
 *.html
 
 temp

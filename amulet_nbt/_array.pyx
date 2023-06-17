@@ -8,12 +8,9 @@ from io import BytesIO
 from copy import deepcopy
 import warnings
 
-from . import __major__
 from ._value cimport AbstractBaseMutableTag
 from ._const cimport CommaSpace, ID_BYTE_ARRAY, ID_INT_ARRAY, ID_LONG_ARRAY
 from ._util cimport write_array, BufferContext, read_int, read_data
-if __major__ <= 2:
-    from ._util import primitive_conversion
 from ._dtype import EncoderType
 
 
@@ -113,9 +110,6 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
         if isinstance(other, ByteArrayTag):
             other_ = other
             return numpy.array_equal(self.value_, other_.value_)
-        elif __major__ <= 2 and isinstance(other, AbstractBaseArrayTag):
-            warnings.warn("NBT comparison operator (a == b) will only return True between classes of the same type.", FutureWarning)
-            return numpy.array_equal(self.value_, primitive_conversion(other))
         return NotImplemented
 
     def __getitem__(ByteArrayTag self, item):
@@ -129,127 +123,6 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
 
     def __len__(ByteArrayTag self):
         return len(self.value_)
-
-    if __major__ <= 2:
-        def __add__(self, other):
-            warnings.warn(f"__add__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) + primitive_conversion(other)).astype(numpy.dtype("int8"))
-
-        def __sub__(self, other):
-            warnings.warn(f"__sub__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) - primitive_conversion(other)).astype(numpy.dtype("int8"))
-
-        def __mul__(self, other):
-            warnings.warn(f"__mul__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) * primitive_conversion(other)).astype(numpy.dtype("int8"))
-
-        def __matmul__(self, other):
-            warnings.warn(f"__matmul__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) @ primitive_conversion(other)).astype(numpy.dtype("int8"))
-
-        def __truediv__(self, other):
-            warnings.warn(f"__truediv__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) / primitive_conversion(other)).astype(numpy.dtype("int8"))
-
-        def __floordiv__(self, other):
-            warnings.warn(f"__floordiv__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) // primitive_conversion(other)).astype(numpy.dtype("int8"))
-
-        def __mod__(self, other):
-            warnings.warn(f"__mod__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) % primitive_conversion(other)).astype(numpy.dtype("int8"))
-
-        def __divmod__(self, other):
-            warnings.warn(f"__divmod__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return divmod(primitive_conversion(self), primitive_conversion(other))
-
-        def __pow__(self, power, modulo):
-            warnings.warn(f"__pow__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return pow(primitive_conversion(self), power, modulo).astype(numpy.dtype("int8"))
-
-        def __lshift__(self, other):
-            warnings.warn(f"__lshift__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) << primitive_conversion(other)).astype(numpy.dtype("int8"))
-
-        def __rshift__(self, other):
-            warnings.warn(f"__rshift__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) >> primitive_conversion(other)).astype(numpy.dtype("int8"))
-
-        def __and__(self, other):
-            warnings.warn(f"__and__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) & primitive_conversion(other)).astype(numpy.dtype("int8"))
-
-        def __xor__(self, other):
-            warnings.warn(f"__xor__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) ^ primitive_conversion(other)).astype(numpy.dtype("int8"))
-
-        def __or__(self, other):
-            warnings.warn(f"__or__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) | primitive_conversion(other)).astype(numpy.dtype("int8"))
-
-        def __radd__(self, other):
-            warnings.warn(f"__radd__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(other) + primitive_conversion(self)).astype(numpy.dtype("int8"))
-
-        def __rsub__(self, other):
-            warnings.warn(f"__rsub__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(other) - primitive_conversion(self)).astype(numpy.dtype("int8"))
-
-        def __rmul__(self, other):
-            warnings.warn(f"__rmul__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(other) * primitive_conversion(self)).astype(numpy.dtype("int8"))
-
-        def __rtruediv__(self, other):
-            warnings.warn(f"__rtruediv__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(other) / primitive_conversion(self)).astype(numpy.dtype("int8"))
-
-        def __rfloordiv__(self, other):
-            warnings.warn(f"__rfloordiv__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(other) // primitive_conversion(self)).astype(numpy.dtype("int8"))
-
-        def __rmod__(self, other):
-            warnings.warn(f"__rmod__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(other) % primitive_conversion(self)).astype(numpy.dtype("int8"))
-
-        def __rdivmod__(self, other):
-            warnings.warn(f"__rdivmod__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return divmod(primitive_conversion(other), primitive_conversion(self))
-
-        def __rpow__(self, other, modulo):
-            warnings.warn(f"__rpow__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return pow(primitive_conversion(other), primitive_conversion(self), modulo).astype(numpy.dtype("int8"))
-
-        def __rlshift__(self, other):
-            warnings.warn(f"__rlshift__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(other) << primitive_conversion(self)).astype(numpy.dtype("int8"))
-
-        def __rrshift__(self, other):
-            warnings.warn(f"__rrshift__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(other) >> primitive_conversion(self)).astype(numpy.dtype("int8"))
-
-        def __rand__(self, other):
-            warnings.warn(f"__rand__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(other) & primitive_conversion(self)).astype(numpy.dtype("int8"))
-
-        def __rxor__(self, other):
-            warnings.warn(f"__rxor__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(other) ^ primitive_conversion(self)).astype(numpy.dtype("int8"))
-
-        def __ror__(self, other):
-            warnings.warn(f"__ror__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(other) | primitive_conversion(self)).astype(numpy.dtype("int8"))
-
-        def __neg__(self):
-            warnings.warn(f"__neg__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (-self.value_).astype(numpy.dtype("int8"))
-
-        def __pos__(self):
-            warnings.warn(f"__pos__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (+self.value_).astype(numpy.dtype("int8"))
-
-        def __abs__(self):
-            warnings.warn(f"__abs__ is depreciated on ByteArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return abs(self.value_).astype(numpy.dtype("int8"))
 
 
 cdef inline IntArrayTag read_int_array_tag(BufferContext buffer, bint little_endian):
@@ -317,9 +190,6 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
         if isinstance(other, IntArrayTag):
             other_ = other
             return numpy.array_equal(self.value_, other_.value_)
-        elif __major__ <= 2 and isinstance(other, AbstractBaseArrayTag):
-            warnings.warn("NBT comparison operator (a == b) will only return True between classes of the same type.", FutureWarning)
-            return numpy.array_equal(self.value_, primitive_conversion(other))
         return NotImplemented
 
     def __getitem__(IntArrayTag self, item):
@@ -333,127 +203,6 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
 
     def __len__(IntArrayTag self):
         return len(self.value_)
-
-    if __major__ <= 2:
-        def __add__(self, other):
-            warnings.warn(f"__add__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) + primitive_conversion(other)).astype(numpy.dtype(">i4"))
-
-        def __sub__(self, other):
-            warnings.warn(f"__sub__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) - primitive_conversion(other)).astype(numpy.dtype(">i4"))
-
-        def __mul__(self, other):
-            warnings.warn(f"__mul__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) * primitive_conversion(other)).astype(numpy.dtype(">i4"))
-
-        def __matmul__(self, other):
-            warnings.warn(f"__matmul__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) @ primitive_conversion(other)).astype(numpy.dtype(">i4"))
-
-        def __truediv__(self, other):
-            warnings.warn(f"__truediv__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) / primitive_conversion(other)).astype(numpy.dtype(">i4"))
-
-        def __floordiv__(self, other):
-            warnings.warn(f"__floordiv__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) // primitive_conversion(other)).astype(numpy.dtype(">i4"))
-
-        def __mod__(self, other):
-            warnings.warn(f"__mod__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) % primitive_conversion(other)).astype(numpy.dtype(">i4"))
-
-        def __divmod__(self, other):
-            warnings.warn(f"__divmod__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return divmod(primitive_conversion(self), primitive_conversion(other))
-
-        def __pow__(self, power, modulo):
-            warnings.warn(f"__pow__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return pow(primitive_conversion(self), power, modulo).astype(numpy.dtype(">i4"))
-
-        def __lshift__(self, other):
-            warnings.warn(f"__lshift__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) << primitive_conversion(other)).astype(numpy.dtype(">i4"))
-
-        def __rshift__(self, other):
-            warnings.warn(f"__rshift__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) >> primitive_conversion(other)).astype(numpy.dtype(">i4"))
-
-        def __and__(self, other):
-            warnings.warn(f"__and__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) & primitive_conversion(other)).astype(numpy.dtype(">i4"))
-
-        def __xor__(self, other):
-            warnings.warn(f"__xor__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) ^ primitive_conversion(other)).astype(numpy.dtype(">i4"))
-
-        def __or__(self, other):
-            warnings.warn(f"__or__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) | primitive_conversion(other)).astype(numpy.dtype(">i4"))
-
-        def __radd__(self, other):
-            warnings.warn(f"__radd__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(other) + primitive_conversion(self)).astype(numpy.dtype(">i4"))
-
-        def __rsub__(self, other):
-            warnings.warn(f"__rsub__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(other) - primitive_conversion(self)).astype(numpy.dtype(">i4"))
-
-        def __rmul__(self, other):
-            warnings.warn(f"__rmul__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(other) * primitive_conversion(self)).astype(numpy.dtype(">i4"))
-
-        def __rtruediv__(self, other):
-            warnings.warn(f"__rtruediv__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(other) / primitive_conversion(self)).astype(numpy.dtype(">i4"))
-
-        def __rfloordiv__(self, other):
-            warnings.warn(f"__rfloordiv__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(other) // primitive_conversion(self)).astype(numpy.dtype(">i4"))
-
-        def __rmod__(self, other):
-            warnings.warn(f"__rmod__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(other) % primitive_conversion(self)).astype(numpy.dtype(">i4"))
-
-        def __rdivmod__(self, other):
-            warnings.warn(f"__rdivmod__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return divmod(primitive_conversion(other), primitive_conversion(self))
-
-        def __rpow__(self, other, modulo):
-            warnings.warn(f"__rpow__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return pow(primitive_conversion(other), primitive_conversion(self), modulo).astype(numpy.dtype(">i4"))
-
-        def __rlshift__(self, other):
-            warnings.warn(f"__rlshift__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(other) << primitive_conversion(self)).astype(numpy.dtype(">i4"))
-
-        def __rrshift__(self, other):
-            warnings.warn(f"__rrshift__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(other) >> primitive_conversion(self)).astype(numpy.dtype(">i4"))
-
-        def __rand__(self, other):
-            warnings.warn(f"__rand__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(other) & primitive_conversion(self)).astype(numpy.dtype(">i4"))
-
-        def __rxor__(self, other):
-            warnings.warn(f"__rxor__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(other) ^ primitive_conversion(self)).astype(numpy.dtype(">i4"))
-
-        def __ror__(self, other):
-            warnings.warn(f"__ror__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(other) | primitive_conversion(self)).astype(numpy.dtype(">i4"))
-
-        def __neg__(self):
-            warnings.warn(f"__neg__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (-self.value_).astype(numpy.dtype(">i4"))
-
-        def __pos__(self):
-            warnings.warn(f"__pos__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (+self.value_).astype(numpy.dtype(">i4"))
-
-        def __abs__(self):
-            warnings.warn(f"__abs__ is depreciated on IntArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return abs(self.value_).astype(numpy.dtype(">i4"))
 
 
 cdef inline LongArrayTag read_long_array_tag(BufferContext buffer, bint little_endian):
@@ -521,9 +270,6 @@ cdef class LongArrayTag(AbstractBaseArrayTag):
         if isinstance(other, LongArrayTag):
             other_ = other
             return numpy.array_equal(self.value_, other_.value_)
-        elif __major__ <= 2 and isinstance(other, AbstractBaseArrayTag):
-            warnings.warn("NBT comparison operator (a == b) will only return True between classes of the same type.", FutureWarning)
-            return numpy.array_equal(self.value_, primitive_conversion(other))
         return NotImplemented
 
     def __getitem__(LongArrayTag self, item):
@@ -537,124 +283,3 @@ cdef class LongArrayTag(AbstractBaseArrayTag):
 
     def __len__(LongArrayTag self):
         return len(self.value_)
-
-    if __major__ <= 2:
-        def __add__(self, other):
-            warnings.warn(f"__add__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) + primitive_conversion(other)).astype(numpy.dtype(">i8"))
-
-        def __sub__(self, other):
-            warnings.warn(f"__sub__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) - primitive_conversion(other)).astype(numpy.dtype(">i8"))
-
-        def __mul__(self, other):
-            warnings.warn(f"__mul__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) * primitive_conversion(other)).astype(numpy.dtype(">i8"))
-
-        def __matmul__(self, other):
-            warnings.warn(f"__matmul__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) @ primitive_conversion(other)).astype(numpy.dtype(">i8"))
-
-        def __truediv__(self, other):
-            warnings.warn(f"__truediv__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) / primitive_conversion(other)).astype(numpy.dtype(">i8"))
-
-        def __floordiv__(self, other):
-            warnings.warn(f"__floordiv__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) // primitive_conversion(other)).astype(numpy.dtype(">i8"))
-
-        def __mod__(self, other):
-            warnings.warn(f"__mod__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) % primitive_conversion(other)).astype(numpy.dtype(">i8"))
-
-        def __divmod__(self, other):
-            warnings.warn(f"__divmod__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return divmod(primitive_conversion(self), primitive_conversion(other))
-
-        def __pow__(self, power, modulo):
-            warnings.warn(f"__pow__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return pow(primitive_conversion(self), power, modulo).astype(numpy.dtype(">i8"))
-
-        def __lshift__(self, other):
-            warnings.warn(f"__lshift__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) << primitive_conversion(other)).astype(numpy.dtype(">i8"))
-
-        def __rshift__(self, other):
-            warnings.warn(f"__rshift__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) >> primitive_conversion(other)).astype(numpy.dtype(">i8"))
-
-        def __and__(self, other):
-            warnings.warn(f"__and__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) & primitive_conversion(other)).astype(numpy.dtype(">i8"))
-
-        def __xor__(self, other):
-            warnings.warn(f"__xor__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) ^ primitive_conversion(other)).astype(numpy.dtype(">i8"))
-
-        def __or__(self, other):
-            warnings.warn(f"__or__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(self) | primitive_conversion(other)).astype(numpy.dtype(">i8"))
-
-        def __radd__(self, other):
-            warnings.warn(f"__radd__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(other) + primitive_conversion(self)).astype(numpy.dtype(">i8"))
-
-        def __rsub__(self, other):
-            warnings.warn(f"__rsub__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(other) - primitive_conversion(self)).astype(numpy.dtype(">i8"))
-
-        def __rmul__(self, other):
-            warnings.warn(f"__rmul__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(other) * primitive_conversion(self)).astype(numpy.dtype(">i8"))
-
-        def __rtruediv__(self, other):
-            warnings.warn(f"__rtruediv__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(other) / primitive_conversion(self)).astype(numpy.dtype(">i8"))
-
-        def __rfloordiv__(self, other):
-            warnings.warn(f"__rfloordiv__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(other) // primitive_conversion(self)).astype(numpy.dtype(">i8"))
-
-        def __rmod__(self, other):
-            warnings.warn(f"__rmod__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(other) % primitive_conversion(self)).astype(numpy.dtype(">i8"))
-
-        def __rdivmod__(self, other):
-            warnings.warn(f"__rdivmod__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return divmod(primitive_conversion(other), primitive_conversion(self))
-
-        def __rpow__(self, other, modulo):
-            warnings.warn(f"__rpow__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return pow(primitive_conversion(other), primitive_conversion(self), modulo).astype(numpy.dtype(">i8"))
-
-        def __rlshift__(self, other):
-            warnings.warn(f"__rlshift__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(other) << primitive_conversion(self)).astype(numpy.dtype(">i8"))
-
-        def __rrshift__(self, other):
-            warnings.warn(f"__rrshift__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(other) >> primitive_conversion(self)).astype(numpy.dtype(">i8"))
-
-        def __rand__(self, other):
-            warnings.warn(f"__rand__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(other) & primitive_conversion(self)).astype(numpy.dtype(">i8"))
-
-        def __rxor__(self, other):
-            warnings.warn(f"__rxor__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(other) ^ primitive_conversion(self)).astype(numpy.dtype(">i8"))
-
-        def __ror__(self, other):
-            warnings.warn(f"__ror__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (primitive_conversion(other) | primitive_conversion(self)).astype(numpy.dtype(">i8"))
-
-        def __neg__(self):
-            warnings.warn(f"__neg__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (-self.value_).astype(numpy.dtype(">i8"))
-
-        def __pos__(self):
-            warnings.warn(f"__pos__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return (+self.value_).astype(numpy.dtype(">i8"))
-
-        def __abs__(self):
-            warnings.warn(f"__abs__ is depreciated on LongArrayTag and will be removed in the future. Please use .np_array to achieve the same behaviour.", DeprecationWarning)
-            return abs(self.value_).astype(numpy.dtype(">i8"))

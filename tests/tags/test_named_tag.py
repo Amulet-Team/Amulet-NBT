@@ -4,7 +4,6 @@ import copy
 import pickle
 
 from amulet_nbt import (
-    __major__,
     AbstractBaseNumericTag,
     AbstractBaseArrayTag,
     NamedTag,
@@ -45,18 +44,6 @@ class NBTTests(TestWrapper.AbstractBaseTest):
         for cls1, cls2 in itertools.product(self.nbt_types, repeat=2):
             with self.subTest(cls1=cls1, cls2=cls2):
                 if cls1 is cls2:
-                    self.assertEqual(NamedTag(cls1()), NamedTag(cls2()))
-                    self.assertEqual(NamedTag(cls1(), "name"), NamedTag(cls2(), "name"))
-                elif __major__ <= 2 and (
-                    (
-                        issubclass(cls1, AbstractBaseNumericTag)
-                        and issubclass(cls2, AbstractBaseNumericTag)
-                    )
-                    or (
-                        issubclass(cls1, AbstractBaseArrayTag)
-                        and issubclass(cls2, AbstractBaseArrayTag)
-                    )
-                ):
                     self.assertEqual(NamedTag(cls1()), NamedTag(cls2()))
                     self.assertEqual(NamedTag(cls1(), "name"), NamedTag(cls2(), "name"))
                 else:
@@ -147,34 +134,18 @@ class NBTTests(TestWrapper.AbstractBaseTest):
                             getattr(named_tag, TagNameMap[cls2])
 
     def test_iter(self):
-        if __major__ <= 2:
-            named_tag = NamedTag(
-                CompoundTag(key1=ByteTag(), key2=ByteTag(), key3=ByteTag())
-            )
-            it = iter(named_tag)
-            self.assertEqual("key1", next(it))
-            self.assertEqual("key2", next(it))
-            self.assertEqual("key3", next(it))
-            with self.assertRaises(StopIteration):
-                next(it)
-        else:
-            tag = CompoundTag()
-            name = "name"
-            named_tag = NamedTag(tag, name)
-            it = iter(named_tag)
-            self.assertIs(tag, next(it))
-            self.assertIs(name, next(it))
+        tag = CompoundTag()
+        name = "name"
+        named_tag = NamedTag(tag, name)
+        it = iter(named_tag)
+        self.assertIs(name, next(it))
+        self.assertIs(tag, next(it))
 
     def test_getitem(self):
         a, b, c = ByteTag(), ByteTag(), ByteTag()
         tag = CompoundTag(a=a, b=b, c=c)
         name = "name"
         named_tag = NamedTag(tag, name)
-
-        if __major__ <= 2:
-            self.assertEqual(a, named_tag["a"])
-            self.assertEqual(b, named_tag["b"])
-            self.assertEqual(c, named_tag["c"])
 
         self.assertIs(name, named_tag[0])
         self.assertIs(tag, named_tag[1])

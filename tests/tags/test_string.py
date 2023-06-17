@@ -4,7 +4,6 @@ import pickle
 from string import ascii_lowercase, ascii_uppercase, digits
 
 from amulet_nbt import (
-    __major__,
     AbstractBaseTag,
     AbstractBaseImmutableTag,
     StringTag,
@@ -29,9 +28,6 @@ class TestString(TestWrapper.AbstractBaseTagTest):
         self.assertNotEqual(StringTag("value"), StringTag("value2"))
         self.assertEqual(StringTag(StringTag("value")), StringTag("value"))
         self.assertEqual(StringTag("value"), StringTag(StringTag("value")))
-        if __major__ <= 2:
-            self.assertEqual("value", StringTag("value"))
-            self.assertEqual(StringTag("value"), "value")
 
     def test_py_data(self):
         self.assertIsNot(StringTag("value").py_str, str)

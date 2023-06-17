@@ -8,12 +8,9 @@ from collections.abc import MutableSequence
 import sys
 import warnings
 
-from . import __major__
 from ._value cimport AbstractBaseTag, AbstractBaseMutableTag
 from ._const cimport ID_LIST, CommaSpace, CommaNewline
 from ._util cimport write_byte, write_int, BufferContext, read_byte, read_int
-if __major__ <= 2:
-    from ._util import primitive_conversion
 from ._load_nbt cimport load_payload
 from ._dtype import AnyNBT, EncoderType
 {{py:from template import include}}

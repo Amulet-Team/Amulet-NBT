@@ -9,12 +9,9 @@ from collections.abc import MutableMapping
 import sys
 import warnings
 
-from . import __major__
 from ._value cimport AbstractBaseTag, AbstractBaseMutableTag
 from ._const cimport ID_END, ID_COMPOUND, CommaSpace, CommaNewline
 from ._util cimport write_byte, BufferContext, read_byte, read_string
-if __major__ <= 2:
-    from ._util import primitive_conversion
 from ._load_nbt cimport load_payload
 from ._dtype import AnyNBT, DecoderType, EncoderType
 from ._int cimport (

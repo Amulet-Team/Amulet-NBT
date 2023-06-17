@@ -5,12 +5,9 @@ from io import BytesIO
 from copy import deepcopy
 import warnings
 
-from . import __major__
 from ._value cimport AbstractBaseImmutableTag
 from ._const cimport ID_STRING
 from ._util cimport write_string, read_string, BufferContext
-if __major__ <= 2:
-    from ._util import primitive_conversion
 from ._dtype import EncoderType
 
 
@@ -41,9 +38,6 @@ cdef class StringTag(AbstractBaseImmutableTag):
         if isinstance(other, StringTag):
             other_ = other
             return self.value_ == other_.value_
-        elif __major__ <= 2:
-            warnings.warn("NBT comparison operator (a == b) will only return True between classes of the same type.", FutureWarning)
-            return self.value_ == primitive_conversion(other)
         return NotImplemented
 
     def __reduce__(StringTag self):
@@ -63,9 +57,6 @@ cdef class StringTag(AbstractBaseImmutableTag):
         if isinstance(other, StringTag):
             other_ = other
             return self.value_ >= other_.value_
-        elif __major__ <= 2:
-            warnings.warn("NBT comparison operator (a >= b) will only return True between classes of the same type.", FutureWarning)
-            return self.value_ >= primitive_conversion(other)
         return NotImplemented
 
     def __gt__(StringTag self, other):
@@ -73,9 +64,6 @@ cdef class StringTag(AbstractBaseImmutableTag):
         if isinstance(other, StringTag):
             other_ = other
             return self.value_ > other_.value_
-        elif __major__ <= 2:
-            warnings.warn("NBT comparison operator (a > b) will only return True between classes of the same type.", FutureWarning)
-            return self.value_ > primitive_conversion(other)
         return NotImplemented
 
     def __le__(StringTag self, other):
@@ -83,9 +71,6 @@ cdef class StringTag(AbstractBaseImmutableTag):
         if isinstance(other, StringTag):
             other_ = other
             return self.value_ <= other_.value_
-        elif __major__ <= 2:
-            warnings.warn("NBT comparison operator (a <= b) will only return True between classes of the same type.", FutureWarning)
-            return self.value_ <= primitive_conversion(other)
         return NotImplemented
 
     def __lt__(StringTag self, other):
@@ -93,9 +78,6 @@ cdef class StringTag(AbstractBaseImmutableTag):
         if isinstance(other, StringTag):
             other_ = other
             return self.value_ < other_.value_
-        elif __major__ <= 2:
-            warnings.warn("NBT comparison operator (a == b) will only return True between classes of the same type.", FutureWarning)
-            return self.value_ < primitive_conversion(other)
         return NotImplemented
 
     @property
@@ -130,24 +112,3 @@ cdef class StringTag(AbstractBaseImmutableTag):
 
     def __len__(self) -> int:
         return len(self.value_)
-
-    if __major__ <= 2:
-        def __getitem__(self, item) -> str:
-            warnings.warn(f"__getitem__ is depreciated on StringTag and will be removed in the future. Please use .py_str to achieve the same behaviour.", DeprecationWarning)
-            return self.value_[item]
-
-        def __add__(self, other):
-            warnings.warn(f"__add__ is depreciated on StringTag and will be removed in the future. Please use .py_str to achieve the same behaviour.", DeprecationWarning)
-            return primitive_conversion(self) + primitive_conversion(other)
-
-        def __radd__(self, other):
-            warnings.warn(f"__radd__ is depreciated on StringTag and will be removed in the future. Please use .py_str to achieve the same behaviour.", DeprecationWarning)
-            return primitive_conversion(other) + primitive_conversion(self)
-
-        def __mul__(self, other):
-            warnings.warn(f"__mul__ is depreciated on StringTag and will be removed in the future. Please use .py_str to achieve the same behaviour.", DeprecationWarning)
-            return primitive_conversion(self) * primitive_conversion(other)
-
-        def __rmul__(self, other):
-            warnings.warn(f"__rmul__ is depreciated on StringTag and will be removed in the future. Please use .py_str to achieve the same behaviour.", DeprecationWarning)
-            return primitive_conversion(other) * primitive_conversion(self)

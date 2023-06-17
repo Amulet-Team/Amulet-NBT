@@ -4,7 +4,6 @@ import copy
 import pickle
 
 from amulet_nbt import (
-    __major__,
     AbstractBaseTag,
     AbstractBaseMutableTag,
     ByteTag,
@@ -547,14 +546,10 @@ class TestList(TestWrapper.AbstractBaseTagTest):
                 tag.index(obj)
 
         tag = ListTag([ByteTag(1), ByteTag(2), ByteTag(3)])
-        if __major__ <= 2:
-            self.assertEqual(1, tag.index(ShortTag(2)))
-            self.assertEqual(0, tag.index(True))  # in V1 ByteTag(1) == True
-        else:
-            with self.assertRaises(ValueError):
-                tag.index(ShortTag(2))
-            with self.assertRaises(ValueError):
-                tag.index(True)
+        with self.assertRaises(ValueError):
+            tag.index(ShortTag(2))
+        with self.assertRaises(ValueError):
+            tag.index(True)
 
     def test_insert(self):
         tag = ListTag([StringTag("val1"), StringTag("val3"), StringTag("val4")])

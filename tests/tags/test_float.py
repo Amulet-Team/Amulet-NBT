@@ -5,7 +5,6 @@ import pickle
 from typing import List, Tuple
 
 from amulet_nbt import (
-    __major__,
     AbstractBaseTag,
     AbstractBaseImmutableTag,
     AbstractBaseNumericTag,
@@ -57,7 +56,7 @@ class TestFloat(TestWrapper.AbstractBaseTagTest):
         for cls1 in self.float_types:
             for cls2 in self.float_types:
                 with self.subTest(cls1=cls1, cls2=cls2):
-                    if cls1 is cls2 or __major__ <= 2:
+                    if cls1 is cls2:
                         self.assertEqual(cls1(), cls2())
                         self.assertEqual(cls1(), cls2(0))
                         self.assertNotEqual(cls1(5), cls2(10))
@@ -65,12 +64,8 @@ class TestFloat(TestWrapper.AbstractBaseTagTest):
                         self.assertNotEqual(cls1(), cls2())
                         self.assertNotEqual(cls1(), cls2(0))
 
-            if __major__ <= 2:
-                self.assertEqual(cls1(), 0)
-                self.assertEqual(0, cls1())
-            else:
-                self.assertNotEqual(cls1(), 0)
-                self.assertNotEqual(0, cls1())
+            self.assertNotEqual(cls1(), 0)
+            self.assertNotEqual(0, cls1())
 
     def test_py_data(self):
         for cls in self.float_types:
@@ -520,7 +515,7 @@ class TestFloat(TestWrapper.AbstractBaseTagTest):
     def test_numerical_operators(self):
         for cls1, cls2 in itertools.product(self.float_types, repeat=2):
             with self.subTest(cls1=cls1, cls2=cls2):
-                if cls1 is cls2 or __major__ <= 2:
+                if cls1 is cls2:
                     self.assertTrue(cls1(5) < cls2(10))
                     self.assertFalse(cls1(5) < cls2(5))
                     self.assertFalse(cls1(5) < cls2(0))

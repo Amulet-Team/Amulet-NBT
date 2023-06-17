@@ -4,7 +4,6 @@ import copy
 import pickle
 
 from amulet_nbt import (
-    __major__,
     AbstractBaseTag,
     AbstractBaseMutableTag,
     AbstractBaseNumericTag,
@@ -91,20 +90,7 @@ class TestCompound(TestWrapper.AbstractBaseTagTest):
                     CompoundTag((("key", cls2()),)),
                 ):
                     with self.subTest(cls1=cls1, cls2=cls2, ground=ground, other=other):
-                        if cls1 is cls2 and (
-                            isinstance(ground, CompoundTag) or __major__ <= 2
-                        ):
-                            self.assertEqual(ground, other)
-                        elif __major__ <= 2 and (
-                            (
-                                issubclass(cls1, AbstractBaseNumericTag)
-                                and issubclass(cls2, AbstractBaseNumericTag)
-                            )
-                            or (
-                                issubclass(cls1, AbstractBaseArrayTag)
-                                and issubclass(cls2, AbstractBaseArrayTag)
-                            )
-                        ):
+                        if cls1 is cls2 and (isinstance(ground, CompoundTag)):
                             self.assertEqual(ground, other)
                         else:
                             self.assertNotEqual(ground, other)

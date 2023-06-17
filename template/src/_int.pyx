@@ -5,7 +5,6 @@ from io import BytesIO
 from copy import deepcopy
 import warnings
 
-from . import __major__
 from ._numeric cimport AbstractBaseNumericTag
 from ._const cimport ID_BYTE, ID_SHORT, ID_INT, ID_LONG
 from ._util cimport (
@@ -18,8 +17,6 @@ from ._util cimport (
     to_little_endian,
     read_byte,
 )
-if __major__ <= 2:
-    from ._util import primitive_conversion
 from ._dtype import EncoderType
 {{py:from template import include}}
 

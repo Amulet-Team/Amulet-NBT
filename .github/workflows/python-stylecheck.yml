@@ -29,5 +29,5 @@ jobs:
         pip install black
     - name: run stylecheck
       run: |
-        python -m black --check --diff amulet_nbt
+        python -m black --check --diff src/amulet_nbt
         python -m black --check --diff tests

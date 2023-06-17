@@ -1,2 +1,2 @@
 * text=auto
-amulet_nbt/_version.py export-subst
+src/amulet_nbt/_version.py export-subst

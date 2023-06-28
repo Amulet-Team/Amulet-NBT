@@ -1,4 +1,5 @@
 #include <bit>
+#include <algorithm>
 
 template <typename T>
 void swap_endian(T &val) {
@@ -20,7 +21,7 @@ void swap_to_endian(T &val, std::endian endianness) {
 }
 
 template <typename Container, typename Element>
-void swap_array_to_endian(Container[Element] &val, std::endian endianness) {
+void swap_array_to_endian(Container &val, std::endian endianness) {
     if (std::endian::native != endianness){
         for (Element & element : val){
             swap_endian(element);

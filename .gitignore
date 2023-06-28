@@ -116,3 +116,8 @@ src/amulet_nbt/*.cpp
 *.html
 
 temp
+
+# visual studio files
+*.vs/
+*.vcxproj*
+*.sln

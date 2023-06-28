@@ -147,7 +147,7 @@ CompoundTagPtr read_compound_tag(std::istream stream, std::endian endianness){
     do {
         stream.read(reinterpret_cast<char*>(&tag_type), sizeof(tag_type));
         validate_stream(stream);
-        std::string name = read_tag(stream, endianness);
+        StringTag name = read_string_tag(stream, endianness);
         TagNode node = read_node(stream, endianness, tag_type);
         tag[name] = node;
     } while (tag_type);
@@ -233,7 +233,7 @@ std::pair<std::string, TagNode> read_named_tag(std::istream stream, std::endian 
     stream.read(reinterpret_cast<char*>(&tag_type), sizeof(tag_type));
     validate_stream(stream);
 
-    std::string name = read_tag(stream, endianness);
+    StringTag name = read_string_tag(stream, endianness);
     TagNode node = read_node(stream, endianness, tag_type);
     return std::make_pair(name, node);
 };

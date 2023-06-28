@@ -9,6 +9,8 @@ class Array : private std::vector<T>
 {
     public:
         // only methods that do not change the buffer size should be exposed here
+        using std::vector<T>::vector;
+
         using std::vector<T>::value_type;
         using std::vector<T>::size_type;
         using std::vector<T>::difference_type;
@@ -16,8 +18,6 @@ class Array : private std::vector<T>
         using std::vector<T>::const_iterator;
         using std::vector<T>::reverse_iterator;
         using std::vector<T>::const_reverse_iterator;
-
-        using std::vector<T>::vector;
 
         using std::vector<T>::operator[];
         using std::vector<T>::at;
@@ -29,4 +29,9 @@ class Array : private std::vector<T>
         using std::vector<T>::max_size;
         using std::vector<T>::size;
         using std::vector<T>::data;
+
+        bool operator==(const Array<T>& other) const
+        {
+            return static_cast<const std::vector<T>&>(*this) == static_cast<const std::vector<T>&>(other);
+        }
 };

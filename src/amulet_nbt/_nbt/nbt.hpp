@@ -9,59 +9,75 @@
 #include "array.hpp"
 
 
-typedef std::int8_t ByteTag;
-typedef std::int16_t ShortTag;
-typedef std::int32_t IntTag;
-typedef std::int64_t LongTag;
-typedef float FloatTag;
-typedef double DoubleTag;
-typedef std::string StringTag;
-class ListTag;
-class CompoundTag;
-typedef Array<ByteTag> ByteArrayTag;
-typedef Array<IntTag> IntArrayTag;
-typedef Array<LongTag> LongArrayTag;
+// Base types
+typedef std::int8_t CByteTag;
+typedef std::int16_t CShortTag;
+typedef std::int32_t CIntTag;
+typedef std::int64_t CLongTag;
+typedef float CFloatTag;
+typedef double CDoubleTag;
+typedef Array<CByteTag> CByteArrayTag;
+typedef std::string CStringTag;
+class CListTag;
+class CCompoundTag;
+typedef Array<CIntTag> CIntArrayTag;
+typedef Array<CLongTag> CLongArrayTag;
 
-typedef std::shared_ptr<ListTag> ListTagPtr;
-typedef std::shared_ptr<CompoundTag> CompoundTagPtr;
-typedef std::shared_ptr<ByteArrayTag> ByteArrayTagPtr;
-typedef std::shared_ptr<IntArrayTag> IntArrayTagPtr;
-typedef std::shared_ptr<LongArrayTag> LongArrayTagPtr;
+// Pointer types
+typedef std::shared_ptr<CListTag> CListTagPtr;
+typedef std::shared_ptr<CCompoundTag> CCompoundTagPtr;
+typedef std::shared_ptr<CByteArrayTag> CByteArrayTagPtr;
+typedef std::shared_ptr<CIntArrayTag> CIntArrayTagPtr;
+typedef std::shared_ptr<CLongArrayTag> CLongArrayTagPtr;
 
-class ListTag : public std::variant<
+// List types
+typedef std::vector<CByteTag> CByteList;
+typedef std::vector<CShortTag> CShortList;
+typedef std::vector<CIntTag> CIntList;
+typedef std::vector<CLongTag> CLongList;
+typedef std::vector<CFloatTag> CFloatList;
+typedef std::vector<CDoubleTag> CDoubleList;
+typedef std::vector<CByteArrayTagPtr> CByteArrayList;
+typedef std::vector<CStringTag> CStringList;
+typedef std::vector<CListTagPtr> CListList;
+typedef std::vector<CCompoundTagPtr> CCompoundList;
+typedef std::vector<CIntArrayTagPtr> CIntArrayList;
+typedef std::vector<CLongArrayTagPtr> CLongArrayList;
+
+class CListTag : public std::variant<
     std::monostate,
-    std::vector<ByteTag>,
-    std::vector<ShortTag>,
-    std::vector<IntTag>,
-    std::vector<LongTag>,
-    std::vector<FloatTag>,
-    std::vector<DoubleTag>,
-    std::vector<StringTag>,
-    std::vector<ListTagPtr>,
-    std::vector<CompoundTagPtr>,
-    std::vector<ByteArrayTagPtr>,
-    std::vector<IntArrayTagPtr>,
-    std::vector<LongArrayTagPtr>
+    CByteList,
+    CShortList,
+    CIntList,
+    CLongList,
+    CFloatList,
+    CDoubleList,
+    CByteArrayList,
+    CStringList,
+    CListList,
+    CCompoundList,
+    CIntArrayList,
+    CLongArrayList
 > {
     using variant::variant;
 };
 
 typedef std::variant<
     std::monostate,
-    ByteTag,
-    ShortTag,
-    IntTag,
-    LongTag,
-    FloatTag,
-    DoubleTag,
-    StringTag,
-    ListTagPtr,
-    CompoundTagPtr,
-    ByteArrayTagPtr,
-    IntArrayTagPtr,
-    LongArrayTagPtr
+    CByteTag,
+    CShortTag,
+    CIntTag,
+    CLongTag,
+    CFloatTag,
+    CDoubleTag,
+    CByteArrayTagPtr,
+    CStringTag,
+    CListTagPtr,
+    CCompoundTagPtr,
+    CIntArrayTagPtr,
+    CLongArrayTagPtr
 > TagNode;
 
-class CompoundTag : public std::unordered_map<std::string, TagNode> {
+class CCompoundTag : public std::unordered_map<std::string, TagNode> {
     using unordered_map::unordered_map;
 };

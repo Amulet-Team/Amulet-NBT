@@ -2,16 +2,13 @@
 This bakes the template files into real cython files."""
 import glob
 import os
-import pkgutil
 from typing import List, Optional
 
 from Cython import Tempita as tempita
 
 
-TEMPLATE_ROOT_PATH = os.path.dirname(pkgutil.get_loader("template").get_filename())
-TEMPLATES_PATH = os.path.join(TEMPLATE_ROOT_PATH, "templates")
-SRC_PATH = os.path.join(TEMPLATE_ROOT_PATH, "src")
-DST_PATH = os.path.join(os.path.dirname(TEMPLATE_ROOT_PATH), "src")
+ROOT_PATH = os.path.dirname(__file__)
+SRC_PATH = os.path.join(ROOT_PATH, "src")
 
 
 def include(rel_path, **kwargs):
@@ -21,16 +18,16 @@ def include(rel_path, **kwargs):
     :param rel_path: The path relative to the root.
     :return: The baked cython code.
     """
-    with open(os.path.join(TEMPLATES_PATH, rel_path)) as f:
+    with open(os.path.join(SRC_PATH, rel_path)) as f:
         return tempita.sub(f.read(), **kwargs)
 
 
 class TempitaManager:
     def __init__(self):
         self.files: List[TempitaFile] = []
-        for path in glob.glob(os.path.join(SRC_PATH, "**", "*.*"), recursive=True):
+        for path in glob.glob(os.path.join(SRC_PATH, "**", "*.tp"), recursive=True):
             rel_path = os.path.relpath(path, SRC_PATH)
-            save_path = os.path.join(DST_PATH, rel_path)
+            save_path = path[:-3]
             self.files.append(TempitaFile(path, rel_path, save_path))
 
     def changed(self):
@@ -79,3 +76,7 @@ class TempitaFile:
 def changed():
     """Have the source files changed since the last time tempita was run."""
     return TempitaManager().changed()
+
+
+if __name__ == '__main__':
+    TempitaManager().build()

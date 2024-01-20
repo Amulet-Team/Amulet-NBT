@@ -1,10 +1,3 @@
-import pkgutil
+from PyInstaller.utils.hooks import collect_submodules
 
-import amulet_nbt
-
-hiddenimports = [
-    name
-    for _, name, _ in pkgutil.walk_packages(
-        amulet_nbt.__path__, amulet_nbt.__name__ + "."
-    )
-]
+hiddenimports = collect_submodules("amulet_nbt")

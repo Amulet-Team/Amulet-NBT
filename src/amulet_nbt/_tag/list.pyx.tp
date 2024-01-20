@@ -1,0 +1,508 @@
+{{py:import base64}}
+{{base64.b64decode("IyMgVGhpcyBmaWxlIGlzIGdlbmVyYXRlZCBmcm9tIGEgdGVtcGxhdGUuCiMjIERvIG5vdCBtb2RpZnkgdGhpcyBmaWxlIGRpcmVjdGx5IG9yIHlvdXIgY2hhbmdlcyB3aWxsIGdldCBvdmVyd3JpdHRlbi4KIyMgRWRpdCB0aGUgYWNjb21wYW55aW5nIC5weXgudHAgZmlsZSBpbnN0ZWFkLg==").decode()}}
+
+from collections.abc import MutableSequence
+
+from libc.stdint cimport int64_t
+from libcpp.memory cimport make_shared
+from cython.operator cimport dereference
+from amulet_nbt._libcpp.variant cimport get
+
+from amulet_nbt._nbt cimport (
+    # CByteTag,
+    # CShortTag,
+    # CIntTag,
+    # CLongTag,
+    # CFloatTag,
+    # CDoubleTag,
+    # CByteArrayTagPtr,
+    # CStringTag,
+    CListTag,
+    CListTagPtr,
+    # CCompoundTagPtr,
+    # CIntArrayTagPtr,
+    # CLongArrayTagPtr,
+    CByteList,
+    CShortList,
+    CIntList,
+    CLongList,
+    CFloatList,
+    CDoubleList,
+    CByteArrayList,
+    CStringList,
+    CListList,
+    CCompoundList,
+    CIntArrayList,
+    CLongArrayList,
+)
+from amulet_nbt._tag.abc cimport AbstractBaseTag, AbstractBaseMutableTag
+from amulet_nbt._tag.array cimport ByteArrayTag, IntArrayTag, LongArrayTag
+from amulet_nbt._tag.compound cimport CompoundTag
+from amulet_nbt._tag.float cimport FloatTag, DoubleTag
+from amulet_nbt._tag.int cimport ByteTag, ShortTag, IntTag, LongTag
+from amulet_nbt._tag.string cimport StringTag
+# from amulet_nbt._const cimport ID_LIST, CommaSpace, CommaNewline
+# from amulet_nbt._dtype import AnyNBT, EncoderType
+{{py:
+from template import include
+ClassData = (
+    #id,  C cls,           C node cls          C list cls        py cls,         tag var,          list var
+    (1,  "CByteTag",      "CByteTag",         "CByteList",      "ByteTag",      "byte_tag",       "byte_list",       ),
+    (2,  "CShortTag",     "CShortTag",        "CShortList",     "ShortTag",     "short_tag",      "short_list",      ),
+    (3,  "CIntTag",       "CIntTag",          "CIntList",       "IntTag",       "int_tag",        "int_list",        ),
+    (4,  "CLongTag",      "CLongTag",         "CLongList",      "LongTag",      "long_tag",       "long_list",       ),
+    (5,  "CFloatTag",     "CFloatTag",        "CFloatList",     "FloatTag",     "float_tag",      "float_list",      ),
+    (6,  "CDoubleTag",    "CDoubleTag",       "CDoubleList",    "DoubleTag",    "double_tag",     "double_list",     ),
+    (7,  "CByteArrayTag", "CByteArrayTagPtr", "CByteArrayList", "ByteArrayTag", "byte_array_tag", "byte_array_list", ),
+    (8,  "CStringTag",    "CStringTag",       "CStringList",    "StringTag",    "string_tag",     "string_list",     ),
+    (9,  "CListTag",      "CListTagPtr",      "CListList",      "ListTag",      "list_tag",       "list_list",       ),
+    (10, "CCompoundTag",  "CCompoundTagPtr",  "CCompoundList",  "CompoundTag",  "compound_tag",   "compound_list",   ),
+    (11, "CIntArrayTag",  "CIntArrayTagPtr",  "CIntArrayList",  "IntArrayTag",  "int_array_tag",  "int_array_list",  ),
+    (12, "CLongArrayTag", "CLongArrayTagPtr", "CLongArrayList", "LongArrayTag", "long_array_tag", "long_array_list", ),
+)
+}}
+
+
+cdef inline size_t _len(CListTagPtr cpp):
+    cdef size_t index = dereference(cpp).index()
+{{
+"".join(
+    f"    {'el'*(index!=1)}if index == {index}:\n        return get[{c_list_cls}](dereference(cpp)).size()\n"
+    for index, c_cls, c_node_cls, c_list_cls, py_cls, tag_var, list_var in ClassData
+)
+}}
+    else:
+        raise RuntimeError
+
+
+{{
+"\n\n\n".join(
+f"""cdef inline {py_cls} _get_{tag_var}(CListTagPtr cpp, int64_t item):
+    cdef {c_list_cls}* {list_var} = &get[{c_list_cls}](dereference(cpp))
+    if item < 0:
+        item += dereference({list_var}).size()
+    if item < 0 or item > dereference({list_var}).size():
+        raise IndexError
+    return {py_cls}.wrap(dereference({list_var})[item])"""
+    for index, c_cls, c_node_cls, c_list_cls, py_cls, tag_var, list_var in ClassData
+)
+}}
+
+
+cdef inline AbstractBaseTag _get_item(CListTagPtr cpp, int64_t item):
+    index = dereference(cpp).index()
+{{
+"\n".join(
+f"""    {"el"*(index!=1)}if index == {index}:
+        return _get_{tag_var}(cpp, item)"""
+    for index, c_cls, c_node_cls, c_list_cls, py_cls, tag_var, list_var in ClassData
+)
+}}
+    else:
+        raise RuntimeError
+
+
+cdef (size_t, size_t, size_t) _slice_to_range(size_t target_len, object s):
+    cdef int64_t start
+    cdef int64_t stop
+    cdef int64_t step
+
+    if s.step is None:
+        step = 1
+    else:
+        step = s.step
+
+    if step > 0:
+        if s.start is None:
+            start = 0
+        elif s.start < 0:
+            start = s.start + target_len
+        else:
+            start = s.start
+        start = min(max(0, start), target_len)
+        if s.stop is None:
+            stop = target_len
+        elif s.stop < 0:
+            stop = s.stop + target_len
+        else:
+            stop = s.stop
+        stop = min(max(0, stop), target_len)
+
+    elif step < 0:
+        if s.start is None:
+            start = target_len - 1
+        elif s.start < 0:
+            start = s.start + target_len
+        else:
+            start = s.start
+        start = min(max(-1, start), target_len - 1)
+        if s.stop is None:
+            stop = -1
+        elif s.stop < 0:
+            stop = s.stop + target_len
+        else:
+            stop = s.stop
+        stop = min(max(-1, stop), target_len - 1)
+
+    elif step == 0:
+        raise ValueError
+    else:
+        raise RuntimeError
+
+    return start, stop, step
+
+
+{{
+"\n\n\n".join(
+f"""cdef inline list _get_slice_{tag_var}(CListTagPtr cpp, object s):
+    cdef size_t start
+    cdef size_t stop
+    cdef size_t step
+    cdef size_t item
+    
+    cdef {c_list_cls}* {list_var}
+    {list_var} = &get[{c_list_cls}](dereference(cpp))
+    
+    start, stop, step = _slice_to_range(dereference({list_var}).size(), s)
+    return [
+        {py_cls}.wrap(dereference({list_var})[item])
+        for item in range(start, stop, step)
+    ]"""
+    for index, c_cls, c_node_cls, c_list_cls, py_cls, tag_var, list_var in ClassData
+)
+}}
+
+
+cdef inline list _get_slice(CListTagPtr cpp, object s):
+    index = dereference(cpp).index()
+{{
+"\n".join(
+f"""    {"el"*(index!=1)}if index == {index}:
+        return _get_slice_{tag_var}(cpp, s)"""
+    for index, c_cls, c_node_cls, c_list_cls, py_cls, tag_var, list_var in ClassData
+)
+}}
+    else:
+        raise RuntimeError
+
+
+{{
+"\n\n\n".join(
+f"""cdef inline void _set_{tag_var}(CListTagPtr cpp, int64_t item, {py_cls} value):
+    cdef {c_list_cls}* {list_var}
+    
+    if dereference(cpp).index() == {index}:
+        {list_var} = &get[{c_list_cls}](dereference(cpp))
+        if item < 0:
+            item += dereference({list_var}).size()
+        if item < 0 or item > dereference({list_var}).size():
+            raise IndexError("Assignment index out of range")
+        dereference({list_var})[item] = value.cpp
+    elif _len(cpp) == 1 and (item == 0 or item == -1):
+        dereference(cpp).emplace[{c_list_cls}]()
+        {list_var} = &get[{c_list_cls}](dereference(cpp))
+        dereference({list_var}).push_back(value.cpp)
+    else:
+        raise TypeError("NBT ListTag item mismatch.")"""
+    for index, c_cls, c_node_cls, c_list_cls, py_cls, tag_var, list_var in ClassData
+)
+}}
+
+
+cdef inline void _set_item(CListTagPtr cpp, int64_t item, AbstractBaseTag value):
+{{
+"\n".join(
+    f"""    {"el" * (index != 1)}if isinstance(value, {py_cls}):
+        _set_{tag_var}(cpp, item, value)"""
+    for index, c_cls, c_node_cls, c_list_cls, py_cls, tag_var, list_var in ClassData
+)
+}}
+    else:
+        raise TypeError
+
+
+{{
+"\n\n\n".join(
+f"""cdef inline void _set_slice_{tag_var}(CListTagPtr cpp, s item, list value):
+    cdef {c_list_cls}* {list_var}
+    
+    if dereference(cpp).index() == {index}:
+        {list_var} = &get[{c_list_cls}](dereference(cpp))
+        if item < 0:
+            item += dereference({list_var}).size()
+        if item < 0 or item > dereference({list_var}).size():
+            raise IndexError("Assignment index out of range")
+        dereference({list_var})[item] = value.cpp
+    elif _len(cpp) == 1 and (item == 0 or item == -1):
+        dereference(cpp).emplace[{c_list_cls}]()
+        {list_var} = &get[{c_list_cls}](dereference(cpp))
+        dereference({list_var}).push_back(value.cpp)
+    else:
+        raise TypeError("NBT ListTag item mismatch.")"""
+    for index, c_cls, c_node_cls, c_list_cls, py_cls, tag_var, list_var in ClassData
+)
+}}
+
+
+cdef inline void _set_slice(CListTagPtr cpp, object s, object value):
+    pass
+
+
+{{
+"\n\n\n".join(
+f"""cdef inline void _del_{tag_var}(CListTagPtr cpp, int64_t item):
+    cdef {c_list_cls}* {list_var} = &get[{c_list_cls}](dereference(cpp))
+    if item < 0:
+        item += dereference({list_var}).size()
+    if item < 0 or item > dereference({list_var}).size():
+        raise IndexError
+    dereference({list_var}).erase(dereference({list_var}).begin() + item)"""
+    for index, c_cls, c_node_cls, c_list_cls, py_cls, tag_var, list_var in ClassData
+)
+}}
+
+
+cdef inline void _del_item(CListTagPtr cpp, int64_t item):
+    index = dereference(cpp).index()
+{{
+"\n".join(
+f"""    {"el"*(index!=1)}if index == {index}:
+        _del_{tag_var}(cpp, item)"""
+    for index, c_cls, c_node_cls, c_list_cls, py_cls, tag_var, list_var in ClassData
+)
+}}
+    else:
+        raise RuntimeError
+
+
+{{
+"\n\n\n".join(
+f"""cdef inline void _del_slice_{tag_var}(CListTagPtr cpp, object s):
+    cdef size_t start
+    cdef size_t stop
+    cdef size_t step
+    cdef size_t item
+
+    cdef {c_list_cls}* {list_var}
+    {list_var} = &get[{c_list_cls}](dereference(cpp))
+
+    start, stop, step = _slice_to_range(dereference({list_var}).size(), s)
+    
+    if step == 1:
+        dereference({list_var}).erase(
+            dereference({list_var}).begin() + start,
+            dereference({list_var}).begin() + stop,
+        )
+    else:
+        for item in range(start, stop, step):
+            dereference({list_var}).erase(dereference({list_var}).begin() + item)"""
+        for index, c_cls, c_node_cls, c_list_cls, py_cls, tag_var, list_var in ClassData
+)
+}}
+
+
+cdef inline void _del_slice(CListTagPtr cpp, object s):
+    index = dereference(cpp).index()
+{{
+"\n".join(
+    f"""    {"el" * (index != 1)}if index == {index}:
+        _del_slice_{tag_var}(cpp, s)"""
+    for index, c_cls, c_node_cls, c_list_cls, py_cls, tag_var, list_var in ClassData
+)
+}}
+    else:
+        raise RuntimeError
+
+
+{{
+"\n\n\n".join(
+f"""cdef inline void _insert_{tag_var}(CListTagPtr cpp, int64_t item, {py_cls} value):
+    cdef {c_list_cls}* {list_var}
+    
+    if dereference(cpp).index() == {index}:
+        {list_var} = &get[{c_list_cls}](dereference(cpp))
+    elif _len(cpp) == 0:
+        dereference(cpp).emplace[{c_list_cls}]()
+        {list_var} = &get[{c_list_cls}](dereference(cpp))
+    else:
+        raise RuntimeError
+    
+    if item < 0:
+        item += dereference({list_var}).size()
+    item = min(max(0, item), dereference({list_var}).size())
+
+    dereference({list_var}).insert(dereference({list_var}).begin() + item, value.cpp)"""
+    for index, c_cls, c_node_cls, c_list_cls, py_cls, tag_var, list_var in ClassData
+)
+}}
+
+
+cdef inline void _insert(CListTagPtr cpp, int64_t item, AbstractBaseTag value):
+{{
+"\n".join(
+    f"""    {"el" * (index != 1)}if isinstance(value, {py_cls}):
+        _insert_{tag_var}(cpp, item, value)"""
+    for index, c_cls, c_node_cls, c_list_cls, py_cls, tag_var, list_var in ClassData
+)
+}}
+    else:
+        raise TypeError
+
+
+cdef class ListTag(AbstractBaseMutableTag, MutableSequence):
+    """
+    This class behaves like a python list.
+    All contained data must be of the same NBT data type.
+    """
+    # tag_id = ID_LIST
+
+    def __init__(ListTag self, object value = (), char list_data_type = 1):
+        self.cpp = make_shared[CListTag]()
+{{
+"\n".join(
+    f"""        {"el" * (index != 1)}if list_data_type == {index}:
+            dereference(self.cpp).emplace[{c_list_cls}]()"""
+    for index, c_cls, c_node_cls, c_list_cls, py_cls, tag_var, list_var in ClassData
+)
+}}
+        else:
+            raise ValueError(list_data_type)
+
+        for tag in value:
+            self.append(tag)
+
+    @staticmethod
+    cdef ListTag wrap(CListTagPtr cpp):
+        cdef ListTag tag = ListTag.__new__(ListTag)
+        tag.cpp = cpp
+        return tag
+
+# {/{include("amulet_nbt/tpf/AbstractBaseMutableTag.pyx.tpf", cls_name="ListTag")}/}
+
+    @property
+    def py_list(ListTag self) -> List[AnyNBT]:
+        """
+        A python list representation of the class.
+        The returned list is a shallow copy of the class, meaning changes will not mirror the instance.
+        Use the public API to modify the internal data.
+        """
+        return list(self)
+
+    @property
+    def py_data(self):
+        """
+        A python representation of the class. Note that the return type is undefined and may change in the future.
+        You would be better off using the py_{type} or np_array properties if you require a fixed type.
+        This is here for convenience to get a python representation under the same property name.
+        """
+        return list(self)
+
+    # cdef void _check_tag(ListTag self, AbstractBaseTag value, bint fix_if_empty=True) except *:
+    #     if value is None:
+    #         raise TypeError("List values must be NBT Tags")
+    #     if fix_if_empty and not self.value_:
+    #         self.list_data_type = value.tag_id
+    #     elif value.tag_id != self.list_data_type:
+    #         raise TypeError(
+    #             f"Invalid type {value.__class__.__name__} for ListTag(list_data_type={self.list_data_type})"
+    #         )
+    #
+    # cdef void _check_tag_iterable(ListTag self, list value) except *:
+    #     cdef int i
+    #     cdef AbstractBaseTag tag
+    #     for i, tag in enumerate(value):
+    #         self._check_tag(tag, not i)
+
+    # def __repr__(ListTag self):
+    #     return f"{self.__class__.__name__}({repr(list(self))}, {self.list_data_type})"
+
+    # def __contains__(ListTag self, object item) -> bool:
+    #     if not isinstance(item, AbstractBaseTag):
+    #         return False
+    #     elif isinstance(item, ByteTag):
+    #     elif isinstance(item, ShortTag):
+    #     elif isinstance(item, IntTag):
+    #     elif isinstance(item, LongTag):
+    #     elif isinstance(item, FloatTag):
+    #     elif isinstance(item, DoubleTag):
+    #     elif isinstance(item, StringTag):
+    #     elif isinstance(item, ByteArrayTag):
+    #     elif isinstance(item, ListTag):
+    #     elif isinstance(item, CompoundTag):
+    #     elif isinstance(item, IntArrayTag):
+    #     elif isinstance(item, LongArrayTag):
+    #
+    #     if list_data_type == 1:
+    #         dereference(self.cpp).emplace[vector[CByteTag]]()
+    #     elif list_data_type == 2:
+    #         dereference(self.cpp).emplace[vector[CShortTag]]()
+    #     elif list_data_type == 3:
+    #         dereference(self.cpp).emplace[vector[CIntTag]]()
+    #     elif list_data_type == 4:
+    #         dereference(self.cpp).emplace[vector[CLongTag]]()
+    #     elif list_data_type == 5:
+    #         dereference(self.cpp).emplace[vector[CFloatTag]]()
+    #     elif list_data_type == 6:
+    #         dereference(self.cpp).emplace[vector[CDoubleTag]]()
+    #     elif list_data_type == 7:
+    #         dereference(self.cpp).emplace[vector[CByteArrayTagPtr]]()
+    #     elif list_data_type == 8:
+    #         dereference(self.cpp).emplace[vector[CStringTag]]()
+    #     elif list_data_type == 9:
+    #         dereference(self.cpp).emplace[vector[CListTagPtr]]()
+    #     elif list_data_type == 10:
+    #         dereference(self.cpp).emplace[vector[CCompoundTagPtr]]()
+    #     elif list_data_type == 11:
+    #         dereference(self.cpp).emplace[vector[CIntArrayTagPtr]]()
+    #     elif list_data_type == 12:
+    #         dereference(self.cpp).emplace[vector[CLongArrayTagPtr]]()
+    #
+    #
+    #         and item.tag_id == self.list_data_type and self.value_.__contains__(item)
+
+    def __len__(ListTag self) -> int:
+        return _len(self.cpp)
+
+    def __getitem__(ListTag self, object item):
+        if isinstance(item, int):
+            return _get_item(self.cpp, item)
+        elif isinstance(item, slice):
+            return _get_slice(self.cpp, item)
+        else:
+            raise TypeError
+
+    def __setitem__(ListTag self, object item, object value):
+        if isinstance(item, int):
+            _set_item(self.cpp, item, value)
+        elif isinstance(item, slice):
+            _set_slice(self.cpp, item, value)
+        else:
+            raise TypeError
+
+    def __delitem__(ListTag self, object item):
+        if isinstance(item, int):
+            _del_item(self.cpp, item)
+        elif isinstance(item, slice):
+            _del_slice(self.cpp, item)
+        else:
+            raise TypeError
+
+    def copy(ListTag self):
+        """Return a shallow copy of the class"""
+        return ListTag(self, dereference(self.cpp).index())
+
+    def insert(ListTag self, int64_t index, AbstractBaseTag value not None):
+        _insert(self.cpp, index, value)
+
+# {/{include("amulet_nbt/tpf/ListGet.pyx.tpf", tag_cls_name="ByteTag", tag_name="byte")}/}
+# {/{include("amulet_nbt/tpf/ListGet.pyx.tpf", tag_cls_name="ShortTag", tag_name="short")}/}
+# {/{include("amulet_nbt/tpf/ListGet.pyx.tpf", tag_cls_name="IntTag", tag_name="int")}/}
+# {/{include("amulet_nbt/tpf/ListGet.pyx.tpf", tag_cls_name="LongTag", tag_name="long")}/}
+# {/{include("amulet_nbt/tpf/ListGet.pyx.tpf", tag_cls_name="FloatTag", tag_name="float")}/}
+# {/{include("amulet_nbt/tpf/ListGet.pyx.tpf", tag_cls_name="DoubleTag", tag_name="double")}/}
+# {/{include("amulet_nbt/tpf/ListGet.pyx.tpf", tag_cls_name="StringTag", tag_name="string")}/}
+# {/{include("amulet_nbt/tpf/ListGet.pyx.tpf", tag_cls_name="ListTag", tag_name="list")}/}
+# {/{include("amulet_nbt/tpf/ListGet.pyx.tpf", tag_cls_name="CompoundTag", tag_name="compound")}/}
+# {/{include("amulet_nbt/tpf/ListGet.pyx.tpf", tag_cls_name="ByteArrayTag", tag_name="byte_array")}/}
+# {/{include("amulet_nbt/tpf/ListGet.pyx.tpf", tag_cls_name="IntArrayTag", tag_name="int_array")}/}
+# {/{include("amulet_nbt/tpf/ListGet.pyx.tpf", tag_cls_name="LongArrayTag", tag_name="long_array")}/}

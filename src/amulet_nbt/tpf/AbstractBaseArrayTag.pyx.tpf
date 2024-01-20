@@ -1,0 +1,56 @@
+{{py:
+from template import include
+}}
+cdef class {{dtype.capitalize()}}ArrayTag(AbstractBaseArrayTag):
+    """This class behaves like an 1D Numpy signed integer array with each value stored in a {{dtype}}."""
+    # tag_id = ID_{{dtype.upper()}}_ARRAY
+
+    def __init__({{dtype.capitalize()}}ArrayTag self, object value = ()):
+        # self.cpp = numpy.asarray(value, {{native_data_type}}).ravel()
+        pass
+
+    @staticmethod
+    cdef {{dtype.capitalize()}}ArrayTag wrap(C{{dtype.capitalize()}}ArrayTagPtr cpp):
+        cdef {{dtype.capitalize()}}ArrayTag tag = {{dtype.capitalize()}}ArrayTag.__new__({{dtype.capitalize()}}ArrayTag)
+        tag.cpp = cpp
+        return tag
+
+#
+#     # cdef str _to_snbt({{dtype.capitalize()}}ArrayTag self):
+#     #     cdef long long elem
+#     #     cdef list tags = []
+#     #     for elem in self.cpp:
+#     #         tags.append(f"{elem}{{snbt_suffix}}")
+#     #     return f"[{{snbt_prefix}};{CommaSpace.join(tags)}]"
+#
+# #{\{include("amulet_nbt/tpf/AbstractBaseMutableTag.pyx.tpf", cls_name=f"{dtype.capitalize()}ArrayTag", show_eq=False, **locals())}\}
+#
+#     # @property
+#     # def np_array({{dtype.capitalize()}}ArrayTag self):
+#     #     """
+#     #     A numpy array holding the same internal data.
+#     #     Changes to the array will also modify the internal state.
+#     #     """
+#     #     return self.cpp
+#
+#     # def __repr__({{dtype.capitalize()}}ArrayTag self):
+#     #     return f"{self.__class__.__name__}({list(self.cpp)})"
+#
+#     def __eq__({{dtype.capitalize()}}ArrayTag self, other):
+#         cdef {{dtype.capitalize()}}ArrayTag other_
+#         if isinstance(other, {{dtype.capitalize()}}ArrayTag):
+#             other_ = other
+#             return dereference(self.cpp) == dereference(other_.cpp)
+#         return NotImplemented
+#
+#     def __getitem__({{dtype.capitalize()}}ArrayTag self, uint32_t item):
+#         return dereference(self.cpp)[item]
+#
+#     def __setitem__({{dtype.capitalize()}}ArrayTag self, uint32_t key, C{{dtype.capitalize()}}Tag value):
+#         dereference(self.cpp)[key] = value
+#
+#     # def __array__({{dtype.capitalize()}}ArrayTag self, dtype=None):
+#     #     return numpy.asarray(self.cpp, dtype=dtype)
+#
+#     def __len__({{dtype.capitalize()}}ArrayTag self):
+#         return dereference(self.cpp).size()

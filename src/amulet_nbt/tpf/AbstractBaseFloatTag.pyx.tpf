@@ -1,0 +1,5 @@
+    @staticmethod
+    cdef {{cls_name}} wrap(C{{cls_name}} cpp):
+        cdef {{cls_name}} tag = {{cls_name}}.__new__({{cls_name}})
+        tag.cpp = cpp
+        return tag

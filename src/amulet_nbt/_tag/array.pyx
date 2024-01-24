@@ -64,14 +64,23 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
     # tag_id = ID_BYTE_ARRAY
 
     def __init__(ByteArrayTag self, object value = ()):
-        # self.cpp = numpy.asarray(value, numpy.dtype("int8")).ravel()
-        pass
+        cdef numpy.ndarray arr = numpy.asarray(value, numpy.dtype("int8")).ravel()
+        self.cpp = make_shared[CByteArrayTag](arr.size)
+        cdef size_t i
+        for i in range(arr.size):
+            dereference(self.cpp)[i] = arr[i]
 
     @staticmethod
     cdef ByteArrayTag wrap(CByteArrayTagPtr cpp):
         cdef ByteArrayTag tag = ByteArrayTag.__new__(ByteArrayTag)
         tag.cpp = cpp
         return tag
+
+    def __eq__(ByteArrayTag self, object other):
+        if not isinstance(other, ByteArrayTag):
+            return False
+        cdef ByteArrayTag tag = other
+        return dereference(self.cpp) == dereference(tag.cpp)
 
 #
 #     # cdef str _to_snbt(ByteArrayTag self):
@@ -81,7 +90,6 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
 #     #         tags.append(f"{elem}B")
 #     #     return f"[B;{CommaSpace.join(tags)}]"
 #
-# #{\{include("amulet_nbt/tpf/AbstractBaseMutableTag.pyx.tpf", cls_name=f"{dtype.capitalize()}ArrayTag", show_eq=False, **locals())}\}
 #
 #     # @property
 #     # def np_array(ByteArrayTag self):
@@ -119,14 +127,23 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
     # tag_id = ID_INT_ARRAY
 
     def __init__(IntArrayTag self, object value = ()):
-        # self.cpp = numpy.asarray(value, numpy.int32).ravel()
-        pass
+        cdef numpy.ndarray arr = numpy.asarray(value, numpy.int32).ravel()
+        self.cpp = make_shared[CIntArrayTag](arr.size)
+        cdef size_t i
+        for i in range(arr.size):
+            dereference(self.cpp)[i] = arr[i]
 
     @staticmethod
     cdef IntArrayTag wrap(CIntArrayTagPtr cpp):
         cdef IntArrayTag tag = IntArrayTag.__new__(IntArrayTag)
         tag.cpp = cpp
         return tag
+
+    def __eq__(IntArrayTag self, object other):
+        if not isinstance(other, IntArrayTag):
+            return False
+        cdef IntArrayTag tag = other
+        return dereference(self.cpp) == dereference(tag.cpp)
 
 #
 #     # cdef str _to_snbt(IntArrayTag self):
@@ -136,7 +153,6 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
 #     #         tags.append(f"{elem}")
 #     #     return f"[I;{CommaSpace.join(tags)}]"
 #
-# #{\{include("amulet_nbt/tpf/AbstractBaseMutableTag.pyx.tpf", cls_name=f"{dtype.capitalize()}ArrayTag", show_eq=False, **locals())}\}
 #
 #     # @property
 #     # def np_array(IntArrayTag self):
@@ -174,14 +190,23 @@ cdef class LongArrayTag(AbstractBaseArrayTag):
     # tag_id = ID_LONG_ARRAY
 
     def __init__(LongArrayTag self, object value = ()):
-        # self.cpp = numpy.asarray(value, numpy.int64).ravel()
-        pass
+        cdef numpy.ndarray arr = numpy.asarray(value, numpy.int64).ravel()
+        self.cpp = make_shared[CLongArrayTag](arr.size)
+        cdef size_t i
+        for i in range(arr.size):
+            dereference(self.cpp)[i] = arr[i]
 
     @staticmethod
     cdef LongArrayTag wrap(CLongArrayTagPtr cpp):
         cdef LongArrayTag tag = LongArrayTag.__new__(LongArrayTag)
         tag.cpp = cpp
         return tag
+
+    def __eq__(LongArrayTag self, object other):
+        if not isinstance(other, LongArrayTag):
+            return False
+        cdef LongArrayTag tag = other
+        return dereference(self.cpp) == dereference(tag.cpp)
 
 #
 #     # cdef str _to_snbt(LongArrayTag self):
@@ -191,7 +216,6 @@ cdef class LongArrayTag(AbstractBaseArrayTag):
 #     #         tags.append(f"{elem}L")
 #     #     return f"[L;{CommaSpace.join(tags)}]"
 #
-# #{\{include("amulet_nbt/tpf/AbstractBaseMutableTag.pyx.tpf", cls_name=f"{dtype.capitalize()}ArrayTag", show_eq=False, **locals())}\}
 #
 #     # @property
 #     # def np_array(LongArrayTag self):

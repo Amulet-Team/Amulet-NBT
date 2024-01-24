@@ -6,14 +6,23 @@ cdef class {{dtype.capitalize()}}ArrayTag(AbstractBaseArrayTag):
     # tag_id = ID_{{dtype.upper()}}_ARRAY
 
     def __init__({{dtype.capitalize()}}ArrayTag self, object value = ()):
-        # self.cpp = numpy.asarray(value, {{native_data_type}}).ravel()
-        pass
+        cdef numpy.ndarray arr = numpy.asarray(value, {{native_data_type}}).ravel()
+        self.cpp = make_shared[C{{dtype.capitalize()}}ArrayTag](arr.size)
+        cdef size_t i
+        for i in range(arr.size):
+            dereference(self.cpp)[i] = arr[i]
 
     @staticmethod
     cdef {{dtype.capitalize()}}ArrayTag wrap(C{{dtype.capitalize()}}ArrayTagPtr cpp):
         cdef {{dtype.capitalize()}}ArrayTag tag = {{dtype.capitalize()}}ArrayTag.__new__({{dtype.capitalize()}}ArrayTag)
         tag.cpp = cpp
         return tag
+
+    def __eq__({{dtype.capitalize()}}ArrayTag self, object other):
+        if not isinstance(other, {{dtype.capitalize()}}ArrayTag):
+            return False
+        cdef {{dtype.capitalize()}}ArrayTag tag = other
+        return dereference(self.cpp) == dereference(tag.cpp)
 
 #
 #     # cdef str _to_snbt({{dtype.capitalize()}}ArrayTag self):
@@ -23,7 +32,6 @@ cdef class {{dtype.capitalize()}}ArrayTag(AbstractBaseArrayTag):
 #     #         tags.append(f"{elem}{{snbt_suffix}}")
 #     #     return f"[{{snbt_prefix}};{CommaSpace.join(tags)}]"
 #
-# #{\{include("amulet_nbt/tpf/AbstractBaseMutableTag.pyx.tpf", cls_name=f"{dtype.capitalize()}ArrayTag", show_eq=False, **locals())}\}
 #
 #     # @property
 #     # def np_array({{dtype.capitalize()}}ArrayTag self):

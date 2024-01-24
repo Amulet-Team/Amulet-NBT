@@ -26,8 +26,11 @@ cdef class StringTag(AbstractBaseImmutableTag):
     """A class that behaves like a string."""
     # tag_id = ID_STRING
 
-    def __init__(StringTag self, string value = b""):
-        self.cpp = value
+    def __init__(StringTag self, object value = b""):
+        if isinstance(value, (str, bytes)):
+            self.cpp = value
+        else:
+            self.cpp = str(value)
 
     @staticmethod
     cdef StringTag wrap(CStringTag cpp):
@@ -35,7 +38,18 @@ cdef class StringTag(AbstractBaseImmutableTag):
         tag.cpp = cpp
         return tag
 
-# {/{include("AbstractBaseImmutableTag.pyx", cls_name="StringTag")}/}
+    def __eq__(StringTag self, other):
+        cdef StringTag other_
+        if not isinstance(other, StringTag):
+            return NotImplemented
+        other_ = other
+        return self.cpp == other_.cpp
+
+    def __repr__(self):
+        return f"StringTag({self})"
+
+    def __str__(self):
+        return self.cpp
 
     # @property
     # def py_str(StringTag self) -> str:

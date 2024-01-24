@@ -8,6 +8,7 @@
 from collections.abc import MutableMapping, Iterable
 
 from libcpp.string cimport string
+from libcpp cimport bool
 from cython.operator cimport dereference, postincrement
 
 from amulet_nbt._nbt cimport CCompoundTag, CCompoundTagPtr, CIntTag, TagNode
@@ -15,8 +16,104 @@ from amulet_nbt._libcpp.variant cimport get
 from amulet_nbt._tag.abc cimport AbstractBaseTag, AbstractBaseMutableTag
 from .int cimport IntTag
 
+from amulet_nbt._nbt cimport (
+    CByteTag,
+    CShortTag,
+    CIntTag,
+    CLongTag,
+    CFloatTag,
+    CDoubleTag,
+    CStringTag,
+    CListTag,
+    CCompoundTag,
+    CByteArrayTag,
+    CIntArrayTag,
+    CLongArrayTag,
+    CListTagPtr,
+    CCompoundTagPtr,
+    CByteArrayTagPtr,
+    CIntArrayTagPtr,
+    CLongArrayTagPtr,
+    CByteList,
+    CShortList,
+    CIntList,
+    CLongList,
+    CFloatList,
+    CDoubleList,
+    CByteArrayList,
+    CStringList,
+    CListList,
+    CCompoundList,
+    CIntArrayList,
+    CLongArrayList,
+    TagNode,
+)
 
-cdef class CompoundTag(AbstractBaseMutableTag, MutableMapping):
+
+{{py:
+ClassData = (
+    #id,  C cls,           C node cls          C list cls        py cls,         tag var,          list var
+    (1,  "CByteTag",      "CByteTag",         "CByteList",      "ByteTag",      "byte_tag",       "byte_list",       ),
+    (2,  "CShortTag",     "CShortTag",        "CShortList",     "ShortTag",     "short_tag",      "short_list",      ),
+    (3,  "CIntTag",       "CIntTag",          "CIntList",       "IntTag",       "int_tag",        "int_list",        ),
+    (4,  "CLongTag",      "CLongTag",         "CLongList",      "LongTag",      "long_tag",       "long_list",       ),
+    (5,  "CFloatTag",     "CFloatTag",        "CFloatList",     "FloatTag",     "float_tag",      "float_list",      ),
+    (6,  "CDoubleTag",    "CDoubleTag",       "CDoubleList",    "DoubleTag",    "double_tag",     "double_list",     ),
+    (7,  "CByteArrayTag", "CByteArrayTagPtr", "CByteArrayList", "ByteArrayTag", "byte_array_tag", "byte_array_list", ),
+    (8,  "CStringTag",    "CStringTag",       "CStringList",    "StringTag",    "string_tag",     "string_list",     ),
+    (9,  "CListTag",      "CListTagPtr",      "CListList",      "ListTag",      "list_tag",       "list_list",       ),
+    (10, "CCompoundTag",  "CCompoundTagPtr",  "CCompoundList",  "CompoundTag",  "compound_tag",   "compound_list",   ),
+    (11, "CIntArrayTag",  "CIntArrayTagPtr",  "CIntArrayList",  "IntArrayTag",  "int_array_tag",  "int_array_list",  ),
+    (12, "CLongArrayTag", "CLongArrayTagPtr", "CLongArrayList", "LongArrayTag", "long_array_tag", "long_array_list", ),
+)
+}}
+
+
+{{
+"\n\n\n".join(
+f"""cdef inline bool _is_{tag_var}_node_eq(TagNode* a, TagNode* b) noexcept nogil:
+    if dereference(b).index() != {index}:
+        return False
+    
+    return {
+        f"is_list_eq(get[{c_node_cls}](dereference(a)), get[{c_node_cls}](dereference(b)))" if index == 9 else
+        f"is_compound_eq(get[{c_node_cls}](dereference(a)), get[{c_node_cls}](dereference(b)))" if index == 10 else
+        f"dereference(get[{c_node_cls}](dereference(a))) == dereference(get[{c_node_cls}](dereference(b)))" if index in {7, 11, 12} else
+        f"get[{c_node_cls}](dereference(a)) == get[{c_node_cls}](dereference(b))"
+    }"""
+        for index, c_cls, c_node_cls, c_list_cls, py_cls, tag_var, list_var in ClassData
+    )
+}}
+
+
+cdef bool is_compound_eq(CCompoundTagPtr a, CCompoundTagPtr b) noexcept nogil:
+    if dereference(a).size() != dereference(b).size():
+        return False
+
+    cdef CCompoundTag.iterator it1 = dereference(a).begin()
+    cdef CCompoundTag.iterator it2
+    cdef string key
+    cdef TagNode* node
+    cdef size_t node_index
+
+    while it1 != dereference(a).end():
+        key = dereference(it1).first
+        it2 = dereference(b).find(key)
+        if it2 == dereference(b).end():
+            return False
+        node = &dereference(it1).second
+        node_index = dereference(node).index()
+{{
+"\n".join(
+f"""        {"el"*(index!=1)}if node_index == {index}:
+            return _is_{tag_var}_node_eq(node, &dereference(it2).second)"""
+    for index, c_cls, c_node_cls, c_list_cls, py_cls, tag_var, list_var in ClassData
+)
+}}
+        postincrement(it1)
+    return True
+
+
     """
     A Python wrapper around a C++ unordered map.
     Note that this class is not thread safe and inherits all the limitations of a C++ map.

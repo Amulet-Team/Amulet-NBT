@@ -121,8 +121,8 @@ f"""cdef inline {py_cls} _get_{tag_var}(CListTagPtr cpp, ptrdiff_t item):
     cdef {c_list_cls}* {list_var} = &get[{c_list_cls}](dereference(cpp))
     if item < 0:
         item += dereference({list_var}).size()
-    if item < 0 or item > dereference({list_var}).size():
         raise IndexError
+    if item < 0 or item >= dereference({list_var}).size():
     return {py_cls}.wrap(dereference({list_var})[item])"""
     for index, c_cls, c_node_cls, c_list_cls, py_cls, tag_var, list_var in ClassData
 )
@@ -235,8 +235,8 @@ f"""cdef inline void _set_{tag_var}(CListTagPtr cpp, ptrdiff_t item, {py_cls} va
         {list_var} = &get[{c_list_cls}](dereference(cpp))
         if item < 0:
             item += dereference({list_var}).size()
-        if item < 0 or item > dereference({list_var}).size():
             raise IndexError("Assignment index out of range")
+        if item < 0 or item >= dereference({list_var}).size():
         dereference({list_var})[item] = value.cpp
     elif _len(cpp) == 1 and (item == 0 or item == -1):
         dereference(cpp).emplace[{c_list_cls}]()
@@ -294,8 +294,8 @@ f"""cdef inline void _del_{tag_var}(CListTagPtr cpp, ptrdiff_t item):
     cdef {c_list_cls}* {list_var} = &get[{c_list_cls}](dereference(cpp))
     if item < 0:
         item += dereference({list_var}).size()
-    if item < 0 or item > dereference({list_var}).size():
         raise IndexError
+    if item < 0 or item >= dereference({list_var}).size():
     dereference({list_var}).erase(dereference({list_var}).begin() + item)"""
     for index, c_cls, c_node_cls, c_list_cls, py_cls, tag_var, list_var in ClassData
 )

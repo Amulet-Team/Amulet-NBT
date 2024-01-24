@@ -315,8 +315,8 @@ cdef inline ByteTag _get_byte_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CByteList* byte_list = &get[CByteList](dereference(cpp))
     if item < 0:
         item += dereference(byte_list).size()
-    if item < 0 or item > dereference(byte_list).size():
         raise IndexError
+    if item < 0 or item >= dereference(byte_list).size():
     return ByteTag.wrap(dereference(byte_list)[item])
 
 
@@ -324,8 +324,8 @@ cdef inline ShortTag _get_short_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CShortList* short_list = &get[CShortList](dereference(cpp))
     if item < 0:
         item += dereference(short_list).size()
-    if item < 0 or item > dereference(short_list).size():
         raise IndexError
+    if item < 0 or item >= dereference(short_list).size():
     return ShortTag.wrap(dereference(short_list)[item])
 
 
@@ -333,8 +333,8 @@ cdef inline IntTag _get_int_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CIntList* int_list = &get[CIntList](dereference(cpp))
     if item < 0:
         item += dereference(int_list).size()
-    if item < 0 or item > dereference(int_list).size():
         raise IndexError
+    if item < 0 or item >= dereference(int_list).size():
     return IntTag.wrap(dereference(int_list)[item])
 
 
@@ -342,8 +342,8 @@ cdef inline LongTag _get_long_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CLongList* long_list = &get[CLongList](dereference(cpp))
     if item < 0:
         item += dereference(long_list).size()
-    if item < 0 or item > dereference(long_list).size():
         raise IndexError
+    if item < 0 or item >= dereference(long_list).size():
     return LongTag.wrap(dereference(long_list)[item])
 
 
@@ -351,8 +351,8 @@ cdef inline FloatTag _get_float_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CFloatList* float_list = &get[CFloatList](dereference(cpp))
     if item < 0:
         item += dereference(float_list).size()
-    if item < 0 or item > dereference(float_list).size():
         raise IndexError
+    if item < 0 or item >= dereference(float_list).size():
     return FloatTag.wrap(dereference(float_list)[item])
 
 
@@ -360,8 +360,8 @@ cdef inline DoubleTag _get_double_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CDoubleList* double_list = &get[CDoubleList](dereference(cpp))
     if item < 0:
         item += dereference(double_list).size()
-    if item < 0 or item > dereference(double_list).size():
         raise IndexError
+    if item < 0 or item >= dereference(double_list).size():
     return DoubleTag.wrap(dereference(double_list)[item])
 
 
@@ -369,8 +369,8 @@ cdef inline ByteArrayTag _get_byte_array_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CByteArrayList* byte_array_list = &get[CByteArrayList](dereference(cpp))
     if item < 0:
         item += dereference(byte_array_list).size()
-    if item < 0 or item > dereference(byte_array_list).size():
         raise IndexError
+    if item < 0 or item >= dereference(byte_array_list).size():
     return ByteArrayTag.wrap(dereference(byte_array_list)[item])
 
 
@@ -378,8 +378,8 @@ cdef inline StringTag _get_string_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CStringList* string_list = &get[CStringList](dereference(cpp))
     if item < 0:
         item += dereference(string_list).size()
-    if item < 0 or item > dereference(string_list).size():
         raise IndexError
+    if item < 0 or item >= dereference(string_list).size():
     return StringTag.wrap(dereference(string_list)[item])
 
 
@@ -387,8 +387,8 @@ cdef inline ListTag _get_list_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CListList* list_list = &get[CListList](dereference(cpp))
     if item < 0:
         item += dereference(list_list).size()
-    if item < 0 or item > dereference(list_list).size():
         raise IndexError
+    if item < 0 or item >= dereference(list_list).size():
     return ListTag.wrap(dereference(list_list)[item])
 
 
@@ -396,8 +396,8 @@ cdef inline CompoundTag _get_compound_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CCompoundList* compound_list = &get[CCompoundList](dereference(cpp))
     if item < 0:
         item += dereference(compound_list).size()
-    if item < 0 or item > dereference(compound_list).size():
         raise IndexError
+    if item < 0 or item >= dereference(compound_list).size():
     return CompoundTag.wrap(dereference(compound_list)[item])
 
 
@@ -405,8 +405,8 @@ cdef inline IntArrayTag _get_int_array_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CIntArrayList* int_array_list = &get[CIntArrayList](dereference(cpp))
     if item < 0:
         item += dereference(int_array_list).size()
-    if item < 0 or item > dereference(int_array_list).size():
         raise IndexError
+    if item < 0 or item >= dereference(int_array_list).size():
     return IntArrayTag.wrap(dereference(int_array_list)[item])
 
 
@@ -414,8 +414,8 @@ cdef inline LongArrayTag _get_long_array_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CLongArrayList* long_array_list = &get[CLongArrayList](dereference(cpp))
     if item < 0:
         item += dereference(long_array_list).size()
-    if item < 0 or item > dereference(long_array_list).size():
         raise IndexError
+    if item < 0 or item >= dereference(long_array_list).size():
     return LongArrayTag.wrap(dereference(long_array_list)[item])
 
 
@@ -728,8 +728,8 @@ cdef inline void _set_byte_tag(CListTagPtr cpp, ptrdiff_t item, ByteTag value):
         byte_list = &get[CByteList](dereference(cpp))
         if item < 0:
             item += dereference(byte_list).size()
-        if item < 0 or item > dereference(byte_list).size():
             raise IndexError("Assignment index out of range")
+        if item < 0 or item >= dereference(byte_list).size():
         dereference(byte_list)[item] = value.cpp
     elif _len(cpp) == 1 and (item == 0 or item == -1):
         dereference(cpp).emplace[CByteList]()
@@ -746,8 +746,8 @@ cdef inline void _set_short_tag(CListTagPtr cpp, ptrdiff_t item, ShortTag value)
         short_list = &get[CShortList](dereference(cpp))
         if item < 0:
             item += dereference(short_list).size()
-        if item < 0 or item > dereference(short_list).size():
             raise IndexError("Assignment index out of range")
+        if item < 0 or item >= dereference(short_list).size():
         dereference(short_list)[item] = value.cpp
     elif _len(cpp) == 1 and (item == 0 or item == -1):
         dereference(cpp).emplace[CShortList]()
@@ -764,8 +764,8 @@ cdef inline void _set_int_tag(CListTagPtr cpp, ptrdiff_t item, IntTag value):
         int_list = &get[CIntList](dereference(cpp))
         if item < 0:
             item += dereference(int_list).size()
-        if item < 0 or item > dereference(int_list).size():
             raise IndexError("Assignment index out of range")
+        if item < 0 or item >= dereference(int_list).size():
         dereference(int_list)[item] = value.cpp
     elif _len(cpp) == 1 and (item == 0 or item == -1):
         dereference(cpp).emplace[CIntList]()
@@ -782,8 +782,8 @@ cdef inline void _set_long_tag(CListTagPtr cpp, ptrdiff_t item, LongTag value):
         long_list = &get[CLongList](dereference(cpp))
         if item < 0:
             item += dereference(long_list).size()
-        if item < 0 or item > dereference(long_list).size():
             raise IndexError("Assignment index out of range")
+        if item < 0 or item >= dereference(long_list).size():
         dereference(long_list)[item] = value.cpp
     elif _len(cpp) == 1 and (item == 0 or item == -1):
         dereference(cpp).emplace[CLongList]()
@@ -800,8 +800,8 @@ cdef inline void _set_float_tag(CListTagPtr cpp, ptrdiff_t item, FloatTag value)
         float_list = &get[CFloatList](dereference(cpp))
         if item < 0:
             item += dereference(float_list).size()
-        if item < 0 or item > dereference(float_list).size():
             raise IndexError("Assignment index out of range")
+        if item < 0 or item >= dereference(float_list).size():
         dereference(float_list)[item] = value.cpp
     elif _len(cpp) == 1 and (item == 0 or item == -1):
         dereference(cpp).emplace[CFloatList]()
@@ -818,8 +818,8 @@ cdef inline void _set_double_tag(CListTagPtr cpp, ptrdiff_t item, DoubleTag valu
         double_list = &get[CDoubleList](dereference(cpp))
         if item < 0:
             item += dereference(double_list).size()
-        if item < 0 or item > dereference(double_list).size():
             raise IndexError("Assignment index out of range")
+        if item < 0 or item >= dereference(double_list).size():
         dereference(double_list)[item] = value.cpp
     elif _len(cpp) == 1 and (item == 0 or item == -1):
         dereference(cpp).emplace[CDoubleList]()
@@ -836,8 +836,8 @@ cdef inline void _set_byte_array_tag(CListTagPtr cpp, ptrdiff_t item, ByteArrayT
         byte_array_list = &get[CByteArrayList](dereference(cpp))
         if item < 0:
             item += dereference(byte_array_list).size()
-        if item < 0 or item > dereference(byte_array_list).size():
             raise IndexError("Assignment index out of range")
+        if item < 0 or item >= dereference(byte_array_list).size():
         dereference(byte_array_list)[item] = value.cpp
     elif _len(cpp) == 1 and (item == 0 or item == -1):
         dereference(cpp).emplace[CByteArrayList]()
@@ -854,8 +854,8 @@ cdef inline void _set_string_tag(CListTagPtr cpp, ptrdiff_t item, StringTag valu
         string_list = &get[CStringList](dereference(cpp))
         if item < 0:
             item += dereference(string_list).size()
-        if item < 0 or item > dereference(string_list).size():
             raise IndexError("Assignment index out of range")
+        if item < 0 or item >= dereference(string_list).size():
         dereference(string_list)[item] = value.cpp
     elif _len(cpp) == 1 and (item == 0 or item == -1):
         dereference(cpp).emplace[CStringList]()
@@ -872,8 +872,8 @@ cdef inline void _set_list_tag(CListTagPtr cpp, ptrdiff_t item, ListTag value):
         list_list = &get[CListList](dereference(cpp))
         if item < 0:
             item += dereference(list_list).size()
-        if item < 0 or item > dereference(list_list).size():
             raise IndexError("Assignment index out of range")
+        if item < 0 or item >= dereference(list_list).size():
         dereference(list_list)[item] = value.cpp
     elif _len(cpp) == 1 and (item == 0 or item == -1):
         dereference(cpp).emplace[CListList]()
@@ -890,8 +890,8 @@ cdef inline void _set_compound_tag(CListTagPtr cpp, ptrdiff_t item, CompoundTag 
         compound_list = &get[CCompoundList](dereference(cpp))
         if item < 0:
             item += dereference(compound_list).size()
-        if item < 0 or item > dereference(compound_list).size():
             raise IndexError("Assignment index out of range")
+        if item < 0 or item >= dereference(compound_list).size():
         dereference(compound_list)[item] = value.cpp
     elif _len(cpp) == 1 and (item == 0 or item == -1):
         dereference(cpp).emplace[CCompoundList]()
@@ -908,8 +908,8 @@ cdef inline void _set_int_array_tag(CListTagPtr cpp, ptrdiff_t item, IntArrayTag
         int_array_list = &get[CIntArrayList](dereference(cpp))
         if item < 0:
             item += dereference(int_array_list).size()
-        if item < 0 or item > dereference(int_array_list).size():
             raise IndexError("Assignment index out of range")
+        if item < 0 or item >= dereference(int_array_list).size():
         dereference(int_array_list)[item] = value.cpp
     elif _len(cpp) == 1 and (item == 0 or item == -1):
         dereference(cpp).emplace[CIntArrayList]()
@@ -926,8 +926,8 @@ cdef inline void _set_long_array_tag(CListTagPtr cpp, ptrdiff_t item, LongArrayT
         long_array_list = &get[CLongArrayList](dereference(cpp))
         if item < 0:
             item += dereference(long_array_list).size()
-        if item < 0 or item > dereference(long_array_list).size():
             raise IndexError("Assignment index out of range")
+        if item < 0 or item >= dereference(long_array_list).size():
         dereference(long_array_list)[item] = value.cpp
     elif _len(cpp) == 1 and (item == 0 or item == -1):
         dereference(cpp).emplace[CLongArrayList]()
@@ -974,8 +974,8 @@ cdef inline void _del_byte_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CByteList* byte_list = &get[CByteList](dereference(cpp))
     if item < 0:
         item += dereference(byte_list).size()
-    if item < 0 or item > dereference(byte_list).size():
         raise IndexError
+    if item < 0 or item >= dereference(byte_list).size():
     dereference(byte_list).erase(dereference(byte_list).begin() + item)
 
 
@@ -983,8 +983,8 @@ cdef inline void _del_short_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CShortList* short_list = &get[CShortList](dereference(cpp))
     if item < 0:
         item += dereference(short_list).size()
-    if item < 0 or item > dereference(short_list).size():
         raise IndexError
+    if item < 0 or item >= dereference(short_list).size():
     dereference(short_list).erase(dereference(short_list).begin() + item)
 
 
@@ -992,8 +992,8 @@ cdef inline void _del_int_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CIntList* int_list = &get[CIntList](dereference(cpp))
     if item < 0:
         item += dereference(int_list).size()
-    if item < 0 or item > dereference(int_list).size():
         raise IndexError
+    if item < 0 or item >= dereference(int_list).size():
     dereference(int_list).erase(dereference(int_list).begin() + item)
 
 
@@ -1001,8 +1001,8 @@ cdef inline void _del_long_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CLongList* long_list = &get[CLongList](dereference(cpp))
     if item < 0:
         item += dereference(long_list).size()
-    if item < 0 or item > dereference(long_list).size():
         raise IndexError
+    if item < 0 or item >= dereference(long_list).size():
     dereference(long_list).erase(dereference(long_list).begin() + item)
 
 
@@ -1010,8 +1010,8 @@ cdef inline void _del_float_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CFloatList* float_list = &get[CFloatList](dereference(cpp))
     if item < 0:
         item += dereference(float_list).size()
-    if item < 0 or item > dereference(float_list).size():
         raise IndexError
+    if item < 0 or item >= dereference(float_list).size():
     dereference(float_list).erase(dereference(float_list).begin() + item)
 
 
@@ -1019,8 +1019,8 @@ cdef inline void _del_double_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CDoubleList* double_list = &get[CDoubleList](dereference(cpp))
     if item < 0:
         item += dereference(double_list).size()
-    if item < 0 or item > dereference(double_list).size():
         raise IndexError
+    if item < 0 or item >= dereference(double_list).size():
     dereference(double_list).erase(dereference(double_list).begin() + item)
 
 
@@ -1028,8 +1028,8 @@ cdef inline void _del_byte_array_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CByteArrayList* byte_array_list = &get[CByteArrayList](dereference(cpp))
     if item < 0:
         item += dereference(byte_array_list).size()
-    if item < 0 or item > dereference(byte_array_list).size():
         raise IndexError
+    if item < 0 or item >= dereference(byte_array_list).size():
     dereference(byte_array_list).erase(dereference(byte_array_list).begin() + item)
 
 
@@ -1037,8 +1037,8 @@ cdef inline void _del_string_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CStringList* string_list = &get[CStringList](dereference(cpp))
     if item < 0:
         item += dereference(string_list).size()
-    if item < 0 or item > dereference(string_list).size():
         raise IndexError
+    if item < 0 or item >= dereference(string_list).size():
     dereference(string_list).erase(dereference(string_list).begin() + item)
 
 
@@ -1046,8 +1046,8 @@ cdef inline void _del_list_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CListList* list_list = &get[CListList](dereference(cpp))
     if item < 0:
         item += dereference(list_list).size()
-    if item < 0 or item > dereference(list_list).size():
         raise IndexError
+    if item < 0 or item >= dereference(list_list).size():
     dereference(list_list).erase(dereference(list_list).begin() + item)
 
 
@@ -1055,8 +1055,8 @@ cdef inline void _del_compound_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CCompoundList* compound_list = &get[CCompoundList](dereference(cpp))
     if item < 0:
         item += dereference(compound_list).size()
-    if item < 0 or item > dereference(compound_list).size():
         raise IndexError
+    if item < 0 or item >= dereference(compound_list).size():
     dereference(compound_list).erase(dereference(compound_list).begin() + item)
 
 
@@ -1064,8 +1064,8 @@ cdef inline void _del_int_array_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CIntArrayList* int_array_list = &get[CIntArrayList](dereference(cpp))
     if item < 0:
         item += dereference(int_array_list).size()
-    if item < 0 or item > dereference(int_array_list).size():
         raise IndexError
+    if item < 0 or item >= dereference(int_array_list).size():
     dereference(int_array_list).erase(dereference(int_array_list).begin() + item)
 
 
@@ -1073,8 +1073,8 @@ cdef inline void _del_long_array_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CLongArrayList* long_array_list = &get[CLongArrayList](dereference(cpp))
     if item < 0:
         item += dereference(long_array_list).size()
-    if item < 0 or item > dereference(long_array_list).size():
         raise IndexError
+    if item < 0 or item >= dereference(long_array_list).size():
     dereference(long_array_list).erase(dereference(long_array_list).begin() + item)
 
 

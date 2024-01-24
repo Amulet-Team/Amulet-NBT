@@ -121,8 +121,8 @@ f"""cdef inline {py_cls} _get_{tag_var}(CListTagPtr cpp, ptrdiff_t item):
     cdef {c_list_cls}* {list_var} = &get[{c_list_cls}](dereference(cpp))
     if item < 0:
         item += dereference({list_var}).size()
-        raise IndexError
     if item < 0 or item >= dereference({list_var}).size():
+        raise IndexError("ListTag index out of range")
     return {py_cls}.wrap(dereference({list_var})[item])"""
     for index, c_cls, c_node_cls, c_list_cls, py_cls, tag_var, list_var in ClassData
 )
@@ -139,7 +139,7 @@ f"""    {"el"*(index!=1)}if index == {index}:
 )
 }}
     else:
-        raise RuntimeError
+        raise RuntimeError("ListTag type has not been set.")
 
 
 cdef (size_t, size_t, ptrdiff_t) _slice_to_range(size_t target_len, object s):
@@ -185,7 +185,7 @@ cdef (size_t, size_t, ptrdiff_t) _slice_to_range(size_t target_len, object s):
         stop = min(max(-1, stop), target_len - 1)
 
     elif step == 0:
-        raise ValueError
+        raise ValueError("slice step cannot be zero")
     else:
         raise RuntimeError
 
@@ -223,7 +223,7 @@ f"""    {"el"*(index!=1)}if index == {index}:
 )
 }}
     else:
-        raise RuntimeError
+        raise RuntimeError("ListTag type has not been set.")
 
 
 {{
@@ -235,8 +235,8 @@ f"""cdef inline void _set_{tag_var}(CListTagPtr cpp, ptrdiff_t item, {py_cls} va
         {list_var} = &get[{c_list_cls}](dereference(cpp))
         if item < 0:
             item += dereference({list_var}).size()
-            raise IndexError("Assignment index out of range")
         if item < 0 or item >= dereference({list_var}).size():
+            raise IndexError("ListTag assignment index out of range")
         dereference({list_var})[item] = value.cpp
     elif _len(cpp) == 1 and (item == 0 or item == -1):
         dereference(cpp).emplace[{c_list_cls}]()
@@ -294,8 +294,8 @@ f"""cdef inline void _del_{tag_var}(CListTagPtr cpp, ptrdiff_t item):
     cdef {c_list_cls}* {list_var} = &get[{c_list_cls}](dereference(cpp))
     if item < 0:
         item += dereference({list_var}).size()
-        raise IndexError
     if item < 0 or item >= dereference({list_var}).size():
+        raise IndexError("ListTag assignment index out of range")
     dereference({list_var}).erase(dereference({list_var}).begin() + item)"""
     for index, c_cls, c_node_cls, c_list_cls, py_cls, tag_var, list_var in ClassData
 )
@@ -312,7 +312,7 @@ f"""    {"el"*(index!=1)}if index == {index}:
 )
 }}
     else:
-        raise RuntimeError
+        raise RuntimeError("ListTag type has not been set.")
 
 
 {{
@@ -351,7 +351,7 @@ cdef inline void _del_slice(CListTagPtr cpp, object s):
 )
 }}
     else:
-        raise RuntimeError
+        raise RuntimeError("ListTag type has not been set.")
 
 
 {{
@@ -365,7 +365,7 @@ f"""cdef inline void _insert_{tag_var}(CListTagPtr cpp, ptrdiff_t item, {py_cls}
         dereference(cpp).emplace[{c_list_cls}]()
         {list_var} = &get[{c_list_cls}](dereference(cpp))
     else:
-        raise RuntimeError
+        raise TypeError("ListTag can only contain one NBT data type.")
     
     if item < 0:
         item += dereference({list_var}).size()
@@ -386,7 +386,7 @@ cdef inline void _insert(CListTagPtr cpp, ptrdiff_t item, AbstractBaseTag value)
 )
 }}
     else:
-        raise TypeError
+        raise TypeError(f"Unsupported type {{'{'}}type(value){{'}'}}")
 
 
 cdef class ListTag(AbstractBaseMutableTag, MutableSequence):
@@ -406,7 +406,7 @@ cdef class ListTag(AbstractBaseMutableTag, MutableSequence):
 )
 }}
         else:
-            raise ValueError(list_data_type)
+            raise ValueError(f"list_data_type must be between 1 and 12. Got {{'{'}}list_data_type{{'}'}}")
 
         for tag in value:
             self.append(tag)
@@ -509,7 +509,7 @@ cdef class ListTag(AbstractBaseMutableTag, MutableSequence):
         elif isinstance(item, slice):
             return _get_slice(self.cpp, item)
         else:
-            raise TypeError
+            raise TypeError(f"Unsupported item type {{'{'}}type(item){{'}'}}")
 
     def __setitem__(ListTag self, object item, object value):
         if isinstance(item, int):
@@ -517,7 +517,7 @@ cdef class ListTag(AbstractBaseMutableTag, MutableSequence):
         elif isinstance(item, slice):
             _set_slice(self.cpp, item, value)
         else:
-            raise TypeError
+            raise TypeError(f"Unsupported item type {{'{'}}type(item){{'}'}}")
 
     def __delitem__(ListTag self, object item):
         if isinstance(item, int):
@@ -525,7 +525,7 @@ cdef class ListTag(AbstractBaseMutableTag, MutableSequence):
         elif isinstance(item, slice):
             _del_slice(self.cpp, item)
         else:
-            raise TypeError
+            raise TypeError(f"Unsupported item type {{'{'}}type(item){{'}'}}")
 
     def copy(ListTag self):
         """Return a shallow copy of the class"""

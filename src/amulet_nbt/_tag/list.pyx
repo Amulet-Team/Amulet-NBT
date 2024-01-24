@@ -5,6 +5,7 @@
 from collections.abc import MutableSequence
 
 from libc.stdint cimport int64_t
+from libcpp cimport bool
 from libcpp.memory cimport make_shared
 from cython.operator cimport dereference
 from amulet_nbt._libcpp.variant cimport get
@@ -44,6 +45,239 @@ from amulet_nbt._tag.int cimport ByteTag, ShortTag, IntTag, LongTag
 from amulet_nbt._tag.string cimport StringTag
 # from amulet_nbt._const cimport ID_LIST, CommaSpace, CommaNewline
 # from amulet_nbt._dtype import AnyNBT, EncoderType
+
+
+cdef inline bool _is_byte_tag_list_eq(CListTagPtr a, CListTagPtr b) noexcept nogil:
+    cdef CByteList* byte_list_a = &get[CByteList](dereference(a))
+    if dereference(b).index() != 1:
+        return dereference(byte_list_a).size() == 0 and _len(b) == 0
+    cdef CByteList* byte_list_b = &get[CByteList](dereference(b))
+    cdef size_t size = dereference(byte_list_a).size()
+    cdef size_t i
+    
+    if size != dereference(byte_list_b).size():
+        return False
+        
+    for i in range(size):
+        if dereference(byte_list_a)[i] != dereference(byte_list_b)[i]:
+            return False
+    return True
+
+
+cdef inline bool _is_short_tag_list_eq(CListTagPtr a, CListTagPtr b) noexcept nogil:
+    cdef CShortList* short_list_a = &get[CShortList](dereference(a))
+    if dereference(b).index() != 2:
+        return dereference(short_list_a).size() == 0 and _len(b) == 0
+    cdef CShortList* short_list_b = &get[CShortList](dereference(b))
+    cdef size_t size = dereference(short_list_a).size()
+    cdef size_t i
+    
+    if size != dereference(short_list_b).size():
+        return False
+        
+    for i in range(size):
+        if dereference(short_list_a)[i] != dereference(short_list_b)[i]:
+            return False
+    return True
+
+
+cdef inline bool _is_int_tag_list_eq(CListTagPtr a, CListTagPtr b) noexcept nogil:
+    cdef CIntList* int_list_a = &get[CIntList](dereference(a))
+    if dereference(b).index() != 3:
+        return dereference(int_list_a).size() == 0 and _len(b) == 0
+    cdef CIntList* int_list_b = &get[CIntList](dereference(b))
+    cdef size_t size = dereference(int_list_a).size()
+    cdef size_t i
+    
+    if size != dereference(int_list_b).size():
+        return False
+        
+    for i in range(size):
+        if dereference(int_list_a)[i] != dereference(int_list_b)[i]:
+            return False
+    return True
+
+
+cdef inline bool _is_long_tag_list_eq(CListTagPtr a, CListTagPtr b) noexcept nogil:
+    cdef CLongList* long_list_a = &get[CLongList](dereference(a))
+    if dereference(b).index() != 4:
+        return dereference(long_list_a).size() == 0 and _len(b) == 0
+    cdef CLongList* long_list_b = &get[CLongList](dereference(b))
+    cdef size_t size = dereference(long_list_a).size()
+    cdef size_t i
+    
+    if size != dereference(long_list_b).size():
+        return False
+        
+    for i in range(size):
+        if dereference(long_list_a)[i] != dereference(long_list_b)[i]:
+            return False
+    return True
+
+
+cdef inline bool _is_float_tag_list_eq(CListTagPtr a, CListTagPtr b) noexcept nogil:
+    cdef CFloatList* float_list_a = &get[CFloatList](dereference(a))
+    if dereference(b).index() != 5:
+        return dereference(float_list_a).size() == 0 and _len(b) == 0
+    cdef CFloatList* float_list_b = &get[CFloatList](dereference(b))
+    cdef size_t size = dereference(float_list_a).size()
+    cdef size_t i
+    
+    if size != dereference(float_list_b).size():
+        return False
+        
+    for i in range(size):
+        if dereference(float_list_a)[i] != dereference(float_list_b)[i]:
+            return False
+    return True
+
+
+cdef inline bool _is_double_tag_list_eq(CListTagPtr a, CListTagPtr b) noexcept nogil:
+    cdef CDoubleList* double_list_a = &get[CDoubleList](dereference(a))
+    if dereference(b).index() != 6:
+        return dereference(double_list_a).size() == 0 and _len(b) == 0
+    cdef CDoubleList* double_list_b = &get[CDoubleList](dereference(b))
+    cdef size_t size = dereference(double_list_a).size()
+    cdef size_t i
+    
+    if size != dereference(double_list_b).size():
+        return False
+        
+    for i in range(size):
+        if dereference(double_list_a)[i] != dereference(double_list_b)[i]:
+            return False
+    return True
+
+
+cdef inline bool _is_byte_array_tag_list_eq(CListTagPtr a, CListTagPtr b) noexcept nogil:
+    cdef CByteArrayList* byte_array_list_a = &get[CByteArrayList](dereference(a))
+    if dereference(b).index() != 7:
+        return dereference(byte_array_list_a).size() == 0 and _len(b) == 0
+    cdef CByteArrayList* byte_array_list_b = &get[CByteArrayList](dereference(b))
+    cdef size_t size = dereference(byte_array_list_a).size()
+    cdef size_t i
+    
+    if size != dereference(byte_array_list_b).size():
+        return False
+        
+    for i in range(size):
+        if dereference(dereference(byte_array_list_a)[i]) != dereference(dereference(byte_array_list_b)[i]):
+            return False
+    return True
+
+
+cdef inline bool _is_string_tag_list_eq(CListTagPtr a, CListTagPtr b) noexcept nogil:
+    cdef CStringList* string_list_a = &get[CStringList](dereference(a))
+    if dereference(b).index() != 8:
+        return dereference(string_list_a).size() == 0 and _len(b) == 0
+    cdef CStringList* string_list_b = &get[CStringList](dereference(b))
+    cdef size_t size = dereference(string_list_a).size()
+    cdef size_t i
+    
+    if size != dereference(string_list_b).size():
+        return False
+        
+    for i in range(size):
+        if dereference(string_list_a)[i] != dereference(string_list_b)[i]:
+            return False
+    return True
+
+
+cdef inline bool _is_list_tag_list_eq(CListTagPtr a, CListTagPtr b) noexcept nogil:
+    cdef CListList* list_list_a = &get[CListList](dereference(a))
+    if dereference(b).index() != 9:
+        return dereference(list_list_a).size() == 0 and _len(b) == 0
+    cdef CListList* list_list_b = &get[CListList](dereference(b))
+    cdef size_t size = dereference(list_list_a).size()
+    cdef size_t i
+    
+    if size != dereference(list_list_b).size():
+        return False
+        
+    for i in range(size):
+        if not is_list_eq(dereference(list_list_a)[i], dereference(list_list_b)[i]):
+            return False
+    return True
+
+
+cdef inline bool _is_compound_tag_list_eq(CListTagPtr a, CListTagPtr b) noexcept nogil:
+    cdef CCompoundList* compound_list_a = &get[CCompoundList](dereference(a))
+    if dereference(b).index() != 10:
+        return dereference(compound_list_a).size() == 0 and _len(b) == 0
+    cdef CCompoundList* compound_list_b = &get[CCompoundList](dereference(b))
+    cdef size_t size = dereference(compound_list_a).size()
+    cdef size_t i
+    
+    if size != dereference(compound_list_b).size():
+        return False
+        
+    for i in range(size):
+        if not is_compound_eq(dereference(compound_list_a)[i], dereference(compound_list_b)[i]):
+            return False
+    return True
+
+
+cdef inline bool _is_int_array_tag_list_eq(CListTagPtr a, CListTagPtr b) noexcept nogil:
+    cdef CIntArrayList* int_array_list_a = &get[CIntArrayList](dereference(a))
+    if dereference(b).index() != 11:
+        return dereference(int_array_list_a).size() == 0 and _len(b) == 0
+    cdef CIntArrayList* int_array_list_b = &get[CIntArrayList](dereference(b))
+    cdef size_t size = dereference(int_array_list_a).size()
+    cdef size_t i
+    
+    if size != dereference(int_array_list_b).size():
+        return False
+        
+    for i in range(size):
+        if dereference(dereference(int_array_list_a)[i]) != dereference(dereference(int_array_list_b)[i]):
+            return False
+    return True
+
+
+cdef inline bool _is_long_array_tag_list_eq(CListTagPtr a, CListTagPtr b) noexcept nogil:
+    cdef CLongArrayList* long_array_list_a = &get[CLongArrayList](dereference(a))
+    if dereference(b).index() != 12:
+        return dereference(long_array_list_a).size() == 0 and _len(b) == 0
+    cdef CLongArrayList* long_array_list_b = &get[CLongArrayList](dereference(b))
+    cdef size_t size = dereference(long_array_list_a).size()
+    cdef size_t i
+    
+    if size != dereference(long_array_list_b).size():
+        return False
+        
+    for i in range(size):
+        if dereference(dereference(long_array_list_a)[i]) != dereference(dereference(long_array_list_b)[i]):
+            return False
+    return True
+
+
+cdef bool is_list_eq(CListTagPtr a, CListTagPtr b) noexcept nogil:
+    cdef size_t index = dereference(a).index()
+    if index == 1:
+        return _is_byte_tag_list_eq(a, b)
+    elif index == 2:
+        return _is_short_tag_list_eq(a, b)
+    elif index == 3:
+        return _is_int_tag_list_eq(a, b)
+    elif index == 4:
+        return _is_long_tag_list_eq(a, b)
+    elif index == 5:
+        return _is_float_tag_list_eq(a, b)
+    elif index == 6:
+        return _is_double_tag_list_eq(a, b)
+    elif index == 7:
+        return _is_byte_array_tag_list_eq(a, b)
+    elif index == 8:
+        return _is_string_tag_list_eq(a, b)
+    elif index == 9:
+        return _is_list_tag_list_eq(a, b)
+    elif index == 10:
+        return _is_compound_tag_list_eq(a, b)
+    elif index == 11:
+        return _is_int_array_tag_list_eq(a, b)
+    elif index == 12:
+        return _is_long_array_tag_list_eq(a, b)
+    return False
 
 
 cdef inline size_t _len(CListTagPtr cpp):

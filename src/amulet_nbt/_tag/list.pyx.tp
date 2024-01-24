@@ -4,6 +4,7 @@
 from collections.abc import MutableSequence
 
 from libc.stdint cimport int64_t
+from libcpp cimport bool
 from libcpp.memory cimport make_shared
 from cython.operator cimport dereference
 from amulet_nbt._libcpp.variant cimport get
@@ -63,7 +64,46 @@ ClassData = (
 }}
 
 
-cdef inline size_t _len(CListTagPtr cpp):
+{{
+"\n\n\n".join(
+f"""cdef inline bool _is_{tag_var}_list_eq(CListTagPtr a, CListTagPtr b) noexcept nogil:
+    cdef {c_list_cls}* {list_var}_a = &get[{c_list_cls}](dereference(a))
+    if dereference(b).index() != {index}:
+        return dereference({list_var}_a).size() == 0 and _len(b) == 0
+    cdef {c_list_cls}* {list_var}_b = &get[{c_list_cls}](dereference(b))
+    cdef size_t size = dereference({list_var}_a).size()
+    cdef size_t i
+    
+    if size != dereference({list_var}_b).size():
+        return False
+        
+    for i in range(size):
+        if {
+            f"not is_list_eq(dereference({list_var}_a)[i], dereference({list_var}_b)[i])" if index == 9 else
+            f"not is_compound_eq(dereference({list_var}_a)[i], dereference({list_var}_b)[i])" if index == 10 else
+            f"dereference(dereference({list_var}_a)[i]) != dereference(dereference({list_var}_b)[i])" if index in {7, 11, 12} else
+            f"dereference({list_var}_a)[i] != dereference({list_var}_b)[i]"
+        }:
+            return False
+    return True"""
+        for index, c_cls, c_node_cls, c_list_cls, py_cls, tag_var, list_var in ClassData
+    )
+}}
+
+
+cdef bool is_list_eq(CListTagPtr a, CListTagPtr b) noexcept nogil:
+    cdef size_t index = dereference(a).index()
+{{
+"\n".join(
+f"""    {"el"*(index!=1)}if index == {index}:
+        return _is_{tag_var}_list_eq(a, b)"""
+    for index, c_cls, c_node_cls, c_list_cls, py_cls, tag_var, list_var in ClassData
+)
+}}
+    return False
+
+
+cdef inline size_t _len(CListTagPtr cpp) noexcept nogil:
     cdef size_t index = dereference(cpp).index()
 {{
 "".join(

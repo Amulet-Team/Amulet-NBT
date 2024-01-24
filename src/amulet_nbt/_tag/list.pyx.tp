@@ -117,7 +117,7 @@ cdef inline size_t _len(CListTagPtr cpp) noexcept nogil:
 
 {{
 "\n\n\n".join(
-f"""cdef inline {py_cls} _get_{tag_var}(CListTagPtr cpp, int64_t item):
+f"""cdef inline {py_cls} _get_{tag_var}(CListTagPtr cpp, ptrdiff_t item):
     cdef {c_list_cls}* {list_var} = &get[{c_list_cls}](dereference(cpp))
     if item < 0:
         item += dereference({list_var}).size()
@@ -129,8 +129,8 @@ f"""cdef inline {py_cls} _get_{tag_var}(CListTagPtr cpp, int64_t item):
 }}
 
 
-cdef inline AbstractBaseTag _get_item(CListTagPtr cpp, int64_t item):
-    index = dereference(cpp).index()
+cdef inline AbstractBaseTag _get_item(CListTagPtr cpp, ptrdiff_t item):
+    cdef size_t index = dereference(cpp).index()
 {{
 "\n".join(
 f"""    {"el"*(index!=1)}if index == {index}:
@@ -142,10 +142,10 @@ f"""    {"el"*(index!=1)}if index == {index}:
         raise RuntimeError
 
 
-cdef (size_t, size_t, size_t) _slice_to_range(size_t target_len, object s):
-    cdef int64_t start
-    cdef int64_t stop
-    cdef int64_t step
+cdef (size_t, size_t, ptrdiff_t) _slice_to_range(size_t target_len, object s):
+    cdef ptrdiff_t start
+    cdef ptrdiff_t stop
+    cdef ptrdiff_t step
 
     if s.step is None:
         step = 1
@@ -197,7 +197,7 @@ cdef (size_t, size_t, size_t) _slice_to_range(size_t target_len, object s):
 f"""cdef inline list _get_slice_{tag_var}(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
-    cdef size_t step
+    cdef ptrdiff_t step
     cdef size_t item
     
     cdef {c_list_cls}* {list_var}
@@ -214,7 +214,7 @@ f"""cdef inline list _get_slice_{tag_var}(CListTagPtr cpp, object s):
 
 
 cdef inline list _get_slice(CListTagPtr cpp, object s):
-    index = dereference(cpp).index()
+    cdef size_t index = dereference(cpp).index()
 {{
 "\n".join(
 f"""    {"el"*(index!=1)}if index == {index}:
@@ -228,7 +228,7 @@ f"""    {"el"*(index!=1)}if index == {index}:
 
 {{
 "\n\n\n".join(
-f"""cdef inline void _set_{tag_var}(CListTagPtr cpp, int64_t item, {py_cls} value):
+f"""cdef inline void _set_{tag_var}(CListTagPtr cpp, ptrdiff_t item, {py_cls} value):
     cdef {c_list_cls}* {list_var}
     
     if dereference(cpp).index() == {index}:
@@ -249,7 +249,7 @@ f"""cdef inline void _set_{tag_var}(CListTagPtr cpp, int64_t item, {py_cls} valu
 }}
 
 
-cdef inline void _set_item(CListTagPtr cpp, int64_t item, AbstractBaseTag value):
+cdef inline void _set_item(CListTagPtr cpp, ptrdiff_t item, AbstractBaseTag value):
 {{
 "\n".join(
     f"""    {"el" * (index != 1)}if isinstance(value, {py_cls}):
@@ -290,7 +290,7 @@ cdef inline void _set_slice(CListTagPtr cpp, object s, object value):
 
 {{
 "\n\n\n".join(
-f"""cdef inline void _del_{tag_var}(CListTagPtr cpp, int64_t item):
+f"""cdef inline void _del_{tag_var}(CListTagPtr cpp, ptrdiff_t item):
     cdef {c_list_cls}* {list_var} = &get[{c_list_cls}](dereference(cpp))
     if item < 0:
         item += dereference({list_var}).size()
@@ -302,8 +302,8 @@ f"""cdef inline void _del_{tag_var}(CListTagPtr cpp, int64_t item):
 }}
 
 
-cdef inline void _del_item(CListTagPtr cpp, int64_t item):
-    index = dereference(cpp).index()
+cdef inline void _del_item(CListTagPtr cpp, ptrdiff_t item):
+    cdef size_t index = dereference(cpp).index()
 {{
 "\n".join(
 f"""    {"el"*(index!=1)}if index == {index}:
@@ -342,7 +342,7 @@ f"""cdef inline void _del_slice_{tag_var}(CListTagPtr cpp, object s):
 
 
 cdef inline void _del_slice(CListTagPtr cpp, object s):
-    index = dereference(cpp).index()
+    cdef size_t index = dereference(cpp).index()
 {{
 "\n".join(
     f"""    {"el" * (index != 1)}if index == {index}:
@@ -356,7 +356,7 @@ cdef inline void _del_slice(CListTagPtr cpp, object s):
 
 {{
 "\n\n\n".join(
-f"""cdef inline void _insert_{tag_var}(CListTagPtr cpp, int64_t item, {py_cls} value):
+f"""cdef inline void _insert_{tag_var}(CListTagPtr cpp, ptrdiff_t item, {py_cls} value):
     cdef {c_list_cls}* {list_var}
     
     if dereference(cpp).index() == {index}:
@@ -377,7 +377,7 @@ f"""cdef inline void _insert_{tag_var}(CListTagPtr cpp, int64_t item, {py_cls} v
 }}
 
 
-cdef inline void _insert(CListTagPtr cpp, int64_t item, AbstractBaseTag value):
+cdef inline void _insert(CListTagPtr cpp, ptrdiff_t item, AbstractBaseTag value):
 {{
 "\n".join(
     f"""    {"el" * (index != 1)}if isinstance(value, {py_cls}):
@@ -531,7 +531,7 @@ cdef class ListTag(AbstractBaseMutableTag, MutableSequence):
         """Return a shallow copy of the class"""
         return ListTag(self, dereference(self.cpp).index())
 
-    def insert(ListTag self, int64_t index, AbstractBaseTag value not None):
+    def insert(ListTag self, ptrdiff_t index, AbstractBaseTag value not None):
         _insert(self.cpp, index, value)
 
 # {/{include("amulet_nbt/tpf/ListGet.pyx.tpf", tag_cls_name="ByteTag", tag_name="byte")}/}

@@ -311,7 +311,7 @@ cdef inline size_t _len(CListTagPtr cpp):
         raise RuntimeError
 
 
-cdef inline ByteTag _get_byte_tag(CListTagPtr cpp, int64_t item):
+cdef inline ByteTag _get_byte_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CByteList* byte_list = &get[CByteList](dereference(cpp))
     if item < 0:
         item += dereference(byte_list).size()
@@ -320,7 +320,7 @@ cdef inline ByteTag _get_byte_tag(CListTagPtr cpp, int64_t item):
     return ByteTag.wrap(dereference(byte_list)[item])
 
 
-cdef inline ShortTag _get_short_tag(CListTagPtr cpp, int64_t item):
+cdef inline ShortTag _get_short_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CShortList* short_list = &get[CShortList](dereference(cpp))
     if item < 0:
         item += dereference(short_list).size()
@@ -329,7 +329,7 @@ cdef inline ShortTag _get_short_tag(CListTagPtr cpp, int64_t item):
     return ShortTag.wrap(dereference(short_list)[item])
 
 
-cdef inline IntTag _get_int_tag(CListTagPtr cpp, int64_t item):
+cdef inline IntTag _get_int_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CIntList* int_list = &get[CIntList](dereference(cpp))
     if item < 0:
         item += dereference(int_list).size()
@@ -338,7 +338,7 @@ cdef inline IntTag _get_int_tag(CListTagPtr cpp, int64_t item):
     return IntTag.wrap(dereference(int_list)[item])
 
 
-cdef inline LongTag _get_long_tag(CListTagPtr cpp, int64_t item):
+cdef inline LongTag _get_long_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CLongList* long_list = &get[CLongList](dereference(cpp))
     if item < 0:
         item += dereference(long_list).size()
@@ -347,7 +347,7 @@ cdef inline LongTag _get_long_tag(CListTagPtr cpp, int64_t item):
     return LongTag.wrap(dereference(long_list)[item])
 
 
-cdef inline FloatTag _get_float_tag(CListTagPtr cpp, int64_t item):
+cdef inline FloatTag _get_float_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CFloatList* float_list = &get[CFloatList](dereference(cpp))
     if item < 0:
         item += dereference(float_list).size()
@@ -356,7 +356,7 @@ cdef inline FloatTag _get_float_tag(CListTagPtr cpp, int64_t item):
     return FloatTag.wrap(dereference(float_list)[item])
 
 
-cdef inline DoubleTag _get_double_tag(CListTagPtr cpp, int64_t item):
+cdef inline DoubleTag _get_double_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CDoubleList* double_list = &get[CDoubleList](dereference(cpp))
     if item < 0:
         item += dereference(double_list).size()
@@ -365,7 +365,7 @@ cdef inline DoubleTag _get_double_tag(CListTagPtr cpp, int64_t item):
     return DoubleTag.wrap(dereference(double_list)[item])
 
 
-cdef inline ByteArrayTag _get_byte_array_tag(CListTagPtr cpp, int64_t item):
+cdef inline ByteArrayTag _get_byte_array_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CByteArrayList* byte_array_list = &get[CByteArrayList](dereference(cpp))
     if item < 0:
         item += dereference(byte_array_list).size()
@@ -374,7 +374,7 @@ cdef inline ByteArrayTag _get_byte_array_tag(CListTagPtr cpp, int64_t item):
     return ByteArrayTag.wrap(dereference(byte_array_list)[item])
 
 
-cdef inline StringTag _get_string_tag(CListTagPtr cpp, int64_t item):
+cdef inline StringTag _get_string_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CStringList* string_list = &get[CStringList](dereference(cpp))
     if item < 0:
         item += dereference(string_list).size()
@@ -383,7 +383,7 @@ cdef inline StringTag _get_string_tag(CListTagPtr cpp, int64_t item):
     return StringTag.wrap(dereference(string_list)[item])
 
 
-cdef inline ListTag _get_list_tag(CListTagPtr cpp, int64_t item):
+cdef inline ListTag _get_list_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CListList* list_list = &get[CListList](dereference(cpp))
     if item < 0:
         item += dereference(list_list).size()
@@ -392,7 +392,7 @@ cdef inline ListTag _get_list_tag(CListTagPtr cpp, int64_t item):
     return ListTag.wrap(dereference(list_list)[item])
 
 
-cdef inline CompoundTag _get_compound_tag(CListTagPtr cpp, int64_t item):
+cdef inline CompoundTag _get_compound_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CCompoundList* compound_list = &get[CCompoundList](dereference(cpp))
     if item < 0:
         item += dereference(compound_list).size()
@@ -401,7 +401,7 @@ cdef inline CompoundTag _get_compound_tag(CListTagPtr cpp, int64_t item):
     return CompoundTag.wrap(dereference(compound_list)[item])
 
 
-cdef inline IntArrayTag _get_int_array_tag(CListTagPtr cpp, int64_t item):
+cdef inline IntArrayTag _get_int_array_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CIntArrayList* int_array_list = &get[CIntArrayList](dereference(cpp))
     if item < 0:
         item += dereference(int_array_list).size()
@@ -410,7 +410,7 @@ cdef inline IntArrayTag _get_int_array_tag(CListTagPtr cpp, int64_t item):
     return IntArrayTag.wrap(dereference(int_array_list)[item])
 
 
-cdef inline LongArrayTag _get_long_array_tag(CListTagPtr cpp, int64_t item):
+cdef inline LongArrayTag _get_long_array_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CLongArrayList* long_array_list = &get[CLongArrayList](dereference(cpp))
     if item < 0:
         item += dereference(long_array_list).size()
@@ -419,8 +419,8 @@ cdef inline LongArrayTag _get_long_array_tag(CListTagPtr cpp, int64_t item):
     return LongArrayTag.wrap(dereference(long_array_list)[item])
 
 
-cdef inline AbstractBaseTag _get_item(CListTagPtr cpp, int64_t item):
-    index = dereference(cpp).index()
+cdef inline AbstractBaseTag _get_item(CListTagPtr cpp, ptrdiff_t item):
+    cdef size_t index = dereference(cpp).index()
     if index == 1:
         return _get_byte_tag(cpp, item)
     elif index == 2:
@@ -449,10 +449,10 @@ cdef inline AbstractBaseTag _get_item(CListTagPtr cpp, int64_t item):
         raise RuntimeError
 
 
-cdef (size_t, size_t, size_t) _slice_to_range(size_t target_len, object s):
-    cdef int64_t start
-    cdef int64_t stop
-    cdef int64_t step
+cdef (size_t, size_t, ptrdiff_t) _slice_to_range(size_t target_len, object s):
+    cdef ptrdiff_t start
+    cdef ptrdiff_t stop
+    cdef ptrdiff_t step
 
     if s.step is None:
         step = 1
@@ -502,7 +502,7 @@ cdef (size_t, size_t, size_t) _slice_to_range(size_t target_len, object s):
 cdef inline list _get_slice_byte_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
-    cdef size_t step
+    cdef ptrdiff_t step
     cdef size_t item
     
     cdef CByteList* byte_list
@@ -518,7 +518,7 @@ cdef inline list _get_slice_byte_tag(CListTagPtr cpp, object s):
 cdef inline list _get_slice_short_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
-    cdef size_t step
+    cdef ptrdiff_t step
     cdef size_t item
     
     cdef CShortList* short_list
@@ -534,7 +534,7 @@ cdef inline list _get_slice_short_tag(CListTagPtr cpp, object s):
 cdef inline list _get_slice_int_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
-    cdef size_t step
+    cdef ptrdiff_t step
     cdef size_t item
     
     cdef CIntList* int_list
@@ -550,7 +550,7 @@ cdef inline list _get_slice_int_tag(CListTagPtr cpp, object s):
 cdef inline list _get_slice_long_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
-    cdef size_t step
+    cdef ptrdiff_t step
     cdef size_t item
     
     cdef CLongList* long_list
@@ -566,7 +566,7 @@ cdef inline list _get_slice_long_tag(CListTagPtr cpp, object s):
 cdef inline list _get_slice_float_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
-    cdef size_t step
+    cdef ptrdiff_t step
     cdef size_t item
     
     cdef CFloatList* float_list
@@ -582,7 +582,7 @@ cdef inline list _get_slice_float_tag(CListTagPtr cpp, object s):
 cdef inline list _get_slice_double_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
-    cdef size_t step
+    cdef ptrdiff_t step
     cdef size_t item
     
     cdef CDoubleList* double_list
@@ -598,7 +598,7 @@ cdef inline list _get_slice_double_tag(CListTagPtr cpp, object s):
 cdef inline list _get_slice_byte_array_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
-    cdef size_t step
+    cdef ptrdiff_t step
     cdef size_t item
     
     cdef CByteArrayList* byte_array_list
@@ -614,7 +614,7 @@ cdef inline list _get_slice_byte_array_tag(CListTagPtr cpp, object s):
 cdef inline list _get_slice_string_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
-    cdef size_t step
+    cdef ptrdiff_t step
     cdef size_t item
     
     cdef CStringList* string_list
@@ -630,7 +630,7 @@ cdef inline list _get_slice_string_tag(CListTagPtr cpp, object s):
 cdef inline list _get_slice_list_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
-    cdef size_t step
+    cdef ptrdiff_t step
     cdef size_t item
     
     cdef CListList* list_list
@@ -646,7 +646,7 @@ cdef inline list _get_slice_list_tag(CListTagPtr cpp, object s):
 cdef inline list _get_slice_compound_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
-    cdef size_t step
+    cdef ptrdiff_t step
     cdef size_t item
     
     cdef CCompoundList* compound_list
@@ -662,7 +662,7 @@ cdef inline list _get_slice_compound_tag(CListTagPtr cpp, object s):
 cdef inline list _get_slice_int_array_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
-    cdef size_t step
+    cdef ptrdiff_t step
     cdef size_t item
     
     cdef CIntArrayList* int_array_list
@@ -678,7 +678,7 @@ cdef inline list _get_slice_int_array_tag(CListTagPtr cpp, object s):
 cdef inline list _get_slice_long_array_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
-    cdef size_t step
+    cdef ptrdiff_t step
     cdef size_t item
     
     cdef CLongArrayList* long_array_list
@@ -692,7 +692,7 @@ cdef inline list _get_slice_long_array_tag(CListTagPtr cpp, object s):
 
 
 cdef inline list _get_slice(CListTagPtr cpp, object s):
-    index = dereference(cpp).index()
+    cdef size_t index = dereference(cpp).index()
     if index == 1:
         return _get_slice_byte_tag(cpp, s)
     elif index == 2:
@@ -721,7 +721,7 @@ cdef inline list _get_slice(CListTagPtr cpp, object s):
         raise RuntimeError
 
 
-cdef inline void _set_byte_tag(CListTagPtr cpp, int64_t item, ByteTag value):
+cdef inline void _set_byte_tag(CListTagPtr cpp, ptrdiff_t item, ByteTag value):
     cdef CByteList* byte_list
     
     if dereference(cpp).index() == 1:
@@ -739,7 +739,7 @@ cdef inline void _set_byte_tag(CListTagPtr cpp, int64_t item, ByteTag value):
         raise TypeError("NBT ListTag item mismatch.")
 
 
-cdef inline void _set_short_tag(CListTagPtr cpp, int64_t item, ShortTag value):
+cdef inline void _set_short_tag(CListTagPtr cpp, ptrdiff_t item, ShortTag value):
     cdef CShortList* short_list
     
     if dereference(cpp).index() == 2:
@@ -757,7 +757,7 @@ cdef inline void _set_short_tag(CListTagPtr cpp, int64_t item, ShortTag value):
         raise TypeError("NBT ListTag item mismatch.")
 
 
-cdef inline void _set_int_tag(CListTagPtr cpp, int64_t item, IntTag value):
+cdef inline void _set_int_tag(CListTagPtr cpp, ptrdiff_t item, IntTag value):
     cdef CIntList* int_list
     
     if dereference(cpp).index() == 3:
@@ -775,7 +775,7 @@ cdef inline void _set_int_tag(CListTagPtr cpp, int64_t item, IntTag value):
         raise TypeError("NBT ListTag item mismatch.")
 
 
-cdef inline void _set_long_tag(CListTagPtr cpp, int64_t item, LongTag value):
+cdef inline void _set_long_tag(CListTagPtr cpp, ptrdiff_t item, LongTag value):
     cdef CLongList* long_list
     
     if dereference(cpp).index() == 4:
@@ -793,7 +793,7 @@ cdef inline void _set_long_tag(CListTagPtr cpp, int64_t item, LongTag value):
         raise TypeError("NBT ListTag item mismatch.")
 
 
-cdef inline void _set_float_tag(CListTagPtr cpp, int64_t item, FloatTag value):
+cdef inline void _set_float_tag(CListTagPtr cpp, ptrdiff_t item, FloatTag value):
     cdef CFloatList* float_list
     
     if dereference(cpp).index() == 5:
@@ -811,7 +811,7 @@ cdef inline void _set_float_tag(CListTagPtr cpp, int64_t item, FloatTag value):
         raise TypeError("NBT ListTag item mismatch.")
 
 
-cdef inline void _set_double_tag(CListTagPtr cpp, int64_t item, DoubleTag value):
+cdef inline void _set_double_tag(CListTagPtr cpp, ptrdiff_t item, DoubleTag value):
     cdef CDoubleList* double_list
     
     if dereference(cpp).index() == 6:
@@ -829,7 +829,7 @@ cdef inline void _set_double_tag(CListTagPtr cpp, int64_t item, DoubleTag value)
         raise TypeError("NBT ListTag item mismatch.")
 
 
-cdef inline void _set_byte_array_tag(CListTagPtr cpp, int64_t item, ByteArrayTag value):
+cdef inline void _set_byte_array_tag(CListTagPtr cpp, ptrdiff_t item, ByteArrayTag value):
     cdef CByteArrayList* byte_array_list
     
     if dereference(cpp).index() == 7:
@@ -847,7 +847,7 @@ cdef inline void _set_byte_array_tag(CListTagPtr cpp, int64_t item, ByteArrayTag
         raise TypeError("NBT ListTag item mismatch.")
 
 
-cdef inline void _set_string_tag(CListTagPtr cpp, int64_t item, StringTag value):
+cdef inline void _set_string_tag(CListTagPtr cpp, ptrdiff_t item, StringTag value):
     cdef CStringList* string_list
     
     if dereference(cpp).index() == 8:
@@ -865,7 +865,7 @@ cdef inline void _set_string_tag(CListTagPtr cpp, int64_t item, StringTag value)
         raise TypeError("NBT ListTag item mismatch.")
 
 
-cdef inline void _set_list_tag(CListTagPtr cpp, int64_t item, ListTag value):
+cdef inline void _set_list_tag(CListTagPtr cpp, ptrdiff_t item, ListTag value):
     cdef CListList* list_list
     
     if dereference(cpp).index() == 9:
@@ -883,7 +883,7 @@ cdef inline void _set_list_tag(CListTagPtr cpp, int64_t item, ListTag value):
         raise TypeError("NBT ListTag item mismatch.")
 
 
-cdef inline void _set_compound_tag(CListTagPtr cpp, int64_t item, CompoundTag value):
+cdef inline void _set_compound_tag(CListTagPtr cpp, ptrdiff_t item, CompoundTag value):
     cdef CCompoundList* compound_list
     
     if dereference(cpp).index() == 10:
@@ -901,7 +901,7 @@ cdef inline void _set_compound_tag(CListTagPtr cpp, int64_t item, CompoundTag va
         raise TypeError("NBT ListTag item mismatch.")
 
 
-cdef inline void _set_int_array_tag(CListTagPtr cpp, int64_t item, IntArrayTag value):
+cdef inline void _set_int_array_tag(CListTagPtr cpp, ptrdiff_t item, IntArrayTag value):
     cdef CIntArrayList* int_array_list
     
     if dereference(cpp).index() == 11:
@@ -919,7 +919,7 @@ cdef inline void _set_int_array_tag(CListTagPtr cpp, int64_t item, IntArrayTag v
         raise TypeError("NBT ListTag item mismatch.")
 
 
-cdef inline void _set_long_array_tag(CListTagPtr cpp, int64_t item, LongArrayTag value):
+cdef inline void _set_long_array_tag(CListTagPtr cpp, ptrdiff_t item, LongArrayTag value):
     cdef CLongArrayList* long_array_list
     
     if dereference(cpp).index() == 12:
@@ -937,8 +937,7 @@ cdef inline void _set_long_array_tag(CListTagPtr cpp, int64_t item, LongArrayTag
         raise TypeError("NBT ListTag item mismatch.")
 
 
-
-cdef inline void _set_item(CListTagPtr cpp, int64_t item, AbstractBaseTag value):
+cdef inline void _set_item(CListTagPtr cpp, ptrdiff_t item, AbstractBaseTag value):
     if isinstance(value, ByteTag):
         _set_byte_tag(cpp, item, value)
     elif isinstance(value, ShortTag):
@@ -971,7 +970,7 @@ cdef inline void _set_slice(CListTagPtr cpp, object s, object value):
     pass
 
 
-cdef inline void _del_byte_tag(CListTagPtr cpp, int64_t item):
+cdef inline void _del_byte_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CByteList* byte_list = &get[CByteList](dereference(cpp))
     if item < 0:
         item += dereference(byte_list).size()
@@ -980,7 +979,7 @@ cdef inline void _del_byte_tag(CListTagPtr cpp, int64_t item):
     dereference(byte_list).erase(dereference(byte_list).begin() + item)
 
 
-cdef inline void _del_short_tag(CListTagPtr cpp, int64_t item):
+cdef inline void _del_short_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CShortList* short_list = &get[CShortList](dereference(cpp))
     if item < 0:
         item += dereference(short_list).size()
@@ -989,7 +988,7 @@ cdef inline void _del_short_tag(CListTagPtr cpp, int64_t item):
     dereference(short_list).erase(dereference(short_list).begin() + item)
 
 
-cdef inline void _del_int_tag(CListTagPtr cpp, int64_t item):
+cdef inline void _del_int_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CIntList* int_list = &get[CIntList](dereference(cpp))
     if item < 0:
         item += dereference(int_list).size()
@@ -998,7 +997,7 @@ cdef inline void _del_int_tag(CListTagPtr cpp, int64_t item):
     dereference(int_list).erase(dereference(int_list).begin() + item)
 
 
-cdef inline void _del_long_tag(CListTagPtr cpp, int64_t item):
+cdef inline void _del_long_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CLongList* long_list = &get[CLongList](dereference(cpp))
     if item < 0:
         item += dereference(long_list).size()
@@ -1007,7 +1006,7 @@ cdef inline void _del_long_tag(CListTagPtr cpp, int64_t item):
     dereference(long_list).erase(dereference(long_list).begin() + item)
 
 
-cdef inline void _del_float_tag(CListTagPtr cpp, int64_t item):
+cdef inline void _del_float_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CFloatList* float_list = &get[CFloatList](dereference(cpp))
     if item < 0:
         item += dereference(float_list).size()
@@ -1016,7 +1015,7 @@ cdef inline void _del_float_tag(CListTagPtr cpp, int64_t item):
     dereference(float_list).erase(dereference(float_list).begin() + item)
 
 
-cdef inline void _del_double_tag(CListTagPtr cpp, int64_t item):
+cdef inline void _del_double_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CDoubleList* double_list = &get[CDoubleList](dereference(cpp))
     if item < 0:
         item += dereference(double_list).size()
@@ -1025,7 +1024,7 @@ cdef inline void _del_double_tag(CListTagPtr cpp, int64_t item):
     dereference(double_list).erase(dereference(double_list).begin() + item)
 
 
-cdef inline void _del_byte_array_tag(CListTagPtr cpp, int64_t item):
+cdef inline void _del_byte_array_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CByteArrayList* byte_array_list = &get[CByteArrayList](dereference(cpp))
     if item < 0:
         item += dereference(byte_array_list).size()
@@ -1034,7 +1033,7 @@ cdef inline void _del_byte_array_tag(CListTagPtr cpp, int64_t item):
     dereference(byte_array_list).erase(dereference(byte_array_list).begin() + item)
 
 
-cdef inline void _del_string_tag(CListTagPtr cpp, int64_t item):
+cdef inline void _del_string_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CStringList* string_list = &get[CStringList](dereference(cpp))
     if item < 0:
         item += dereference(string_list).size()
@@ -1043,7 +1042,7 @@ cdef inline void _del_string_tag(CListTagPtr cpp, int64_t item):
     dereference(string_list).erase(dereference(string_list).begin() + item)
 
 
-cdef inline void _del_list_tag(CListTagPtr cpp, int64_t item):
+cdef inline void _del_list_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CListList* list_list = &get[CListList](dereference(cpp))
     if item < 0:
         item += dereference(list_list).size()
@@ -1052,7 +1051,7 @@ cdef inline void _del_list_tag(CListTagPtr cpp, int64_t item):
     dereference(list_list).erase(dereference(list_list).begin() + item)
 
 
-cdef inline void _del_compound_tag(CListTagPtr cpp, int64_t item):
+cdef inline void _del_compound_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CCompoundList* compound_list = &get[CCompoundList](dereference(cpp))
     if item < 0:
         item += dereference(compound_list).size()
@@ -1061,7 +1060,7 @@ cdef inline void _del_compound_tag(CListTagPtr cpp, int64_t item):
     dereference(compound_list).erase(dereference(compound_list).begin() + item)
 
 
-cdef inline void _del_int_array_tag(CListTagPtr cpp, int64_t item):
+cdef inline void _del_int_array_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CIntArrayList* int_array_list = &get[CIntArrayList](dereference(cpp))
     if item < 0:
         item += dereference(int_array_list).size()
@@ -1070,7 +1069,7 @@ cdef inline void _del_int_array_tag(CListTagPtr cpp, int64_t item):
     dereference(int_array_list).erase(dereference(int_array_list).begin() + item)
 
 
-cdef inline void _del_long_array_tag(CListTagPtr cpp, int64_t item):
+cdef inline void _del_long_array_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CLongArrayList* long_array_list = &get[CLongArrayList](dereference(cpp))
     if item < 0:
         item += dereference(long_array_list).size()
@@ -1079,8 +1078,8 @@ cdef inline void _del_long_array_tag(CListTagPtr cpp, int64_t item):
     dereference(long_array_list).erase(dereference(long_array_list).begin() + item)
 
 
-cdef inline void _del_item(CListTagPtr cpp, int64_t item):
-    index = dereference(cpp).index()
+cdef inline void _del_item(CListTagPtr cpp, ptrdiff_t item):
+    cdef size_t index = dereference(cpp).index()
     if index == 1:
         _del_byte_tag(cpp, item)
     elif index == 2:
@@ -1362,7 +1361,7 @@ cdef inline void _del_slice_long_array_tag(CListTagPtr cpp, object s):
 
 
 cdef inline void _del_slice(CListTagPtr cpp, object s):
-    index = dereference(cpp).index()
+    cdef size_t index = dereference(cpp).index()
     if index == 1:
         _del_slice_byte_tag(cpp, s)
     elif index == 2:
@@ -1391,7 +1390,7 @@ cdef inline void _del_slice(CListTagPtr cpp, object s):
         raise RuntimeError
 
 
-cdef inline void _insert_byte_tag(CListTagPtr cpp, int64_t item, ByteTag value):
+cdef inline void _insert_byte_tag(CListTagPtr cpp, ptrdiff_t item, ByteTag value):
     cdef CByteList* byte_list
     
     if dereference(cpp).index() == 1:
@@ -1409,7 +1408,7 @@ cdef inline void _insert_byte_tag(CListTagPtr cpp, int64_t item, ByteTag value):
     dereference(byte_list).insert(dereference(byte_list).begin() + item, value.cpp)
 
 
-cdef inline void _insert_short_tag(CListTagPtr cpp, int64_t item, ShortTag value):
+cdef inline void _insert_short_tag(CListTagPtr cpp, ptrdiff_t item, ShortTag value):
     cdef CShortList* short_list
     
     if dereference(cpp).index() == 2:
@@ -1427,7 +1426,7 @@ cdef inline void _insert_short_tag(CListTagPtr cpp, int64_t item, ShortTag value
     dereference(short_list).insert(dereference(short_list).begin() + item, value.cpp)
 
 
-cdef inline void _insert_int_tag(CListTagPtr cpp, int64_t item, IntTag value):
+cdef inline void _insert_int_tag(CListTagPtr cpp, ptrdiff_t item, IntTag value):
     cdef CIntList* int_list
     
     if dereference(cpp).index() == 3:
@@ -1445,7 +1444,7 @@ cdef inline void _insert_int_tag(CListTagPtr cpp, int64_t item, IntTag value):
     dereference(int_list).insert(dereference(int_list).begin() + item, value.cpp)
 
 
-cdef inline void _insert_long_tag(CListTagPtr cpp, int64_t item, LongTag value):
+cdef inline void _insert_long_tag(CListTagPtr cpp, ptrdiff_t item, LongTag value):
     cdef CLongList* long_list
     
     if dereference(cpp).index() == 4:
@@ -1463,7 +1462,7 @@ cdef inline void _insert_long_tag(CListTagPtr cpp, int64_t item, LongTag value):
     dereference(long_list).insert(dereference(long_list).begin() + item, value.cpp)
 
 
-cdef inline void _insert_float_tag(CListTagPtr cpp, int64_t item, FloatTag value):
+cdef inline void _insert_float_tag(CListTagPtr cpp, ptrdiff_t item, FloatTag value):
     cdef CFloatList* float_list
     
     if dereference(cpp).index() == 5:
@@ -1481,7 +1480,7 @@ cdef inline void _insert_float_tag(CListTagPtr cpp, int64_t item, FloatTag value
     dereference(float_list).insert(dereference(float_list).begin() + item, value.cpp)
 
 
-cdef inline void _insert_double_tag(CListTagPtr cpp, int64_t item, DoubleTag value):
+cdef inline void _insert_double_tag(CListTagPtr cpp, ptrdiff_t item, DoubleTag value):
     cdef CDoubleList* double_list
     
     if dereference(cpp).index() == 6:
@@ -1499,7 +1498,7 @@ cdef inline void _insert_double_tag(CListTagPtr cpp, int64_t item, DoubleTag val
     dereference(double_list).insert(dereference(double_list).begin() + item, value.cpp)
 
 
-cdef inline void _insert_byte_array_tag(CListTagPtr cpp, int64_t item, ByteArrayTag value):
+cdef inline void _insert_byte_array_tag(CListTagPtr cpp, ptrdiff_t item, ByteArrayTag value):
     cdef CByteArrayList* byte_array_list
     
     if dereference(cpp).index() == 7:
@@ -1517,7 +1516,7 @@ cdef inline void _insert_byte_array_tag(CListTagPtr cpp, int64_t item, ByteArray
     dereference(byte_array_list).insert(dereference(byte_array_list).begin() + item, value.cpp)
 
 
-cdef inline void _insert_string_tag(CListTagPtr cpp, int64_t item, StringTag value):
+cdef inline void _insert_string_tag(CListTagPtr cpp, ptrdiff_t item, StringTag value):
     cdef CStringList* string_list
     
     if dereference(cpp).index() == 8:
@@ -1535,7 +1534,7 @@ cdef inline void _insert_string_tag(CListTagPtr cpp, int64_t item, StringTag val
     dereference(string_list).insert(dereference(string_list).begin() + item, value.cpp)
 
 
-cdef inline void _insert_list_tag(CListTagPtr cpp, int64_t item, ListTag value):
+cdef inline void _insert_list_tag(CListTagPtr cpp, ptrdiff_t item, ListTag value):
     cdef CListList* list_list
     
     if dereference(cpp).index() == 9:
@@ -1553,7 +1552,7 @@ cdef inline void _insert_list_tag(CListTagPtr cpp, int64_t item, ListTag value):
     dereference(list_list).insert(dereference(list_list).begin() + item, value.cpp)
 
 
-cdef inline void _insert_compound_tag(CListTagPtr cpp, int64_t item, CompoundTag value):
+cdef inline void _insert_compound_tag(CListTagPtr cpp, ptrdiff_t item, CompoundTag value):
     cdef CCompoundList* compound_list
     
     if dereference(cpp).index() == 10:
@@ -1571,7 +1570,7 @@ cdef inline void _insert_compound_tag(CListTagPtr cpp, int64_t item, CompoundTag
     dereference(compound_list).insert(dereference(compound_list).begin() + item, value.cpp)
 
 
-cdef inline void _insert_int_array_tag(CListTagPtr cpp, int64_t item, IntArrayTag value):
+cdef inline void _insert_int_array_tag(CListTagPtr cpp, ptrdiff_t item, IntArrayTag value):
     cdef CIntArrayList* int_array_list
     
     if dereference(cpp).index() == 11:
@@ -1589,7 +1588,7 @@ cdef inline void _insert_int_array_tag(CListTagPtr cpp, int64_t item, IntArrayTa
     dereference(int_array_list).insert(dereference(int_array_list).begin() + item, value.cpp)
 
 
-cdef inline void _insert_long_array_tag(CListTagPtr cpp, int64_t item, LongArrayTag value):
+cdef inline void _insert_long_array_tag(CListTagPtr cpp, ptrdiff_t item, LongArrayTag value):
     cdef CLongArrayList* long_array_list
     
     if dereference(cpp).index() == 12:
@@ -1607,7 +1606,7 @@ cdef inline void _insert_long_array_tag(CListTagPtr cpp, int64_t item, LongArray
     dereference(long_array_list).insert(dereference(long_array_list).begin() + item, value.cpp)
 
 
-cdef inline void _insert(CListTagPtr cpp, int64_t item, AbstractBaseTag value):
+cdef inline void _insert(CListTagPtr cpp, ptrdiff_t item, AbstractBaseTag value):
     if isinstance(value, ByteTag):
         _insert_byte_tag(cpp, item, value)
     elif isinstance(value, ShortTag):
@@ -1795,7 +1794,7 @@ cdef class ListTag(AbstractBaseMutableTag, MutableSequence):
         """Return a shallow copy of the class"""
         return ListTag(self, dereference(self.cpp).index())
 
-    def insert(ListTag self, int64_t index, AbstractBaseTag value not None):
+    def insert(ListTag self, ptrdiff_t index, AbstractBaseTag value not None):
         _insert(self.cpp, index, value)
 
 # {/{include("amulet_nbt/tpf/ListGet.pyx.tpf", tag_cls_name="ByteTag", tag_name="byte")}/}

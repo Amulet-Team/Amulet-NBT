@@ -45,6 +45,52 @@ cdef class ByteTag(AbstractBaseIntTag):
     def __init__(ByteTag self, value = 0):
         self.cpp = self._sanitise_value(int(value))
 
+    def __eq__(ByteTag self, other):
+        cdef ByteTag other_
+        if not isinstance(other, ByteTag):
+            return NotImplemented
+        other_ = other
+        return self.cpp == other_.cpp
+
+    def __repr__(ByteTag self):
+        return f"{self.__class__.__name__}({self.cpp})"
+
+    def __int__(ByteTag self):
+        return int(self.cpp)
+
+    def __float__(ByteTag self):
+        return float(self.cpp)
+
+    def __bool__(ByteTag self):
+        return bool(self.cpp)
+
+    def __ge__(ByteTag self, other):
+        cdef ByteTag other_
+        if not isinstance(other, ByteTag):
+            return NotImplemented
+        other_ = other
+        return self.cpp >= other_.cpp
+
+    def __gt__(ByteTag self, other):
+        cdef ByteTag other_
+        if not isinstance(other, ByteTag):
+            return NotImplemented
+        other_ = other
+        return self.cpp > other_.cpp
+
+    def __le__(ByteTag self, other):
+        cdef ByteTag other_
+        if not isinstance(other, ByteTag):
+            return NotImplemented
+        other_ = other
+        return self.cpp <= other_.cpp
+
+    def __lt__(ByteTag self, other):
+        cdef ByteTag other_
+        if not isinstance(other, ByteTag):
+            return NotImplemented
+        other_ = other
+        return self.cpp < other_.cpp
     @staticmethod
     cdef ByteTag wrap(CByteTag cpp):
         cdef ByteTag tag = ByteTag.__new__(ByteTag)
@@ -73,6 +119,52 @@ cdef class ShortTag(AbstractBaseIntTag):
     def __init__(ShortTag self, value = 0):
         self.cpp = self._sanitise_value(int(value))
 
+    def __eq__(ShortTag self, other):
+        cdef ShortTag other_
+        if not isinstance(other, ShortTag):
+            return NotImplemented
+        other_ = other
+        return self.cpp == other_.cpp
+
+    def __repr__(ShortTag self):
+        return f"{self.__class__.__name__}({self.cpp})"
+
+    def __int__(ShortTag self):
+        return int(self.cpp)
+
+    def __float__(ShortTag self):
+        return float(self.cpp)
+
+    def __bool__(ShortTag self):
+        return bool(self.cpp)
+
+    def __ge__(ShortTag self, other):
+        cdef ShortTag other_
+        if not isinstance(other, ShortTag):
+            return NotImplemented
+        other_ = other
+        return self.cpp >= other_.cpp
+
+    def __gt__(ShortTag self, other):
+        cdef ShortTag other_
+        if not isinstance(other, ShortTag):
+            return NotImplemented
+        other_ = other
+        return self.cpp > other_.cpp
+
+    def __le__(ShortTag self, other):
+        cdef ShortTag other_
+        if not isinstance(other, ShortTag):
+            return NotImplemented
+        other_ = other
+        return self.cpp <= other_.cpp
+
+    def __lt__(ShortTag self, other):
+        cdef ShortTag other_
+        if not isinstance(other, ShortTag):
+            return NotImplemented
+        other_ = other
+        return self.cpp < other_.cpp
     @staticmethod
     cdef ShortTag wrap(CShortTag cpp):
         cdef ShortTag tag = ShortTag.__new__(ShortTag)
@@ -101,6 +193,52 @@ cdef class IntTag(AbstractBaseIntTag):
     def __init__(IntTag self, value = 0):
         self.cpp = self._sanitise_value(int(value))
 
+    def __eq__(IntTag self, other):
+        cdef IntTag other_
+        if not isinstance(other, IntTag):
+            return NotImplemented
+        other_ = other
+        return self.cpp == other_.cpp
+
+    def __repr__(IntTag self):
+        return f"{self.__class__.__name__}({self.cpp})"
+
+    def __int__(IntTag self):
+        return int(self.cpp)
+
+    def __float__(IntTag self):
+        return float(self.cpp)
+
+    def __bool__(IntTag self):
+        return bool(self.cpp)
+
+    def __ge__(IntTag self, other):
+        cdef IntTag other_
+        if not isinstance(other, IntTag):
+            return NotImplemented
+        other_ = other
+        return self.cpp >= other_.cpp
+
+    def __gt__(IntTag self, other):
+        cdef IntTag other_
+        if not isinstance(other, IntTag):
+            return NotImplemented
+        other_ = other
+        return self.cpp > other_.cpp
+
+    def __le__(IntTag self, other):
+        cdef IntTag other_
+        if not isinstance(other, IntTag):
+            return NotImplemented
+        other_ = other
+        return self.cpp <= other_.cpp
+
+    def __lt__(IntTag self, other):
+        cdef IntTag other_
+        if not isinstance(other, IntTag):
+            return NotImplemented
+        other_ = other
+        return self.cpp < other_.cpp
     @staticmethod
     cdef IntTag wrap(CIntTag cpp):
         cdef IntTag tag = IntTag.__new__(IntTag)
@@ -129,6 +267,52 @@ cdef class LongTag(AbstractBaseIntTag):
     def __init__(LongTag self, value = 0):
         self.cpp = self._sanitise_value(int(value))
 
+    def __eq__(LongTag self, other):
+        cdef LongTag other_
+        if not isinstance(other, LongTag):
+            return NotImplemented
+        other_ = other
+        return self.cpp == other_.cpp
+
+    def __repr__(LongTag self):
+        return f"{self.__class__.__name__}({self.cpp})"
+
+    def __int__(LongTag self):
+        return int(self.cpp)
+
+    def __float__(LongTag self):
+        return float(self.cpp)
+
+    def __bool__(LongTag self):
+        return bool(self.cpp)
+
+    def __ge__(LongTag self, other):
+        cdef LongTag other_
+        if not isinstance(other, LongTag):
+            return NotImplemented
+        other_ = other
+        return self.cpp >= other_.cpp
+
+    def __gt__(LongTag self, other):
+        cdef LongTag other_
+        if not isinstance(other, LongTag):
+            return NotImplemented
+        other_ = other
+        return self.cpp > other_.cpp
+
+    def __le__(LongTag self, other):
+        cdef LongTag other_
+        if not isinstance(other, LongTag):
+            return NotImplemented
+        other_ = other
+        return self.cpp <= other_.cpp
+
+    def __lt__(LongTag self, other):
+        cdef LongTag other_
+        if not isinstance(other, LongTag):
+            return NotImplemented
+        other_ = other
+        return self.cpp < other_.cpp
     @staticmethod
     cdef LongTag wrap(CLongTag cpp):
         cdef LongTag tag = LongTag.__new__(LongTag)

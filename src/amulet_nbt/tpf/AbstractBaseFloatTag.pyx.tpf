@@ -1,5 +1,8 @@
+{{py:from template import include}}
     @staticmethod
-    cdef {{cls_name}} wrap(C{{cls_name}} cpp):
-        cdef {{cls_name}} tag = {{cls_name}}.__new__({{cls_name}})
+    cdef {{py_cls}} wrap(C{{py_cls}} cpp):
+        cdef {{py_cls}} tag = {{py_cls}}.__new__({{py_cls}})
         tag.cpp = cpp
         return tag
+
+{{include("amulet_nbt/tpf/AbstractBaseNumericTag.pyx.tpf", **locals())}}

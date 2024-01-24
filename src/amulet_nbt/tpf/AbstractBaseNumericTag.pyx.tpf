@@ -1,0 +1,16 @@
+{{py:from template import include}}
+{{include("amulet_nbt/tpf/AbstractBaseImmutableTag.pyx.tpf", **locals())}}
+
+    def __repr__({{py_cls}} self):
+        return f"{self.__class__.__name__}({self.cpp})"
+
+    def __int__({{py_cls}} self):
+        return int(self.cpp)
+
+    def __float__({{py_cls}} self):
+        return float(self.cpp)
+
+    def __bool__({{py_cls}} self):
+        return bool(self.cpp)
+
+{{include("amulet_nbt/tpf/Comparison.pyx.tpf", **locals())}}

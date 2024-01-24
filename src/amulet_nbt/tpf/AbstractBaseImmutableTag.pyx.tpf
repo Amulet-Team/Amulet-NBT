@@ -1,0 +1,6 @@
+    def __eq__({{py_cls}} self, other):
+        cdef {{py_cls}} other_
+        if not isinstance(other, {{py_cls}}):
+            return NotImplemented
+        other_ = other
+        return self.cpp == other_.cpp

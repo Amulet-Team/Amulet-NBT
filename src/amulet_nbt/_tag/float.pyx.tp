@@ -43,7 +43,7 @@ cdef class FloatTag(AbstractBaseFloatTag):
     def __init__(FloatTag self, value = 0):
         self.cpp = float(value)
 
-{{include("amulet_nbt/tpf/AbstractBaseFloatTag.pyx.tpf", cls_name="FloatTag")}}
+{{include("amulet_nbt/tpf/AbstractBaseFloatTag.pyx.tpf", py_cls="FloatTag")}}
 
 
 cdef class DoubleTag(AbstractBaseFloatTag):
@@ -53,4 +53,4 @@ cdef class DoubleTag(AbstractBaseFloatTag):
     def __init__(DoubleTag self, value = 0):
         self.cpp = float(value)
 
-{{include("amulet_nbt/tpf/AbstractBaseFloatTag.pyx.tpf", cls_name="DoubleTag")}}
+{{include("amulet_nbt/tpf/AbstractBaseFloatTag.pyx.tpf", py_cls="DoubleTag")}}

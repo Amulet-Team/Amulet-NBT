@@ -7,18 +7,14 @@
 import numpy
 cimport numpy
 numpy.import_array()
-from io import BytesIO
-from copy import deepcopy
-import warnings
-from typing import Any
+from typing import Any, Iterator
 
 from cython.operator cimport dereference
+from cpython cimport Py_INCREF
 from libc.stdint cimport (
     int8_t,
-    int16_t,
     int32_t,
     int64_t,
-    uint32_t
 )
 from libcpp.memory cimport make_shared
 from amulet_nbt._nbt.array cimport Array
@@ -33,20 +29,8 @@ from template import include
 
 
 cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
-    def __getitem__(AbstractBaseArrayTag self, item):
-        raise NotImplementedError
-
-    def __setitem__(AbstractBaseArrayTag self, key, value):
-        raise NotImplementedError
-
-    def __array__(AbstractBaseArrayTag self, dtype=None):
-        raise NotImplementedError
-
-    def __len__(AbstractBaseArrayTag self):
-        raise NotImplementedError
-
     @property
-    def np_array(AbstractBaseArrayTag self):
+    def np_array(AbstractBaseArrayTag self) -> numpy.ndarray:
         """
         A numpy array holding the same internal data.
         Changes to the array will also modify the internal state.
@@ -62,6 +46,31 @@ cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
         """
         return self.np_array
 
+    # Sized
+    def __len__(AbstractBaseArrayTag self):
+        raise NotImplementedError
+
+    # Sequence
+    def __getitem__(AbstractBaseArrayTag self, item):
+        raise NotImplementedError
+
+    def __iter__(self):
+        raise NotImplementedError
+
+    def __contains__(self, value):
+        raise NotImplementedError
+
+    def __reversed__(self):
+        raise NotImplementedError
+
+    # MutableSequence
+    def __setitem__(AbstractBaseArrayTag self, key, value):
+        raise NotImplementedError
+
+    # Array interface
+    def __array__(AbstractBaseArrayTag self, dtype=None):
+        raise NotImplementedError
+
 
 {{include(
     "amulet_nbt/tpf/ArrayTag.pyx.tpf",
@@ -72,6 +81,8 @@ cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
     dtype="byte",
     snbt_prefix="B",
     snbt_suffix="B",
+    cpp="int8_t",
+    npy_c="NPY_INT8",
 )}}
 
 
@@ -84,6 +95,8 @@ cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
     dtype="int",
     snbt_prefix="I",
     snbt_suffix="",
+    cpp="int32_t",
+    npy_c="NPY_INT32",
 )}}
 
 
@@ -96,4 +109,6 @@ cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
     dtype="long",
     snbt_prefix="L",
     snbt_suffix="L",
+    cpp="int64_t",
+    npy_c="NPY_INT64",
 )}}

@@ -23,12 +23,84 @@ cdef class {{dtype.capitalize()}}ArrayTag(AbstractBaseArrayTag):
         node.emplace[C{{dtype.capitalize()}}ArrayTagPtr](self.cpp)
         return node
 
+    @property
+    def np_array({{dtype.capitalize()}}ArrayTag self) -> numpy.ndarray:
+        return numpy.asarray(self)
+
     def __eq__({{dtype.capitalize()}}ArrayTag self, object other):
         if not isinstance(other, {{dtype.capitalize()}}ArrayTag):
             return False
         cdef {{dtype.capitalize()}}ArrayTag tag = other
         return dereference(self.cpp) == dereference(tag.cpp)
 
+    def __repr__({{dtype.capitalize()}}ArrayTag self):
+        return f"{{dtype.capitalize()}}ArrayTag({list(self)})"
+
+    def __str__({{dtype.capitalize()}}ArrayTag self):
+        return str(list(self))
+
+    def __reduce__({{dtype.capitalize()}}ArrayTag self):
+        raise NotImplementedError
+
+    def __copy__({{dtype.capitalize()}}ArrayTag self):
+        raise NotImplementedError
+
+    def __deepcopy__({{dtype.capitalize()}}ArrayTag self, memo=None):
+        raise NotImplementedError
+
+    # Sized
+    def __len__({{dtype.capitalize()}}ArrayTag self):
+        return dereference(self.cpp).size()
+
+    # Sequence
+    def __getitem__({{dtype.capitalize()}}ArrayTag self, ptrdiff_t item):
+        if item < 0:
+            item += dereference(self.cpp).size()
+        if item < 0 or item >= dereference(self.cpp).size():
+            raise IndexError("{{dtype.capitalize()}}ArrayTag assignment index out of range")
+        return dereference(self.cpp)[item]
+
+    def __iter__({{dtype.capitalize()}}ArrayTag self) -> Iterator[int]:
+        cdef size_t index
+        for index in range(dereference(self.cpp).size()):
+            yield dereference(self.cpp)[index]
+
+    def __reversed__({{dtype.capitalize()}}ArrayTag self) -> Iterator[int]:
+        cdef size_t index
+        for index in range(dereference(self.cpp).size() - 1, -1, -1):
+            yield dereference(self.cpp)[index]
+
+    def __contains__({{dtype.capitalize()}}ArrayTag self, value):
+        cdef {{cpp}} tag
+
+        try:
+            tag = value
+        except TypeError:
+            return False
+
+        cdef C{{dtype.capitalize()}}ArrayTag.iterator it = dereference(self.cpp).begin()
+        cdef size_t index
+        for index in range(dereference(self.cpp).size()):
+            if dereference(self.cpp)[index] == tag:
+                return True
+        return False
+
+    # MutableSequence
+    def __setitem__({{dtype.capitalize()}}ArrayTag self, ptrdiff_t item, {{cpp}} value):
+        if item < 0:
+            item += dereference(self.cpp).size()
+        if item < 0 or item >= dereference(self.cpp).size():
+            raise IndexError("{{dtype.capitalize()}}ArrayTag assignment index out of range")
+        dereference(self.cpp)[item] = value
+
+    # Array interface
+    def __array__({{dtype.capitalize()}}ArrayTag self, dtype=None):
+        cdef numpy.npy_intp shape[1]
+        shape[0] = <numpy.npy_intp> dereference(self.cpp).size()
+        cdef numpy.ndarray ndarray = numpy.PyArray_SimpleNewFromData(1, shape, numpy.{{npy_c}}, dereference(self.cpp).data())
+        Py_INCREF(self)
+        numpy.PyArray_SetBaseObject(ndarray, self)
+        return ndarray
 #
 #     # cdef str _to_snbt({{dtype.capitalize()}}ArrayTag self):
 #     #     cdef long long elem
@@ -36,27 +108,3 @@ cdef class {{dtype.capitalize()}}ArrayTag(AbstractBaseArrayTag):
 #     #     for elem in self.cpp:
 #     #         tags.append(f"{elem}{{snbt_suffix}}")
 #     #     return f"[{{snbt_prefix}};{CommaSpace.join(tags)}]"
-#
-#
-#     # @property
-#     # def np_array({{dtype.capitalize()}}ArrayTag self):
-#     #     """
-#     #     A numpy array holding the same internal data.
-#     #     Changes to the array will also modify the internal state.
-#     #     """
-#     #     return self.cpp
-#
-#     # def __repr__({{dtype.capitalize()}}ArrayTag self):
-#     #     return f"{self.__class__.__name__}({list(self.cpp)})"
-#
-#     def __getitem__({{dtype.capitalize()}}ArrayTag self, uint32_t item):
-#         return dereference(self.cpp)[item]
-#
-#     def __setitem__({{dtype.capitalize()}}ArrayTag self, uint32_t key, C{{dtype.capitalize()}}Tag value):
-#         dereference(self.cpp)[key] = value
-#
-#     # def __array__({{dtype.capitalize()}}ArrayTag self, dtype=None):
-#     #     return numpy.asarray(self.cpp, dtype=dtype)
-#
-#     def __len__({{dtype.capitalize()}}ArrayTag self):
-#         return dereference(self.cpp).size()

@@ -484,7 +484,7 @@ cdef class ListTag(AbstractBaseMutableTag):
     This class behaves like a python list.
     All contained data must be of the same NBT data type.
     """
-    # tag_id = ID_LIST
+    tag_id: int = 9
 
     def __init__(ListTag self, object value = (), char list_data_type = 1):
         self.cpp = make_shared[CListTag]()

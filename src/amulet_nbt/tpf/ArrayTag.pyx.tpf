@@ -3,7 +3,7 @@ from template import include
 }}
 cdef class {{dtype.capitalize()}}ArrayTag(AbstractBaseArrayTag):
     """This class behaves like an 1D Numpy signed integer array with each value stored in a {{dtype}}."""
-    # tag_id = ID_{{dtype.upper()}}_ARRAY
+    tag_id: int = {{tag_id}}
 
     def __init__({{dtype.capitalize()}}ArrayTag self, object value = ()):
         cdef numpy.ndarray arr = numpy.asarray(value, {{native_data_type}}).ravel()

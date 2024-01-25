@@ -25,7 +25,7 @@ from amulet_nbt._nbt cimport TagNode, CStringTag
 
 cdef class StringTag(AbstractBaseImmutableTag):
     """A class that behaves like a string."""
-    # tag_id = ID_STRING
+    tag_id: int = 8
 
     def __init__(StringTag self, object value = b""):
         if isinstance(value, (str, bytes)):

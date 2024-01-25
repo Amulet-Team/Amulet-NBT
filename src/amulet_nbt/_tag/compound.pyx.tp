@@ -136,6 +136,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
     A Python wrapper around a C++ unordered map.
     Note that this class is not thread safe and inherits all the limitations of a C++ unordered_map.
     """
+    tag_id: int = 10
 
     def __init__(self, *args, **kwargs) -> None:
         self.update(*args, **kwargs)

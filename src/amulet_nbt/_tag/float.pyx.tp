@@ -39,7 +39,7 @@ cdef class AbstractBaseFloatTag(AbstractBaseNumericTag):
 
 cdef class FloatTag(AbstractBaseFloatTag):
     """A single precision float class."""
-    # tag_id = ID_FLOAT
+    tag_id: int = 5
 
     def __init__(FloatTag self, value = 0):
         self.cpp = float(value)
@@ -49,7 +49,7 @@ cdef class FloatTag(AbstractBaseFloatTag):
 
 cdef class DoubleTag(AbstractBaseFloatTag):
     """A double precision float class."""
-    # tag_id = ID_DOUBLE
+    tag_id: int = 6
 
     def __init__(DoubleTag self, value = 0):
         self.cpp = float(value)

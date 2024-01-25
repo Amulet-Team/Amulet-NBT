@@ -83,6 +83,7 @@ cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
     snbt_suffix="B",
     cpp="int8_t",
     npy_c="NPY_INT8",
+    tag_id = 7,
 )}}
 
 
@@ -97,6 +98,7 @@ cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
     snbt_suffix="",
     cpp="int32_t",
     npy_c="NPY_INT32",
+    tag_id = 11,
 )}}
 
 
@@ -111,4 +113,5 @@ cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
     snbt_suffix="L",
     cpp="int64_t",
     npy_c="NPY_INT64",
+    tag_id = 12,
 )}}

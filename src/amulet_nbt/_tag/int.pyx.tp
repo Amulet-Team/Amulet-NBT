@@ -41,7 +41,7 @@ cdef class ByteTag(AbstractBaseIntTag):
     A 1 byte integer class.
     Can Store numbers between -(2^7) and (2^7 - 1)
     """
-    # tag_id = ID_BYTE
+    tag_id: int = 1
 
     def __init__(ByteTag self, value = 0):
         self.cpp = self._sanitise_value(int(value))
@@ -57,7 +57,7 @@ cdef class ShortTag(AbstractBaseIntTag):
     A 2 byte integer class.
     Can Store numbers between -(2^15) and (2^15 - 1)
     """
-    # tag_id = ID_SHORT
+    tag_id: int = 2
 
     def __init__(ShortTag self, value = 0):
         self.cpp = self._sanitise_value(int(value))
@@ -73,7 +73,7 @@ cdef class IntTag(AbstractBaseIntTag):
     A 4 byte integer class.
     Can Store numbers between -(2^31) and (2^31 - 1)
     """
-    # tag_id = ID_INT
+    tag_id: int = 3
 
     def __init__(IntTag self, value = 0):
         self.cpp = self._sanitise_value(int(value))
@@ -89,7 +89,7 @@ cdef class LongTag(AbstractBaseIntTag):
     An 8 byte integer class.
     Can Store numbers between -(2^63) and (2^63 - 1)
     """
-    # tag_id = ID_LONG
+    tag_id: int = 4
 
     def __init__(LongTag self, value = 0):
         self.cpp = self._sanitise_value(int(value))

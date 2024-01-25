@@ -71,7 +71,7 @@ cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
 
 cdef class ByteArrayTag(AbstractBaseArrayTag):
     """This class behaves like an 1D Numpy signed integer array with each value stored in a byte."""
-    # tag_id = ID_BYTE_ARRAY
+    tag_id: int = 7
 
     def __init__(ByteArrayTag self, object value = ()):
         cdef numpy.ndarray arr = numpy.asarray(value, numpy.dtype("int8")).ravel()
@@ -181,7 +181,7 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
 
 cdef class IntArrayTag(AbstractBaseArrayTag):
     """This class behaves like an 1D Numpy signed integer array with each value stored in a int."""
-    # tag_id = ID_INT_ARRAY
+    tag_id: int = 11
 
     def __init__(IntArrayTag self, object value = ()):
         cdef numpy.ndarray arr = numpy.asarray(value, numpy.int32).ravel()
@@ -291,7 +291,7 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
 
 cdef class LongArrayTag(AbstractBaseArrayTag):
     """This class behaves like an 1D Numpy signed integer array with each value stored in a long."""
-    # tag_id = ID_LONG_ARRAY
+    tag_id: int = 12
 
     def __init__(LongArrayTag self, object value = ()):
         cdef numpy.ndarray arr = numpy.asarray(value, numpy.int64).ravel()

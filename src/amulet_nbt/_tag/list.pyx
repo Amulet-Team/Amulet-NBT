@@ -2,28 +2,19 @@
 ## Do not modify this file directly or your changes will get overwritten.
 ## Edit the accompanying .pyx.tp file instead.
 
-from collections.abc import MutableSequence
+from typing import Any
 
 from libc.stdint cimport int64_t
+from libc.math cimport ceil
 from libcpp cimport bool
 from libcpp.memory cimport make_shared
 from cython.operator cimport dereference
 from amulet_nbt._libcpp.variant cimport get
 
 from amulet_nbt._nbt cimport (
-    CByteTag,
-    CShortTag,
-    CIntTag,
-    CLongTag,
-    CFloatTag,
-    CDoubleTag,
-    CByteArrayTagPtr,
-    CStringTag,
+    TagNode,
     CListTag,
     CListTagPtr,
-    CCompoundTagPtr,
-    CIntArrayTagPtr,
-    CLongArrayTagPtr,
     CByteList,
     CShortList,
     CIntList,
@@ -38,19 +29,20 @@ from amulet_nbt._nbt cimport (
     CLongArrayList,
 )
 from amulet_nbt._tag.abc cimport AbstractBaseTag, AbstractBaseMutableTag
-from amulet_nbt._tag.array cimport ByteArrayTag, IntArrayTag, LongArrayTag
-from amulet_nbt._tag.compound cimport CompoundTag
-from amulet_nbt._tag.float cimport FloatTag, DoubleTag
 from amulet_nbt._tag.int cimport ByteTag, ShortTag, IntTag, LongTag
+from amulet_nbt._tag.float cimport FloatTag, DoubleTag
 from amulet_nbt._tag.string cimport StringTag
+from amulet_nbt._tag.compound cimport CompoundTag
+from amulet_nbt._tag.array cimport ByteArrayTag, IntArrayTag, LongArrayTag
 # from amulet_nbt._const cimport ID_LIST, CommaSpace, CommaNewline
 # from amulet_nbt._dtype import AnyNBT, EncoderType
+from .compound cimport is_compound_eq
 
 
 cdef inline bool _is_byte_tag_list_eq(CListTagPtr a, CListTagPtr b) noexcept nogil:
     cdef CByteList* byte_list_a = &get[CByteList](dereference(a))
     if dereference(b).index() != 1:
-        return dereference(byte_list_a).size() == 0 and _len(b) == 0
+        return dereference(byte_list_a).size() == 0 and ListTag_len(b) == 0
     cdef CByteList* byte_list_b = &get[CByteList](dereference(b))
     cdef size_t size = dereference(byte_list_a).size()
     cdef size_t i
@@ -67,7 +59,7 @@ cdef inline bool _is_byte_tag_list_eq(CListTagPtr a, CListTagPtr b) noexcept nog
 cdef inline bool _is_short_tag_list_eq(CListTagPtr a, CListTagPtr b) noexcept nogil:
     cdef CShortList* short_list_a = &get[CShortList](dereference(a))
     if dereference(b).index() != 2:
-        return dereference(short_list_a).size() == 0 and _len(b) == 0
+        return dereference(short_list_a).size() == 0 and ListTag_len(b) == 0
     cdef CShortList* short_list_b = &get[CShortList](dereference(b))
     cdef size_t size = dereference(short_list_a).size()
     cdef size_t i
@@ -84,7 +76,7 @@ cdef inline bool _is_short_tag_list_eq(CListTagPtr a, CListTagPtr b) noexcept no
 cdef inline bool _is_int_tag_list_eq(CListTagPtr a, CListTagPtr b) noexcept nogil:
     cdef CIntList* int_list_a = &get[CIntList](dereference(a))
     if dereference(b).index() != 3:
-        return dereference(int_list_a).size() == 0 and _len(b) == 0
+        return dereference(int_list_a).size() == 0 and ListTag_len(b) == 0
     cdef CIntList* int_list_b = &get[CIntList](dereference(b))
     cdef size_t size = dereference(int_list_a).size()
     cdef size_t i
@@ -101,7 +93,7 @@ cdef inline bool _is_int_tag_list_eq(CListTagPtr a, CListTagPtr b) noexcept nogi
 cdef inline bool _is_long_tag_list_eq(CListTagPtr a, CListTagPtr b) noexcept nogil:
     cdef CLongList* long_list_a = &get[CLongList](dereference(a))
     if dereference(b).index() != 4:
-        return dereference(long_list_a).size() == 0 and _len(b) == 0
+        return dereference(long_list_a).size() == 0 and ListTag_len(b) == 0
     cdef CLongList* long_list_b = &get[CLongList](dereference(b))
     cdef size_t size = dereference(long_list_a).size()
     cdef size_t i
@@ -118,7 +110,7 @@ cdef inline bool _is_long_tag_list_eq(CListTagPtr a, CListTagPtr b) noexcept nog
 cdef inline bool _is_float_tag_list_eq(CListTagPtr a, CListTagPtr b) noexcept nogil:
     cdef CFloatList* float_list_a = &get[CFloatList](dereference(a))
     if dereference(b).index() != 5:
-        return dereference(float_list_a).size() == 0 and _len(b) == 0
+        return dereference(float_list_a).size() == 0 and ListTag_len(b) == 0
     cdef CFloatList* float_list_b = &get[CFloatList](dereference(b))
     cdef size_t size = dereference(float_list_a).size()
     cdef size_t i
@@ -135,7 +127,7 @@ cdef inline bool _is_float_tag_list_eq(CListTagPtr a, CListTagPtr b) noexcept no
 cdef inline bool _is_double_tag_list_eq(CListTagPtr a, CListTagPtr b) noexcept nogil:
     cdef CDoubleList* double_list_a = &get[CDoubleList](dereference(a))
     if dereference(b).index() != 6:
-        return dereference(double_list_a).size() == 0 and _len(b) == 0
+        return dereference(double_list_a).size() == 0 and ListTag_len(b) == 0
     cdef CDoubleList* double_list_b = &get[CDoubleList](dereference(b))
     cdef size_t size = dereference(double_list_a).size()
     cdef size_t i
@@ -152,7 +144,7 @@ cdef inline bool _is_double_tag_list_eq(CListTagPtr a, CListTagPtr b) noexcept n
 cdef inline bool _is_byte_array_tag_list_eq(CListTagPtr a, CListTagPtr b) noexcept nogil:
     cdef CByteArrayList* byte_array_list_a = &get[CByteArrayList](dereference(a))
     if dereference(b).index() != 7:
-        return dereference(byte_array_list_a).size() == 0 and _len(b) == 0
+        return dereference(byte_array_list_a).size() == 0 and ListTag_len(b) == 0
     cdef CByteArrayList* byte_array_list_b = &get[CByteArrayList](dereference(b))
     cdef size_t size = dereference(byte_array_list_a).size()
     cdef size_t i
@@ -169,7 +161,7 @@ cdef inline bool _is_byte_array_tag_list_eq(CListTagPtr a, CListTagPtr b) noexce
 cdef inline bool _is_string_tag_list_eq(CListTagPtr a, CListTagPtr b) noexcept nogil:
     cdef CStringList* string_list_a = &get[CStringList](dereference(a))
     if dereference(b).index() != 8:
-        return dereference(string_list_a).size() == 0 and _len(b) == 0
+        return dereference(string_list_a).size() == 0 and ListTag_len(b) == 0
     cdef CStringList* string_list_b = &get[CStringList](dereference(b))
     cdef size_t size = dereference(string_list_a).size()
     cdef size_t i
@@ -186,7 +178,7 @@ cdef inline bool _is_string_tag_list_eq(CListTagPtr a, CListTagPtr b) noexcept n
 cdef inline bool _is_list_tag_list_eq(CListTagPtr a, CListTagPtr b) noexcept nogil:
     cdef CListList* list_list_a = &get[CListList](dereference(a))
     if dereference(b).index() != 9:
-        return dereference(list_list_a).size() == 0 and _len(b) == 0
+        return dereference(list_list_a).size() == 0 and ListTag_len(b) == 0
     cdef CListList* list_list_b = &get[CListList](dereference(b))
     cdef size_t size = dereference(list_list_a).size()
     cdef size_t i
@@ -203,7 +195,7 @@ cdef inline bool _is_list_tag_list_eq(CListTagPtr a, CListTagPtr b) noexcept nog
 cdef inline bool _is_compound_tag_list_eq(CListTagPtr a, CListTagPtr b) noexcept nogil:
     cdef CCompoundList* compound_list_a = &get[CCompoundList](dereference(a))
     if dereference(b).index() != 10:
-        return dereference(compound_list_a).size() == 0 and _len(b) == 0
+        return dereference(compound_list_a).size() == 0 and ListTag_len(b) == 0
     cdef CCompoundList* compound_list_b = &get[CCompoundList](dereference(b))
     cdef size_t size = dereference(compound_list_a).size()
     cdef size_t i
@@ -220,7 +212,7 @@ cdef inline bool _is_compound_tag_list_eq(CListTagPtr a, CListTagPtr b) noexcept
 cdef inline bool _is_int_array_tag_list_eq(CListTagPtr a, CListTagPtr b) noexcept nogil:
     cdef CIntArrayList* int_array_list_a = &get[CIntArrayList](dereference(a))
     if dereference(b).index() != 11:
-        return dereference(int_array_list_a).size() == 0 and _len(b) == 0
+        return dereference(int_array_list_a).size() == 0 and ListTag_len(b) == 0
     cdef CIntArrayList* int_array_list_b = &get[CIntArrayList](dereference(b))
     cdef size_t size = dereference(int_array_list_a).size()
     cdef size_t i
@@ -237,7 +229,7 @@ cdef inline bool _is_int_array_tag_list_eq(CListTagPtr a, CListTagPtr b) noexcep
 cdef inline bool _is_long_array_tag_list_eq(CListTagPtr a, CListTagPtr b) noexcept nogil:
     cdef CLongArrayList* long_array_list_a = &get[CLongArrayList](dereference(a))
     if dereference(b).index() != 12:
-        return dereference(long_array_list_a).size() == 0 and _len(b) == 0
+        return dereference(long_array_list_a).size() == 0 and ListTag_len(b) == 0
     cdef CLongArrayList* long_array_list_b = &get[CLongArrayList](dereference(b))
     cdef size_t size = dereference(long_array_list_a).size()
     cdef size_t i
@@ -280,7 +272,7 @@ cdef bool is_list_eq(CListTagPtr a, CListTagPtr b) noexcept nogil:
     return False
 
 
-cdef inline size_t _len(CListTagPtr cpp):
+cdef inline size_t ListTag_len(CListTagPtr cpp) noexcept nogil:
     cdef size_t index = dereference(cpp).index()
     if index == 1:
         return get[CByteList](dereference(cpp)).size()
@@ -307,11 +299,10 @@ cdef inline size_t _len(CListTagPtr cpp):
     elif index == 12:
         return get[CLongArrayList](dereference(cpp)).size()
 
-    else:
-        raise RuntimeError
+    return 0
 
 
-cdef inline ByteTag _get_byte_tag(CListTagPtr cpp, ptrdiff_t item):
+cdef inline ByteTag ListTag_get_item_byte_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CByteList* byte_list = &get[CByteList](dereference(cpp))
     if item < 0:
         item += dereference(byte_list).size()
@@ -320,7 +311,7 @@ cdef inline ByteTag _get_byte_tag(CListTagPtr cpp, ptrdiff_t item):
     return ByteTag.wrap(dereference(byte_list)[item])
 
 
-cdef inline ShortTag _get_short_tag(CListTagPtr cpp, ptrdiff_t item):
+cdef inline ShortTag ListTag_get_item_short_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CShortList* short_list = &get[CShortList](dereference(cpp))
     if item < 0:
         item += dereference(short_list).size()
@@ -329,7 +320,7 @@ cdef inline ShortTag _get_short_tag(CListTagPtr cpp, ptrdiff_t item):
     return ShortTag.wrap(dereference(short_list)[item])
 
 
-cdef inline IntTag _get_int_tag(CListTagPtr cpp, ptrdiff_t item):
+cdef inline IntTag ListTag_get_item_int_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CIntList* int_list = &get[CIntList](dereference(cpp))
     if item < 0:
         item += dereference(int_list).size()
@@ -338,7 +329,7 @@ cdef inline IntTag _get_int_tag(CListTagPtr cpp, ptrdiff_t item):
     return IntTag.wrap(dereference(int_list)[item])
 
 
-cdef inline LongTag _get_long_tag(CListTagPtr cpp, ptrdiff_t item):
+cdef inline LongTag ListTag_get_item_long_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CLongList* long_list = &get[CLongList](dereference(cpp))
     if item < 0:
         item += dereference(long_list).size()
@@ -347,7 +338,7 @@ cdef inline LongTag _get_long_tag(CListTagPtr cpp, ptrdiff_t item):
     return LongTag.wrap(dereference(long_list)[item])
 
 
-cdef inline FloatTag _get_float_tag(CListTagPtr cpp, ptrdiff_t item):
+cdef inline FloatTag ListTag_get_item_float_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CFloatList* float_list = &get[CFloatList](dereference(cpp))
     if item < 0:
         item += dereference(float_list).size()
@@ -356,7 +347,7 @@ cdef inline FloatTag _get_float_tag(CListTagPtr cpp, ptrdiff_t item):
     return FloatTag.wrap(dereference(float_list)[item])
 
 
-cdef inline DoubleTag _get_double_tag(CListTagPtr cpp, ptrdiff_t item):
+cdef inline DoubleTag ListTag_get_item_double_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CDoubleList* double_list = &get[CDoubleList](dereference(cpp))
     if item < 0:
         item += dereference(double_list).size()
@@ -365,7 +356,7 @@ cdef inline DoubleTag _get_double_tag(CListTagPtr cpp, ptrdiff_t item):
     return DoubleTag.wrap(dereference(double_list)[item])
 
 
-cdef inline ByteArrayTag _get_byte_array_tag(CListTagPtr cpp, ptrdiff_t item):
+cdef inline ByteArrayTag ListTag_get_item_byte_array_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CByteArrayList* byte_array_list = &get[CByteArrayList](dereference(cpp))
     if item < 0:
         item += dereference(byte_array_list).size()
@@ -374,7 +365,7 @@ cdef inline ByteArrayTag _get_byte_array_tag(CListTagPtr cpp, ptrdiff_t item):
     return ByteArrayTag.wrap(dereference(byte_array_list)[item])
 
 
-cdef inline StringTag _get_string_tag(CListTagPtr cpp, ptrdiff_t item):
+cdef inline StringTag ListTag_get_item_string_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CStringList* string_list = &get[CStringList](dereference(cpp))
     if item < 0:
         item += dereference(string_list).size()
@@ -383,7 +374,7 @@ cdef inline StringTag _get_string_tag(CListTagPtr cpp, ptrdiff_t item):
     return StringTag.wrap(dereference(string_list)[item])
 
 
-cdef inline ListTag _get_list_tag(CListTagPtr cpp, ptrdiff_t item):
+cdef inline ListTag ListTag_get_item_list_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CListList* list_list = &get[CListList](dereference(cpp))
     if item < 0:
         item += dereference(list_list).size()
@@ -392,7 +383,7 @@ cdef inline ListTag _get_list_tag(CListTagPtr cpp, ptrdiff_t item):
     return ListTag.wrap(dereference(list_list)[item])
 
 
-cdef inline CompoundTag _get_compound_tag(CListTagPtr cpp, ptrdiff_t item):
+cdef inline CompoundTag ListTag_get_item_compound_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CCompoundList* compound_list = &get[CCompoundList](dereference(cpp))
     if item < 0:
         item += dereference(compound_list).size()
@@ -401,7 +392,7 @@ cdef inline CompoundTag _get_compound_tag(CListTagPtr cpp, ptrdiff_t item):
     return CompoundTag.wrap(dereference(compound_list)[item])
 
 
-cdef inline IntArrayTag _get_int_array_tag(CListTagPtr cpp, ptrdiff_t item):
+cdef inline IntArrayTag ListTag_get_item_int_array_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CIntArrayList* int_array_list = &get[CIntArrayList](dereference(cpp))
     if item < 0:
         item += dereference(int_array_list).size()
@@ -410,7 +401,7 @@ cdef inline IntArrayTag _get_int_array_tag(CListTagPtr cpp, ptrdiff_t item):
     return IntArrayTag.wrap(dereference(int_array_list)[item])
 
 
-cdef inline LongArrayTag _get_long_array_tag(CListTagPtr cpp, ptrdiff_t item):
+cdef inline LongArrayTag ListTag_get_item_long_array_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CLongArrayList* long_array_list = &get[CLongArrayList](dereference(cpp))
     if item < 0:
         item += dereference(long_array_list).size()
@@ -419,32 +410,32 @@ cdef inline LongArrayTag _get_long_array_tag(CListTagPtr cpp, ptrdiff_t item):
     return LongArrayTag.wrap(dereference(long_array_list)[item])
 
 
-cdef inline AbstractBaseTag _get_item(CListTagPtr cpp, ptrdiff_t item):
+cdef inline AbstractBaseTag ListTag_get_item(CListTagPtr cpp, ptrdiff_t item):
     cdef size_t index = dereference(cpp).index()
     if index == 1:
-        return _get_byte_tag(cpp, item)
+        return ListTag_get_item_byte_tag(cpp, item)
     elif index == 2:
-        return _get_short_tag(cpp, item)
+        return ListTag_get_item_short_tag(cpp, item)
     elif index == 3:
-        return _get_int_tag(cpp, item)
+        return ListTag_get_item_int_tag(cpp, item)
     elif index == 4:
-        return _get_long_tag(cpp, item)
+        return ListTag_get_item_long_tag(cpp, item)
     elif index == 5:
-        return _get_float_tag(cpp, item)
+        return ListTag_get_item_float_tag(cpp, item)
     elif index == 6:
-        return _get_double_tag(cpp, item)
+        return ListTag_get_item_double_tag(cpp, item)
     elif index == 7:
-        return _get_byte_array_tag(cpp, item)
+        return ListTag_get_item_byte_array_tag(cpp, item)
     elif index == 8:
-        return _get_string_tag(cpp, item)
+        return ListTag_get_item_string_tag(cpp, item)
     elif index == 9:
-        return _get_list_tag(cpp, item)
+        return ListTag_get_item_list_tag(cpp, item)
     elif index == 10:
-        return _get_compound_tag(cpp, item)
+        return ListTag_get_item_compound_tag(cpp, item)
     elif index == 11:
-        return _get_int_array_tag(cpp, item)
+        return ListTag_get_item_int_array_tag(cpp, item)
     elif index == 12:
-        return _get_long_array_tag(cpp, item)
+        return ListTag_get_item_long_array_tag(cpp, item)
     else:
         raise RuntimeError("ListTag type has not been set.")
 
@@ -499,7 +490,7 @@ cdef (size_t, size_t, ptrdiff_t) _slice_to_range(size_t target_len, object s):
     return start, stop, step
 
 
-cdef inline list _get_slice_byte_tag(CListTagPtr cpp, object s):
+cdef inline list ListTag_get_slice_byte_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
     cdef ptrdiff_t step
@@ -515,7 +506,7 @@ cdef inline list _get_slice_byte_tag(CListTagPtr cpp, object s):
     ]
 
 
-cdef inline list _get_slice_short_tag(CListTagPtr cpp, object s):
+cdef inline list ListTag_get_slice_short_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
     cdef ptrdiff_t step
@@ -531,7 +522,7 @@ cdef inline list _get_slice_short_tag(CListTagPtr cpp, object s):
     ]
 
 
-cdef inline list _get_slice_int_tag(CListTagPtr cpp, object s):
+cdef inline list ListTag_get_slice_int_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
     cdef ptrdiff_t step
@@ -547,7 +538,7 @@ cdef inline list _get_slice_int_tag(CListTagPtr cpp, object s):
     ]
 
 
-cdef inline list _get_slice_long_tag(CListTagPtr cpp, object s):
+cdef inline list ListTag_get_slice_long_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
     cdef ptrdiff_t step
@@ -563,7 +554,7 @@ cdef inline list _get_slice_long_tag(CListTagPtr cpp, object s):
     ]
 
 
-cdef inline list _get_slice_float_tag(CListTagPtr cpp, object s):
+cdef inline list ListTag_get_slice_float_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
     cdef ptrdiff_t step
@@ -579,7 +570,7 @@ cdef inline list _get_slice_float_tag(CListTagPtr cpp, object s):
     ]
 
 
-cdef inline list _get_slice_double_tag(CListTagPtr cpp, object s):
+cdef inline list ListTag_get_slice_double_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
     cdef ptrdiff_t step
@@ -595,7 +586,7 @@ cdef inline list _get_slice_double_tag(CListTagPtr cpp, object s):
     ]
 
 
-cdef inline list _get_slice_byte_array_tag(CListTagPtr cpp, object s):
+cdef inline list ListTag_get_slice_byte_array_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
     cdef ptrdiff_t step
@@ -611,7 +602,7 @@ cdef inline list _get_slice_byte_array_tag(CListTagPtr cpp, object s):
     ]
 
 
-cdef inline list _get_slice_string_tag(CListTagPtr cpp, object s):
+cdef inline list ListTag_get_slice_string_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
     cdef ptrdiff_t step
@@ -627,7 +618,7 @@ cdef inline list _get_slice_string_tag(CListTagPtr cpp, object s):
     ]
 
 
-cdef inline list _get_slice_list_tag(CListTagPtr cpp, object s):
+cdef inline list ListTag_get_slice_list_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
     cdef ptrdiff_t step
@@ -643,7 +634,7 @@ cdef inline list _get_slice_list_tag(CListTagPtr cpp, object s):
     ]
 
 
-cdef inline list _get_slice_compound_tag(CListTagPtr cpp, object s):
+cdef inline list ListTag_get_slice_compound_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
     cdef ptrdiff_t step
@@ -659,7 +650,7 @@ cdef inline list _get_slice_compound_tag(CListTagPtr cpp, object s):
     ]
 
 
-cdef inline list _get_slice_int_array_tag(CListTagPtr cpp, object s):
+cdef inline list ListTag_get_slice_int_array_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
     cdef ptrdiff_t step
@@ -675,7 +666,7 @@ cdef inline list _get_slice_int_array_tag(CListTagPtr cpp, object s):
     ]
 
 
-cdef inline list _get_slice_long_array_tag(CListTagPtr cpp, object s):
+cdef inline list ListTag_get_slice_long_array_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
     cdef ptrdiff_t step
@@ -691,37 +682,37 @@ cdef inline list _get_slice_long_array_tag(CListTagPtr cpp, object s):
     ]
 
 
-cdef inline list _get_slice(CListTagPtr cpp, object s):
+cdef inline list ListTag_get_slice(CListTagPtr cpp, object s):
     cdef size_t index = dereference(cpp).index()
     if index == 1:
-        return _get_slice_byte_tag(cpp, s)
+        return ListTag_get_slice_byte_tag(cpp, s)
     elif index == 2:
-        return _get_slice_short_tag(cpp, s)
+        return ListTag_get_slice_short_tag(cpp, s)
     elif index == 3:
-        return _get_slice_int_tag(cpp, s)
+        return ListTag_get_slice_int_tag(cpp, s)
     elif index == 4:
-        return _get_slice_long_tag(cpp, s)
+        return ListTag_get_slice_long_tag(cpp, s)
     elif index == 5:
-        return _get_slice_float_tag(cpp, s)
+        return ListTag_get_slice_float_tag(cpp, s)
     elif index == 6:
-        return _get_slice_double_tag(cpp, s)
+        return ListTag_get_slice_double_tag(cpp, s)
     elif index == 7:
-        return _get_slice_byte_array_tag(cpp, s)
+        return ListTag_get_slice_byte_array_tag(cpp, s)
     elif index == 8:
-        return _get_slice_string_tag(cpp, s)
+        return ListTag_get_slice_string_tag(cpp, s)
     elif index == 9:
-        return _get_slice_list_tag(cpp, s)
+        return ListTag_get_slice_list_tag(cpp, s)
     elif index == 10:
-        return _get_slice_compound_tag(cpp, s)
+        return ListTag_get_slice_compound_tag(cpp, s)
     elif index == 11:
-        return _get_slice_int_array_tag(cpp, s)
+        return ListTag_get_slice_int_array_tag(cpp, s)
     elif index == 12:
-        return _get_slice_long_array_tag(cpp, s)
+        return ListTag_get_slice_long_array_tag(cpp, s)
     else:
         raise RuntimeError("ListTag type has not been set.")
 
 
-cdef inline void _set_byte_tag(CListTagPtr cpp, ptrdiff_t item, ByteTag value):
+cdef inline void ListTag_set_item_byte_tag(CListTagPtr cpp, ptrdiff_t item, ByteTag value):
     cdef CByteList* byte_list
     
     if dereference(cpp).index() == 1:
@@ -731,7 +722,7 @@ cdef inline void _set_byte_tag(CListTagPtr cpp, ptrdiff_t item, ByteTag value):
         if item < 0 or item >= dereference(byte_list).size():
             raise IndexError("ListTag assignment index out of range")
         dereference(byte_list)[item] = value.cpp
-    elif _len(cpp) == 1 and (item == 0 or item == -1):
+    elif ListTag_len(cpp) == 1 and (item == 0 or item == -1):
         dereference(cpp).emplace[CByteList]()
         byte_list = &get[CByteList](dereference(cpp))
         dereference(byte_list).push_back(value.cpp)
@@ -739,7 +730,7 @@ cdef inline void _set_byte_tag(CListTagPtr cpp, ptrdiff_t item, ByteTag value):
         raise TypeError("NBT ListTag item mismatch.")
 
 
-cdef inline void _set_short_tag(CListTagPtr cpp, ptrdiff_t item, ShortTag value):
+cdef inline void ListTag_set_item_short_tag(CListTagPtr cpp, ptrdiff_t item, ShortTag value):
     cdef CShortList* short_list
     
     if dereference(cpp).index() == 2:
@@ -749,7 +740,7 @@ cdef inline void _set_short_tag(CListTagPtr cpp, ptrdiff_t item, ShortTag value)
         if item < 0 or item >= dereference(short_list).size():
             raise IndexError("ListTag assignment index out of range")
         dereference(short_list)[item] = value.cpp
-    elif _len(cpp) == 1 and (item == 0 or item == -1):
+    elif ListTag_len(cpp) == 1 and (item == 0 or item == -1):
         dereference(cpp).emplace[CShortList]()
         short_list = &get[CShortList](dereference(cpp))
         dereference(short_list).push_back(value.cpp)
@@ -757,7 +748,7 @@ cdef inline void _set_short_tag(CListTagPtr cpp, ptrdiff_t item, ShortTag value)
         raise TypeError("NBT ListTag item mismatch.")
 
 
-cdef inline void _set_int_tag(CListTagPtr cpp, ptrdiff_t item, IntTag value):
+cdef inline void ListTag_set_item_int_tag(CListTagPtr cpp, ptrdiff_t item, IntTag value):
     cdef CIntList* int_list
     
     if dereference(cpp).index() == 3:
@@ -767,7 +758,7 @@ cdef inline void _set_int_tag(CListTagPtr cpp, ptrdiff_t item, IntTag value):
         if item < 0 or item >= dereference(int_list).size():
             raise IndexError("ListTag assignment index out of range")
         dereference(int_list)[item] = value.cpp
-    elif _len(cpp) == 1 and (item == 0 or item == -1):
+    elif ListTag_len(cpp) == 1 and (item == 0 or item == -1):
         dereference(cpp).emplace[CIntList]()
         int_list = &get[CIntList](dereference(cpp))
         dereference(int_list).push_back(value.cpp)
@@ -775,7 +766,7 @@ cdef inline void _set_int_tag(CListTagPtr cpp, ptrdiff_t item, IntTag value):
         raise TypeError("NBT ListTag item mismatch.")
 
 
-cdef inline void _set_long_tag(CListTagPtr cpp, ptrdiff_t item, LongTag value):
+cdef inline void ListTag_set_item_long_tag(CListTagPtr cpp, ptrdiff_t item, LongTag value):
     cdef CLongList* long_list
     
     if dereference(cpp).index() == 4:
@@ -785,7 +776,7 @@ cdef inline void _set_long_tag(CListTagPtr cpp, ptrdiff_t item, LongTag value):
         if item < 0 or item >= dereference(long_list).size():
             raise IndexError("ListTag assignment index out of range")
         dereference(long_list)[item] = value.cpp
-    elif _len(cpp) == 1 and (item == 0 or item == -1):
+    elif ListTag_len(cpp) == 1 and (item == 0 or item == -1):
         dereference(cpp).emplace[CLongList]()
         long_list = &get[CLongList](dereference(cpp))
         dereference(long_list).push_back(value.cpp)
@@ -793,7 +784,7 @@ cdef inline void _set_long_tag(CListTagPtr cpp, ptrdiff_t item, LongTag value):
         raise TypeError("NBT ListTag item mismatch.")
 
 
-cdef inline void _set_float_tag(CListTagPtr cpp, ptrdiff_t item, FloatTag value):
+cdef inline void ListTag_set_item_float_tag(CListTagPtr cpp, ptrdiff_t item, FloatTag value):
     cdef CFloatList* float_list
     
     if dereference(cpp).index() == 5:
@@ -803,7 +794,7 @@ cdef inline void _set_float_tag(CListTagPtr cpp, ptrdiff_t item, FloatTag value)
         if item < 0 or item >= dereference(float_list).size():
             raise IndexError("ListTag assignment index out of range")
         dereference(float_list)[item] = value.cpp
-    elif _len(cpp) == 1 and (item == 0 or item == -1):
+    elif ListTag_len(cpp) == 1 and (item == 0 or item == -1):
         dereference(cpp).emplace[CFloatList]()
         float_list = &get[CFloatList](dereference(cpp))
         dereference(float_list).push_back(value.cpp)
@@ -811,7 +802,7 @@ cdef inline void _set_float_tag(CListTagPtr cpp, ptrdiff_t item, FloatTag value)
         raise TypeError("NBT ListTag item mismatch.")
 
 
-cdef inline void _set_double_tag(CListTagPtr cpp, ptrdiff_t item, DoubleTag value):
+cdef inline void ListTag_set_item_double_tag(CListTagPtr cpp, ptrdiff_t item, DoubleTag value):
     cdef CDoubleList* double_list
     
     if dereference(cpp).index() == 6:
@@ -821,7 +812,7 @@ cdef inline void _set_double_tag(CListTagPtr cpp, ptrdiff_t item, DoubleTag valu
         if item < 0 or item >= dereference(double_list).size():
             raise IndexError("ListTag assignment index out of range")
         dereference(double_list)[item] = value.cpp
-    elif _len(cpp) == 1 and (item == 0 or item == -1):
+    elif ListTag_len(cpp) == 1 and (item == 0 or item == -1):
         dereference(cpp).emplace[CDoubleList]()
         double_list = &get[CDoubleList](dereference(cpp))
         dereference(double_list).push_back(value.cpp)
@@ -829,7 +820,7 @@ cdef inline void _set_double_tag(CListTagPtr cpp, ptrdiff_t item, DoubleTag valu
         raise TypeError("NBT ListTag item mismatch.")
 
 
-cdef inline void _set_byte_array_tag(CListTagPtr cpp, ptrdiff_t item, ByteArrayTag value):
+cdef inline void ListTag_set_item_byte_array_tag(CListTagPtr cpp, ptrdiff_t item, ByteArrayTag value):
     cdef CByteArrayList* byte_array_list
     
     if dereference(cpp).index() == 7:
@@ -839,7 +830,7 @@ cdef inline void _set_byte_array_tag(CListTagPtr cpp, ptrdiff_t item, ByteArrayT
         if item < 0 or item >= dereference(byte_array_list).size():
             raise IndexError("ListTag assignment index out of range")
         dereference(byte_array_list)[item] = value.cpp
-    elif _len(cpp) == 1 and (item == 0 or item == -1):
+    elif ListTag_len(cpp) == 1 and (item == 0 or item == -1):
         dereference(cpp).emplace[CByteArrayList]()
         byte_array_list = &get[CByteArrayList](dereference(cpp))
         dereference(byte_array_list).push_back(value.cpp)
@@ -847,7 +838,7 @@ cdef inline void _set_byte_array_tag(CListTagPtr cpp, ptrdiff_t item, ByteArrayT
         raise TypeError("NBT ListTag item mismatch.")
 
 
-cdef inline void _set_string_tag(CListTagPtr cpp, ptrdiff_t item, StringTag value):
+cdef inline void ListTag_set_item_string_tag(CListTagPtr cpp, ptrdiff_t item, StringTag value):
     cdef CStringList* string_list
     
     if dereference(cpp).index() == 8:
@@ -857,7 +848,7 @@ cdef inline void _set_string_tag(CListTagPtr cpp, ptrdiff_t item, StringTag valu
         if item < 0 or item >= dereference(string_list).size():
             raise IndexError("ListTag assignment index out of range")
         dereference(string_list)[item] = value.cpp
-    elif _len(cpp) == 1 and (item == 0 or item == -1):
+    elif ListTag_len(cpp) == 1 and (item == 0 or item == -1):
         dereference(cpp).emplace[CStringList]()
         string_list = &get[CStringList](dereference(cpp))
         dereference(string_list).push_back(value.cpp)
@@ -865,7 +856,7 @@ cdef inline void _set_string_tag(CListTagPtr cpp, ptrdiff_t item, StringTag valu
         raise TypeError("NBT ListTag item mismatch.")
 
 
-cdef inline void _set_list_tag(CListTagPtr cpp, ptrdiff_t item, ListTag value):
+cdef inline void ListTag_set_item_list_tag(CListTagPtr cpp, ptrdiff_t item, ListTag value):
     cdef CListList* list_list
     
     if dereference(cpp).index() == 9:
@@ -875,7 +866,7 @@ cdef inline void _set_list_tag(CListTagPtr cpp, ptrdiff_t item, ListTag value):
         if item < 0 or item >= dereference(list_list).size():
             raise IndexError("ListTag assignment index out of range")
         dereference(list_list)[item] = value.cpp
-    elif _len(cpp) == 1 and (item == 0 or item == -1):
+    elif ListTag_len(cpp) == 1 and (item == 0 or item == -1):
         dereference(cpp).emplace[CListList]()
         list_list = &get[CListList](dereference(cpp))
         dereference(list_list).push_back(value.cpp)
@@ -883,7 +874,7 @@ cdef inline void _set_list_tag(CListTagPtr cpp, ptrdiff_t item, ListTag value):
         raise TypeError("NBT ListTag item mismatch.")
 
 
-cdef inline void _set_compound_tag(CListTagPtr cpp, ptrdiff_t item, CompoundTag value):
+cdef inline void ListTag_set_item_compound_tag(CListTagPtr cpp, ptrdiff_t item, CompoundTag value):
     cdef CCompoundList* compound_list
     
     if dereference(cpp).index() == 10:
@@ -893,7 +884,7 @@ cdef inline void _set_compound_tag(CListTagPtr cpp, ptrdiff_t item, CompoundTag 
         if item < 0 or item >= dereference(compound_list).size():
             raise IndexError("ListTag assignment index out of range")
         dereference(compound_list)[item] = value.cpp
-    elif _len(cpp) == 1 and (item == 0 or item == -1):
+    elif ListTag_len(cpp) == 1 and (item == 0 or item == -1):
         dereference(cpp).emplace[CCompoundList]()
         compound_list = &get[CCompoundList](dereference(cpp))
         dereference(compound_list).push_back(value.cpp)
@@ -901,7 +892,7 @@ cdef inline void _set_compound_tag(CListTagPtr cpp, ptrdiff_t item, CompoundTag 
         raise TypeError("NBT ListTag item mismatch.")
 
 
-cdef inline void _set_int_array_tag(CListTagPtr cpp, ptrdiff_t item, IntArrayTag value):
+cdef inline void ListTag_set_item_int_array_tag(CListTagPtr cpp, ptrdiff_t item, IntArrayTag value):
     cdef CIntArrayList* int_array_list
     
     if dereference(cpp).index() == 11:
@@ -911,7 +902,7 @@ cdef inline void _set_int_array_tag(CListTagPtr cpp, ptrdiff_t item, IntArrayTag
         if item < 0 or item >= dereference(int_array_list).size():
             raise IndexError("ListTag assignment index out of range")
         dereference(int_array_list)[item] = value.cpp
-    elif _len(cpp) == 1 and (item == 0 or item == -1):
+    elif ListTag_len(cpp) == 1 and (item == 0 or item == -1):
         dereference(cpp).emplace[CIntArrayList]()
         int_array_list = &get[CIntArrayList](dereference(cpp))
         dereference(int_array_list).push_back(value.cpp)
@@ -919,7 +910,7 @@ cdef inline void _set_int_array_tag(CListTagPtr cpp, ptrdiff_t item, IntArrayTag
         raise TypeError("NBT ListTag item mismatch.")
 
 
-cdef inline void _set_long_array_tag(CListTagPtr cpp, ptrdiff_t item, LongArrayTag value):
+cdef inline void ListTag_set_item_long_array_tag(CListTagPtr cpp, ptrdiff_t item, LongArrayTag value):
     cdef CLongArrayList* long_array_list
     
     if dereference(cpp).index() == 12:
@@ -929,7 +920,7 @@ cdef inline void _set_long_array_tag(CListTagPtr cpp, ptrdiff_t item, LongArrayT
         if item < 0 or item >= dereference(long_array_list).size():
             raise IndexError("ListTag assignment index out of range")
         dereference(long_array_list)[item] = value.cpp
-    elif _len(cpp) == 1 and (item == 0 or item == -1):
+    elif ListTag_len(cpp) == 1 and (item == 0 or item == -1):
         dereference(cpp).emplace[CLongArrayList]()
         long_array_list = &get[CLongArrayList](dereference(cpp))
         dereference(long_array_list).push_back(value.cpp)
@@ -937,40 +928,710 @@ cdef inline void _set_long_array_tag(CListTagPtr cpp, ptrdiff_t item, LongArrayT
         raise TypeError("NBT ListTag item mismatch.")
 
 
-cdef inline void _set_item(CListTagPtr cpp, ptrdiff_t item, AbstractBaseTag value):
+cdef inline void ListTag_set_item(CListTagPtr cpp, ptrdiff_t item, AbstractBaseTag value):
     if isinstance(value, ByteTag):
-        _set_byte_tag(cpp, item, value)
+        ListTag_set_item_byte_tag(cpp, item, value)
     elif isinstance(value, ShortTag):
-        _set_short_tag(cpp, item, value)
+        ListTag_set_item_short_tag(cpp, item, value)
     elif isinstance(value, IntTag):
-        _set_int_tag(cpp, item, value)
+        ListTag_set_item_int_tag(cpp, item, value)
     elif isinstance(value, LongTag):
-        _set_long_tag(cpp, item, value)
+        ListTag_set_item_long_tag(cpp, item, value)
     elif isinstance(value, FloatTag):
-        _set_float_tag(cpp, item, value)
+        ListTag_set_item_float_tag(cpp, item, value)
     elif isinstance(value, DoubleTag):
-        _set_double_tag(cpp, item, value)
+        ListTag_set_item_double_tag(cpp, item, value)
     elif isinstance(value, ByteArrayTag):
-        _set_byte_array_tag(cpp, item, value)
+        ListTag_set_item_byte_array_tag(cpp, item, value)
     elif isinstance(value, StringTag):
-        _set_string_tag(cpp, item, value)
+        ListTag_set_item_string_tag(cpp, item, value)
     elif isinstance(value, ListTag):
-        _set_list_tag(cpp, item, value)
+        ListTag_set_item_list_tag(cpp, item, value)
     elif isinstance(value, CompoundTag):
-        _set_compound_tag(cpp, item, value)
+        ListTag_set_item_compound_tag(cpp, item, value)
     elif isinstance(value, IntArrayTag):
-        _set_int_array_tag(cpp, item, value)
+        ListTag_set_item_int_array_tag(cpp, item, value)
     elif isinstance(value, LongArrayTag):
-        _set_long_array_tag(cpp, item, value)
+        ListTag_set_item_long_array_tag(cpp, item, value)
     else:
         raise TypeError(f"Unsupported type {type(value)}")
 
 
-cdef inline void _set_slice(CListTagPtr cpp, object s, object value):
-    pass
+cdef inline size_t _iter_count(size_t start, size_t stop, ptrdiff_t step):
+    cdef double iter_count = ceil((stop - start)/step)
+    if iter_count < 0:
+        return 0
+    else:
+        return <size_t>iter_count
 
 
-cdef inline void _del_byte_tag(CListTagPtr cpp, ptrdiff_t item):
+cdef inline void ListTag_set_slice_byte_tag(CListTagPtr cpp, object s, list value):
+    if not all(isinstance(v, ByteTag) for v in value):
+        raise TypeError("All elements of a ListTag must have the same type.")
+    
+    cdef CByteList* byte_list
+    cdef size_t start
+    cdef size_t stop
+    cdef ptrdiff_t step
+    cdef size_t item
+    cdef size_t iter_count
+    cdef ByteTag el
+    cdef size_t size
+    
+    if dereference(cpp).index() == 1:
+        byte_list = &get[CByteList](dereference(cpp))
+        
+        start, stop, step = _slice_to_range(dereference(byte_list).size(), s)
+        iter_count = _iter_count(start, stop, step)
+        
+        if iter_count == len(value):
+            for item, el in zip(range(start, stop, step), value):
+                dereference(byte_list)[item] = el.cpp
+        elif step == 1:
+            dereference(byte_list).erase(
+                dereference(byte_list).begin() + start,
+                dereference(byte_list).begin() + stop,
+            )
+            for item, el in enumerate(value):
+                dereference(byte_list).insert(dereference(byte_list).begin() + start + item, el.cpp)
+        else:
+            raise ValueError(f"attempt to assign sequence of size {len(value)} to extended slice of size {{iter_count}}")
+        
+    else:
+        size = ListTag_len(cpp)
+        start, stop, step = _slice_to_range(size, s)
+        iter_count = _iter_count(start, stop, step)
+        if size == iter_count:
+            if step == -1:
+                value = reversed(value)
+            elif step != 1:
+                raise RuntimeError
+                
+            dereference(cpp).emplace[CByteList]()
+            byte_list = &get[CByteList](dereference(cpp))
+            for el in value:
+                dereference(byte_list).push_back(el.cpp)
+        else:
+            raise TypeError("NBT ListTag item mismatch.")
+
+
+cdef inline void ListTag_set_slice_short_tag(CListTagPtr cpp, object s, list value):
+    if not all(isinstance(v, ShortTag) for v in value):
+        raise TypeError("All elements of a ListTag must have the same type.")
+    
+    cdef CShortList* short_list
+    cdef size_t start
+    cdef size_t stop
+    cdef ptrdiff_t step
+    cdef size_t item
+    cdef size_t iter_count
+    cdef ShortTag el
+    cdef size_t size
+    
+    if dereference(cpp).index() == 2:
+        short_list = &get[CShortList](dereference(cpp))
+        
+        start, stop, step = _slice_to_range(dereference(short_list).size(), s)
+        iter_count = _iter_count(start, stop, step)
+        
+        if iter_count == len(value):
+            for item, el in zip(range(start, stop, step), value):
+                dereference(short_list)[item] = el.cpp
+        elif step == 1:
+            dereference(short_list).erase(
+                dereference(short_list).begin() + start,
+                dereference(short_list).begin() + stop,
+            )
+            for item, el in enumerate(value):
+                dereference(short_list).insert(dereference(short_list).begin() + start + item, el.cpp)
+        else:
+            raise ValueError(f"attempt to assign sequence of size {len(value)} to extended slice of size {{iter_count}}")
+        
+    else:
+        size = ListTag_len(cpp)
+        start, stop, step = _slice_to_range(size, s)
+        iter_count = _iter_count(start, stop, step)
+        if size == iter_count:
+            if step == -1:
+                value = reversed(value)
+            elif step != 1:
+                raise RuntimeError
+                
+            dereference(cpp).emplace[CShortList]()
+            short_list = &get[CShortList](dereference(cpp))
+            for el in value:
+                dereference(short_list).push_back(el.cpp)
+        else:
+            raise TypeError("NBT ListTag item mismatch.")
+
+
+cdef inline void ListTag_set_slice_int_tag(CListTagPtr cpp, object s, list value):
+    if not all(isinstance(v, IntTag) for v in value):
+        raise TypeError("All elements of a ListTag must have the same type.")
+    
+    cdef CIntList* int_list
+    cdef size_t start
+    cdef size_t stop
+    cdef ptrdiff_t step
+    cdef size_t item
+    cdef size_t iter_count
+    cdef IntTag el
+    cdef size_t size
+    
+    if dereference(cpp).index() == 3:
+        int_list = &get[CIntList](dereference(cpp))
+        
+        start, stop, step = _slice_to_range(dereference(int_list).size(), s)
+        iter_count = _iter_count(start, stop, step)
+        
+        if iter_count == len(value):
+            for item, el in zip(range(start, stop, step), value):
+                dereference(int_list)[item] = el.cpp
+        elif step == 1:
+            dereference(int_list).erase(
+                dereference(int_list).begin() + start,
+                dereference(int_list).begin() + stop,
+            )
+            for item, el in enumerate(value):
+                dereference(int_list).insert(dereference(int_list).begin() + start + item, el.cpp)
+        else:
+            raise ValueError(f"attempt to assign sequence of size {len(value)} to extended slice of size {{iter_count}}")
+        
+    else:
+        size = ListTag_len(cpp)
+        start, stop, step = _slice_to_range(size, s)
+        iter_count = _iter_count(start, stop, step)
+        if size == iter_count:
+            if step == -1:
+                value = reversed(value)
+            elif step != 1:
+                raise RuntimeError
+                
+            dereference(cpp).emplace[CIntList]()
+            int_list = &get[CIntList](dereference(cpp))
+            for el in value:
+                dereference(int_list).push_back(el.cpp)
+        else:
+            raise TypeError("NBT ListTag item mismatch.")
+
+
+cdef inline void ListTag_set_slice_long_tag(CListTagPtr cpp, object s, list value):
+    if not all(isinstance(v, LongTag) for v in value):
+        raise TypeError("All elements of a ListTag must have the same type.")
+    
+    cdef CLongList* long_list
+    cdef size_t start
+    cdef size_t stop
+    cdef ptrdiff_t step
+    cdef size_t item
+    cdef size_t iter_count
+    cdef LongTag el
+    cdef size_t size
+    
+    if dereference(cpp).index() == 4:
+        long_list = &get[CLongList](dereference(cpp))
+        
+        start, stop, step = _slice_to_range(dereference(long_list).size(), s)
+        iter_count = _iter_count(start, stop, step)
+        
+        if iter_count == len(value):
+            for item, el in zip(range(start, stop, step), value):
+                dereference(long_list)[item] = el.cpp
+        elif step == 1:
+            dereference(long_list).erase(
+                dereference(long_list).begin() + start,
+                dereference(long_list).begin() + stop,
+            )
+            for item, el in enumerate(value):
+                dereference(long_list).insert(dereference(long_list).begin() + start + item, el.cpp)
+        else:
+            raise ValueError(f"attempt to assign sequence of size {len(value)} to extended slice of size {{iter_count}}")
+        
+    else:
+        size = ListTag_len(cpp)
+        start, stop, step = _slice_to_range(size, s)
+        iter_count = _iter_count(start, stop, step)
+        if size == iter_count:
+            if step == -1:
+                value = reversed(value)
+            elif step != 1:
+                raise RuntimeError
+                
+            dereference(cpp).emplace[CLongList]()
+            long_list = &get[CLongList](dereference(cpp))
+            for el in value:
+                dereference(long_list).push_back(el.cpp)
+        else:
+            raise TypeError("NBT ListTag item mismatch.")
+
+
+cdef inline void ListTag_set_slice_float_tag(CListTagPtr cpp, object s, list value):
+    if not all(isinstance(v, FloatTag) for v in value):
+        raise TypeError("All elements of a ListTag must have the same type.")
+    
+    cdef CFloatList* float_list
+    cdef size_t start
+    cdef size_t stop
+    cdef ptrdiff_t step
+    cdef size_t item
+    cdef size_t iter_count
+    cdef FloatTag el
+    cdef size_t size
+    
+    if dereference(cpp).index() == 5:
+        float_list = &get[CFloatList](dereference(cpp))
+        
+        start, stop, step = _slice_to_range(dereference(float_list).size(), s)
+        iter_count = _iter_count(start, stop, step)
+        
+        if iter_count == len(value):
+            for item, el in zip(range(start, stop, step), value):
+                dereference(float_list)[item] = el.cpp
+        elif step == 1:
+            dereference(float_list).erase(
+                dereference(float_list).begin() + start,
+                dereference(float_list).begin() + stop,
+            )
+            for item, el in enumerate(value):
+                dereference(float_list).insert(dereference(float_list).begin() + start + item, el.cpp)
+        else:
+            raise ValueError(f"attempt to assign sequence of size {len(value)} to extended slice of size {{iter_count}}")
+        
+    else:
+        size = ListTag_len(cpp)
+        start, stop, step = _slice_to_range(size, s)
+        iter_count = _iter_count(start, stop, step)
+        if size == iter_count:
+            if step == -1:
+                value = reversed(value)
+            elif step != 1:
+                raise RuntimeError
+                
+            dereference(cpp).emplace[CFloatList]()
+            float_list = &get[CFloatList](dereference(cpp))
+            for el in value:
+                dereference(float_list).push_back(el.cpp)
+        else:
+            raise TypeError("NBT ListTag item mismatch.")
+
+
+cdef inline void ListTag_set_slice_double_tag(CListTagPtr cpp, object s, list value):
+    if not all(isinstance(v, DoubleTag) for v in value):
+        raise TypeError("All elements of a ListTag must have the same type.")
+    
+    cdef CDoubleList* double_list
+    cdef size_t start
+    cdef size_t stop
+    cdef ptrdiff_t step
+    cdef size_t item
+    cdef size_t iter_count
+    cdef DoubleTag el
+    cdef size_t size
+    
+    if dereference(cpp).index() == 6:
+        double_list = &get[CDoubleList](dereference(cpp))
+        
+        start, stop, step = _slice_to_range(dereference(double_list).size(), s)
+        iter_count = _iter_count(start, stop, step)
+        
+        if iter_count == len(value):
+            for item, el in zip(range(start, stop, step), value):
+                dereference(double_list)[item] = el.cpp
+        elif step == 1:
+            dereference(double_list).erase(
+                dereference(double_list).begin() + start,
+                dereference(double_list).begin() + stop,
+            )
+            for item, el in enumerate(value):
+                dereference(double_list).insert(dereference(double_list).begin() + start + item, el.cpp)
+        else:
+            raise ValueError(f"attempt to assign sequence of size {len(value)} to extended slice of size {{iter_count}}")
+        
+    else:
+        size = ListTag_len(cpp)
+        start, stop, step = _slice_to_range(size, s)
+        iter_count = _iter_count(start, stop, step)
+        if size == iter_count:
+            if step == -1:
+                value = reversed(value)
+            elif step != 1:
+                raise RuntimeError
+                
+            dereference(cpp).emplace[CDoubleList]()
+            double_list = &get[CDoubleList](dereference(cpp))
+            for el in value:
+                dereference(double_list).push_back(el.cpp)
+        else:
+            raise TypeError("NBT ListTag item mismatch.")
+
+
+cdef inline void ListTag_set_slice_byte_array_tag(CListTagPtr cpp, object s, list value):
+    if not all(isinstance(v, ByteArrayTag) for v in value):
+        raise TypeError("All elements of a ListTag must have the same type.")
+    
+    cdef CByteArrayList* byte_array_list
+    cdef size_t start
+    cdef size_t stop
+    cdef ptrdiff_t step
+    cdef size_t item
+    cdef size_t iter_count
+    cdef ByteArrayTag el
+    cdef size_t size
+    
+    if dereference(cpp).index() == 7:
+        byte_array_list = &get[CByteArrayList](dereference(cpp))
+        
+        start, stop, step = _slice_to_range(dereference(byte_array_list).size(), s)
+        iter_count = _iter_count(start, stop, step)
+        
+        if iter_count == len(value):
+            for item, el in zip(range(start, stop, step), value):
+                dereference(byte_array_list)[item] = el.cpp
+        elif step == 1:
+            dereference(byte_array_list).erase(
+                dereference(byte_array_list).begin() + start,
+                dereference(byte_array_list).begin() + stop,
+            )
+            for item, el in enumerate(value):
+                dereference(byte_array_list).insert(dereference(byte_array_list).begin() + start + item, el.cpp)
+        else:
+            raise ValueError(f"attempt to assign sequence of size {len(value)} to extended slice of size {{iter_count}}")
+        
+    else:
+        size = ListTag_len(cpp)
+        start, stop, step = _slice_to_range(size, s)
+        iter_count = _iter_count(start, stop, step)
+        if size == iter_count:
+            if step == -1:
+                value = reversed(value)
+            elif step != 1:
+                raise RuntimeError
+                
+            dereference(cpp).emplace[CByteArrayList]()
+            byte_array_list = &get[CByteArrayList](dereference(cpp))
+            for el in value:
+                dereference(byte_array_list).push_back(el.cpp)
+        else:
+            raise TypeError("NBT ListTag item mismatch.")
+
+
+cdef inline void ListTag_set_slice_string_tag(CListTagPtr cpp, object s, list value):
+    if not all(isinstance(v, StringTag) for v in value):
+        raise TypeError("All elements of a ListTag must have the same type.")
+    
+    cdef CStringList* string_list
+    cdef size_t start
+    cdef size_t stop
+    cdef ptrdiff_t step
+    cdef size_t item
+    cdef size_t iter_count
+    cdef StringTag el
+    cdef size_t size
+    
+    if dereference(cpp).index() == 8:
+        string_list = &get[CStringList](dereference(cpp))
+        
+        start, stop, step = _slice_to_range(dereference(string_list).size(), s)
+        iter_count = _iter_count(start, stop, step)
+        
+        if iter_count == len(value):
+            for item, el in zip(range(start, stop, step), value):
+                dereference(string_list)[item] = el.cpp
+        elif step == 1:
+            dereference(string_list).erase(
+                dereference(string_list).begin() + start,
+                dereference(string_list).begin() + stop,
+            )
+            for item, el in enumerate(value):
+                dereference(string_list).insert(dereference(string_list).begin() + start + item, el.cpp)
+        else:
+            raise ValueError(f"attempt to assign sequence of size {len(value)} to extended slice of size {{iter_count}}")
+        
+    else:
+        size = ListTag_len(cpp)
+        start, stop, step = _slice_to_range(size, s)
+        iter_count = _iter_count(start, stop, step)
+        if size == iter_count:
+            if step == -1:
+                value = reversed(value)
+            elif step != 1:
+                raise RuntimeError
+                
+            dereference(cpp).emplace[CStringList]()
+            string_list = &get[CStringList](dereference(cpp))
+            for el in value:
+                dereference(string_list).push_back(el.cpp)
+        else:
+            raise TypeError("NBT ListTag item mismatch.")
+
+
+cdef inline void ListTag_set_slice_list_tag(CListTagPtr cpp, object s, list value):
+    if not all(isinstance(v, ListTag) for v in value):
+        raise TypeError("All elements of a ListTag must have the same type.")
+    
+    cdef CListList* list_list
+    cdef size_t start
+    cdef size_t stop
+    cdef ptrdiff_t step
+    cdef size_t item
+    cdef size_t iter_count
+    cdef ListTag el
+    cdef size_t size
+    
+    if dereference(cpp).index() == 9:
+        list_list = &get[CListList](dereference(cpp))
+        
+        start, stop, step = _slice_to_range(dereference(list_list).size(), s)
+        iter_count = _iter_count(start, stop, step)
+        
+        if iter_count == len(value):
+            for item, el in zip(range(start, stop, step), value):
+                dereference(list_list)[item] = el.cpp
+        elif step == 1:
+            dereference(list_list).erase(
+                dereference(list_list).begin() + start,
+                dereference(list_list).begin() + stop,
+            )
+            for item, el in enumerate(value):
+                dereference(list_list).insert(dereference(list_list).begin() + start + item, el.cpp)
+        else:
+            raise ValueError(f"attempt to assign sequence of size {len(value)} to extended slice of size {{iter_count}}")
+        
+    else:
+        size = ListTag_len(cpp)
+        start, stop, step = _slice_to_range(size, s)
+        iter_count = _iter_count(start, stop, step)
+        if size == iter_count:
+            if step == -1:
+                value = reversed(value)
+            elif step != 1:
+                raise RuntimeError
+                
+            dereference(cpp).emplace[CListList]()
+            list_list = &get[CListList](dereference(cpp))
+            for el in value:
+                dereference(list_list).push_back(el.cpp)
+        else:
+            raise TypeError("NBT ListTag item mismatch.")
+
+
+cdef inline void ListTag_set_slice_compound_tag(CListTagPtr cpp, object s, list value):
+    if not all(isinstance(v, CompoundTag) for v in value):
+        raise TypeError("All elements of a ListTag must have the same type.")
+    
+    cdef CCompoundList* compound_list
+    cdef size_t start
+    cdef size_t stop
+    cdef ptrdiff_t step
+    cdef size_t item
+    cdef size_t iter_count
+    cdef CompoundTag el
+    cdef size_t size
+    
+    if dereference(cpp).index() == 10:
+        compound_list = &get[CCompoundList](dereference(cpp))
+        
+        start, stop, step = _slice_to_range(dereference(compound_list).size(), s)
+        iter_count = _iter_count(start, stop, step)
+        
+        if iter_count == len(value):
+            for item, el in zip(range(start, stop, step), value):
+                dereference(compound_list)[item] = el.cpp
+        elif step == 1:
+            dereference(compound_list).erase(
+                dereference(compound_list).begin() + start,
+                dereference(compound_list).begin() + stop,
+            )
+            for item, el in enumerate(value):
+                dereference(compound_list).insert(dereference(compound_list).begin() + start + item, el.cpp)
+        else:
+            raise ValueError(f"attempt to assign sequence of size {len(value)} to extended slice of size {{iter_count}}")
+        
+    else:
+        size = ListTag_len(cpp)
+        start, stop, step = _slice_to_range(size, s)
+        iter_count = _iter_count(start, stop, step)
+        if size == iter_count:
+            if step == -1:
+                value = reversed(value)
+            elif step != 1:
+                raise RuntimeError
+                
+            dereference(cpp).emplace[CCompoundList]()
+            compound_list = &get[CCompoundList](dereference(cpp))
+            for el in value:
+                dereference(compound_list).push_back(el.cpp)
+        else:
+            raise TypeError("NBT ListTag item mismatch.")
+
+
+cdef inline void ListTag_set_slice_int_array_tag(CListTagPtr cpp, object s, list value):
+    if not all(isinstance(v, IntArrayTag) for v in value):
+        raise TypeError("All elements of a ListTag must have the same type.")
+    
+    cdef CIntArrayList* int_array_list
+    cdef size_t start
+    cdef size_t stop
+    cdef ptrdiff_t step
+    cdef size_t item
+    cdef size_t iter_count
+    cdef IntArrayTag el
+    cdef size_t size
+    
+    if dereference(cpp).index() == 11:
+        int_array_list = &get[CIntArrayList](dereference(cpp))
+        
+        start, stop, step = _slice_to_range(dereference(int_array_list).size(), s)
+        iter_count = _iter_count(start, stop, step)
+        
+        if iter_count == len(value):
+            for item, el in zip(range(start, stop, step), value):
+                dereference(int_array_list)[item] = el.cpp
+        elif step == 1:
+            dereference(int_array_list).erase(
+                dereference(int_array_list).begin() + start,
+                dereference(int_array_list).begin() + stop,
+            )
+            for item, el in enumerate(value):
+                dereference(int_array_list).insert(dereference(int_array_list).begin() + start + item, el.cpp)
+        else:
+            raise ValueError(f"attempt to assign sequence of size {len(value)} to extended slice of size {{iter_count}}")
+        
+    else:
+        size = ListTag_len(cpp)
+        start, stop, step = _slice_to_range(size, s)
+        iter_count = _iter_count(start, stop, step)
+        if size == iter_count:
+            if step == -1:
+                value = reversed(value)
+            elif step != 1:
+                raise RuntimeError
+                
+            dereference(cpp).emplace[CIntArrayList]()
+            int_array_list = &get[CIntArrayList](dereference(cpp))
+            for el in value:
+                dereference(int_array_list).push_back(el.cpp)
+        else:
+            raise TypeError("NBT ListTag item mismatch.")
+
+
+cdef inline void ListTag_set_slice_long_array_tag(CListTagPtr cpp, object s, list value):
+    if not all(isinstance(v, LongArrayTag) for v in value):
+        raise TypeError("All elements of a ListTag must have the same type.")
+    
+    cdef CLongArrayList* long_array_list
+    cdef size_t start
+    cdef size_t stop
+    cdef ptrdiff_t step
+    cdef size_t item
+    cdef size_t iter_count
+    cdef LongArrayTag el
+    cdef size_t size
+    
+    if dereference(cpp).index() == 12:
+        long_array_list = &get[CLongArrayList](dereference(cpp))
+        
+        start, stop, step = _slice_to_range(dereference(long_array_list).size(), s)
+        iter_count = _iter_count(start, stop, step)
+        
+        if iter_count == len(value):
+            for item, el in zip(range(start, stop, step), value):
+                dereference(long_array_list)[item] = el.cpp
+        elif step == 1:
+            dereference(long_array_list).erase(
+                dereference(long_array_list).begin() + start,
+                dereference(long_array_list).begin() + stop,
+            )
+            for item, el in enumerate(value):
+                dereference(long_array_list).insert(dereference(long_array_list).begin() + start + item, el.cpp)
+        else:
+            raise ValueError(f"attempt to assign sequence of size {len(value)} to extended slice of size {{iter_count}}")
+        
+    else:
+        size = ListTag_len(cpp)
+        start, stop, step = _slice_to_range(size, s)
+        iter_count = _iter_count(start, stop, step)
+        if size == iter_count:
+            if step == -1:
+                value = reversed(value)
+            elif step != 1:
+                raise RuntimeError
+                
+            dereference(cpp).emplace[CLongArrayList]()
+            long_array_list = &get[CLongArrayList](dereference(cpp))
+            for el in value:
+                dereference(long_array_list).push_back(el.cpp)
+        else:
+            raise TypeError("NBT ListTag item mismatch.")
+
+
+
+cdef inline void _set_slice_empty(CListTagPtr cpp, object s):
+    cdef size_t index = dereference(cpp).index()
+    if index == 1:
+        ListTag_set_slice_byte_tag(cpp, s, [])
+    elif index == 2:
+        ListTag_set_slice_short_tag(cpp, s, [])
+    elif index == 3:
+        ListTag_set_slice_int_tag(cpp, s, [])
+    elif index == 4:
+        ListTag_set_slice_long_tag(cpp, s, [])
+    elif index == 5:
+        ListTag_set_slice_float_tag(cpp, s, [])
+    elif index == 6:
+        ListTag_set_slice_double_tag(cpp, s, [])
+    elif index == 7:
+        ListTag_set_slice_byte_array_tag(cpp, s, [])
+    elif index == 8:
+        ListTag_set_slice_string_tag(cpp, s, [])
+    elif index == 9:
+        ListTag_set_slice_list_tag(cpp, s, [])
+    elif index == 10:
+        ListTag_set_slice_compound_tag(cpp, s, [])
+    elif index == 11:
+        ListTag_set_slice_int_array_tag(cpp, s, [])
+    elif index == 12:
+        ListTag_set_slice_long_array_tag(cpp, s, [])
+    else:
+        raise RuntimeError("ListTag type has not been set.")
+
+
+cdef inline void ListTag_set_slice(CListTagPtr cpp, object s, object value):
+    cdef list arr = value
+    if arr:
+        # Items in the array
+        if isinstance(value, ByteTag):
+            ListTag_set_slice_byte_tag(cpp, s, arr)
+        elif isinstance(value, ShortTag):
+            ListTag_set_slice_short_tag(cpp, s, arr)
+        elif isinstance(value, IntTag):
+            ListTag_set_slice_int_tag(cpp, s, arr)
+        elif isinstance(value, LongTag):
+            ListTag_set_slice_long_tag(cpp, s, arr)
+        elif isinstance(value, FloatTag):
+            ListTag_set_slice_float_tag(cpp, s, arr)
+        elif isinstance(value, DoubleTag):
+            ListTag_set_slice_double_tag(cpp, s, arr)
+        elif isinstance(value, ByteArrayTag):
+            ListTag_set_slice_byte_array_tag(cpp, s, arr)
+        elif isinstance(value, StringTag):
+            ListTag_set_slice_string_tag(cpp, s, arr)
+        elif isinstance(value, ListTag):
+            ListTag_set_slice_list_tag(cpp, s, arr)
+        elif isinstance(value, CompoundTag):
+            ListTag_set_slice_compound_tag(cpp, s, arr)
+        elif isinstance(value, IntArrayTag):
+            ListTag_set_slice_int_array_tag(cpp, s, arr)
+        elif isinstance(value, LongArrayTag):
+            ListTag_set_slice_long_array_tag(cpp, s, arr)
+        else:
+            raise TypeError(f"Unsupported type {type(value)}")
+    else:
+        # array is empty
+        _set_slice_empty(cpp, s)
+
+
+cdef inline void ListTag_del_item_byte_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CByteList* byte_list = &get[CByteList](dereference(cpp))
     if item < 0:
         item += dereference(byte_list).size()
@@ -979,7 +1640,7 @@ cdef inline void _del_byte_tag(CListTagPtr cpp, ptrdiff_t item):
     dereference(byte_list).erase(dereference(byte_list).begin() + item)
 
 
-cdef inline void _del_short_tag(CListTagPtr cpp, ptrdiff_t item):
+cdef inline void ListTag_del_item_short_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CShortList* short_list = &get[CShortList](dereference(cpp))
     if item < 0:
         item += dereference(short_list).size()
@@ -988,7 +1649,7 @@ cdef inline void _del_short_tag(CListTagPtr cpp, ptrdiff_t item):
     dereference(short_list).erase(dereference(short_list).begin() + item)
 
 
-cdef inline void _del_int_tag(CListTagPtr cpp, ptrdiff_t item):
+cdef inline void ListTag_del_item_int_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CIntList* int_list = &get[CIntList](dereference(cpp))
     if item < 0:
         item += dereference(int_list).size()
@@ -997,7 +1658,7 @@ cdef inline void _del_int_tag(CListTagPtr cpp, ptrdiff_t item):
     dereference(int_list).erase(dereference(int_list).begin() + item)
 
 
-cdef inline void _del_long_tag(CListTagPtr cpp, ptrdiff_t item):
+cdef inline void ListTag_del_item_long_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CLongList* long_list = &get[CLongList](dereference(cpp))
     if item < 0:
         item += dereference(long_list).size()
@@ -1006,7 +1667,7 @@ cdef inline void _del_long_tag(CListTagPtr cpp, ptrdiff_t item):
     dereference(long_list).erase(dereference(long_list).begin() + item)
 
 
-cdef inline void _del_float_tag(CListTagPtr cpp, ptrdiff_t item):
+cdef inline void ListTag_del_item_float_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CFloatList* float_list = &get[CFloatList](dereference(cpp))
     if item < 0:
         item += dereference(float_list).size()
@@ -1015,7 +1676,7 @@ cdef inline void _del_float_tag(CListTagPtr cpp, ptrdiff_t item):
     dereference(float_list).erase(dereference(float_list).begin() + item)
 
 
-cdef inline void _del_double_tag(CListTagPtr cpp, ptrdiff_t item):
+cdef inline void ListTag_del_item_double_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CDoubleList* double_list = &get[CDoubleList](dereference(cpp))
     if item < 0:
         item += dereference(double_list).size()
@@ -1024,7 +1685,7 @@ cdef inline void _del_double_tag(CListTagPtr cpp, ptrdiff_t item):
     dereference(double_list).erase(dereference(double_list).begin() + item)
 
 
-cdef inline void _del_byte_array_tag(CListTagPtr cpp, ptrdiff_t item):
+cdef inline void ListTag_del_item_byte_array_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CByteArrayList* byte_array_list = &get[CByteArrayList](dereference(cpp))
     if item < 0:
         item += dereference(byte_array_list).size()
@@ -1033,7 +1694,7 @@ cdef inline void _del_byte_array_tag(CListTagPtr cpp, ptrdiff_t item):
     dereference(byte_array_list).erase(dereference(byte_array_list).begin() + item)
 
 
-cdef inline void _del_string_tag(CListTagPtr cpp, ptrdiff_t item):
+cdef inline void ListTag_del_item_string_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CStringList* string_list = &get[CStringList](dereference(cpp))
     if item < 0:
         item += dereference(string_list).size()
@@ -1042,7 +1703,7 @@ cdef inline void _del_string_tag(CListTagPtr cpp, ptrdiff_t item):
     dereference(string_list).erase(dereference(string_list).begin() + item)
 
 
-cdef inline void _del_list_tag(CListTagPtr cpp, ptrdiff_t item):
+cdef inline void ListTag_del_item_list_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CListList* list_list = &get[CListList](dereference(cpp))
     if item < 0:
         item += dereference(list_list).size()
@@ -1051,7 +1712,7 @@ cdef inline void _del_list_tag(CListTagPtr cpp, ptrdiff_t item):
     dereference(list_list).erase(dereference(list_list).begin() + item)
 
 
-cdef inline void _del_compound_tag(CListTagPtr cpp, ptrdiff_t item):
+cdef inline void ListTag_del_item_compound_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CCompoundList* compound_list = &get[CCompoundList](dereference(cpp))
     if item < 0:
         item += dereference(compound_list).size()
@@ -1060,7 +1721,7 @@ cdef inline void _del_compound_tag(CListTagPtr cpp, ptrdiff_t item):
     dereference(compound_list).erase(dereference(compound_list).begin() + item)
 
 
-cdef inline void _del_int_array_tag(CListTagPtr cpp, ptrdiff_t item):
+cdef inline void ListTag_del_item_int_array_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CIntArrayList* int_array_list = &get[CIntArrayList](dereference(cpp))
     if item < 0:
         item += dereference(int_array_list).size()
@@ -1069,7 +1730,7 @@ cdef inline void _del_int_array_tag(CListTagPtr cpp, ptrdiff_t item):
     dereference(int_array_list).erase(dereference(int_array_list).begin() + item)
 
 
-cdef inline void _del_long_array_tag(CListTagPtr cpp, ptrdiff_t item):
+cdef inline void ListTag_del_item_long_array_tag(CListTagPtr cpp, ptrdiff_t item):
     cdef CLongArrayList* long_array_list = &get[CLongArrayList](dereference(cpp))
     if item < 0:
         item += dereference(long_array_list).size()
@@ -1078,37 +1739,37 @@ cdef inline void _del_long_array_tag(CListTagPtr cpp, ptrdiff_t item):
     dereference(long_array_list).erase(dereference(long_array_list).begin() + item)
 
 
-cdef inline void _del_item(CListTagPtr cpp, ptrdiff_t item):
+cdef inline void ListTag_del_item(CListTagPtr cpp, ptrdiff_t item):
     cdef size_t index = dereference(cpp).index()
     if index == 1:
-        _del_byte_tag(cpp, item)
+        ListTag_del_item_byte_tag(cpp, item)
     elif index == 2:
-        _del_short_tag(cpp, item)
+        ListTag_del_item_short_tag(cpp, item)
     elif index == 3:
-        _del_int_tag(cpp, item)
+        ListTag_del_item_int_tag(cpp, item)
     elif index == 4:
-        _del_long_tag(cpp, item)
+        ListTag_del_item_long_tag(cpp, item)
     elif index == 5:
-        _del_float_tag(cpp, item)
+        ListTag_del_item_float_tag(cpp, item)
     elif index == 6:
-        _del_double_tag(cpp, item)
+        ListTag_del_item_double_tag(cpp, item)
     elif index == 7:
-        _del_byte_array_tag(cpp, item)
+        ListTag_del_item_byte_array_tag(cpp, item)
     elif index == 8:
-        _del_string_tag(cpp, item)
+        ListTag_del_item_string_tag(cpp, item)
     elif index == 9:
-        _del_list_tag(cpp, item)
+        ListTag_del_item_list_tag(cpp, item)
     elif index == 10:
-        _del_compound_tag(cpp, item)
+        ListTag_del_item_compound_tag(cpp, item)
     elif index == 11:
-        _del_int_array_tag(cpp, item)
+        ListTag_del_item_int_array_tag(cpp, item)
     elif index == 12:
-        _del_long_array_tag(cpp, item)
+        ListTag_del_item_long_array_tag(cpp, item)
     else:
         raise RuntimeError("ListTag type has not been set.")
 
 
-cdef inline void _del_slice_byte_tag(CListTagPtr cpp, object s):
+cdef inline void ListTag_del_slice_byte_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
     cdef size_t step
@@ -1129,7 +1790,7 @@ cdef inline void _del_slice_byte_tag(CListTagPtr cpp, object s):
             dereference(byte_list).erase(dereference(byte_list).begin() + item)
 
 
-cdef inline void _del_slice_short_tag(CListTagPtr cpp, object s):
+cdef inline void ListTag_del_slice_short_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
     cdef size_t step
@@ -1150,7 +1811,7 @@ cdef inline void _del_slice_short_tag(CListTagPtr cpp, object s):
             dereference(short_list).erase(dereference(short_list).begin() + item)
 
 
-cdef inline void _del_slice_int_tag(CListTagPtr cpp, object s):
+cdef inline void ListTag_del_slice_int_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
     cdef size_t step
@@ -1171,7 +1832,7 @@ cdef inline void _del_slice_int_tag(CListTagPtr cpp, object s):
             dereference(int_list).erase(dereference(int_list).begin() + item)
 
 
-cdef inline void _del_slice_long_tag(CListTagPtr cpp, object s):
+cdef inline void ListTag_del_slice_long_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
     cdef size_t step
@@ -1192,7 +1853,7 @@ cdef inline void _del_slice_long_tag(CListTagPtr cpp, object s):
             dereference(long_list).erase(dereference(long_list).begin() + item)
 
 
-cdef inline void _del_slice_float_tag(CListTagPtr cpp, object s):
+cdef inline void ListTag_del_slice_float_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
     cdef size_t step
@@ -1213,7 +1874,7 @@ cdef inline void _del_slice_float_tag(CListTagPtr cpp, object s):
             dereference(float_list).erase(dereference(float_list).begin() + item)
 
 
-cdef inline void _del_slice_double_tag(CListTagPtr cpp, object s):
+cdef inline void ListTag_del_slice_double_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
     cdef size_t step
@@ -1234,7 +1895,7 @@ cdef inline void _del_slice_double_tag(CListTagPtr cpp, object s):
             dereference(double_list).erase(dereference(double_list).begin() + item)
 
 
-cdef inline void _del_slice_byte_array_tag(CListTagPtr cpp, object s):
+cdef inline void ListTag_del_slice_byte_array_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
     cdef size_t step
@@ -1255,7 +1916,7 @@ cdef inline void _del_slice_byte_array_tag(CListTagPtr cpp, object s):
             dereference(byte_array_list).erase(dereference(byte_array_list).begin() + item)
 
 
-cdef inline void _del_slice_string_tag(CListTagPtr cpp, object s):
+cdef inline void ListTag_del_slice_string_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
     cdef size_t step
@@ -1276,7 +1937,7 @@ cdef inline void _del_slice_string_tag(CListTagPtr cpp, object s):
             dereference(string_list).erase(dereference(string_list).begin() + item)
 
 
-cdef inline void _del_slice_list_tag(CListTagPtr cpp, object s):
+cdef inline void ListTag_del_slice_list_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
     cdef size_t step
@@ -1297,7 +1958,7 @@ cdef inline void _del_slice_list_tag(CListTagPtr cpp, object s):
             dereference(list_list).erase(dereference(list_list).begin() + item)
 
 
-cdef inline void _del_slice_compound_tag(CListTagPtr cpp, object s):
+cdef inline void ListTag_del_slice_compound_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
     cdef size_t step
@@ -1318,7 +1979,7 @@ cdef inline void _del_slice_compound_tag(CListTagPtr cpp, object s):
             dereference(compound_list).erase(dereference(compound_list).begin() + item)
 
 
-cdef inline void _del_slice_int_array_tag(CListTagPtr cpp, object s):
+cdef inline void ListTag_del_slice_int_array_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
     cdef size_t step
@@ -1339,7 +2000,7 @@ cdef inline void _del_slice_int_array_tag(CListTagPtr cpp, object s):
             dereference(int_array_list).erase(dereference(int_array_list).begin() + item)
 
 
-cdef inline void _del_slice_long_array_tag(CListTagPtr cpp, object s):
+cdef inline void ListTag_del_slice_long_array_tag(CListTagPtr cpp, object s):
     cdef size_t start
     cdef size_t stop
     cdef size_t step
@@ -1360,42 +2021,42 @@ cdef inline void _del_slice_long_array_tag(CListTagPtr cpp, object s):
             dereference(long_array_list).erase(dereference(long_array_list).begin() + item)
 
 
-cdef inline void _del_slice(CListTagPtr cpp, object s):
+cdef inline void ListTag_del_slice(CListTagPtr cpp, object s):
     cdef size_t index = dereference(cpp).index()
     if index == 1:
-        _del_slice_byte_tag(cpp, s)
+        ListTag_del_slice_byte_tag(cpp, s)
     elif index == 2:
-        _del_slice_short_tag(cpp, s)
+        ListTag_del_slice_short_tag(cpp, s)
     elif index == 3:
-        _del_slice_int_tag(cpp, s)
+        ListTag_del_slice_int_tag(cpp, s)
     elif index == 4:
-        _del_slice_long_tag(cpp, s)
+        ListTag_del_slice_long_tag(cpp, s)
     elif index == 5:
-        _del_slice_float_tag(cpp, s)
+        ListTag_del_slice_float_tag(cpp, s)
     elif index == 6:
-        _del_slice_double_tag(cpp, s)
+        ListTag_del_slice_double_tag(cpp, s)
     elif index == 7:
-        _del_slice_byte_array_tag(cpp, s)
+        ListTag_del_slice_byte_array_tag(cpp, s)
     elif index == 8:
-        _del_slice_string_tag(cpp, s)
+        ListTag_del_slice_string_tag(cpp, s)
     elif index == 9:
-        _del_slice_list_tag(cpp, s)
+        ListTag_del_slice_list_tag(cpp, s)
     elif index == 10:
-        _del_slice_compound_tag(cpp, s)
+        ListTag_del_slice_compound_tag(cpp, s)
     elif index == 11:
-        _del_slice_int_array_tag(cpp, s)
+        ListTag_del_slice_int_array_tag(cpp, s)
     elif index == 12:
-        _del_slice_long_array_tag(cpp, s)
+        ListTag_del_slice_long_array_tag(cpp, s)
     else:
         raise RuntimeError("ListTag type has not been set.")
 
 
-cdef inline void _insert_byte_tag(CListTagPtr cpp, ptrdiff_t item, ByteTag value):
+cdef inline void ListTag_insert_byte_tag(CListTagPtr cpp, ptrdiff_t item, ByteTag value):
     cdef CByteList* byte_list
     
     if dereference(cpp).index() == 1:
         byte_list = &get[CByteList](dereference(cpp))
-    elif _len(cpp) == 0:
+    elif ListTag_len(cpp) == 0:
         dereference(cpp).emplace[CByteList]()
         byte_list = &get[CByteList](dereference(cpp))
     else:
@@ -1408,12 +2069,12 @@ cdef inline void _insert_byte_tag(CListTagPtr cpp, ptrdiff_t item, ByteTag value
     dereference(byte_list).insert(dereference(byte_list).begin() + item, value.cpp)
 
 
-cdef inline void _insert_short_tag(CListTagPtr cpp, ptrdiff_t item, ShortTag value):
+cdef inline void ListTag_insert_short_tag(CListTagPtr cpp, ptrdiff_t item, ShortTag value):
     cdef CShortList* short_list
     
     if dereference(cpp).index() == 2:
         short_list = &get[CShortList](dereference(cpp))
-    elif _len(cpp) == 0:
+    elif ListTag_len(cpp) == 0:
         dereference(cpp).emplace[CShortList]()
         short_list = &get[CShortList](dereference(cpp))
     else:
@@ -1426,12 +2087,12 @@ cdef inline void _insert_short_tag(CListTagPtr cpp, ptrdiff_t item, ShortTag val
     dereference(short_list).insert(dereference(short_list).begin() + item, value.cpp)
 
 
-cdef inline void _insert_int_tag(CListTagPtr cpp, ptrdiff_t item, IntTag value):
+cdef inline void ListTag_insert_int_tag(CListTagPtr cpp, ptrdiff_t item, IntTag value):
     cdef CIntList* int_list
     
     if dereference(cpp).index() == 3:
         int_list = &get[CIntList](dereference(cpp))
-    elif _len(cpp) == 0:
+    elif ListTag_len(cpp) == 0:
         dereference(cpp).emplace[CIntList]()
         int_list = &get[CIntList](dereference(cpp))
     else:
@@ -1444,12 +2105,12 @@ cdef inline void _insert_int_tag(CListTagPtr cpp, ptrdiff_t item, IntTag value):
     dereference(int_list).insert(dereference(int_list).begin() + item, value.cpp)
 
 
-cdef inline void _insert_long_tag(CListTagPtr cpp, ptrdiff_t item, LongTag value):
+cdef inline void ListTag_insert_long_tag(CListTagPtr cpp, ptrdiff_t item, LongTag value):
     cdef CLongList* long_list
     
     if dereference(cpp).index() == 4:
         long_list = &get[CLongList](dereference(cpp))
-    elif _len(cpp) == 0:
+    elif ListTag_len(cpp) == 0:
         dereference(cpp).emplace[CLongList]()
         long_list = &get[CLongList](dereference(cpp))
     else:
@@ -1462,12 +2123,12 @@ cdef inline void _insert_long_tag(CListTagPtr cpp, ptrdiff_t item, LongTag value
     dereference(long_list).insert(dereference(long_list).begin() + item, value.cpp)
 
 
-cdef inline void _insert_float_tag(CListTagPtr cpp, ptrdiff_t item, FloatTag value):
+cdef inline void ListTag_insert_float_tag(CListTagPtr cpp, ptrdiff_t item, FloatTag value):
     cdef CFloatList* float_list
     
     if dereference(cpp).index() == 5:
         float_list = &get[CFloatList](dereference(cpp))
-    elif _len(cpp) == 0:
+    elif ListTag_len(cpp) == 0:
         dereference(cpp).emplace[CFloatList]()
         float_list = &get[CFloatList](dereference(cpp))
     else:
@@ -1480,12 +2141,12 @@ cdef inline void _insert_float_tag(CListTagPtr cpp, ptrdiff_t item, FloatTag val
     dereference(float_list).insert(dereference(float_list).begin() + item, value.cpp)
 
 
-cdef inline void _insert_double_tag(CListTagPtr cpp, ptrdiff_t item, DoubleTag value):
+cdef inline void ListTag_insert_double_tag(CListTagPtr cpp, ptrdiff_t item, DoubleTag value):
     cdef CDoubleList* double_list
     
     if dereference(cpp).index() == 6:
         double_list = &get[CDoubleList](dereference(cpp))
-    elif _len(cpp) == 0:
+    elif ListTag_len(cpp) == 0:
         dereference(cpp).emplace[CDoubleList]()
         double_list = &get[CDoubleList](dereference(cpp))
     else:
@@ -1498,12 +2159,12 @@ cdef inline void _insert_double_tag(CListTagPtr cpp, ptrdiff_t item, DoubleTag v
     dereference(double_list).insert(dereference(double_list).begin() + item, value.cpp)
 
 
-cdef inline void _insert_byte_array_tag(CListTagPtr cpp, ptrdiff_t item, ByteArrayTag value):
+cdef inline void ListTag_insert_byte_array_tag(CListTagPtr cpp, ptrdiff_t item, ByteArrayTag value):
     cdef CByteArrayList* byte_array_list
     
     if dereference(cpp).index() == 7:
         byte_array_list = &get[CByteArrayList](dereference(cpp))
-    elif _len(cpp) == 0:
+    elif ListTag_len(cpp) == 0:
         dereference(cpp).emplace[CByteArrayList]()
         byte_array_list = &get[CByteArrayList](dereference(cpp))
     else:
@@ -1516,12 +2177,12 @@ cdef inline void _insert_byte_array_tag(CListTagPtr cpp, ptrdiff_t item, ByteArr
     dereference(byte_array_list).insert(dereference(byte_array_list).begin() + item, value.cpp)
 
 
-cdef inline void _insert_string_tag(CListTagPtr cpp, ptrdiff_t item, StringTag value):
+cdef inline void ListTag_insert_string_tag(CListTagPtr cpp, ptrdiff_t item, StringTag value):
     cdef CStringList* string_list
     
     if dereference(cpp).index() == 8:
         string_list = &get[CStringList](dereference(cpp))
-    elif _len(cpp) == 0:
+    elif ListTag_len(cpp) == 0:
         dereference(cpp).emplace[CStringList]()
         string_list = &get[CStringList](dereference(cpp))
     else:
@@ -1534,12 +2195,12 @@ cdef inline void _insert_string_tag(CListTagPtr cpp, ptrdiff_t item, StringTag v
     dereference(string_list).insert(dereference(string_list).begin() + item, value.cpp)
 
 
-cdef inline void _insert_list_tag(CListTagPtr cpp, ptrdiff_t item, ListTag value):
+cdef inline void ListTag_insert_list_tag(CListTagPtr cpp, ptrdiff_t item, ListTag value):
     cdef CListList* list_list
     
     if dereference(cpp).index() == 9:
         list_list = &get[CListList](dereference(cpp))
-    elif _len(cpp) == 0:
+    elif ListTag_len(cpp) == 0:
         dereference(cpp).emplace[CListList]()
         list_list = &get[CListList](dereference(cpp))
     else:
@@ -1552,12 +2213,12 @@ cdef inline void _insert_list_tag(CListTagPtr cpp, ptrdiff_t item, ListTag value
     dereference(list_list).insert(dereference(list_list).begin() + item, value.cpp)
 
 
-cdef inline void _insert_compound_tag(CListTagPtr cpp, ptrdiff_t item, CompoundTag value):
+cdef inline void ListTag_insert_compound_tag(CListTagPtr cpp, ptrdiff_t item, CompoundTag value):
     cdef CCompoundList* compound_list
     
     if dereference(cpp).index() == 10:
         compound_list = &get[CCompoundList](dereference(cpp))
-    elif _len(cpp) == 0:
+    elif ListTag_len(cpp) == 0:
         dereference(cpp).emplace[CCompoundList]()
         compound_list = &get[CCompoundList](dereference(cpp))
     else:
@@ -1570,12 +2231,12 @@ cdef inline void _insert_compound_tag(CListTagPtr cpp, ptrdiff_t item, CompoundT
     dereference(compound_list).insert(dereference(compound_list).begin() + item, value.cpp)
 
 
-cdef inline void _insert_int_array_tag(CListTagPtr cpp, ptrdiff_t item, IntArrayTag value):
+cdef inline void ListTag_insert_int_array_tag(CListTagPtr cpp, ptrdiff_t item, IntArrayTag value):
     cdef CIntArrayList* int_array_list
     
     if dereference(cpp).index() == 11:
         int_array_list = &get[CIntArrayList](dereference(cpp))
-    elif _len(cpp) == 0:
+    elif ListTag_len(cpp) == 0:
         dereference(cpp).emplace[CIntArrayList]()
         int_array_list = &get[CIntArrayList](dereference(cpp))
     else:
@@ -1588,12 +2249,12 @@ cdef inline void _insert_int_array_tag(CListTagPtr cpp, ptrdiff_t item, IntArray
     dereference(int_array_list).insert(dereference(int_array_list).begin() + item, value.cpp)
 
 
-cdef inline void _insert_long_array_tag(CListTagPtr cpp, ptrdiff_t item, LongArrayTag value):
+cdef inline void ListTag_insert_long_array_tag(CListTagPtr cpp, ptrdiff_t item, LongArrayTag value):
     cdef CLongArrayList* long_array_list
     
     if dereference(cpp).index() == 12:
         long_array_list = &get[CLongArrayList](dereference(cpp))
-    elif _len(cpp) == 0:
+    elif ListTag_len(cpp) == 0:
         dereference(cpp).emplace[CLongArrayList]()
         long_array_list = &get[CLongArrayList](dereference(cpp))
     else:
@@ -1606,36 +2267,233 @@ cdef inline void _insert_long_array_tag(CListTagPtr cpp, ptrdiff_t item, LongArr
     dereference(long_array_list).insert(dereference(long_array_list).begin() + item, value.cpp)
 
 
-cdef inline void _insert(CListTagPtr cpp, ptrdiff_t item, AbstractBaseTag value):
+cdef inline void ListTag_insert(CListTagPtr cpp, ptrdiff_t item, AbstractBaseTag value):
     if isinstance(value, ByteTag):
-        _insert_byte_tag(cpp, item, value)
+        ListTag_insert_byte_tag(cpp, item, value)
     elif isinstance(value, ShortTag):
-        _insert_short_tag(cpp, item, value)
+        ListTag_insert_short_tag(cpp, item, value)
     elif isinstance(value, IntTag):
-        _insert_int_tag(cpp, item, value)
+        ListTag_insert_int_tag(cpp, item, value)
     elif isinstance(value, LongTag):
-        _insert_long_tag(cpp, item, value)
+        ListTag_insert_long_tag(cpp, item, value)
     elif isinstance(value, FloatTag):
-        _insert_float_tag(cpp, item, value)
+        ListTag_insert_float_tag(cpp, item, value)
     elif isinstance(value, DoubleTag):
-        _insert_double_tag(cpp, item, value)
+        ListTag_insert_double_tag(cpp, item, value)
     elif isinstance(value, ByteArrayTag):
-        _insert_byte_array_tag(cpp, item, value)
+        ListTag_insert_byte_array_tag(cpp, item, value)
     elif isinstance(value, StringTag):
-        _insert_string_tag(cpp, item, value)
+        ListTag_insert_string_tag(cpp, item, value)
     elif isinstance(value, ListTag):
-        _insert_list_tag(cpp, item, value)
+        ListTag_insert_list_tag(cpp, item, value)
     elif isinstance(value, CompoundTag):
-        _insert_compound_tag(cpp, item, value)
+        ListTag_insert_compound_tag(cpp, item, value)
     elif isinstance(value, IntArrayTag):
-        _insert_int_array_tag(cpp, item, value)
+        ListTag_insert_int_array_tag(cpp, item, value)
     elif isinstance(value, LongArrayTag):
-        _insert_long_array_tag(cpp, item, value)
+        ListTag_insert_long_array_tag(cpp, item, value)
     else:
         raise TypeError(f"Unsupported type {type(value)}")
 
 
-cdef class ListTag(AbstractBaseMutableTag, MutableSequence):
+cdef inline void ListTag_append_byte_tag(CListTagPtr cpp, ByteTag value):
+    cdef CByteList* byte_list
+    
+    if dereference(cpp).index() == 1:
+        byte_list = &get[CByteList](dereference(cpp))
+    elif ListTag_len(cpp) == 0:
+        dereference(cpp).emplace[CByteList]()
+        byte_list = &get[CByteList](dereference(cpp))
+    else:
+        raise TypeError("ListTag can only contain one NBT data type.")
+
+    dereference(byte_list).push_back(value.cpp)
+
+
+cdef inline void ListTag_append_short_tag(CListTagPtr cpp, ShortTag value):
+    cdef CShortList* short_list
+    
+    if dereference(cpp).index() == 2:
+        short_list = &get[CShortList](dereference(cpp))
+    elif ListTag_len(cpp) == 0:
+        dereference(cpp).emplace[CShortList]()
+        short_list = &get[CShortList](dereference(cpp))
+    else:
+        raise TypeError("ListTag can only contain one NBT data type.")
+
+    dereference(short_list).push_back(value.cpp)
+
+
+cdef inline void ListTag_append_int_tag(CListTagPtr cpp, IntTag value):
+    cdef CIntList* int_list
+    
+    if dereference(cpp).index() == 3:
+        int_list = &get[CIntList](dereference(cpp))
+    elif ListTag_len(cpp) == 0:
+        dereference(cpp).emplace[CIntList]()
+        int_list = &get[CIntList](dereference(cpp))
+    else:
+        raise TypeError("ListTag can only contain one NBT data type.")
+
+    dereference(int_list).push_back(value.cpp)
+
+
+cdef inline void ListTag_append_long_tag(CListTagPtr cpp, LongTag value):
+    cdef CLongList* long_list
+    
+    if dereference(cpp).index() == 4:
+        long_list = &get[CLongList](dereference(cpp))
+    elif ListTag_len(cpp) == 0:
+        dereference(cpp).emplace[CLongList]()
+        long_list = &get[CLongList](dereference(cpp))
+    else:
+        raise TypeError("ListTag can only contain one NBT data type.")
+
+    dereference(long_list).push_back(value.cpp)
+
+
+cdef inline void ListTag_append_float_tag(CListTagPtr cpp, FloatTag value):
+    cdef CFloatList* float_list
+    
+    if dereference(cpp).index() == 5:
+        float_list = &get[CFloatList](dereference(cpp))
+    elif ListTag_len(cpp) == 0:
+        dereference(cpp).emplace[CFloatList]()
+        float_list = &get[CFloatList](dereference(cpp))
+    else:
+        raise TypeError("ListTag can only contain one NBT data type.")
+
+    dereference(float_list).push_back(value.cpp)
+
+
+cdef inline void ListTag_append_double_tag(CListTagPtr cpp, DoubleTag value):
+    cdef CDoubleList* double_list
+    
+    if dereference(cpp).index() == 6:
+        double_list = &get[CDoubleList](dereference(cpp))
+    elif ListTag_len(cpp) == 0:
+        dereference(cpp).emplace[CDoubleList]()
+        double_list = &get[CDoubleList](dereference(cpp))
+    else:
+        raise TypeError("ListTag can only contain one NBT data type.")
+
+    dereference(double_list).push_back(value.cpp)
+
+
+cdef inline void ListTag_append_byte_array_tag(CListTagPtr cpp, ByteArrayTag value):
+    cdef CByteArrayList* byte_array_list
+    
+    if dereference(cpp).index() == 7:
+        byte_array_list = &get[CByteArrayList](dereference(cpp))
+    elif ListTag_len(cpp) == 0:
+        dereference(cpp).emplace[CByteArrayList]()
+        byte_array_list = &get[CByteArrayList](dereference(cpp))
+    else:
+        raise TypeError("ListTag can only contain one NBT data type.")
+
+    dereference(byte_array_list).push_back(value.cpp)
+
+
+cdef inline void ListTag_append_string_tag(CListTagPtr cpp, StringTag value):
+    cdef CStringList* string_list
+    
+    if dereference(cpp).index() == 8:
+        string_list = &get[CStringList](dereference(cpp))
+    elif ListTag_len(cpp) == 0:
+        dereference(cpp).emplace[CStringList]()
+        string_list = &get[CStringList](dereference(cpp))
+    else:
+        raise TypeError("ListTag can only contain one NBT data type.")
+
+    dereference(string_list).push_back(value.cpp)
+
+
+cdef inline void ListTag_append_list_tag(CListTagPtr cpp, ListTag value):
+    cdef CListList* list_list
+    
+    if dereference(cpp).index() == 9:
+        list_list = &get[CListList](dereference(cpp))
+    elif ListTag_len(cpp) == 0:
+        dereference(cpp).emplace[CListList]()
+        list_list = &get[CListList](dereference(cpp))
+    else:
+        raise TypeError("ListTag can only contain one NBT data type.")
+
+    dereference(list_list).push_back(value.cpp)
+
+
+cdef inline void ListTag_append_compound_tag(CListTagPtr cpp, CompoundTag value):
+    cdef CCompoundList* compound_list
+    
+    if dereference(cpp).index() == 10:
+        compound_list = &get[CCompoundList](dereference(cpp))
+    elif ListTag_len(cpp) == 0:
+        dereference(cpp).emplace[CCompoundList]()
+        compound_list = &get[CCompoundList](dereference(cpp))
+    else:
+        raise TypeError("ListTag can only contain one NBT data type.")
+
+    dereference(compound_list).push_back(value.cpp)
+
+
+cdef inline void ListTag_append_int_array_tag(CListTagPtr cpp, IntArrayTag value):
+    cdef CIntArrayList* int_array_list
+    
+    if dereference(cpp).index() == 11:
+        int_array_list = &get[CIntArrayList](dereference(cpp))
+    elif ListTag_len(cpp) == 0:
+        dereference(cpp).emplace[CIntArrayList]()
+        int_array_list = &get[CIntArrayList](dereference(cpp))
+    else:
+        raise TypeError("ListTag can only contain one NBT data type.")
+
+    dereference(int_array_list).push_back(value.cpp)
+
+
+cdef inline void ListTag_append_long_array_tag(CListTagPtr cpp, LongArrayTag value):
+    cdef CLongArrayList* long_array_list
+    
+    if dereference(cpp).index() == 12:
+        long_array_list = &get[CLongArrayList](dereference(cpp))
+    elif ListTag_len(cpp) == 0:
+        dereference(cpp).emplace[CLongArrayList]()
+        long_array_list = &get[CLongArrayList](dereference(cpp))
+    else:
+        raise TypeError("ListTag can only contain one NBT data type.")
+
+    dereference(long_array_list).push_back(value.cpp)
+
+
+cdef inline void ListTag_append(CListTagPtr cpp, AbstractBaseTag value):
+    if isinstance(value, ByteTag):
+        ListTag_append_byte_tag(cpp, value)
+    elif isinstance(value, ShortTag):
+        ListTag_append_short_tag(cpp, value)
+    elif isinstance(value, IntTag):
+        ListTag_append_int_tag(cpp, value)
+    elif isinstance(value, LongTag):
+        ListTag_append_long_tag(cpp, value)
+    elif isinstance(value, FloatTag):
+        ListTag_append_float_tag(cpp, value)
+    elif isinstance(value, DoubleTag):
+        ListTag_append_double_tag(cpp, value)
+    elif isinstance(value, ByteArrayTag):
+        ListTag_append_byte_array_tag(cpp, value)
+    elif isinstance(value, StringTag):
+        ListTag_append_string_tag(cpp, value)
+    elif isinstance(value, ListTag):
+        ListTag_append_list_tag(cpp, value)
+    elif isinstance(value, CompoundTag):
+        ListTag_append_compound_tag(cpp, value)
+    elif isinstance(value, IntArrayTag):
+        ListTag_append_int_array_tag(cpp, value)
+    elif isinstance(value, LongArrayTag):
+        ListTag_append_long_array_tag(cpp, value)
+    else:
+        raise TypeError(f"Unsupported type {type(value)}")
+
+
+cdef class ListTag(AbstractBaseMutableTag):
     """
     This class behaves like a python list.
     All contained data must be of the same NBT data type.
@@ -1680,15 +2538,19 @@ cdef class ListTag(AbstractBaseMutableTag, MutableSequence):
         tag.cpp = cpp
         return tag
 
-# {/{include("amulet_nbt/tpf/AbstractBaseMutableTag.pyx.tpf", cls_name="ListTag")}/}
     cdef TagNode to_node(self):
         cdef TagNode node
         node.emplace[CListTagPtr](self.cpp)
         return node
 
+    def __eq__(ListTag self, object other):
+        if not isinstance(other, ListTag):
+            return False
+        cdef ListTag tag = other
+        return is_list_eq(self.cpp, tag.cpp)
 
     @property
-    def py_list(ListTag self) -> List[AnyNBT]:
+    def py_list(ListTag self) -> list[ByteTag] | list[ShortTag] | list[IntTag] | list[LongTag] | list[FloatTag] | list[DoubleTag] | list[StringTag] | list[CompoundTag] | list[ByteArrayTag] | list[IntArrayTag] | list[LongArrayTag]:
         """
         A python list representation of the class.
         The returned list is a shallow copy of the class, meaning changes will not mirror the instance.
@@ -1697,29 +2559,13 @@ cdef class ListTag(AbstractBaseMutableTag, MutableSequence):
         return list(self)
 
     @property
-    def py_data(self):
+    def py_data(self) -> Any:
         """
         A python representation of the class. Note that the return type is undefined and may change in the future.
         You would be better off using the py_{type} or np_array properties if you require a fixed type.
         This is here for convenience to get a python representation under the same property name.
         """
         return list(self)
-
-    # cdef void _check_tag(ListTag self, AbstractBaseTag value, bint fix_if_empty=True) except *:
-    #     if value is None:
-    #         raise TypeError("List values must be NBT Tags")
-    #     if fix_if_empty and not self.value_:
-    #         self.list_data_type = value.tag_id
-    #     elif value.tag_id != self.list_data_type:
-    #         raise TypeError(
-    #             f"Invalid type {value.__class__.__name__} for ListTag(list_data_type={self.list_data_type})"
-    #         )
-    #
-    # cdef void _check_tag_iterable(ListTag self, list value) except *:
-    #     cdef int i
-    #     cdef AbstractBaseTag tag
-    #     for i, tag in enumerate(value):
-    #         self._check_tag(tag, not i)
 
     # def __repr__(ListTag self):
     #     return f"{self.__class__.__name__}({repr(list(self))}, {self.list_data_type})"
@@ -1768,49 +2614,284 @@ cdef class ListTag(AbstractBaseMutableTag, MutableSequence):
     #
     #         and item.tag_id == self.list_data_type and self.value_.__contains__(item)
 
+    # Sized
     def __len__(ListTag self) -> int:
-        return _len(self.cpp)
+        return ListTag_len(self.cpp)
 
+    # Sequence
     def __getitem__(ListTag self, object item):
         if isinstance(item, int):
-            return _get_item(self.cpp, item)
+            return ListTag_get_item(self.cpp, item)
         elif isinstance(item, slice):
-            return _get_slice(self.cpp, item)
+            return ListTag_get_slice(self.cpp, item)
         else:
             raise TypeError(f"Unsupported item type {type(item)}")
 
+    def __iter__(self):
+        i = 0
+        try:
+            while True:
+                v = self[i]
+                yield v
+                i += 1
+        except IndexError:
+            return
+
+    def __contains__(self, value):
+        for v in self:
+            if v is value or v == value:
+                return True
+        return False
+
+    def __reversed__(self):
+        for i in reversed(range(len(self))):
+            yield self[i]
+
+    def index(self, value, start=0, stop=None):
+        '''S.index(value, [start, [stop]]) -> integer -- return first index of value.
+           Raises ValueError if the value is not present.
+
+           Supporting start and stop arguments is optional, but
+           recommended.
+        '''
+        if start is not None and start < 0:
+            start = max(len(self) + start, 0)
+        if stop is not None and stop < 0:
+            stop += len(self)
+
+        i = start
+        while stop is None or i < stop:
+            try:
+                v = self[i]
+            except IndexError:
+                break
+            if v is value or v == value:
+                return i
+            i += 1
+        raise ValueError
+
+    def count(self, value):
+        'S.count(value) -> integer -- return number of occurrences of value'
+        return sum(1 for v in self if v is value or v == value)
+
+    # MutableSequence
     def __setitem__(ListTag self, object item, object value):
         if isinstance(item, int):
-            _set_item(self.cpp, item, value)
+            ListTag_set_item(self.cpp, item, value)
         elif isinstance(item, slice):
-            _set_slice(self.cpp, item, value)
+            ListTag_set_slice(self.cpp, item, value)
         else:
             raise TypeError(f"Unsupported item type {type(item)}")
 
     def __delitem__(ListTag self, object item):
         if isinstance(item, int):
-            _del_item(self.cpp, item)
+            ListTag_del_item(self.cpp, item)
         elif isinstance(item, slice):
-            _del_slice(self.cpp, item)
+            ListTag_del_slice(self.cpp, item)
         else:
             raise TypeError(f"Unsupported item type {type(item)}")
+
+    def insert(ListTag self, ptrdiff_t index, AbstractBaseTag value not None):
+        ListTag_insert(self.cpp, index, value)
+
+    def append(self, AbstractBaseTag value not None):
+        'S.append(value) -- append value to the end of the sequence'
+        ListTag_append(self.cpp, value)
+
+    def clear(self):
+        cdef size_t index = dereference(self.cpp).index()
+        if index == 1:
+            get[CByteList](dereference(self.cpp)).clear()
+        elif index == 2:
+            get[CShortList](dereference(self.cpp)).clear()
+        elif index == 3:
+            get[CIntList](dereference(self.cpp)).clear()
+        elif index == 4:
+            get[CLongList](dereference(self.cpp)).clear()
+        elif index == 5:
+            get[CFloatList](dereference(self.cpp)).clear()
+        elif index == 6:
+            get[CDoubleList](dereference(self.cpp)).clear()
+        elif index == 7:
+            get[CByteArrayList](dereference(self.cpp)).clear()
+        elif index == 8:
+            get[CStringList](dereference(self.cpp)).clear()
+        elif index == 9:
+            get[CListList](dereference(self.cpp)).clear()
+        elif index == 10:
+            get[CCompoundList](dereference(self.cpp)).clear()
+        elif index == 11:
+            get[CIntArrayList](dereference(self.cpp)).clear()
+        elif index == 12:
+            get[CLongArrayList](dereference(self.cpp)).clear()
+
+    def reverse(self):
+        'S.reverse() -- reverse *IN PLACE*'
+        n = len(self)
+        for i in range(n//2):
+            self[i], self[n-i-1] = self[n-i-1], self[i]
+
+    def extend(self, values):
+        'S.extend(iterable) -- extend sequence by appending elements from the iterable'
+        if values is self:
+            values = list(values)
+        for v in values:
+            self.append(v)
+
+    def pop(self, index=-1):
+        '''S.pop([index]) -> item -- remove and return item at index (default last).
+           Raise IndexError if list is empty or index is out of range.
+        '''
+        v = self[index]
+        del self[index]
+        return v
+
+    def remove(self, value):
+        '''S.remove(value) -- remove first occurrence of value.
+           Raise ValueError if the value is not present.
+        '''
+        del self[self.index(value)]
+
+    def __iadd__(self, values):
+        self.extend(values)
+        return self
 
     def copy(ListTag self):
         """Return a shallow copy of the class"""
         return ListTag(self, dereference(self.cpp).index())
 
-    def insert(ListTag self, ptrdiff_t index, AbstractBaseTag value not None):
-        _insert(self.cpp, index, value)
+    @property
+    def list_data_type(self):
+        return dereference(self.cpp).index()
 
-# {/{include("amulet_nbt/tpf/ListGet.pyx.tpf", tag_cls_name="ByteTag", tag_name="byte")}/}
-# {/{include("amulet_nbt/tpf/ListGet.pyx.tpf", tag_cls_name="ShortTag", tag_name="short")}/}
-# {/{include("amulet_nbt/tpf/ListGet.pyx.tpf", tag_cls_name="IntTag", tag_name="int")}/}
-# {/{include("amulet_nbt/tpf/ListGet.pyx.tpf", tag_cls_name="LongTag", tag_name="long")}/}
-# {/{include("amulet_nbt/tpf/ListGet.pyx.tpf", tag_cls_name="FloatTag", tag_name="float")}/}
-# {/{include("amulet_nbt/tpf/ListGet.pyx.tpf", tag_cls_name="DoubleTag", tag_name="double")}/}
-# {/{include("amulet_nbt/tpf/ListGet.pyx.tpf", tag_cls_name="StringTag", tag_name="string")}/}
-# {/{include("amulet_nbt/tpf/ListGet.pyx.tpf", tag_cls_name="ListTag", tag_name="list")}/}
-# {/{include("amulet_nbt/tpf/ListGet.pyx.tpf", tag_cls_name="CompoundTag", tag_name="compound")}/}
-# {/{include("amulet_nbt/tpf/ListGet.pyx.tpf", tag_cls_name="ByteArrayTag", tag_name="byte_array")}/}
-# {/{include("amulet_nbt/tpf/ListGet.pyx.tpf", tag_cls_name="IntArrayTag", tag_name="int_array")}/}
-# {/{include("amulet_nbt/tpf/ListGet.pyx.tpf", tag_cls_name="LongArrayTag", tag_name="long_array")}/}
+    cpdef ByteTag get_byte(self, ptrdiff_t index):
+        """Get the tag at index if it is a ByteTag.
+    
+        :param index: The index to get
+        :return: The ByteTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a ByteTag
+        """
+        cdef ByteTag tag = ListTag_get_item(self.cpp, index)
+        return tag
+
+    cpdef ShortTag get_short(self, ptrdiff_t index):
+        """Get the tag at index if it is a ShortTag.
+    
+        :param index: The index to get
+        :return: The ShortTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a ShortTag
+        """
+        cdef ShortTag tag = ListTag_get_item(self.cpp, index)
+        return tag
+
+    cpdef IntTag get_int(self, ptrdiff_t index):
+        """Get the tag at index if it is a IntTag.
+    
+        :param index: The index to get
+        :return: The IntTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a IntTag
+        """
+        cdef IntTag tag = ListTag_get_item(self.cpp, index)
+        return tag
+
+    cpdef LongTag get_long(self, ptrdiff_t index):
+        """Get the tag at index if it is a LongTag.
+    
+        :param index: The index to get
+        :return: The LongTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a LongTag
+        """
+        cdef LongTag tag = ListTag_get_item(self.cpp, index)
+        return tag
+
+    cpdef FloatTag get_float(self, ptrdiff_t index):
+        """Get the tag at index if it is a FloatTag.
+    
+        :param index: The index to get
+        :return: The FloatTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a FloatTag
+        """
+        cdef FloatTag tag = ListTag_get_item(self.cpp, index)
+        return tag
+
+    cpdef DoubleTag get_double(self, ptrdiff_t index):
+        """Get the tag at index if it is a DoubleTag.
+    
+        :param index: The index to get
+        :return: The DoubleTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a DoubleTag
+        """
+        cdef DoubleTag tag = ListTag_get_item(self.cpp, index)
+        return tag
+
+    cpdef StringTag get_string(self, ptrdiff_t index):
+        """Get the tag at index if it is a StringTag.
+    
+        :param index: The index to get
+        :return: The StringTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a StringTag
+        """
+        cdef StringTag tag = ListTag_get_item(self.cpp, index)
+        return tag
+
+    cpdef ListTag get_list(self, ptrdiff_t index):
+        """Get the tag at index if it is a ListTag.
+    
+        :param index: The index to get
+        :return: The ListTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a ListTag
+        """
+        cdef ListTag tag = ListTag_get_item(self.cpp, index)
+        return tag
+
+    cpdef CompoundTag get_compound(self, ptrdiff_t index):
+        """Get the tag at index if it is a CompoundTag.
+    
+        :param index: The index to get
+        :return: The CompoundTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a CompoundTag
+        """
+        cdef CompoundTag tag = ListTag_get_item(self.cpp, index)
+        return tag
+
+    cpdef ByteArrayTag get_byte_array(self, ptrdiff_t index):
+        """Get the tag at index if it is a ByteArrayTag.
+    
+        :param index: The index to get
+        :return: The ByteArrayTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a ByteArrayTag
+        """
+        cdef ByteArrayTag tag = ListTag_get_item(self.cpp, index)
+        return tag
+
+    cpdef IntArrayTag get_int_array(self, ptrdiff_t index):
+        """Get the tag at index if it is a IntArrayTag.
+    
+        :param index: The index to get
+        :return: The IntArrayTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a IntArrayTag
+        """
+        cdef IntArrayTag tag = ListTag_get_item(self.cpp, index)
+        return tag
+
+    cpdef LongArrayTag get_long_array(self, ptrdiff_t index):
+        """Get the tag at index if it is a LongArrayTag.
+    
+        :param index: The index to get
+        :return: The LongArrayTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a LongArrayTag
+        """
+        cdef LongArrayTag tag = ListTag_get_item(self.cpp, index)
+        return tag

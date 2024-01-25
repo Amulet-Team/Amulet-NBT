@@ -8,7 +8,7 @@ cdef class AbstractBase:
 
 cdef class AbstractBaseTag(AbstractBase):
     """Abstract Base Class for all Tag classes"""
-    tag_id: int = None
+    tag_id: int = -1
 
     cdef TagNode to_node(self):
         raise NotImplementedError

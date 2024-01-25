@@ -22,13 +22,13 @@ cdef class AbstractBaseTag(AbstractBase):
         """
         raise NotImplementedError
 
+    def __eq__(self, other):
+        raise NotImplementedError
+
     def __repr__(self):
         raise NotImplementedError
 
     def __str__(self):
-        raise NotImplementedError
-
-    def __eq__(self, other):
         raise NotImplementedError
 
     def __reduce__(self):
@@ -38,10 +38,10 @@ cdef class AbstractBaseTag(AbstractBase):
         """Return a shallow copy of the class"""
         return copy(self)
 
-    def __deepcopy__(self, memo=None):
+    def __copy__(self):
         raise NotImplementedError
 
-    def __copy__(self):
+    def __deepcopy__(self, memo=None):
         raise NotImplementedError
 
 

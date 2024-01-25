@@ -7,6 +7,7 @@
 from io import BytesIO
 from copy import deepcopy
 import warnings
+from typing import Any
 
 from amulet_nbt._nbt cimport TagNode, CByteTag, CShortTag, CIntTag, CLongTag
 from amulet_nbt._tag.numeric cimport AbstractBaseNumericTag
@@ -26,7 +27,7 @@ cdef class AbstractBaseIntTag(AbstractBaseNumericTag):
         raise NotImplementedError
 
     @property
-    def py_data(self):
+    def py_data(self) -> Any:
         """
         A python representation of the class. Note that the return type is undefined and may change in the future.
         You would be better off using the py_{type} or np_array properties if you require a fixed type.

@@ -6,6 +6,7 @@
 # distutils: extra_link_args = -std=c++20 /std:c++20
 # cython: c_string_type=str, c_string_encoding=utf8
 
+from typing import Any
 from io import BytesIO
 from copy import deepcopy
 import warnings
@@ -38,40 +39,44 @@ cdef class StringTag(AbstractBaseImmutableTag):
         tag.cpp = cpp
         return tag
 
+    cdef TagNode to_node(self):
+        cdef TagNode node
+        node.emplace[CStringTag](self.cpp)
+        return node
+
+    @property
+    def py_str(StringTag self) -> str | bytes:
+        """
+        A python string representation of the class.
+        """
+        return str(self)
+
+    @property
+    def py_data(self) -> Any:
+        """
+        A python representation of the class. Note that the return type is undefined and may change in the future.
+        You would be better off using the py_{type} or np_array properties if you require a fixed type.
+        This is here for convenience to get a python representation under the same property name.
+        """
+        return self.py_str
+
     def __eq__(StringTag self, other):
-        cdef StringTag other_
         if not isinstance(other, StringTag):
             return NotImplemented
-        other_ = other
+        cdef StringTag other_ = other
         return self.cpp == other_.cpp
 
     def __repr__(self):
-        return f"StringTag({self})"
+        return f"StringTag({self.py_str!r})"
 
     def __str__(self):
-        return self.cpp
+        try:
+            return <str> self.cpp
+        except UnicodeDecodeError:
+            return <bytes> self.cpp
 
-    # @property
-    # def py_str(StringTag self) -> str:
-    #     """
-    #     A python string representation of the class.
-    #     """
-    #     return self.value_
-    #
-    # @property
-    # def py_data(self):
-    #     """
-    #     A python representation of the class. Note that the return type is undefined and may change in the future.
-    #     You would be better off using the py_{type} or np_array properties if you require a fixed type.
-    #     This is here for convenience to get a python representation under the same property name.
-    #     """
-    #     return self.py_str
-    #
-    # def __repr__(StringTag self):
-    #     return f"{self.__class__.__name__}(\"{escape(self.py_str)}\")"
-    #
     # cdef str _to_snbt(StringTag self):
     #     return f"\"{escape(self.py_str)}\""
-    #
-    # def __len__(self) -> int:
-    #     return len(self.value_)
+
+    def __len__(self) -> int:
+        return self.cpp.size()

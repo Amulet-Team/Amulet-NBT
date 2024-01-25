@@ -8,7 +8,7 @@ from copy import deepcopy
 import warnings
 from math import trunc, floor, ceil
 
-from amulet_nbt._nbt cimport CFloatTag, CDoubleTag
+from amulet_nbt._nbt cimport TagNode, CFloatTag, CDoubleTag
 from amulet_nbt._tag.numeric cimport AbstractBaseNumericTag
 # from amulet_nbt._const cimport ID_FLOAT, ID_DOUBLE
 # from amulet_nbt._dtype import EncoderType

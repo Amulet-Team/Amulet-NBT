@@ -146,6 +146,11 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         tag.cpp = cpp
         return tag
 
+    cdef TagNode to_node(self):
+        cdef TagNode node
+        node.emplace[CCompoundTagPtr](self.cpp)
+        return node
+
     def __eq__(CompoundTag self, object other):
         if not isinstance(other, CompoundTag):
             return False
@@ -209,18 +214,8 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return ValuesView(self)
 
     # MutableMapping
-    def __setitem__(self, string key, AbstractBaseTag value not None) -> None:
-        cdef TagNode node
-{{
-"\n".join(
-f"""        {"el"*(index!=1)}if isinstance(value, {py_cls}):
-            node.emplace[{c_node_cls}]((<{py_cls}> value).cpp)"""
-    for index, c_cls, c_node_cls, c_list_cls, py_cls, tag_var, list_var in ClassData
-)
-}}
-        else:
-            raise TypeError
-        dereference(self.cpp)[<string> key] = node
+    def __setitem__(self, string key, AbstractBaseTag tag not None) -> None:
+        dereference(self.cpp)[<string> key] = tag.to_node()
 
     def __delitem__(self, string key) -> None:
         dereference(self.cpp).erase(key)

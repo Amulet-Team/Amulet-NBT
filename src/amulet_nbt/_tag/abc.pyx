@@ -10,6 +10,9 @@ cdef class AbstractBaseTag(AbstractBase):
     """Abstract Base Class for all Tag classes"""
     tag_id: int = None
 
+    cdef TagNode to_node(self):
+        raise NotImplementedError
+
     @property
     def py_data(self) -> Any:
         """

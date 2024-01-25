@@ -8,7 +8,7 @@ from io import BytesIO
 from copy import deepcopy
 import warnings
 
-from amulet_nbt._nbt cimport CByteTag, CShortTag, CIntTag, CLongTag
+from amulet_nbt._nbt cimport TagNode, CByteTag, CShortTag, CIntTag, CLongTag
 from amulet_nbt._tag.numeric cimport AbstractBaseNumericTag
 # from amulet_nbt._const cimport ID_BYTE, ID_SHORT, ID_INT, ID_LONG
 # from amulet_nbt._dtype import EncoderType
@@ -97,6 +97,11 @@ cdef class ByteTag(AbstractBaseIntTag):
         tag.cpp = cpp
         return tag
 
+    cdef TagNode to_node(self):
+        cdef TagNode node
+        node.emplace[CByteTag](self.cpp)
+        return node
+
     @property
     def py_int(ByteTag self) -> int:
         """
@@ -170,6 +175,11 @@ cdef class ShortTag(AbstractBaseIntTag):
         cdef ShortTag tag = ShortTag.__new__(ShortTag)
         tag.cpp = cpp
         return tag
+
+    cdef TagNode to_node(self):
+        cdef TagNode node
+        node.emplace[CShortTag](self.cpp)
+        return node
 
     @property
     def py_int(ShortTag self) -> int:
@@ -245,6 +255,11 @@ cdef class IntTag(AbstractBaseIntTag):
         tag.cpp = cpp
         return tag
 
+    cdef TagNode to_node(self):
+        cdef TagNode node
+        node.emplace[CIntTag](self.cpp)
+        return node
+
     @property
     def py_int(IntTag self) -> int:
         """
@@ -318,6 +333,11 @@ cdef class LongTag(AbstractBaseIntTag):
         cdef LongTag tag = LongTag.__new__(LongTag)
         tag.cpp = cpp
         return tag
+
+    cdef TagNode to_node(self):
+        cdef TagNode node
+        node.emplace[CLongTag](self.cpp)
+        return node
 
     @property
     def py_int(LongTag self) -> int:

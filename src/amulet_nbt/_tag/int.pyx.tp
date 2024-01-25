@@ -7,7 +7,7 @@ from io import BytesIO
 from copy import deepcopy
 import warnings
 
-from amulet_nbt._nbt cimport CByteTag, CShortTag, CIntTag, CLongTag
+from amulet_nbt._nbt cimport TagNode, CByteTag, CShortTag, CIntTag, CLongTag
 from amulet_nbt._tag.numeric cimport AbstractBaseNumericTag
 # from amulet_nbt._const cimport ID_BYTE, ID_SHORT, ID_INT, ID_LONG
 # from amulet_nbt._dtype import EncoderType

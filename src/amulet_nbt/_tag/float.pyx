@@ -9,7 +9,7 @@ from copy import deepcopy
 import warnings
 from math import trunc, floor, ceil
 
-from amulet_nbt._nbt cimport CFloatTag, CDoubleTag
+from amulet_nbt._nbt cimport TagNode, CFloatTag, CDoubleTag
 from amulet_nbt._tag.numeric cimport AbstractBaseNumericTag
 # from amulet_nbt._const cimport ID_FLOAT, ID_DOUBLE
 # from amulet_nbt._dtype import EncoderType
@@ -48,6 +48,11 @@ cdef class FloatTag(AbstractBaseFloatTag):
         cdef FloatTag tag = FloatTag.__new__(FloatTag)
         tag.cpp = cpp
         return tag
+
+    cdef TagNode to_node(self):
+        cdef TagNode node
+        node.emplace[CFloatTag](self.cpp)
+        return node
 
     def __eq__(FloatTag self, other):
         cdef FloatTag other_
@@ -109,6 +114,11 @@ cdef class DoubleTag(AbstractBaseFloatTag):
         cdef DoubleTag tag = DoubleTag.__new__(DoubleTag)
         tag.cpp = cpp
         return tag
+
+    cdef TagNode to_node(self):
+        cdef TagNode node
+        node.emplace[CDoubleTag](self.cpp)
+        return node
 
     def __eq__(DoubleTag self, other):
         cdef DoubleTag other_

@@ -22,7 +22,7 @@ from libc.stdint cimport (
 )
 from libcpp.memory cimport make_shared
 from amulet_nbt._nbt.array cimport Array
-from amulet_nbt._nbt cimport CByteTag, CIntTag, CLongTag, CByteArrayTag, CIntArrayTag, CLongArrayTag
+from amulet_nbt._nbt cimport TagNode, CByteTag, CIntTag, CLongTag, CByteArrayTag, CIntArrayTag, CLongArrayTag
 from amulet_nbt._tag.abc cimport AbstractBaseMutableTag
 # from amulet_nbt._const cimport CommaSpace, ID_BYTE_ARRAY, ID_INT_ARRAY, ID_LONG_ARRAY
 # from amulet_nbt._dtype import EncoderType
@@ -75,6 +75,11 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
         cdef ByteArrayTag tag = ByteArrayTag.__new__(ByteArrayTag)
         tag.cpp = cpp
         return tag
+
+    cdef TagNode to_node(self):
+        cdef TagNode node
+        node.emplace[CByteArrayTagPtr](self.cpp)
+        return node
 
     def __eq__(ByteArrayTag self, object other):
         if not isinstance(other, ByteArrayTag):
@@ -139,6 +144,11 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
         tag.cpp = cpp
         return tag
 
+    cdef TagNode to_node(self):
+        cdef TagNode node
+        node.emplace[CIntArrayTagPtr](self.cpp)
+        return node
+
     def __eq__(IntArrayTag self, object other):
         if not isinstance(other, IntArrayTag):
             return False
@@ -201,6 +211,11 @@ cdef class LongArrayTag(AbstractBaseArrayTag):
         cdef LongArrayTag tag = LongArrayTag.__new__(LongArrayTag)
         tag.cpp = cpp
         return tag
+
+    cdef TagNode to_node(self):
+        cdef TagNode node
+        node.emplace[CLongArrayTagPtr](self.cpp)
+        return node
 
     def __eq__(LongArrayTag self, object other):
         if not isinstance(other, LongArrayTag):

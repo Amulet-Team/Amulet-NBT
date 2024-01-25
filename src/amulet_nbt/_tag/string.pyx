@@ -13,7 +13,7 @@ import warnings
 from libcpp.string cimport string
 
 from amulet_nbt._tag.abc cimport AbstractBaseImmutableTag
-from amulet_nbt._nbt cimport CStringTag
+from amulet_nbt._nbt cimport TagNode, CStringTag
 # from amulet_nbt._const cimport ID_STRING
 # from amulet_nbt._dtype import EncoderType
 

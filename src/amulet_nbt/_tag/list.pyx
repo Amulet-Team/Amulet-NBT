@@ -1681,6 +1681,11 @@ cdef class ListTag(AbstractBaseMutableTag, MutableSequence):
         return tag
 
 # {/{include("amulet_nbt/tpf/AbstractBaseMutableTag.pyx.tpf", cls_name="ListTag")}/}
+    cdef TagNode to_node(self):
+        cdef TagNode node
+        node.emplace[CListTagPtr](self.cpp)
+        return node
+
 
     @property
     def py_list(ListTag self) -> List[AnyNBT]:

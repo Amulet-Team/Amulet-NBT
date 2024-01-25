@@ -230,6 +230,11 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         tag.cpp = cpp
         return tag
 
+    cdef TagNode to_node(self):
+        cdef TagNode node
+        node.emplace[CCompoundTagPtr](self.cpp)
+        return node
+
     def __eq__(CompoundTag self, object other):
         if not isinstance(other, CompoundTag):
             return False
@@ -293,35 +298,8 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return ValuesView(self)
 
     # MutableMapping
-    def __setitem__(self, string key, AbstractBaseTag value not None) -> None:
-        cdef TagNode node
-        if isinstance(value, ByteTag):
-            node.emplace[CByteTag]((<ByteTag> value).cpp)
-        elif isinstance(value, ShortTag):
-            node.emplace[CShortTag]((<ShortTag> value).cpp)
-        elif isinstance(value, IntTag):
-            node.emplace[CIntTag]((<IntTag> value).cpp)
-        elif isinstance(value, LongTag):
-            node.emplace[CLongTag]((<LongTag> value).cpp)
-        elif isinstance(value, FloatTag):
-            node.emplace[CFloatTag]((<FloatTag> value).cpp)
-        elif isinstance(value, DoubleTag):
-            node.emplace[CDoubleTag]((<DoubleTag> value).cpp)
-        elif isinstance(value, ByteArrayTag):
-            node.emplace[CByteArrayTagPtr]((<ByteArrayTag> value).cpp)
-        elif isinstance(value, StringTag):
-            node.emplace[CStringTag]((<StringTag> value).cpp)
-        elif isinstance(value, ListTag):
-            node.emplace[CListTagPtr]((<ListTag> value).cpp)
-        elif isinstance(value, CompoundTag):
-            node.emplace[CCompoundTagPtr]((<CompoundTag> value).cpp)
-        elif isinstance(value, IntArrayTag):
-            node.emplace[CIntArrayTagPtr]((<IntArrayTag> value).cpp)
-        elif isinstance(value, LongArrayTag):
-            node.emplace[CLongArrayTagPtr]((<LongArrayTag> value).cpp)
-        else:
-            raise TypeError
-        dereference(self.cpp)[<string> key] = node
+    def __setitem__(self, string key, AbstractBaseTag tag not None) -> None:
+        dereference(self.cpp)[<string> key] = tag.to_node()
 
     def __delitem__(self, string key) -> None:
         dereference(self.cpp).erase(key)

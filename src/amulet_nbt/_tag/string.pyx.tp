@@ -12,7 +12,7 @@ import warnings
 from libcpp.string cimport string
 
 from amulet_nbt._tag.abc cimport AbstractBaseImmutableTag
-from amulet_nbt._nbt cimport CStringTag
+from amulet_nbt._nbt cimport TagNode, CStringTag
 # from amulet_nbt._const cimport ID_STRING
 # from amulet_nbt._dtype import EncoderType
 {{py:from template import include}}
@@ -37,6 +37,11 @@ cdef class StringTag(AbstractBaseImmutableTag):
         cdef StringTag tag = StringTag.__new__(StringTag)
         tag.cpp = cpp
         return tag
+
+    cdef TagNode to_node(self):
+        cdef TagNode node
+        node.emplace[CStringTag](self.cpp)
+        return node
 
 {{include("amulet_nbt/tpf/ImmutableTag.pyx.tpf", py_cls="StringTag")}}
 

@@ -1,10 +1,15 @@
 {{py:from template import include}}
-{{include("amulet_nbt/tpf/AbstractBaseNumericTag.pyx.tpf", **locals())}}
+{{include("amulet_nbt/tpf/NumericTag.pyx.tpf", **locals())}}
     @staticmethod
     cdef {{py_cls}} wrap(C{{py_cls}} cpp):
         cdef {{py_cls}} tag = {{py_cls}}.__new__({{py_cls}})
         tag.cpp = cpp
         return tag
+
+    cdef TagNode to_node(self):
+        cdef TagNode node
+        node.emplace[C{{py_cls}}](self.cpp)
+        return node
 
     @property
     def py_int({{py_cls}} self) -> int:

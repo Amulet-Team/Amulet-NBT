@@ -1,5 +1,5 @@
 {{py:from template import include}}
-{{include("amulet_nbt/tpf/AbstractBaseImmutableTag.pyx.tpf", **locals())}}
+{{include("amulet_nbt/tpf/ImmutableTag.pyx.tpf", **locals())}}
 
     def __repr__({{py_cls}} self):
         return f"{self.__class__.__name__}({self.cpp})"

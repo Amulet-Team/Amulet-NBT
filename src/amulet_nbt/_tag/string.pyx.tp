@@ -38,7 +38,7 @@ cdef class StringTag(AbstractBaseImmutableTag):
         tag.cpp = cpp
         return tag
 
-{{include("amulet_nbt/tpf/AbstractBaseImmutableTag.pyx.tpf", py_cls="StringTag")}}
+{{include("amulet_nbt/tpf/ImmutableTag.pyx.tpf", py_cls="StringTag")}}
 
     def __repr__(self):
         return f"StringTag({self})"

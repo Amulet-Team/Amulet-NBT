@@ -63,7 +63,7 @@ cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
 
 
 {{include(
-    "amulet_nbt/tpf/AbstractBaseArrayTag.pyx.tpf",
+    "amulet_nbt/tpf/ArrayTag.pyx.tpf",
     native_data_type='numpy.dtype("int8")',
     big_endian_data_type='numpy.dtype("int8")',
     little_endian_data_type='numpy.dtype("int8")',
@@ -75,7 +75,7 @@ cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
 
 
 {{include(
-    "amulet_nbt/tpf/AbstractBaseArrayTag.pyx.tpf",
+    "amulet_nbt/tpf/ArrayTag.pyx.tpf",
     native_data_type='numpy.int32',
     big_endian_data_type='numpy.dtype(">i4")',
     little_endian_data_type='numpy.dtype("<i4")',
@@ -87,7 +87,7 @@ cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
 
 
 {{include(
-    "amulet_nbt/tpf/AbstractBaseArrayTag.pyx.tpf",
+    "amulet_nbt/tpf/ArrayTag.pyx.tpf",
     native_data_type='numpy.int64',
     big_endian_data_type='numpy.dtype(">i8")',
     little_endian_data_type='numpy.dtype("<i8")',

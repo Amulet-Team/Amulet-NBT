@@ -18,6 +18,11 @@ cdef class {{dtype.capitalize()}}ArrayTag(AbstractBaseArrayTag):
         tag.cpp = cpp
         return tag
 
+    cdef TagNode to_node(self):
+        cdef TagNode node
+        node.emplace[C{{dtype.capitalize()}}ArrayTagPtr](self.cpp)
+        return node
+
     def __eq__({{dtype.capitalize()}}ArrayTag self, object other):
         if not isinstance(other, {{dtype.capitalize()}}ArrayTag):
             return False
@@ -43,13 +48,6 @@ cdef class {{dtype.capitalize()}}ArrayTag(AbstractBaseArrayTag):
 #
 #     # def __repr__({{dtype.capitalize()}}ArrayTag self):
 #     #     return f"{self.__class__.__name__}({list(self.cpp)})"
-#
-#     def __eq__({{dtype.capitalize()}}ArrayTag self, other):
-#         cdef {{dtype.capitalize()}}ArrayTag other_
-#         if isinstance(other, {{dtype.capitalize()}}ArrayTag):
-#             other_ = other
-#             return dereference(self.cpp) == dereference(other_.cpp)
-#         return NotImplemented
 #
 #     def __getitem__({{dtype.capitalize()}}ArrayTag self, uint32_t item):
 #         return dereference(self.cpp)[item]

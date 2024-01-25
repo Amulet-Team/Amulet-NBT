@@ -5,4 +5,9 @@
         tag.cpp = cpp
         return tag
 
-{{include("amulet_nbt/tpf/AbstractBaseNumericTag.pyx.tpf", **locals())}}
+    cdef TagNode to_node(self):
+        cdef TagNode node
+        node.emplace[C{{py_cls}}](self.cpp)
+        return node
+
+{{include("amulet_nbt/tpf/NumericTag.pyx.tpf", **locals())}}

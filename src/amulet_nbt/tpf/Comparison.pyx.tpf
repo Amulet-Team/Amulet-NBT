@@ -1,10 +1,9 @@
 {{
 "\n\n".join(
     f"""    def {meth}({py_cls} self, other):
-        cdef {py_cls} other_
         if not isinstance(other, {py_cls}):
             return NotImplemented
-        other_ = other
+        cdef {py_cls} other_ = other
         return self.cpp {op} other_.cpp"""
     for meth, op, py_cls in (
         ("__ge__", ">=", py_cls),

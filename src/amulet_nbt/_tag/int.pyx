@@ -46,10 +46,9 @@ cdef class ByteTag(AbstractBaseIntTag):
         self.cpp = self._sanitise_value(int(value))
 
     def __eq__(ByteTag self, other):
-        cdef ByteTag other_
         if not isinstance(other, ByteTag):
             return NotImplemented
-        other_ = other
+        cdef ByteTag other_ = other
         return self.cpp == other_.cpp
 
     def __repr__(ByteTag self):
@@ -65,31 +64,27 @@ cdef class ByteTag(AbstractBaseIntTag):
         return bool(self.cpp)
 
     def __ge__(ByteTag self, other):
-        cdef ByteTag other_
         if not isinstance(other, ByteTag):
             return NotImplemented
-        other_ = other
+        cdef ByteTag other_ = other
         return self.cpp >= other_.cpp
 
     def __gt__(ByteTag self, other):
-        cdef ByteTag other_
         if not isinstance(other, ByteTag):
             return NotImplemented
-        other_ = other
+        cdef ByteTag other_ = other
         return self.cpp > other_.cpp
 
     def __le__(ByteTag self, other):
-        cdef ByteTag other_
         if not isinstance(other, ByteTag):
             return NotImplemented
-        other_ = other
+        cdef ByteTag other_ = other
         return self.cpp <= other_.cpp
 
     def __lt__(ByteTag self, other):
-        cdef ByteTag other_
         if not isinstance(other, ByteTag):
             return NotImplemented
-        other_ = other
+        cdef ByteTag other_ = other
         return self.cpp < other_.cpp
     @staticmethod
     cdef ByteTag wrap(CByteTag cpp):
@@ -125,10 +120,9 @@ cdef class ShortTag(AbstractBaseIntTag):
         self.cpp = self._sanitise_value(int(value))
 
     def __eq__(ShortTag self, other):
-        cdef ShortTag other_
         if not isinstance(other, ShortTag):
             return NotImplemented
-        other_ = other
+        cdef ShortTag other_ = other
         return self.cpp == other_.cpp
 
     def __repr__(ShortTag self):
@@ -144,31 +138,27 @@ cdef class ShortTag(AbstractBaseIntTag):
         return bool(self.cpp)
 
     def __ge__(ShortTag self, other):
-        cdef ShortTag other_
         if not isinstance(other, ShortTag):
             return NotImplemented
-        other_ = other
+        cdef ShortTag other_ = other
         return self.cpp >= other_.cpp
 
     def __gt__(ShortTag self, other):
-        cdef ShortTag other_
         if not isinstance(other, ShortTag):
             return NotImplemented
-        other_ = other
+        cdef ShortTag other_ = other
         return self.cpp > other_.cpp
 
     def __le__(ShortTag self, other):
-        cdef ShortTag other_
         if not isinstance(other, ShortTag):
             return NotImplemented
-        other_ = other
+        cdef ShortTag other_ = other
         return self.cpp <= other_.cpp
 
     def __lt__(ShortTag self, other):
-        cdef ShortTag other_
         if not isinstance(other, ShortTag):
             return NotImplemented
-        other_ = other
+        cdef ShortTag other_ = other
         return self.cpp < other_.cpp
     @staticmethod
     cdef ShortTag wrap(CShortTag cpp):
@@ -204,10 +194,9 @@ cdef class IntTag(AbstractBaseIntTag):
         self.cpp = self._sanitise_value(int(value))
 
     def __eq__(IntTag self, other):
-        cdef IntTag other_
         if not isinstance(other, IntTag):
             return NotImplemented
-        other_ = other
+        cdef IntTag other_ = other
         return self.cpp == other_.cpp
 
     def __repr__(IntTag self):
@@ -223,31 +212,27 @@ cdef class IntTag(AbstractBaseIntTag):
         return bool(self.cpp)
 
     def __ge__(IntTag self, other):
-        cdef IntTag other_
         if not isinstance(other, IntTag):
             return NotImplemented
-        other_ = other
+        cdef IntTag other_ = other
         return self.cpp >= other_.cpp
 
     def __gt__(IntTag self, other):
-        cdef IntTag other_
         if not isinstance(other, IntTag):
             return NotImplemented
-        other_ = other
+        cdef IntTag other_ = other
         return self.cpp > other_.cpp
 
     def __le__(IntTag self, other):
-        cdef IntTag other_
         if not isinstance(other, IntTag):
             return NotImplemented
-        other_ = other
+        cdef IntTag other_ = other
         return self.cpp <= other_.cpp
 
     def __lt__(IntTag self, other):
-        cdef IntTag other_
         if not isinstance(other, IntTag):
             return NotImplemented
-        other_ = other
+        cdef IntTag other_ = other
         return self.cpp < other_.cpp
     @staticmethod
     cdef IntTag wrap(CIntTag cpp):
@@ -283,10 +268,9 @@ cdef class LongTag(AbstractBaseIntTag):
         self.cpp = self._sanitise_value(int(value))
 
     def __eq__(LongTag self, other):
-        cdef LongTag other_
         if not isinstance(other, LongTag):
             return NotImplemented
-        other_ = other
+        cdef LongTag other_ = other
         return self.cpp == other_.cpp
 
     def __repr__(LongTag self):
@@ -302,31 +286,27 @@ cdef class LongTag(AbstractBaseIntTag):
         return bool(self.cpp)
 
     def __ge__(LongTag self, other):
-        cdef LongTag other_
         if not isinstance(other, LongTag):
             return NotImplemented
-        other_ = other
+        cdef LongTag other_ = other
         return self.cpp >= other_.cpp
 
     def __gt__(LongTag self, other):
-        cdef LongTag other_
         if not isinstance(other, LongTag):
             return NotImplemented
-        other_ = other
+        cdef LongTag other_ = other
         return self.cpp > other_.cpp
 
     def __le__(LongTag self, other):
-        cdef LongTag other_
         if not isinstance(other, LongTag):
             return NotImplemented
-        other_ = other
+        cdef LongTag other_ = other
         return self.cpp <= other_.cpp
 
     def __lt__(LongTag self, other):
-        cdef LongTag other_
         if not isinstance(other, LongTag):
             return NotImplemented
-        other_ = other
+        cdef LongTag other_ = other
         return self.cpp < other_.cpp
     @staticmethod
     cdef LongTag wrap(CLongTag cpp):

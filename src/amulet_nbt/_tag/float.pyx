@@ -55,10 +55,9 @@ cdef class FloatTag(AbstractBaseFloatTag):
         return node
 
     def __eq__(FloatTag self, other):
-        cdef FloatTag other_
         if not isinstance(other, FloatTag):
             return NotImplemented
-        other_ = other
+        cdef FloatTag other_ = other
         return self.cpp == other_.cpp
 
     def __repr__(FloatTag self):
@@ -74,31 +73,27 @@ cdef class FloatTag(AbstractBaseFloatTag):
         return bool(self.cpp)
 
     def __ge__(FloatTag self, other):
-        cdef FloatTag other_
         if not isinstance(other, FloatTag):
             return NotImplemented
-        other_ = other
+        cdef FloatTag other_ = other
         return self.cpp >= other_.cpp
 
     def __gt__(FloatTag self, other):
-        cdef FloatTag other_
         if not isinstance(other, FloatTag):
             return NotImplemented
-        other_ = other
+        cdef FloatTag other_ = other
         return self.cpp > other_.cpp
 
     def __le__(FloatTag self, other):
-        cdef FloatTag other_
         if not isinstance(other, FloatTag):
             return NotImplemented
-        other_ = other
+        cdef FloatTag other_ = other
         return self.cpp <= other_.cpp
 
     def __lt__(FloatTag self, other):
-        cdef FloatTag other_
         if not isinstance(other, FloatTag):
             return NotImplemented
-        other_ = other
+        cdef FloatTag other_ = other
         return self.cpp < other_.cpp
 
 
@@ -121,10 +116,9 @@ cdef class DoubleTag(AbstractBaseFloatTag):
         return node
 
     def __eq__(DoubleTag self, other):
-        cdef DoubleTag other_
         if not isinstance(other, DoubleTag):
             return NotImplemented
-        other_ = other
+        cdef DoubleTag other_ = other
         return self.cpp == other_.cpp
 
     def __repr__(DoubleTag self):
@@ -140,29 +134,25 @@ cdef class DoubleTag(AbstractBaseFloatTag):
         return bool(self.cpp)
 
     def __ge__(DoubleTag self, other):
-        cdef DoubleTag other_
         if not isinstance(other, DoubleTag):
             return NotImplemented
-        other_ = other
+        cdef DoubleTag other_ = other
         return self.cpp >= other_.cpp
 
     def __gt__(DoubleTag self, other):
-        cdef DoubleTag other_
         if not isinstance(other, DoubleTag):
             return NotImplemented
-        other_ = other
+        cdef DoubleTag other_ = other
         return self.cpp > other_.cpp
 
     def __le__(DoubleTag self, other):
-        cdef DoubleTag other_
         if not isinstance(other, DoubleTag):
             return NotImplemented
-        other_ = other
+        cdef DoubleTag other_ = other
         return self.cpp <= other_.cpp
 
     def __lt__(DoubleTag self, other):
-        cdef DoubleTag other_
         if not isinstance(other, DoubleTag):
             return NotImplemented
-        other_ = other
+        cdef DoubleTag other_ = other
         return self.cpp < other_.cpp

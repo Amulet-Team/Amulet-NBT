@@ -10,6 +10,7 @@ from collections.abc import Mapping, Iterable, KeysView, ItemsView, ValuesView
 
 from libcpp.string cimport string
 from libcpp cimport bool
+from libcpp.memory cimport make_shared
 from cython.operator cimport dereference, postincrement
 
 from amulet_nbt._nbt cimport CCompoundTag, CCompoundTagPtr, CIntTag, TagNode
@@ -223,6 +224,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
     tag_id: int = 10
 
     def __init__(self, *args, **kwargs) -> None:
+        self.cpp = make_shared[CCompoundTag]()
         self.update(*args, **kwargs)
 
     @staticmethod

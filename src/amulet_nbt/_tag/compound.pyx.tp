@@ -5,7 +5,7 @@
 # distutils: extra_link_args = -std=c++20 /std:c++20
 # cython: c_string_type=str, c_string_encoding=utf8
 
-from collections.abc import Mapping, Iterable, KeysView, ItemsView, ValuesView
+from collections.abc import Mapping, Iterator, KeysView, ItemsView, ValuesView
 
 from libcpp.string cimport string
 from libcpp cimport bool
@@ -165,18 +165,16 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return dereference(self.cpp).size()
 
     # Iterable
-    def __iter__(self) -> Iterable[str | bytes]:
-        cdef list keys = []
+    def __iter__(self) -> Iterator[str | bytes]:
         cdef CCompoundTag.iterator it = dereference(self.cpp).begin()
         cdef string key
         while it != dereference(self.cpp).end():
             key = dereference(it).first
             try:
-                yield key
+                yield <str>key
             except UnicodeDecodeError as e:
                 yield <bytes>key
             postincrement(it)
-        return keys
 
     # Mapping
     def __getitem__(self, string key) -> AbstractBaseTag:

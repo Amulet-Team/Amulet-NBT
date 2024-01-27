@@ -128,13 +128,25 @@ class IntTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
                 self.assertIsInstance(tag, cls)
 
     def test_int(self):
-        pass
+        for cls in self.int_types:
+            with self.subTest(cls=cls):
+                self.assertEqual(5, int(cls(5)))
+                self.assertEqual(-5, int(cls(-5)))
 
     def test_float(self):
-        pass
+        for cls in self.int_types:
+            with self.subTest(cls=cls):
+                self.assertEqual(5.0, float(cls(5.0)))
+                self.assertEqual(-5.0, float(cls(-5.0)))
 
     def test_bool(self):
-        pass
+        for cls in self.int_types:
+            with self.subTest(cls=cls):
+                self.assertTrue(cls(5))
+                self.assertTrue(cls(1))
+                self.assertFalse(cls(0))
+                self.assertTrue(cls(-1))
+                self.assertTrue(cls(-5))
 
     def test_numerical_operators(self):
         for cls1, cls2 in itertools.product(self.int_types, repeat=2):

@@ -129,13 +129,29 @@ class FloatTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
                 self.assertIsInstance(tag, cls)
 
     def test_int(self):
-        pass
+        for cls in self.float_types:
+            with self.subTest(cls=cls):
+                self.assertEqual(5, int(cls(5.5)))
+                self.assertEqual(-5, int(cls(-5.5)))
 
     def test_float(self):
-        pass
+        for cls in self.float_types:
+            with self.subTest(cls=cls):
+                self.assertEqual(5.5, float(cls(5.5)))
+                self.assertEqual(-5.5, float(cls(-5.5)))
 
     def test_bool(self):
-        pass
+        for cls in self.float_types:
+            with self.subTest(cls=cls):
+                self.assertTrue(cls(5.5))
+                self.assertTrue(cls(5))
+                self.assertTrue(cls(1))
+                self.assertTrue(cls(0.01))
+                self.assertFalse(cls(0.0))
+                self.assertTrue(cls(-0.01))
+                self.assertTrue(cls(-1))
+                self.assertTrue(cls(-5))
+                self.assertTrue(cls(-5.5))
 
     def test_numerical_operators(self):
         for cls1, cls2 in itertools.product(self.float_types, repeat=2):

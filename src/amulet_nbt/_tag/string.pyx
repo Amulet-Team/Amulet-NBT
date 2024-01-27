@@ -13,14 +13,14 @@ import warnings
 
 from libcpp.string cimport string
 
-from amulet_nbt._tag.abc cimport AbstractBaseImmutableTag
 from amulet_nbt._nbt cimport TagNode, CStringTag
+from .abc cimport AbstractBaseImmutableTag
 # from amulet_nbt._const cimport ID_STRING
 # from amulet_nbt._dtype import EncoderType
 
 
-# cdef inline escape(str string):
-#     return string.replace('\\', '\\\\').replace('"', '\\"')
+cdef inline escape(str string):
+    return string.replace('\\', '\\\\').replace('"', '\\"')
 
 
 cdef class StringTag(AbstractBaseImmutableTag):
@@ -67,7 +67,7 @@ cdef class StringTag(AbstractBaseImmutableTag):
         return self.cpp == other_.cpp
 
     def __repr__(self):
-        return f"StringTag({self.py_str!r})"
+        return f"StringTag(\"{escape(self.py_str)}\")"
 
     def __str__(self):
         try:
@@ -75,8 +75,48 @@ cdef class StringTag(AbstractBaseImmutableTag):
         except UnicodeDecodeError:
             return <bytes> self.cpp
 
+    def __reduce__(self):
+        raise NotImplementedError
+
+    def __copy__(self):
+        raise NotImplementedError
+
+    def __deepcopy__(self, memo=None):
+        raise NotImplementedError
+
+    def __hash__(self):
+        return hash((8, self.cpp))
+
     # cdef str _to_snbt(StringTag self):
     #     return f"\"{escape(self.py_str)}\""
 
     def __len__(self) -> int:
         return self.cpp.size()
+
+    def __ge__(StringTag self, other):
+        cdef StringTag other_
+        if isinstance(other, StringTag):
+            other_ = other
+            return str(self.cpp) >= str(other_.cpp)
+        return NotImplemented
+
+    def __gt__(StringTag self, other):
+        cdef StringTag other_
+        if isinstance(other, StringTag):
+            other_ = other
+            return str(self.cpp) > str(other_.cpp)
+        return NotImplemented
+
+    def __le__(StringTag self, other):
+        cdef StringTag other_
+        if isinstance(other, StringTag):
+            other_ = other
+            return str(self.cpp) <= str(other_.cpp)
+        return NotImplemented
+
+    def __lt__(StringTag self, other):
+        cdef StringTag other_
+        if isinstance(other, StringTag):
+            other_ = other
+            return str(self.cpp) < str(other_.cpp)
+        return NotImplemented

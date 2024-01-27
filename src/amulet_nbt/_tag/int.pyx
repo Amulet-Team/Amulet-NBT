@@ -10,7 +10,7 @@ import warnings
 from typing import Any
 
 from amulet_nbt._nbt cimport TagNode, CByteTag, CShortTag, CIntTag, CLongTag
-from amulet_nbt._tag.numeric cimport AbstractBaseNumericTag
+from .numeric cimport AbstractBaseNumericTag
 # from amulet_nbt._const cimport ID_BYTE, ID_SHORT, ID_INT, ID_LONG
 # from amulet_nbt._dtype import EncoderType
 
@@ -53,7 +53,22 @@ cdef class ByteTag(AbstractBaseIntTag):
         return self.cpp == other_.cpp
 
     def __repr__(ByteTag self):
-        return f"{self.__class__.__name__}({self.cpp})"
+        return f"ByteTag({self.cpp})"
+
+    def __str__(ByteTag self):
+        return str(self.cpp)
+
+    def __reduce__(ByteTag self):
+        raise NotImplementedError
+
+    def __copy__(ByteTag self):
+        raise NotImplementedError
+
+    def __deepcopy__(ByteTag self, memo=None):
+        raise NotImplementedError
+
+    def __hash__(ByteTag self):
+        return hash((1, self.cpp))
 
     def __int__(ByteTag self):
         return int(self.cpp)
@@ -127,7 +142,22 @@ cdef class ShortTag(AbstractBaseIntTag):
         return self.cpp == other_.cpp
 
     def __repr__(ShortTag self):
-        return f"{self.__class__.__name__}({self.cpp})"
+        return f"ShortTag({self.cpp})"
+
+    def __str__(ShortTag self):
+        return str(self.cpp)
+
+    def __reduce__(ShortTag self):
+        raise NotImplementedError
+
+    def __copy__(ShortTag self):
+        raise NotImplementedError
+
+    def __deepcopy__(ShortTag self, memo=None):
+        raise NotImplementedError
+
+    def __hash__(ShortTag self):
+        return hash((2, self.cpp))
 
     def __int__(ShortTag self):
         return int(self.cpp)
@@ -201,7 +231,22 @@ cdef class IntTag(AbstractBaseIntTag):
         return self.cpp == other_.cpp
 
     def __repr__(IntTag self):
-        return f"{self.__class__.__name__}({self.cpp})"
+        return f"IntTag({self.cpp})"
+
+    def __str__(IntTag self):
+        return str(self.cpp)
+
+    def __reduce__(IntTag self):
+        raise NotImplementedError
+
+    def __copy__(IntTag self):
+        raise NotImplementedError
+
+    def __deepcopy__(IntTag self, memo=None):
+        raise NotImplementedError
+
+    def __hash__(IntTag self):
+        return hash((3, self.cpp))
 
     def __int__(IntTag self):
         return int(self.cpp)
@@ -275,7 +320,22 @@ cdef class LongTag(AbstractBaseIntTag):
         return self.cpp == other_.cpp
 
     def __repr__(LongTag self):
-        return f"{self.__class__.__name__}({self.cpp})"
+        return f"LongTag({self.cpp})"
+
+    def __str__(LongTag self):
+        return str(self.cpp)
+
+    def __reduce__(LongTag self):
+        raise NotImplementedError
+
+    def __copy__(LongTag self):
+        raise NotImplementedError
+
+    def __deepcopy__(LongTag self, memo=None):
+        raise NotImplementedError
+
+    def __hash__(LongTag self):
+        return hash((4, self.cpp))
 
     def __int__(LongTag self):
         return int(self.cpp)

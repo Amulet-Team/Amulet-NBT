@@ -6,6 +6,7 @@
 # cython: c_string_type=str, c_string_encoding=utf8
 
 from collections.abc import Mapping, Iterator, KeysView, ItemsView, ValuesView
+from typing import Iterable
 
 from libcpp.string cimport string
 from libcpp cimport bool
@@ -14,7 +15,7 @@ from cython.operator cimport dereference, postincrement
 
 from amulet_nbt._nbt cimport CCompoundTag, CCompoundTagPtr, CIntTag, TagNode
 from amulet_nbt._libcpp.variant cimport get
-from amulet_nbt._tag.abc cimport AbstractBaseTag, AbstractBaseMutableTag
+from .abc cimport AbstractBaseTag, AbstractBaseMutableTag
 
 from amulet_nbt._nbt cimport (
     CByteTag,
@@ -56,6 +57,7 @@ from .list cimport is_list_eq, ListTag
 from .array cimport ByteArrayTag, IntArrayTag, LongArrayTag
 
 {{py:
+from template import include
 ClassData = (
     #id,  C cls,           C node cls          C list cls        py cls,         tag var,          list var
     (1,  "CByteTag",      "CByteTag",         "CByteList",      "ByteTag",      "byte_tag",       "byte_list",       ),
@@ -154,11 +156,34 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         node.emplace[CCompoundTagPtr](self.cpp)
         return node
 
+    @property
+    def py_dict(self) -> dict[str, ByteTag | ShortTag | IntTag | LongTag | FloatTag | DoubleTag | StringTag | ByteArrayTag | ListTag | CompoundTag | IntArrayTag | LongArrayTag]:
+        return dict(self)
+
+    @property
+    def py_data(self) -> Any:
+        return dict(self)
+
     def __eq__(CompoundTag self, object other):
         if not isinstance(other, CompoundTag):
             return False
         cdef CompoundTag tag = other
         return is_compound_eq(self.cpp, tag.cpp)
+
+    def __repr__(self) -> str:
+        return f"CompoundTag({dict(self)})"
+
+    def __str__(self) -> str:
+        return str(dict(self))
+
+    def __reduce__(self):
+        raise NotImplementedError
+
+    def __copy__(self):
+        raise NotImplementedError
+
+    def __deepcopy__(self, memo=None):
+        raise NotImplementedError
 
     # Sized
     def __len__(self) -> size_t:
@@ -189,10 +214,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
 
         if it == dereference(self.cpp).end():
-            if default is None:
-                raise KeyError(key)
-            else:
-                return default
+            return default
 
         cdef AbstractBaseTag tag = wrap_node(&dereference(it).second)
         if isinstance(tag, cls):
@@ -272,19 +294,51 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         for key, value in kwds.items():
             self[key] = value
 
-    def setdefault(self, string key, AbstractBaseTag tag not None, object cls = AbstractBaseTag):
+    def setdefault(self, string key, AbstractBaseTag tag = None, object cls = AbstractBaseTag):
         cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
 
         if it == dereference(self.cpp).end():
             # if the key does not exist then set it
+            if tag is None:
+                raise TypeError("Cannot setdefault a value of None.")
             self[key] = tag
             return tag
 
         cdef AbstractBaseTag existing_tag = wrap_node(&dereference(it).second)
 
-        if not isinstance(tag, cls):
+        if not isinstance(existing_tag, cls):
             # if the key exists but has the wrong type then set it
+            if tag is None:
+                raise TypeError("Cannot setdefault a value of None.")
             self[key] = tag
             return tag
 
         return existing_tag
+
+    @classmethod
+    def fromkeys(cls, keys: Iterable[str], AbstractBaseTag value):
+        return cls(dict.fromkeys(keys, value))
+
+{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", tag_cls_name="ByteTag", tag_name="byte")}}
+
+{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", tag_cls_name="ShortTag", tag_name="short")}}
+
+{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", tag_cls_name="IntTag", tag_name="int")}}
+
+{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", tag_cls_name="LongTag", tag_name="long")}}
+
+{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", tag_cls_name="FloatTag", tag_name="float")}}
+
+{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", tag_cls_name="DoubleTag", tag_name="double")}}
+
+{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", tag_cls_name="StringTag", tag_name="string")}}
+
+{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", tag_cls_name="ListTag", tag_name="list")}}
+
+{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", tag_cls_name="CompoundTag", tag_name="compound")}}
+
+{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", tag_cls_name="ByteArrayTag", tag_name="byte_array")}}
+
+{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", tag_cls_name="IntArrayTag", tag_name="int_array")}}
+
+{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", tag_cls_name="LongArrayTag", tag_name="long_array")}}

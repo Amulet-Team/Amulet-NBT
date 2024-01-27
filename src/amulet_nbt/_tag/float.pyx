@@ -11,7 +11,7 @@ from math import trunc, floor, ceil
 from typing import Any
 
 from amulet_nbt._nbt cimport TagNode, CFloatTag, CDoubleTag
-from amulet_nbt._tag.numeric cimport AbstractBaseNumericTag
+from .numeric cimport AbstractBaseNumericTag
 # from amulet_nbt._const cimport ID_FLOAT, ID_DOUBLE
 # from amulet_nbt._dtype import EncoderType
 
@@ -55,6 +55,10 @@ cdef class FloatTag(AbstractBaseFloatTag):
         node.emplace[CFloatTag](self.cpp)
         return node
 
+    @property
+    def py_float(self) -> float:
+        return self.cpp
+
     def __eq__(FloatTag self, other):
         if not isinstance(other, FloatTag):
             return NotImplemented
@@ -62,7 +66,22 @@ cdef class FloatTag(AbstractBaseFloatTag):
         return self.cpp == other_.cpp
 
     def __repr__(FloatTag self):
-        return f"{self.__class__.__name__}({self.cpp})"
+        return f"FloatTag({self.cpp})"
+
+    def __str__(FloatTag self):
+        return str(self.cpp)
+
+    def __reduce__(FloatTag self):
+        raise NotImplementedError
+
+    def __copy__(FloatTag self):
+        raise NotImplementedError
+
+    def __deepcopy__(FloatTag self, memo=None):
+        raise NotImplementedError
+
+    def __hash__(FloatTag self):
+        return hash((5, self.cpp))
 
     def __int__(FloatTag self):
         return int(self.cpp)
@@ -116,6 +135,10 @@ cdef class DoubleTag(AbstractBaseFloatTag):
         node.emplace[CDoubleTag](self.cpp)
         return node
 
+    @property
+    def py_float(self) -> float:
+        return self.cpp
+
     def __eq__(DoubleTag self, other):
         if not isinstance(other, DoubleTag):
             return NotImplemented
@@ -123,7 +146,22 @@ cdef class DoubleTag(AbstractBaseFloatTag):
         return self.cpp == other_.cpp
 
     def __repr__(DoubleTag self):
-        return f"{self.__class__.__name__}({self.cpp})"
+        return f"DoubleTag({self.cpp})"
+
+    def __str__(DoubleTag self):
+        return str(self.cpp)
+
+    def __reduce__(DoubleTag self):
+        raise NotImplementedError
+
+    def __copy__(DoubleTag self):
+        raise NotImplementedError
+
+    def __deepcopy__(DoubleTag self, memo=None):
+        raise NotImplementedError
+
+    def __hash__(DoubleTag self):
+        return hash((6, self.cpp))
 
     def __int__(DoubleTag self):
         return int(self.cpp)

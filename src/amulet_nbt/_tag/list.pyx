@@ -28,12 +28,12 @@ from amulet_nbt._nbt cimport (
     CIntArrayList,
     CLongArrayList,
 )
-from amulet_nbt._tag.abc cimport AbstractBaseTag, AbstractBaseMutableTag
-from amulet_nbt._tag.int cimport ByteTag, ShortTag, IntTag, LongTag
-from amulet_nbt._tag.float cimport FloatTag, DoubleTag
-from amulet_nbt._tag.string cimport StringTag
-from amulet_nbt._tag.compound cimport CompoundTag
-from amulet_nbt._tag.array cimport ByteArrayTag, IntArrayTag, LongArrayTag
+from .abc cimport AbstractBaseTag, AbstractBaseMutableTag
+from .int cimport ByteTag, ShortTag, IntTag, LongTag
+from .float cimport FloatTag, DoubleTag
+from .string cimport StringTag
+from .compound cimport CompoundTag
+from .array cimport ByteArrayTag, IntArrayTag, LongArrayTag
 # from amulet_nbt._const cimport ID_LIST, CommaSpace, CommaNewline
 # from amulet_nbt._dtype import AnyNBT, EncoderType
 from .compound cimport is_compound_eq
@@ -1600,29 +1600,29 @@ cdef inline void ListTag_set_slice(CListTagPtr cpp, object s, object value):
     cdef list arr = value
     if arr:
         # Items in the array
-        if isinstance(value, ByteTag):
+        if isinstance(arr[0], ByteTag):
             ListTag_set_slice_byte_tag(cpp, s, arr)
-        elif isinstance(value, ShortTag):
+        elif isinstance(arr[0], ShortTag):
             ListTag_set_slice_short_tag(cpp, s, arr)
-        elif isinstance(value, IntTag):
+        elif isinstance(arr[0], IntTag):
             ListTag_set_slice_int_tag(cpp, s, arr)
-        elif isinstance(value, LongTag):
+        elif isinstance(arr[0], LongTag):
             ListTag_set_slice_long_tag(cpp, s, arr)
-        elif isinstance(value, FloatTag):
+        elif isinstance(arr[0], FloatTag):
             ListTag_set_slice_float_tag(cpp, s, arr)
-        elif isinstance(value, DoubleTag):
+        elif isinstance(arr[0], DoubleTag):
             ListTag_set_slice_double_tag(cpp, s, arr)
-        elif isinstance(value, ByteArrayTag):
+        elif isinstance(arr[0], ByteArrayTag):
             ListTag_set_slice_byte_array_tag(cpp, s, arr)
-        elif isinstance(value, StringTag):
+        elif isinstance(arr[0], StringTag):
             ListTag_set_slice_string_tag(cpp, s, arr)
-        elif isinstance(value, ListTag):
+        elif isinstance(arr[0], ListTag):
             ListTag_set_slice_list_tag(cpp, s, arr)
-        elif isinstance(value, CompoundTag):
+        elif isinstance(arr[0], CompoundTag):
             ListTag_set_slice_compound_tag(cpp, s, arr)
-        elif isinstance(value, IntArrayTag):
+        elif isinstance(arr[0], IntArrayTag):
             ListTag_set_slice_int_array_tag(cpp, s, arr)
-        elif isinstance(value, LongArrayTag):
+        elif isinstance(arr[0], LongArrayTag):
             ListTag_set_slice_long_array_tag(cpp, s, arr)
         else:
             raise TypeError(f"Unsupported type {type(value)}")
@@ -2543,14 +2543,9 @@ cdef class ListTag(AbstractBaseMutableTag):
         node.emplace[CListTagPtr](self.cpp)
         return node
 
-    def __eq__(ListTag self, object other):
-        if not isinstance(other, ListTag):
-            return False
-        cdef ListTag tag = other
-        return is_list_eq(self.cpp, tag.cpp)
-
     @property
-    def py_list(ListTag self) -> list[ByteTag] | list[ShortTag] | list[IntTag] | list[LongTag] | list[FloatTag] | list[DoubleTag] | list[StringTag] | list[CompoundTag] | list[ByteArrayTag] | list[IntArrayTag] | list[LongArrayTag]:
+    def py_list(ListTag self) -> list[ByteTag] | list[ShortTag] | list[IntTag] | list[LongTag] | list[FloatTag] | list[
+        DoubleTag] | list[StringTag] | list[CompoundTag] | list[ByteArrayTag] | list[IntArrayTag] | list[LongArrayTag]:
         """
         A python list representation of the class.
         The returned list is a shallow copy of the class, meaning changes will not mirror the instance.
@@ -2567,52 +2562,30 @@ cdef class ListTag(AbstractBaseMutableTag):
         """
         return list(self)
 
-    # def __repr__(ListTag self):
-    #     return f"{self.__class__.__name__}({repr(list(self))}, {self.list_data_type})"
+    def __eq__(ListTag self, object other):
+        if not isinstance(other, ListTag):
+            return False
+        cdef ListTag tag = other
+        return is_list_eq(self.cpp, tag.cpp)
 
-    # def __contains__(ListTag self, object item) -> bool:
-    #     if not isinstance(item, AbstractBaseTag):
-    #         return False
-    #     elif isinstance(item, ByteTag):
-    #     elif isinstance(item, ShortTag):
-    #     elif isinstance(item, IntTag):
-    #     elif isinstance(item, LongTag):
-    #     elif isinstance(item, FloatTag):
-    #     elif isinstance(item, DoubleTag):
-    #     elif isinstance(item, StringTag):
-    #     elif isinstance(item, ByteArrayTag):
-    #     elif isinstance(item, ListTag):
-    #     elif isinstance(item, CompoundTag):
-    #     elif isinstance(item, IntArrayTag):
-    #     elif isinstance(item, LongArrayTag):
-    #
-    #     if list_data_type == 1:
-    #         dereference(self.cpp).emplace[vector[CByteTag]]()
-    #     elif list_data_type == 2:
-    #         dereference(self.cpp).emplace[vector[CShortTag]]()
-    #     elif list_data_type == 3:
-    #         dereference(self.cpp).emplace[vector[CIntTag]]()
-    #     elif list_data_type == 4:
-    #         dereference(self.cpp).emplace[vector[CLongTag]]()
-    #     elif list_data_type == 5:
-    #         dereference(self.cpp).emplace[vector[CFloatTag]]()
-    #     elif list_data_type == 6:
-    #         dereference(self.cpp).emplace[vector[CDoubleTag]]()
-    #     elif list_data_type == 7:
-    #         dereference(self.cpp).emplace[vector[CByteArrayTagPtr]]()
-    #     elif list_data_type == 8:
-    #         dereference(self.cpp).emplace[vector[CStringTag]]()
-    #     elif list_data_type == 9:
-    #         dereference(self.cpp).emplace[vector[CListTagPtr]]()
-    #     elif list_data_type == 10:
-    #         dereference(self.cpp).emplace[vector[CCompoundTagPtr]]()
-    #     elif list_data_type == 11:
-    #         dereference(self.cpp).emplace[vector[CIntArrayTagPtr]]()
-    #     elif list_data_type == 12:
-    #         dereference(self.cpp).emplace[vector[CLongArrayTagPtr]]()
-    #
-    #
-    #         and item.tag_id == self.list_data_type and self.value_.__contains__(item)
+    def __repr__(ListTag self):
+        return f"ListTag({list(self)!r}, {self.list_data_type})"
+
+    def __str__(ListTag self):
+        return str(list(self))
+
+    def __reduce__(self):
+        raise NotImplementedError
+
+    def __copy__(self):
+        raise NotImplementedError
+
+    def __deepcopy__(self, memo=None):
+        raise NotImplementedError
+
+    @property
+    def list_data_type(self):
+        return dereference(self.cpp).index()
 
     # Sized
     def __len__(ListTag self) -> int:
@@ -2759,10 +2732,6 @@ cdef class ListTag(AbstractBaseMutableTag):
     def copy(ListTag self):
         """Return a shallow copy of the class"""
         return ListTag(self, dereference(self.cpp).index())
-
-    @property
-    def list_data_type(self):
-        return dereference(self.cpp).index()
 
     cpdef ByteTag get_byte(self, ptrdiff_t index):
         """Get the tag at index if it is a ByteTag.

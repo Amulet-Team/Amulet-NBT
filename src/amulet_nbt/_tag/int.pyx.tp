@@ -9,7 +9,7 @@ import warnings
 from typing import Any
 
 from amulet_nbt._nbt cimport TagNode, CByteTag, CShortTag, CIntTag, CLongTag
-from amulet_nbt._tag.numeric cimport AbstractBaseNumericTag
+from .numeric cimport AbstractBaseNumericTag
 # from amulet_nbt._const cimport ID_BYTE, ID_SHORT, ID_INT, ID_LONG
 # from amulet_nbt._dtype import EncoderType
 {{py:from template import include}}
@@ -46,7 +46,7 @@ cdef class ByteTag(AbstractBaseIntTag):
     def __init__(ByteTag self, value = 0):
         self.cpp = self._sanitise_value(int(value))
 
-{{include("amulet_nbt/tpf/IntTag.pyx.tpf", py_cls="ByteTag")}}
+{{include("amulet_nbt/tpf/IntTag.pyx.tpf", py_cls="ByteTag", tag_id=1)}}
 
     cdef CByteTag _sanitise_value(ByteTag self, value):
         return (value & 0x7F) - (value & 0x80)
@@ -62,7 +62,7 @@ cdef class ShortTag(AbstractBaseIntTag):
     def __init__(ShortTag self, value = 0):
         self.cpp = self._sanitise_value(int(value))
 
-{{include("amulet_nbt/tpf/IntTag.pyx.tpf", py_cls="ShortTag")}}
+{{include("amulet_nbt/tpf/IntTag.pyx.tpf", py_cls="ShortTag", tag_id=2)}}
 
     cdef CShortTag _sanitise_value(ShortTag self, value):
         return (value & 0x7FFF) - (value & 0x8000)
@@ -78,7 +78,7 @@ cdef class IntTag(AbstractBaseIntTag):
     def __init__(IntTag self, value = 0):
         self.cpp = self._sanitise_value(int(value))
 
-{{include("amulet_nbt/tpf/IntTag.pyx.tpf", py_cls="IntTag")}}
+{{include("amulet_nbt/tpf/IntTag.pyx.tpf", py_cls="IntTag", tag_id=3)}}
 
     cdef CIntTag _sanitise_value(IntTag self, value):
         return (value & 0x7FFF_FFFF) - (value & 0x8000_0000)
@@ -94,7 +94,7 @@ cdef class LongTag(AbstractBaseIntTag):
     def __init__(LongTag self, value = 0):
         self.cpp = self._sanitise_value(int(value))
 
-{{include("amulet_nbt/tpf/IntTag.pyx.tpf", py_cls="LongTag")}}
+{{include("amulet_nbt/tpf/IntTag.pyx.tpf", py_cls="LongTag", tag_id=4)}}
 
     cdef CLongTag _sanitise_value(LongTag self, value):
         return (value & 0x7FFF_FFFF_FFFF_FFFF) - (value & 0x8000_0000_0000_0000)

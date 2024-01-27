@@ -2,7 +2,22 @@
 {{include("amulet_nbt/tpf/ImmutableTag.pyx.tpf", **locals())}}
 
     def __repr__({{py_cls}} self):
-        return f"{self.__class__.__name__}({self.cpp})"
+        return f"{{py_cls}}({self.cpp})"
+
+    def __str__({{py_cls}} self):
+        return str(self.cpp)
+
+    def __reduce__({{py_cls}} self):
+        raise NotImplementedError
+
+    def __copy__({{py_cls}} self):
+        raise NotImplementedError
+
+    def __deepcopy__({{py_cls}} self, memo=None):
+        raise NotImplementedError
+
+    def __hash__({{py_cls}} self):
+        return hash(({{tag_id}}, self.cpp))
 
     def __int__({{py_cls}} self):
         return int(self.cpp)

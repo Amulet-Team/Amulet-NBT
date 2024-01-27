@@ -10,7 +10,7 @@ from math import trunc, floor, ceil
 from typing import Any
 
 from amulet_nbt._nbt cimport TagNode, CFloatTag, CDoubleTag
-from amulet_nbt._tag.numeric cimport AbstractBaseNumericTag
+from .numeric cimport AbstractBaseNumericTag
 # from amulet_nbt._const cimport ID_FLOAT, ID_DOUBLE
 # from amulet_nbt._dtype import EncoderType
 {{py:from template import include}}
@@ -44,7 +44,7 @@ cdef class FloatTag(AbstractBaseFloatTag):
     def __init__(FloatTag self, value = 0):
         self.cpp = float(value)
 
-{{include("amulet_nbt/tpf/FloatTag.pyx.tpf", py_cls="FloatTag")}}
+{{include("amulet_nbt/tpf/FloatTag.pyx.tpf", py_cls="FloatTag", tag_id=5)}}
 
 
 cdef class DoubleTag(AbstractBaseFloatTag):
@@ -54,4 +54,4 @@ cdef class DoubleTag(AbstractBaseFloatTag):
     def __init__(DoubleTag self, value = 0):
         self.cpp = float(value)
 
-{{include("amulet_nbt/tpf/FloatTag.pyx.tpf", py_cls="DoubleTag")}}
+{{include("amulet_nbt/tpf/FloatTag.pyx.tpf", py_cls="DoubleTag", tag_id=6)}}

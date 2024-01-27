@@ -7,6 +7,7 @@
 # cython: c_string_type=str, c_string_encoding=utf8
 
 from collections.abc import Mapping, Iterator, KeysView, ItemsView, ValuesView
+from typing import Iterable
 
 from libcpp.string cimport string
 from libcpp cimport bool
@@ -15,7 +16,7 @@ from cython.operator cimport dereference, postincrement
 
 from amulet_nbt._nbt cimport CCompoundTag, CCompoundTagPtr, CIntTag, TagNode
 from amulet_nbt._libcpp.variant cimport get
-from amulet_nbt._tag.abc cimport AbstractBaseTag, AbstractBaseMutableTag
+from .abc cimport AbstractBaseTag, AbstractBaseMutableTag
 
 from amulet_nbt._nbt cimport (
     CByteTag,
@@ -238,11 +239,34 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         node.emplace[CCompoundTagPtr](self.cpp)
         return node
 
+    @property
+    def py_dict(self) -> dict[str, ByteTag | ShortTag | IntTag | LongTag | FloatTag | DoubleTag | StringTag | ByteArrayTag | ListTag | CompoundTag | IntArrayTag | LongArrayTag]:
+        return dict(self)
+
+    @property
+    def py_data(self) -> Any:
+        return dict(self)
+
     def __eq__(CompoundTag self, object other):
         if not isinstance(other, CompoundTag):
             return False
         cdef CompoundTag tag = other
         return is_compound_eq(self.cpp, tag.cpp)
+
+    def __repr__(self) -> str:
+        return f"CompoundTag({dict(self)})"
+
+    def __str__(self) -> str:
+        return str(dict(self))
+
+    def __reduce__(self):
+        raise NotImplementedError
+
+    def __copy__(self):
+        raise NotImplementedError
+
+    def __deepcopy__(self, memo=None):
+        raise NotImplementedError
 
     # Sized
     def __len__(self) -> size_t:
@@ -273,10 +297,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
 
         if it == dereference(self.cpp).end():
-            if default is None:
-                raise KeyError(key)
-            else:
-                return default
+            return default
 
         cdef AbstractBaseTag tag = wrap_node(&dereference(it).second)
         if isinstance(tag, cls):
@@ -356,19 +377,627 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         for key, value in kwds.items():
             self[key] = value
 
-    def setdefault(self, string key, AbstractBaseTag tag not None, object cls = AbstractBaseTag):
+    def setdefault(self, string key, AbstractBaseTag tag = None, object cls = AbstractBaseTag):
         cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
 
         if it == dereference(self.cpp).end():
             # if the key does not exist then set it
+            if tag is None:
+                raise TypeError("Cannot setdefault a value of None.")
             self[key] = tag
             return tag
 
         cdef AbstractBaseTag existing_tag = wrap_node(&dereference(it).second)
 
-        if not isinstance(tag, cls):
+        if not isinstance(existing_tag, cls):
             # if the key exists but has the wrong type then set it
+            if tag is None:
+                raise TypeError("Cannot setdefault a value of None.")
             self[key] = tag
             return tag
 
         return existing_tag
+
+    @classmethod
+    def fromkeys(cls, keys: Iterable[str], AbstractBaseTag value):
+        return cls(dict.fromkeys(keys, value))
+
+    cpdef ByteTag get_byte(self, string key, ByteTag default=None):
+        """Get the tag stored in key if it is a ByteTag.
+    
+        :param key: The key to get
+        :param default: The value to return if the key does not exist or the type is wrong. If not defined errors are raised.
+        :return: The ByteTag.
+        :raises: KeyError if the key does not exist
+        :raises: TypeError if the stored type is not a ByteTag
+        """
+        cdef AbstractBaseTag tag
+        try:
+            tag = self[key]
+        except KeyError as e:
+            if default is None:
+                raise e
+            else:
+                return default
+        else:
+            if isinstance(tag, ByteTag):
+                return tag
+            elif default is None:
+                raise TypeError(f"Expected tag to be of type ByteTag but got {type(tag)}")
+            else:
+                return default
+
+    cpdef ByteTag setdefault_byte(self, string key, ByteTag default=None):
+        """Populate key if not defined or value is not ByteTag. Return the value stored.
+    
+        If default is a ByteTag then it will be stored under key else a default instance will be created.
+        :param key: The key to populate and get
+        :param default: The default value to use
+        :return: The ByteTag stored in key
+        :raises: TypeError if the input types are incorrect
+        """
+        cdef AbstractBaseTag tag
+        try:
+            tag = self[key]
+        except KeyError as e:
+            if default is None:
+                tag = self[key] = ByteTag()
+            else:
+                tag = self[key] = default
+        else:
+            if not isinstance(tag, ByteTag):
+                if default is None:
+                    tag = self[key] = ByteTag()
+                else:
+                    tag = self[key] = default
+        return tag
+
+    cpdef ShortTag get_short(self, string key, ShortTag default=None):
+        """Get the tag stored in key if it is a ShortTag.
+    
+        :param key: The key to get
+        :param default: The value to return if the key does not exist or the type is wrong. If not defined errors are raised.
+        :return: The ShortTag.
+        :raises: KeyError if the key does not exist
+        :raises: TypeError if the stored type is not a ShortTag
+        """
+        cdef AbstractBaseTag tag
+        try:
+            tag = self[key]
+        except KeyError as e:
+            if default is None:
+                raise e
+            else:
+                return default
+        else:
+            if isinstance(tag, ShortTag):
+                return tag
+            elif default is None:
+                raise TypeError(f"Expected tag to be of type ShortTag but got {type(tag)}")
+            else:
+                return default
+
+    cpdef ShortTag setdefault_short(self, string key, ShortTag default=None):
+        """Populate key if not defined or value is not ShortTag. Return the value stored.
+    
+        If default is a ShortTag then it will be stored under key else a default instance will be created.
+        :param key: The key to populate and get
+        :param default: The default value to use
+        :return: The ShortTag stored in key
+        :raises: TypeError if the input types are incorrect
+        """
+        cdef AbstractBaseTag tag
+        try:
+            tag = self[key]
+        except KeyError as e:
+            if default is None:
+                tag = self[key] = ShortTag()
+            else:
+                tag = self[key] = default
+        else:
+            if not isinstance(tag, ShortTag):
+                if default is None:
+                    tag = self[key] = ShortTag()
+                else:
+                    tag = self[key] = default
+        return tag
+
+    cpdef IntTag get_int(self, string key, IntTag default=None):
+        """Get the tag stored in key if it is a IntTag.
+    
+        :param key: The key to get
+        :param default: The value to return if the key does not exist or the type is wrong. If not defined errors are raised.
+        :return: The IntTag.
+        :raises: KeyError if the key does not exist
+        :raises: TypeError if the stored type is not a IntTag
+        """
+        cdef AbstractBaseTag tag
+        try:
+            tag = self[key]
+        except KeyError as e:
+            if default is None:
+                raise e
+            else:
+                return default
+        else:
+            if isinstance(tag, IntTag):
+                return tag
+            elif default is None:
+                raise TypeError(f"Expected tag to be of type IntTag but got {type(tag)}")
+            else:
+                return default
+
+    cpdef IntTag setdefault_int(self, string key, IntTag default=None):
+        """Populate key if not defined or value is not IntTag. Return the value stored.
+    
+        If default is a IntTag then it will be stored under key else a default instance will be created.
+        :param key: The key to populate and get
+        :param default: The default value to use
+        :return: The IntTag stored in key
+        :raises: TypeError if the input types are incorrect
+        """
+        cdef AbstractBaseTag tag
+        try:
+            tag = self[key]
+        except KeyError as e:
+            if default is None:
+                tag = self[key] = IntTag()
+            else:
+                tag = self[key] = default
+        else:
+            if not isinstance(tag, IntTag):
+                if default is None:
+                    tag = self[key] = IntTag()
+                else:
+                    tag = self[key] = default
+        return tag
+
+    cpdef LongTag get_long(self, string key, LongTag default=None):
+        """Get the tag stored in key if it is a LongTag.
+    
+        :param key: The key to get
+        :param default: The value to return if the key does not exist or the type is wrong. If not defined errors are raised.
+        :return: The LongTag.
+        :raises: KeyError if the key does not exist
+        :raises: TypeError if the stored type is not a LongTag
+        """
+        cdef AbstractBaseTag tag
+        try:
+            tag = self[key]
+        except KeyError as e:
+            if default is None:
+                raise e
+            else:
+                return default
+        else:
+            if isinstance(tag, LongTag):
+                return tag
+            elif default is None:
+                raise TypeError(f"Expected tag to be of type LongTag but got {type(tag)}")
+            else:
+                return default
+
+    cpdef LongTag setdefault_long(self, string key, LongTag default=None):
+        """Populate key if not defined or value is not LongTag. Return the value stored.
+    
+        If default is a LongTag then it will be stored under key else a default instance will be created.
+        :param key: The key to populate and get
+        :param default: The default value to use
+        :return: The LongTag stored in key
+        :raises: TypeError if the input types are incorrect
+        """
+        cdef AbstractBaseTag tag
+        try:
+            tag = self[key]
+        except KeyError as e:
+            if default is None:
+                tag = self[key] = LongTag()
+            else:
+                tag = self[key] = default
+        else:
+            if not isinstance(tag, LongTag):
+                if default is None:
+                    tag = self[key] = LongTag()
+                else:
+                    tag = self[key] = default
+        return tag
+
+    cpdef FloatTag get_float(self, string key, FloatTag default=None):
+        """Get the tag stored in key if it is a FloatTag.
+    
+        :param key: The key to get
+        :param default: The value to return if the key does not exist or the type is wrong. If not defined errors are raised.
+        :return: The FloatTag.
+        :raises: KeyError if the key does not exist
+        :raises: TypeError if the stored type is not a FloatTag
+        """
+        cdef AbstractBaseTag tag
+        try:
+            tag = self[key]
+        except KeyError as e:
+            if default is None:
+                raise e
+            else:
+                return default
+        else:
+            if isinstance(tag, FloatTag):
+                return tag
+            elif default is None:
+                raise TypeError(f"Expected tag to be of type FloatTag but got {type(tag)}")
+            else:
+                return default
+
+    cpdef FloatTag setdefault_float(self, string key, FloatTag default=None):
+        """Populate key if not defined or value is not FloatTag. Return the value stored.
+    
+        If default is a FloatTag then it will be stored under key else a default instance will be created.
+        :param key: The key to populate and get
+        :param default: The default value to use
+        :return: The FloatTag stored in key
+        :raises: TypeError if the input types are incorrect
+        """
+        cdef AbstractBaseTag tag
+        try:
+            tag = self[key]
+        except KeyError as e:
+            if default is None:
+                tag = self[key] = FloatTag()
+            else:
+                tag = self[key] = default
+        else:
+            if not isinstance(tag, FloatTag):
+                if default is None:
+                    tag = self[key] = FloatTag()
+                else:
+                    tag = self[key] = default
+        return tag
+
+    cpdef DoubleTag get_double(self, string key, DoubleTag default=None):
+        """Get the tag stored in key if it is a DoubleTag.
+    
+        :param key: The key to get
+        :param default: The value to return if the key does not exist or the type is wrong. If not defined errors are raised.
+        :return: The DoubleTag.
+        :raises: KeyError if the key does not exist
+        :raises: TypeError if the stored type is not a DoubleTag
+        """
+        cdef AbstractBaseTag tag
+        try:
+            tag = self[key]
+        except KeyError as e:
+            if default is None:
+                raise e
+            else:
+                return default
+        else:
+            if isinstance(tag, DoubleTag):
+                return tag
+            elif default is None:
+                raise TypeError(f"Expected tag to be of type DoubleTag but got {type(tag)}")
+            else:
+                return default
+
+    cpdef DoubleTag setdefault_double(self, string key, DoubleTag default=None):
+        """Populate key if not defined or value is not DoubleTag. Return the value stored.
+    
+        If default is a DoubleTag then it will be stored under key else a default instance will be created.
+        :param key: The key to populate and get
+        :param default: The default value to use
+        :return: The DoubleTag stored in key
+        :raises: TypeError if the input types are incorrect
+        """
+        cdef AbstractBaseTag tag
+        try:
+            tag = self[key]
+        except KeyError as e:
+            if default is None:
+                tag = self[key] = DoubleTag()
+            else:
+                tag = self[key] = default
+        else:
+            if not isinstance(tag, DoubleTag):
+                if default is None:
+                    tag = self[key] = DoubleTag()
+                else:
+                    tag = self[key] = default
+        return tag
+
+    cpdef StringTag get_string(self, string key, StringTag default=None):
+        """Get the tag stored in key if it is a StringTag.
+    
+        :param key: The key to get
+        :param default: The value to return if the key does not exist or the type is wrong. If not defined errors are raised.
+        :return: The StringTag.
+        :raises: KeyError if the key does not exist
+        :raises: TypeError if the stored type is not a StringTag
+        """
+        cdef AbstractBaseTag tag
+        try:
+            tag = self[key]
+        except KeyError as e:
+            if default is None:
+                raise e
+            else:
+                return default
+        else:
+            if isinstance(tag, StringTag):
+                return tag
+            elif default is None:
+                raise TypeError(f"Expected tag to be of type StringTag but got {type(tag)}")
+            else:
+                return default
+
+    cpdef StringTag setdefault_string(self, string key, StringTag default=None):
+        """Populate key if not defined or value is not StringTag. Return the value stored.
+    
+        If default is a StringTag then it will be stored under key else a default instance will be created.
+        :param key: The key to populate and get
+        :param default: The default value to use
+        :return: The StringTag stored in key
+        :raises: TypeError if the input types are incorrect
+        """
+        cdef AbstractBaseTag tag
+        try:
+            tag = self[key]
+        except KeyError as e:
+            if default is None:
+                tag = self[key] = StringTag()
+            else:
+                tag = self[key] = default
+        else:
+            if not isinstance(tag, StringTag):
+                if default is None:
+                    tag = self[key] = StringTag()
+                else:
+                    tag = self[key] = default
+        return tag
+
+    cpdef ListTag get_list(self, string key, ListTag default=None):
+        """Get the tag stored in key if it is a ListTag.
+    
+        :param key: The key to get
+        :param default: The value to return if the key does not exist or the type is wrong. If not defined errors are raised.
+        :return: The ListTag.
+        :raises: KeyError if the key does not exist
+        :raises: TypeError if the stored type is not a ListTag
+        """
+        cdef AbstractBaseTag tag
+        try:
+            tag = self[key]
+        except KeyError as e:
+            if default is None:
+                raise e
+            else:
+                return default
+        else:
+            if isinstance(tag, ListTag):
+                return tag
+            elif default is None:
+                raise TypeError(f"Expected tag to be of type ListTag but got {type(tag)}")
+            else:
+                return default
+
+    cpdef ListTag setdefault_list(self, string key, ListTag default=None):
+        """Populate key if not defined or value is not ListTag. Return the value stored.
+    
+        If default is a ListTag then it will be stored under key else a default instance will be created.
+        :param key: The key to populate and get
+        :param default: The default value to use
+        :return: The ListTag stored in key
+        :raises: TypeError if the input types are incorrect
+        """
+        cdef AbstractBaseTag tag
+        try:
+            tag = self[key]
+        except KeyError as e:
+            if default is None:
+                tag = self[key] = ListTag()
+            else:
+                tag = self[key] = default
+        else:
+            if not isinstance(tag, ListTag):
+                if default is None:
+                    tag = self[key] = ListTag()
+                else:
+                    tag = self[key] = default
+        return tag
+
+    cpdef CompoundTag get_compound(self, string key, CompoundTag default=None):
+        """Get the tag stored in key if it is a CompoundTag.
+    
+        :param key: The key to get
+        :param default: The value to return if the key does not exist or the type is wrong. If not defined errors are raised.
+        :return: The CompoundTag.
+        :raises: KeyError if the key does not exist
+        :raises: TypeError if the stored type is not a CompoundTag
+        """
+        cdef AbstractBaseTag tag
+        try:
+            tag = self[key]
+        except KeyError as e:
+            if default is None:
+                raise e
+            else:
+                return default
+        else:
+            if isinstance(tag, CompoundTag):
+                return tag
+            elif default is None:
+                raise TypeError(f"Expected tag to be of type CompoundTag but got {type(tag)}")
+            else:
+                return default
+
+    cpdef CompoundTag setdefault_compound(self, string key, CompoundTag default=None):
+        """Populate key if not defined or value is not CompoundTag. Return the value stored.
+    
+        If default is a CompoundTag then it will be stored under key else a default instance will be created.
+        :param key: The key to populate and get
+        :param default: The default value to use
+        :return: The CompoundTag stored in key
+        :raises: TypeError if the input types are incorrect
+        """
+        cdef AbstractBaseTag tag
+        try:
+            tag = self[key]
+        except KeyError as e:
+            if default is None:
+                tag = self[key] = CompoundTag()
+            else:
+                tag = self[key] = default
+        else:
+            if not isinstance(tag, CompoundTag):
+                if default is None:
+                    tag = self[key] = CompoundTag()
+                else:
+                    tag = self[key] = default
+        return tag
+
+    cpdef ByteArrayTag get_byte_array(self, string key, ByteArrayTag default=None):
+        """Get the tag stored in key if it is a ByteArrayTag.
+    
+        :param key: The key to get
+        :param default: The value to return if the key does not exist or the type is wrong. If not defined errors are raised.
+        :return: The ByteArrayTag.
+        :raises: KeyError if the key does not exist
+        :raises: TypeError if the stored type is not a ByteArrayTag
+        """
+        cdef AbstractBaseTag tag
+        try:
+            tag = self[key]
+        except KeyError as e:
+            if default is None:
+                raise e
+            else:
+                return default
+        else:
+            if isinstance(tag, ByteArrayTag):
+                return tag
+            elif default is None:
+                raise TypeError(f"Expected tag to be of type ByteArrayTag but got {type(tag)}")
+            else:
+                return default
+
+    cpdef ByteArrayTag setdefault_byte_array(self, string key, ByteArrayTag default=None):
+        """Populate key if not defined or value is not ByteArrayTag. Return the value stored.
+    
+        If default is a ByteArrayTag then it will be stored under key else a default instance will be created.
+        :param key: The key to populate and get
+        :param default: The default value to use
+        :return: The ByteArrayTag stored in key
+        :raises: TypeError if the input types are incorrect
+        """
+        cdef AbstractBaseTag tag
+        try:
+            tag = self[key]
+        except KeyError as e:
+            if default is None:
+                tag = self[key] = ByteArrayTag()
+            else:
+                tag = self[key] = default
+        else:
+            if not isinstance(tag, ByteArrayTag):
+                if default is None:
+                    tag = self[key] = ByteArrayTag()
+                else:
+                    tag = self[key] = default
+        return tag
+
+    cpdef IntArrayTag get_int_array(self, string key, IntArrayTag default=None):
+        """Get the tag stored in key if it is a IntArrayTag.
+    
+        :param key: The key to get
+        :param default: The value to return if the key does not exist or the type is wrong. If not defined errors are raised.
+        :return: The IntArrayTag.
+        :raises: KeyError if the key does not exist
+        :raises: TypeError if the stored type is not a IntArrayTag
+        """
+        cdef AbstractBaseTag tag
+        try:
+            tag = self[key]
+        except KeyError as e:
+            if default is None:
+                raise e
+            else:
+                return default
+        else:
+            if isinstance(tag, IntArrayTag):
+                return tag
+            elif default is None:
+                raise TypeError(f"Expected tag to be of type IntArrayTag but got {type(tag)}")
+            else:
+                return default
+
+    cpdef IntArrayTag setdefault_int_array(self, string key, IntArrayTag default=None):
+        """Populate key if not defined or value is not IntArrayTag. Return the value stored.
+    
+        If default is a IntArrayTag then it will be stored under key else a default instance will be created.
+        :param key: The key to populate and get
+        :param default: The default value to use
+        :return: The IntArrayTag stored in key
+        :raises: TypeError if the input types are incorrect
+        """
+        cdef AbstractBaseTag tag
+        try:
+            tag = self[key]
+        except KeyError as e:
+            if default is None:
+                tag = self[key] = IntArrayTag()
+            else:
+                tag = self[key] = default
+        else:
+            if not isinstance(tag, IntArrayTag):
+                if default is None:
+                    tag = self[key] = IntArrayTag()
+                else:
+                    tag = self[key] = default
+        return tag
+
+    cpdef LongArrayTag get_long_array(self, string key, LongArrayTag default=None):
+        """Get the tag stored in key if it is a LongArrayTag.
+    
+        :param key: The key to get
+        :param default: The value to return if the key does not exist or the type is wrong. If not defined errors are raised.
+        :return: The LongArrayTag.
+        :raises: KeyError if the key does not exist
+        :raises: TypeError if the stored type is not a LongArrayTag
+        """
+        cdef AbstractBaseTag tag
+        try:
+            tag = self[key]
+        except KeyError as e:
+            if default is None:
+                raise e
+            else:
+                return default
+        else:
+            if isinstance(tag, LongArrayTag):
+                return tag
+            elif default is None:
+                raise TypeError(f"Expected tag to be of type LongArrayTag but got {type(tag)}")
+            else:
+                return default
+
+    cpdef LongArrayTag setdefault_long_array(self, string key, LongArrayTag default=None):
+        """Populate key if not defined or value is not LongArrayTag. Return the value stored.
+    
+        If default is a LongArrayTag then it will be stored under key else a default instance will be created.
+        :param key: The key to populate and get
+        :param default: The default value to use
+        :return: The LongArrayTag stored in key
+        :raises: TypeError if the input types are incorrect
+        """
+        cdef AbstractBaseTag tag
+        try:
+            tag = self[key]
+        except KeyError as e:
+            if default is None:
+                tag = self[key] = LongArrayTag()
+            else:
+                tag = self[key] = default
+        else:
+            if not isinstance(tag, LongArrayTag):
+                if default is None:
+                    tag = self[key] = LongArrayTag()
+                else:
+                    tag = self[key] = default
+        return tag

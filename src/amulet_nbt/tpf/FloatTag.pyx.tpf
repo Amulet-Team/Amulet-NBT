@@ -10,4 +10,8 @@
         node.emplace[C{{py_cls}}](self.cpp)
         return node
 
+    @property
+    def py_float(self) -> float:
+        return self.cpp
+
 {{include("amulet_nbt/tpf/NumericTag.pyx.tpf", **locals())}}

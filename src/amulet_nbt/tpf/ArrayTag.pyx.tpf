@@ -1,3 +1,5 @@
+import numpy
+
 {{py:
 from template import include
 }}
@@ -53,45 +55,21 @@ cdef class {{dtype.capitalize()}}ArrayTag(AbstractBaseArrayTag):
         return dereference(self.cpp).size()
 
     # Sequence
-    def __getitem__({{dtype.capitalize()}}ArrayTag self, ptrdiff_t item):
-        if item < 0:
-            item += dereference(self.cpp).size()
-        if item < 0 or item >= dereference(self.cpp).size():
-            raise IndexError("{{dtype.capitalize()}}ArrayTag assignment index out of range")
-        return dereference(self.cpp)[item]
+    def __getitem__({{dtype.capitalize()}}ArrayTag self, object item):
+        return numpy.asarray(self)[item]
 
     def __iter__({{dtype.capitalize()}}ArrayTag self) -> Iterator[int]:
-        cdef size_t index
-        for index in range(dereference(self.cpp).size()):
-            yield dereference(self.cpp)[index]
+        return iter(numpy.asarray(self))
 
     def __reversed__({{dtype.capitalize()}}ArrayTag self) -> Iterator[int]:
-        cdef size_t index
-        for index in range(dereference(self.cpp).size() - 1, -1, -1):
-            yield dereference(self.cpp)[index]
+        return reversed(numpy.asarray(self))
 
     def __contains__({{dtype.capitalize()}}ArrayTag self, value):
-        cdef {{cpp}} tag
-
-        try:
-            tag = value
-        except TypeError:
-            return False
-
-        cdef C{{dtype.capitalize()}}ArrayTag.iterator it = dereference(self.cpp).begin()
-        cdef size_t index
-        for index in range(dereference(self.cpp).size()):
-            if dereference(self.cpp)[index] == tag:
-                return True
-        return False
+        return value in numpy.asarray(self)
 
     # MutableSequence
-    def __setitem__({{dtype.capitalize()}}ArrayTag self, ptrdiff_t item, {{cpp}} value):
-        if item < 0:
-            item += dereference(self.cpp).size()
-        if item < 0 or item >= dereference(self.cpp).size():
-            raise IndexError("{{dtype.capitalize()}}ArrayTag assignment index out of range")
-        dereference(self.cpp)[item] = value
+    def __setitem__({{dtype.capitalize()}}ArrayTag self, object item, object value):
+        numpy.asarray(self)[item] = value
 
     # Array interface
     def __array__({{dtype.capitalize()}}ArrayTag self, dtype=None):

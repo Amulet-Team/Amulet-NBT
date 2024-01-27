@@ -69,6 +69,7 @@ cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
         raise NotImplementedError
 
 
+import numpy
 cdef class ByteArrayTag(AbstractBaseArrayTag):
     """This class behaves like an 1D Numpy signed integer array with each value stored in a byte."""
     tag_id: int = 7
@@ -121,45 +122,21 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
         return dereference(self.cpp).size()
 
     # Sequence
-    def __getitem__(ByteArrayTag self, ptrdiff_t item):
-        if item < 0:
-            item += dereference(self.cpp).size()
-        if item < 0 or item >= dereference(self.cpp).size():
-            raise IndexError("ByteArrayTag assignment index out of range")
-        return dereference(self.cpp)[item]
+    def __getitem__(ByteArrayTag self, object item):
+        return numpy.asarray(self)[item]
 
     def __iter__(ByteArrayTag self) -> Iterator[int]:
-        cdef size_t index
-        for index in range(dereference(self.cpp).size()):
-            yield dereference(self.cpp)[index]
+        return iter(numpy.asarray(self))
 
     def __reversed__(ByteArrayTag self) -> Iterator[int]:
-        cdef size_t index
-        for index in range(dereference(self.cpp).size() - 1, -1, -1):
-            yield dereference(self.cpp)[index]
+        return reversed(numpy.asarray(self))
 
     def __contains__(ByteArrayTag self, value):
-        cdef int8_t tag
-
-        try:
-            tag = value
-        except TypeError:
-            return False
-
-        cdef CByteArrayTag.iterator it = dereference(self.cpp).begin()
-        cdef size_t index
-        for index in range(dereference(self.cpp).size()):
-            if dereference(self.cpp)[index] == tag:
-                return True
-        return False
+        return value in numpy.asarray(self)
 
     # MutableSequence
-    def __setitem__(ByteArrayTag self, ptrdiff_t item, int8_t value):
-        if item < 0:
-            item += dereference(self.cpp).size()
-        if item < 0 or item >= dereference(self.cpp).size():
-            raise IndexError("ByteArrayTag assignment index out of range")
-        dereference(self.cpp)[item] = value
+    def __setitem__(ByteArrayTag self, object item, object value):
+        numpy.asarray(self)[item] = value
 
     # Array interface
     def __array__(ByteArrayTag self, dtype=None):
@@ -179,6 +156,7 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
 
 
 
+import numpy
 cdef class IntArrayTag(AbstractBaseArrayTag):
     """This class behaves like an 1D Numpy signed integer array with each value stored in a int."""
     tag_id: int = 11
@@ -231,45 +209,21 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
         return dereference(self.cpp).size()
 
     # Sequence
-    def __getitem__(IntArrayTag self, ptrdiff_t item):
-        if item < 0:
-            item += dereference(self.cpp).size()
-        if item < 0 or item >= dereference(self.cpp).size():
-            raise IndexError("IntArrayTag assignment index out of range")
-        return dereference(self.cpp)[item]
+    def __getitem__(IntArrayTag self, object item):
+        return numpy.asarray(self)[item]
 
     def __iter__(IntArrayTag self) -> Iterator[int]:
-        cdef size_t index
-        for index in range(dereference(self.cpp).size()):
-            yield dereference(self.cpp)[index]
+        return iter(numpy.asarray(self))
 
     def __reversed__(IntArrayTag self) -> Iterator[int]:
-        cdef size_t index
-        for index in range(dereference(self.cpp).size() - 1, -1, -1):
-            yield dereference(self.cpp)[index]
+        return reversed(numpy.asarray(self))
 
     def __contains__(IntArrayTag self, value):
-        cdef int32_t tag
-
-        try:
-            tag = value
-        except TypeError:
-            return False
-
-        cdef CIntArrayTag.iterator it = dereference(self.cpp).begin()
-        cdef size_t index
-        for index in range(dereference(self.cpp).size()):
-            if dereference(self.cpp)[index] == tag:
-                return True
-        return False
+        return value in numpy.asarray(self)
 
     # MutableSequence
-    def __setitem__(IntArrayTag self, ptrdiff_t item, int32_t value):
-        if item < 0:
-            item += dereference(self.cpp).size()
-        if item < 0 or item >= dereference(self.cpp).size():
-            raise IndexError("IntArrayTag assignment index out of range")
-        dereference(self.cpp)[item] = value
+    def __setitem__(IntArrayTag self, object item, object value):
+        numpy.asarray(self)[item] = value
 
     # Array interface
     def __array__(IntArrayTag self, dtype=None):
@@ -289,6 +243,7 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
 
 
 
+import numpy
 cdef class LongArrayTag(AbstractBaseArrayTag):
     """This class behaves like an 1D Numpy signed integer array with each value stored in a long."""
     tag_id: int = 12
@@ -341,45 +296,21 @@ cdef class LongArrayTag(AbstractBaseArrayTag):
         return dereference(self.cpp).size()
 
     # Sequence
-    def __getitem__(LongArrayTag self, ptrdiff_t item):
-        if item < 0:
-            item += dereference(self.cpp).size()
-        if item < 0 or item >= dereference(self.cpp).size():
-            raise IndexError("LongArrayTag assignment index out of range")
-        return dereference(self.cpp)[item]
+    def __getitem__(LongArrayTag self, object item):
+        return numpy.asarray(self)[item]
 
     def __iter__(LongArrayTag self) -> Iterator[int]:
-        cdef size_t index
-        for index in range(dereference(self.cpp).size()):
-            yield dereference(self.cpp)[index]
+        return iter(numpy.asarray(self))
 
     def __reversed__(LongArrayTag self) -> Iterator[int]:
-        cdef size_t index
-        for index in range(dereference(self.cpp).size() - 1, -1, -1):
-            yield dereference(self.cpp)[index]
+        return reversed(numpy.asarray(self))
 
     def __contains__(LongArrayTag self, value):
-        cdef int64_t tag
-
-        try:
-            tag = value
-        except TypeError:
-            return False
-
-        cdef CLongArrayTag.iterator it = dereference(self.cpp).begin()
-        cdef size_t index
-        for index in range(dereference(self.cpp).size()):
-            if dereference(self.cpp)[index] == tag:
-                return True
-        return False
+        return value in numpy.asarray(self)
 
     # MutableSequence
-    def __setitem__(LongArrayTag self, ptrdiff_t item, int64_t value):
-        if item < 0:
-            item += dereference(self.cpp).size()
-        if item < 0 or item >= dereference(self.cpp).size():
-            raise IndexError("LongArrayTag assignment index out of range")
-        dereference(self.cpp)[item] = value
+    def __setitem__(LongArrayTag self, object item, object value):
+        numpy.asarray(self)[item] = value
 
     # Array interface
     def __array__(LongArrayTag self, dtype=None):

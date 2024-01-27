@@ -107,14 +107,14 @@ class AbstractBaseMutableTagTestCase(AbstractBaseTagTestCase):
 
 
 class CreateAbstractTestCase(unittest.TestCase):
-    def test_create_abc(self):
+    def test_create_abc(self) -> None:
         pass
 
-    def test_create_abc_tag(self):
+    def test_create_abc_tag(self) -> None:
         pass
 
-    def test_create_abc_immutable_tag(self):
+    def test_create_abc_immutable_tag(self) -> None:
         pass
 
-    def test_create_abc_mutable_tag(self):
+    def test_create_abc_mutable_tag(self) -> None:
         pass

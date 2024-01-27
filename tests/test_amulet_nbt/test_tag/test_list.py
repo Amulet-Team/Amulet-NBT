@@ -21,7 +21,7 @@ def is_iterable(obj):
 
 
 class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
-    def test_constructor(self):
+    def test_constructor(self) -> None:
         for cls in self.nbt_types:
             with self.subTest(cls=cls):
                 # empty
@@ -55,7 +55,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 with self.subTest(val=val), self.assertRaises(TypeError):
                     ListTag(val)
 
-    def test_equal(self):
+    def test_equal(self) -> None:
         for cls1, cls2 in itertools.product(self.nbt_types, repeat=2):
             with self.subTest(cls1=cls1, cls2=cls2):
                 i1 = cls1()
@@ -74,7 +74,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                     ListTag([], list_data_type=i1), ListTag([], list_data_type=i2)
                 )
 
-    def test_py_data(self):
+    def test_py_data(self) -> None:
         tag = ListTag()
         self.assertIsInstance(tag.py_list, list)
         self.assertEqual(tag.py_list, [])
@@ -86,7 +86,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
 
                 self.assertIsNot(tag.py_list, tag.py_list)
 
-    def test_repr(self):
+    def test_repr(self) -> None:
         # empty list
         self.assertEqual("ListTag([], 1)", repr(ListTag()))
 
@@ -285,7 +285,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
     def test_str(self) -> None:
         pass
 
-    def test_pickle(self):
+    def test_pickle(self) -> None:
         for cls in self.nbt_types:
             with self.subTest(cls=cls):
                 tag = ListTag([cls()])
@@ -398,16 +398,16 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         self.assertNotEqual(tag, tag2)
         self.assertEqual(1, tag2[0][0])
 
-    def test_hash(self):
+    def test_hash(self) -> None:
         with self.assertRaises(TypeError):
             hash(ListTag())
 
-    def test_instance(self):
+    def test_instance(self) -> None:
         self.assertIsInstance(ListTag(), AbstractBaseTag)
         self.assertIsInstance(ListTag(), AbstractBaseMutableTag)
         self.assertIsInstance(ListTag(), ListTag)
 
-    def test_getitem(self):
+    def test_getitem(self) -> None:
         a, b, c = StringTag("val1"), StringTag("val2"), StringTag("val3")
         tag = ListTag([a, b, c])
 
@@ -423,7 +423,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
             self.assertEqual([a, b], tag[:2])
             self.assertEqual([], tag[5:])
 
-    def test_setitem(self):
+    def test_setitem(self) -> None:
         for cls1, cls2 in itertools.product(self.nbt_types, repeat=2):
             with self.subTest("Overwrite only value", cls1=cls1, cls2=cls2):
                 # TODO: I feel like this should work with different types because you are replacing the only value
@@ -517,20 +517,20 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                         tag[1:] = [cls2()]
                 self.assertEqual(cls1.tag_id, tag.list_data_type)
 
-    def test_delitem(self):
+    def test_delitem(self) -> None:
         tag = ListTag([StringTag("val1"), StringTag("val2"), StringTag("val3")])
         del tag[:2]
         self.assertEqual(tag, ListTag([StringTag("val3")]))
         del tag[0]
         self.assertEqual(tag, ListTag())
 
-    def test_len(self):
+    def test_len(self) -> None:
         tag = StringTag("val")
         for i in range(10):
             with self.subTest(i=i):
                 self.assertEqual(i, len(ListTag([tag] * i)))
 
-    def test_insert(self):
+    def test_insert(self) -> None:
         tag = ListTag([StringTag("val1"), StringTag("val3"), StringTag("val4")])
         tag.insert(1, StringTag("val2"))
         self.assertEqual(
@@ -556,7 +556,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
             with self.subTest(val=obj), self.assertRaises(TypeError):
                 tag.insert(1, obj)
 
-    def test_contains(self):
+    def test_contains(self) -> None:
         tag = ListTag([StringTag("val1"), StringTag("val2"), StringTag("val3")])
         self.assertIn(StringTag("val1"), tag)
         self.assertNotIn(StringTag("val4"), tag)
@@ -571,7 +571,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                     else:
                         self.assertNotIn(tag_cls2(), tag)
 
-    def test_iter(self):
+    def test_iter(self) -> None:
         a = StringTag("val1")
         b = StringTag("val2")
         c = StringTag("val3")
@@ -586,7 +586,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
     def test_reversed(self) -> None:
         pass
 
-    def test_reverse(self):
+    def test_reverse(self) -> None:
         tag = ListTag([StringTag("val1"), StringTag("val2"), StringTag("val3")])
 
         # reverse (create new)
@@ -605,7 +605,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
             tag, ListTag([StringTag("val3"), StringTag("val2"), StringTag("val1")])
         )
 
-    def test_index(self):
+    def test_index(self) -> None:
         tag = ListTag([StringTag("val1"), StringTag("val2"), StringTag("val2")])
         self.assertEqual(1, tag.index(StringTag("val2")))
         with self.assertRaises(ValueError):
@@ -621,7 +621,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         with self.assertRaises(ValueError):
             tag.index(True)
 
-    def test_count(self):
+    def test_count(self) -> None:
         tag = ListTag([StringTag("val1"), StringTag("val2"), StringTag("val2")])
         self.assertEqual(1, tag.count(StringTag("val1")))
         self.assertEqual(2, tag.count(StringTag("val2")))
@@ -629,7 +629,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
             with self.subTest(val=obj):
                 self.assertEqual(0, tag.count(obj))
 
-    def test_append(self):
+    def test_append(self) -> None:
         for cls1 in self.nbt_types:
             with self.subTest(cls1=cls1):
                 tag = ListTag()
@@ -650,7 +650,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
             with self.subTest(val=obj), self.assertRaises(TypeError):
                 tag.append(obj)
 
-    def test_extend(self):
+    def test_extend(self) -> None:
         tag = ListTag()
         tag.extend([StringTag("val1"), StringTag("val2")])
         tag.extend([StringTag("val2")])
@@ -672,7 +672,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 with self.assertRaises(TypeError):
                     tag.extend([obj])
 
-    def test_pop(self):
+    def test_pop(self) -> None:
         tag = ListTag([StringTag("val1"), StringTag("val2"), StringTag("val3")])
 
         self.assertEqual(tag.pop(), StringTag("val3"))
@@ -686,7 +686,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 with self.subTest(val=obj), self.assertRaises(TypeError):
                     tag.pop(obj)
 
-    def test_remove(self):
+    def test_remove(self) -> None:
         tag = ListTag([StringTag("val1"), StringTag("val2"), StringTag("val3")])
         tag.remove(StringTag("val3"))
         self.assertEqual(tag, ListTag([StringTag("val1"), StringTag("val2")]))
@@ -697,7 +697,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
             with self.subTest(val=obj), self.assertRaises(ValueError):
                 tag.remove(obj)
 
-    def test_iadd(self):
+    def test_iadd(self) -> None:
         tag_ = tag = ListTag()
         tag += [StringTag("val1")]
         self.assertEqual(tag_, tag)
@@ -744,7 +744,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 with self.assertRaises(TypeError):
                     tag += [obj]
 
-    def test_clear(self):
+    def test_clear(self) -> None:
         tag = ListTag([StringTag("val1"), StringTag("val2"), StringTag("val3")])
         tag.clear()
         self.assertEqual(ListTag(), tag)

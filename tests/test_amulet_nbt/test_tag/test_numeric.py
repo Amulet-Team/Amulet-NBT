@@ -7,17 +7,17 @@ from .test_abc import AbstractBaseImmutableTagTestCase
 
 class AbstractBaseNumericTagTestCase(AbstractBaseImmutableTagTestCase, ABC):
     @abstractmethod
-    def test_int(self):
+    def test_int(self) -> None:
         raise NotImplementedError
 
     @abstractmethod
-    def test_float(self):
+    def test_float(self) -> None:
         raise NotImplementedError
 
     @abstractmethod
-    def test_bool(self):
+    def test_bool(self) -> None:
         raise NotImplementedError
 
     @abstractmethod
-    def test_numerical_operators(self):
+    def test_numerical_operators(self) -> None:
         raise NotImplementedError

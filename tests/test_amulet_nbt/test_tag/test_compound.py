@@ -33,7 +33,7 @@ from amulet_nbt import (
 
 
 class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
-    def test_constructor(self):
+    def test_constructor(self) -> None:
         for cls in self.nbt_types:
             with self.subTest(cls=cls):
                 # empty
@@ -69,7 +69,7 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                     with self.assertRaises(TypeError):
                         CompoundTag((("key", val),))
 
-    def test_equal(self):
+    def test_equal(self) -> None:
         for cls1, cls2 in itertools.product(self.array_types, repeat=2):
             for ground in ({"key": cls1()}, CompoundTag({"key": cls1()})):
                 for other in (
@@ -92,7 +92,7 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
             CompoundTag({TagNameMap[tag_cls]: tag_cls() for tag_cls in self.nbt_types}),
         )
 
-    def test_py_data(self):
+    def test_py_data(self) -> None:
         tag = CompoundTag()
         self.assertIsInstance(tag.py_dict, dict)
         self.assertEqual(tag.py_dict, {})
@@ -102,7 +102,7 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
 
         self.assertIsNot(tag.py_dict, tag.py_dict)
 
-    def test_repr(self):
+    def test_repr(self) -> None:
         self.assertEqual("CompoundTag({})", repr(CompoundTag()))
         self.assertEqual(
             repr(CompoundTag({"key": ByteTag(-5)})),
@@ -272,7 +272,7 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
     def test_str(self) -> None:
         pass
 
-    def test_pickle(self):
+    def test_pickle(self) -> None:
         for cls in self.nbt_types:
             with self.subTest(cls=cls):
                 tag = CompoundTag(key=cls())
@@ -280,7 +280,7 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 tag2 = pickle.loads(dump)
                 self.assertEqual(tag, tag2)
 
-    def test_copy(self):
+    def test_copy(self) -> None:
         tag = CompoundTag({
             "byte": ByteTag(1),
             "short": ShortTag(1),
@@ -426,16 +426,16 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         tag["long_array"][0] = 10
         self.assertEqual(LongArrayTag([1, 2, 3]), tag2["long_array"])
 
-    def test_hash(self):
+    def test_hash(self) -> None:
         with self.assertRaises(TypeError):
             hash(CompoundTag())
 
-    def test_instance(self):
+    def test_instance(self) -> None:
         self.assertIsInstance(CompoundTag(), AbstractBaseTag)
         self.assertIsInstance(CompoundTag(), AbstractBaseMutableTag)
         self.assertIsInstance(CompoundTag(), CompoundTag)
 
-    def test_fromkeys(self):
+    def test_fromkeys(self) -> None:
         tag = CompoundTag.fromkeys(("a", "b"), StringTag("test"))
         self.assertIsInstance(tag, CompoundTag)
         self.assertEqual(
@@ -448,12 +448,12 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         with self.assertRaises(TypeError):
             CompoundTag.fromkeys(("a", "b"), None)
 
-    def test_clear(self):
+    def test_clear(self) -> None:
         c = CompoundTag({TagNameMap[tag_cls]: tag_cls() for tag_cls in self.nbt_types})
         c.clear()
         self.assertEqual(c, CompoundTag({}))
 
-    def test_contains(self):
+    def test_contains(self) -> None:
         c = CompoundTag({"key1": StringTag("val1")})
         self.assertIn("key1", c)
         self.assertNotIn("key2", c)
@@ -465,7 +465,7 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                     with self.assertRaises(TypeError, msg=not_nbt):
                         not_nbt in c
 
-    def test_getitem(self):
+    def test_getitem(self) -> None:
         c = CompoundTag(
             {
                 "key1": StringTag("val1"),
@@ -485,14 +485,14 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                     with self.assertRaises(TypeError):
                         c[not_nbt]
 
-    def test_get(self):
+    def test_get(self) -> None:
         value = StringTag("test")
         c = CompoundTag(key=value)
         self.assertEqual(value, c.get("key"))
         self.assertIs(None, c.get("key2"))
         self.assertEqual(value, c.get("key3", value))
 
-    def test_get_typed(self):
+    def test_get_typed(self) -> None:
         for cls in self.nbt_types:
             tag_name = TagNameMap[cls]
             tag = cls()
@@ -510,7 +510,7 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 with self.subTest(cls=cls, cls2=cls2), self.assertRaises(TypeError):
                     getattr(comp, f"get_{tag_name2}")("key")
 
-    def test_pop(self):
+    def test_pop(self) -> None:
         tag = CompoundTag(
             key1=StringTag("val1"),
             key2=StringTag("val2"),
@@ -529,7 +529,7 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         self.assertIs(None, tag.pop("key1", None))
         self.assertEqual(StringTag("val1"), tag.pop("key1", StringTag("val1")))
 
-    def test_setitem(self):
+    def test_setitem(self) -> None:
         tag = CompoundTag()
         tag["key"] = StringTag("val")
         self.assertEqual(CompoundTag({"key": StringTag("val")}), tag)
@@ -544,7 +544,7 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 with self.assertRaises(TypeError, msg=repr(not_nbt)):
                     tag[not_nbt.__class__.__name__] = not_nbt
 
-    def test_setdefault(self):
+    def test_setdefault(self) -> None:
         c = CompoundTag(key1=StringTag("val1"))
 
         # invalid keys
@@ -567,7 +567,7 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         self.assertEqual(StringTag("val2"), c.setdefault("key2", StringTag("val2")))
         self.assertEqual(StringTag("val2"), c["key2"])
 
-    def test_setdefault_typed(self):
+    def test_setdefault_typed(self) -> None:
         for cls, cls2 in itertools.product(self.nbt_types, repeat=2):
             tag_name = TagNameMap[cls2]
             with self.subTest(cls=cls, cls2=cls2):
@@ -595,12 +595,12 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                     tag2, getattr(comp, f"setdefault_{tag_name}")("key3", tag2)
                 )
 
-    def test_delitem(self):
+    def test_delitem(self) -> None:
         c = CompoundTag(key1=StringTag("val1"), key2=StringTag("val2"))
         del c["key1"]
         self.assertEqual(CompoundTag(key2=StringTag("val2")), c)
 
-    def test_update(self):
+    def test_update(self) -> None:
         c = CompoundTag()
         with self.assertRaises(TypeError):
             c.update({None: StringTag("val")})
@@ -673,7 +673,7 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         c.update(d)
         self.assertEqual(CompoundTag(d), c)
 
-    def test_iter(self):
+    def test_iter(self) -> None:
         d = {
             "key1": StringTag("val1"),
             "key2": StringTag("val2"),
@@ -692,7 +692,7 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         self.assertIsInstance(dict(c), dict)
         self.assertEqual(dict(d), dict(c))
 
-    def test_keys(self):
+    def test_keys(self) -> None:
         d = {
             "key1": StringTag("val1"),
             "key2": StringTag("val2"),
@@ -701,7 +701,7 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         c = CompoundTag(d)
         self.assertEqual(d.keys(), c.keys())
 
-    def test_values(self):
+    def test_values(self) -> None:
         d = {
             "key1": StringTag("val1"),
             "key2": StringTag("val2"),
@@ -710,7 +710,7 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         c = CompoundTag(d)
         self.assertEqual(list(d.values()), list(c.values()))
 
-    def test_items(self):
+    def test_items(self) -> None:
         d = {
             "key1": StringTag("val1"),
             "key2": StringTag("val2"),
@@ -719,7 +719,7 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         c = CompoundTag(d)
         self.assertEqual(d.items(), c.items())
 
-    def test_len(self):
+    def test_len(self) -> None:
         self.assertEqual(
             3,
             len(

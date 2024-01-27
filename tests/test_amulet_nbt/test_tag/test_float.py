@@ -11,7 +11,7 @@ from amulet_nbt import AbstractBaseTag, AbstractBaseImmutableTag, AbstractBaseNu
 
 
 class FloatTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
-    def test_constructor(self):
+    def test_constructor(self) -> None:
         for float_cls in self.float_types:
             with self.subTest(float_cls=float_cls):
                 float_cls()
@@ -43,7 +43,7 @@ class FloatTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
                     with self.subTest(obj=obj, float_cls=float_cls):
                         float_cls(obj)
 
-    def test_equal(self):
+    def test_equal(self) -> None:
         for cls1 in self.float_types:
             for cls2 in self.float_types:
                 with self.subTest(cls1=cls1, cls2=cls2):
@@ -58,7 +58,7 @@ class FloatTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
             self.assertNotEqual(cls1(), 0)
             self.assertNotEqual(0, cls1())
 
-    def test_py_data(self):
+    def test_py_data(self) -> None:
         for cls in self.float_types:
             with self.subTest(cls=cls):
                 self.assertIsInstance(cls().py_float, float)
@@ -66,7 +66,7 @@ class FloatTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
                 self.assertEqual(cls(5).py_float, 5.0)
                 self.assertEqual(cls(5.5).py_float, 5.5)
 
-    def test_repr(self):
+    def test_repr(self) -> None:
         for cls in self.float_types:
             with self.subTest(cls=cls):
                 self.assertEqual(f"{cls.__name__}(0.0)", repr(cls()))
@@ -76,7 +76,7 @@ class FloatTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
     def test_str(self) -> None:
         pass
 
-    def test_pickle(self):
+    def test_pickle(self) -> None:
         for cls in self.float_types:
             with self.subTest(cls=cls):
                 tag = cls()
@@ -87,7 +87,7 @@ class FloatTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
                 self.assertEqual(tag, tag_2)
                 self.assertEqual(tag.py_float, tag_2.py_float)
 
-    def test_copy(self):
+    def test_copy(self) -> None:
         for cls in self.float_types:
             with self.subTest(cls=cls):
                 tag = cls()
@@ -107,7 +107,7 @@ class FloatTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
                 self.assertEqual(tag, tag_deepcopy)
                 self.assertEqual(tag.py_float, tag_deepcopy.py_float)
 
-    def test_hash(self):
+    def test_hash(self) -> None:
         for cls1, cls2 in itertools.product(self.float_types, repeat=2):
             with self.subTest(cls1=cls1, cls2=cls2):
                 if cls1 is cls2:
@@ -115,7 +115,7 @@ class FloatTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
                 else:
                     self.assertNotEqual(hash(cls1()), hash(cls2()))
 
-    def test_instance(self):
+    def test_instance(self) -> None:
         for cls in self.float_types:
             with self.subTest(cls=cls):
                 tag = cls()
@@ -125,19 +125,19 @@ class FloatTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
                 self.assertIsInstance(tag, AbstractBaseFloatTag)
                 self.assertIsInstance(tag, cls)
 
-    def test_int(self):
+    def test_int(self) -> None:
         for cls in self.float_types:
             with self.subTest(cls=cls):
                 self.assertEqual(5, int(cls(5.5)))
                 self.assertEqual(-5, int(cls(-5.5)))
 
-    def test_float(self):
+    def test_float(self) -> None:
         for cls in self.float_types:
             with self.subTest(cls=cls):
                 self.assertEqual(5.5, float(cls(5.5)))
                 self.assertEqual(-5.5, float(cls(-5.5)))
 
-    def test_bool(self):
+    def test_bool(self) -> None:
         for cls in self.float_types:
             with self.subTest(cls=cls):
                 self.assertTrue(cls(5.5))
@@ -150,7 +150,7 @@ class FloatTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
                 self.assertTrue(cls(-5))
                 self.assertTrue(cls(-5.5))
 
-    def test_numerical_operators(self):
+    def test_numerical_operators(self) -> None:
         for cls1, cls2 in itertools.product(self.float_types, repeat=2):
             with self.subTest(cls1=cls1, cls2=cls2):
                 if cls1 is cls2:

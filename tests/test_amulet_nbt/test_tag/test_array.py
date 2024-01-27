@@ -13,7 +13,7 @@ from amulet_nbt import AbstractBaseTag, AbstractBaseMutableTag, AbstractBaseArra
 
 
 class ArrayTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
-    def test_constructor(self):
+    def test_constructor(self) -> None:
         for cls in self.array_types:
             with self.subTest(cls=cls):
                 cls()
@@ -28,7 +28,7 @@ class ArrayTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 with self.subTest(cls=cls, cls2=cls2):
                     cls(cls2([1, 2, 3]))
 
-    def test_equal(self):
+    def test_equal(self) -> None:
         for cls1, cls2 in itertools.product(self.array_types, repeat=2):
             for arg1, arg2 in itertools.product(([], [1, 2, 3], [4, 5, 6]), repeat=2):
                 with self.subTest(cls1=cls1, cls2=cls2, arg1=arg1, arg2=arg2):
@@ -39,7 +39,7 @@ class ArrayTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                     else:
                         self.assertNotEqual(a, b)
 
-    def test_py_data(self):
+    def test_py_data(self) -> None:
         for cls in self.array_types:
             with self.subTest(cls=cls):
                 inst = cls([1, 2, 3])
@@ -50,7 +50,7 @@ class ArrayTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 arr[1] = 10
                 self.assertEqual(10, inst[1])
 
-    def test_repr(self):
+    def test_repr(self) -> None:
         for cls in self.array_types:
             with self.subTest(cls=cls):
                 self.assertEqual(f"{cls.__name__}([])", repr(cls()))
@@ -62,7 +62,7 @@ class ArrayTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
     def test_str(self) -> None:
         pass
 
-    def test_pickle(self):
+    def test_pickle(self) -> None:
         for cls1, cls2 in itertools.product(self.array_types, repeat=2):
             for arg1, arg2 in itertools.product(([], [1, 2, 3], [4, 5, 6]), repeat=2):
                 with self.subTest(cls1=cls1, cls2=cls2, arg1=arg1, arg2=arg2):
@@ -74,7 +74,7 @@ class ArrayTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                     else:
                         self.assertNotEqual(a, b)
 
-    def test_copy(self):
+    def test_copy(self) -> None:
         for cls in self.array_types:
             inst = cls([1, 2, 3])
             inst2 = copy.copy(inst)
@@ -90,7 +90,7 @@ class ArrayTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
             inst[1] = 10
             self.assertEqual(2, inst2[1])
 
-    def test_hash(self):
+    def test_hash(self) -> None:
         for cls in self.array_types:
             with self.subTest(cls=cls):
                 with self.assertRaises(TypeError):
@@ -98,24 +98,24 @@ class ArrayTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 with self.assertRaises(TypeError):
                     hash(cls([1, 2, 3]))
 
-    def test_instance(self):
+    def test_instance(self) -> None:
         for cls in self.array_types:
             for parent in (
-                    AbstractBaseTag,
-                    AbstractBaseMutableTag,
-                    AbstractBaseArrayTag,
-                    cls,
+                AbstractBaseTag,
+                AbstractBaseMutableTag,
+                AbstractBaseArrayTag,
+                cls,
             ):
                 with self.subTest(cls=cls, parent=parent):
                     self.assertIsInstance(cls(), parent)
 
-    def test_len(self):
+    def test_len(self) -> None:
         for cls in self.array_types:
             with self.subTest(cls=cls):
                 self.assertEqual(0, len(cls()))
                 self.assertEqual(3, len(cls([1, 2, 3])))
 
-    def test_set_get_item(self):
+    def test_set_get_item(self) -> None:
         for cls in self.array_types:
             with self.subTest("Get and set index", cls=cls):
                 inst = cls([1, 2, 3])
@@ -138,7 +138,7 @@ class ArrayTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 numpy.testing.assert_array_equal([4, 2, 5], inst[:])
                 numpy.testing.assert_array_equal([4, 5], inst[::2])
 
-    def test_asarray(self):
+    def test_asarray(self) -> None:
         for cls in self.array_types:
             with self.subTest(cls=cls):
                 numpy.testing.assert_array_equal([], numpy.asarray(cls()))

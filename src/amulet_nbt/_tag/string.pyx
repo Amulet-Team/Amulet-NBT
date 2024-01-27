@@ -76,13 +76,13 @@ cdef class StringTag(AbstractBaseImmutableTag):
             return <bytes> self.cpp
 
     def __reduce__(self):
-        raise NotImplementedError
+        return StringTag, (self.cpp,)
 
     def __copy__(self):
-        raise NotImplementedError
+        return StringTag.wrap(self.cpp)
 
     def __deepcopy__(self, memo=None):
-        raise NotImplementedError
+        return StringTag.wrap(self.cpp)
 
     def __hash__(self):
         return hash((8, self.cpp))

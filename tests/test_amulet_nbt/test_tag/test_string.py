@@ -37,32 +37,29 @@ class StringTagTestCase(AbstractBaseImmutableTagTestCase, unittest.TestCase):
         pass
 
     def test_pickle(self):
-        pass
-        # tag = StringTag("value")
-        #
-        # tag_pickled = pickle.dumps(tag)
-        # tag_2 = pickle.loads(tag_pickled)
-        # self.assertIsNot(tag, tag_2)
-        # self.assertEqual(tag, tag_2)
-        # self.assertEqual(tag.py_str, tag_2.py_str)
+        tag = StringTag("value")
+
+        tag_pickled = pickle.dumps(tag)
+        tag_2 = pickle.loads(tag_pickled)
+        self.assertIsNot(tag, tag_2)
+        self.assertEqual(tag, tag_2)
+        self.assertEqual(tag.py_str, tag_2.py_str)
 
     def test_copy(self):
-        pass
-        # tag = StringTag("value")
-        #
-        # tag_copy = copy.copy(tag)
-        # self.assertIsNot(tag, tag_copy)
-        # self.assertEqual(tag, tag_copy)
-        # self.assertEqual(tag.py_str, tag_copy.py_str)
+        tag = StringTag("value")
+
+        tag_copy = copy.copy(tag)
+        self.assertIsNot(tag, tag_copy)
+        self.assertEqual(tag, tag_copy)
+        self.assertEqual(tag.py_str, tag_copy.py_str)
 
     def test_deepcopy(self) -> None:
-        pass
-        # tag = StringTag("value")
-        #
-        # tag_deepcopy = copy.deepcopy(tag)
-        # self.assertIsNot(tag, tag_deepcopy)
-        # self.assertEqual(tag, tag_deepcopy)
-        # self.assertEqual(tag.py_str, tag_deepcopy.py_str)
+        tag = StringTag("value")
+
+        tag_deepcopy = copy.deepcopy(tag)
+        self.assertIsNot(tag, tag_deepcopy)
+        self.assertEqual(tag, tag_deepcopy)
+        self.assertEqual(tag.py_str, tag_deepcopy.py_str)
 
     def test_hash(self):
         self.assertEqual(hash(StringTag("value")), hash(StringTag("value")))

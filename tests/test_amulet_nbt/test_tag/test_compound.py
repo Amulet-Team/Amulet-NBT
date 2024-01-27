@@ -273,43 +273,158 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         pass
 
     def test_pickle(self):
-        pass
-        # for cls in self.nbt_types:
-        #     with self.subTest(cls=cls):
-        #         tag = CompoundTag(key=cls())
-        #         dump = pickle.dumps(tag)
-        #         tag2 = pickle.loads(dump)
-        #         self.assertEqual(tag, tag2)
+        for cls in self.nbt_types:
+            with self.subTest(cls=cls):
+                tag = CompoundTag(key=cls())
+                dump = pickle.dumps(tag)
+                tag2 = pickle.loads(dump)
+                self.assertEqual(tag, tag2)
 
     def test_copy(self):
-        pass
-        # tag = CompoundTag(key=CompoundTag())
-        # tag2 = copy.copy(tag)
-        #
-        # # check the root data is copied
-        # self.assertIsNot(tag, tag2)
-        # tag["key2"] = CompoundTag()
-        # self.assertNotEqual(tag, tag2)
-        #
-        # self.assertEqual(tag.get_compound("key"), tag2.get_compound("key"))
-        # tag.get_compound("key")["key2"] = ByteTag()
-        # self.assertEqual(tag.get_compound("key"), tag2.get_compound("key"))
+        tag = CompoundTag({
+            "byte": ByteTag(1),
+            "short": ShortTag(1),
+            "int": IntTag(1),
+            "long": LongTag(1),
+            "float": FloatTag(1),
+            "double": DoubleTag(1),
+            "byte_array": ByteArrayTag([1,2,3]),
+            "string": StringTag("hello world"),
+            "list": ListTag(),
+            "compound": CompoundTag(),
+            "int_array": IntArrayTag([1,2,3]),
+            "long_array": LongArrayTag([1,2,3]),
+        })
+        tag2 = copy.copy(tag)
+
+        # check the root data is copied
+        self.assertIsNot(tag, tag2)
+        self.assertEqual(tag, tag2)
+
+        # Check if modifying the data makes it not equal
+        tag["key"] = CompoundTag()
+        self.assertNotEqual(tag, tag2)
+
+        # Ensure they each have their own data
+        tag["byte"] = ByteTag(2)
+        tag["short"] = ShortTag(2)
+        tag["int"] = IntTag(2)
+        tag["long"] = LongTag(2)
+        tag["float"] = FloatTag(2)
+        tag["double"] = DoubleTag(2)
+        tag["byte_array"] = ByteArrayTag([4, 5, 6])
+        tag["string"] = StringTag("hello world2")
+        tag["list"] = ListTag([ByteTag(1)])
+        tag["compound"] = CompoundTag({"test": ByteTag(1)})
+        tag["int_array"] = IntArrayTag([4, 5, 6])
+        tag["long_array"] = LongArrayTag([4, 5, 6])
+
+        self.assertEqual(ByteTag(1), tag2["byte"])
+        self.assertEqual(ShortTag(1), tag2["short"])
+        self.assertEqual(IntTag(1), tag2["int"])
+        self.assertEqual(LongTag(1), tag2["long"])
+        self.assertEqual(FloatTag(1), tag2["float"])
+        self.assertEqual(DoubleTag(1), tag2["double"])
+        self.assertEqual(ByteArrayTag([1, 2, 3]), tag2["byte_array"])
+        self.assertEqual(StringTag("hello world"), tag2["string"])
+        self.assertEqual(ListTag(), tag2["list"])
+        self.assertEqual(CompoundTag(), tag2["compound"])
+        self.assertEqual(IntArrayTag([1, 2, 3]), tag2["int_array"])
+        self.assertEqual(LongArrayTag([1, 2, 3]), tag2["long_array"])
+
+        # Make sure the contained data is shared
+        tag = CompoundTag({
+            "byte_array": ByteArrayTag([1, 2, 3]),
+            "list": ListTag(),
+            "compound": CompoundTag(),
+            "int_array": IntArrayTag([1, 2, 3]),
+            "long_array": LongArrayTag([1, 2, 3]),
+        })
+        tag2 = copy.copy(tag)
+
+        tag["list"].append(ByteTag())
+        self.assertEqual(ListTag([ByteTag()]), tag2["list"])
+        tag["compound"]["key"] = ByteTag()
+        self.assertEqual(CompoundTag({"key": ByteTag()}), tag2["compound"])
+        tag["byte_array"][0] = 10
+        self.assertEqual(ByteArrayTag([10, 2, 3]), tag2["byte_array"])
+        tag["int_array"][0] = 10
+        self.assertEqual(IntArrayTag([10, 2, 3]), tag2["int_array"])
+        tag["long_array"][0] = 10
+        self.assertEqual(LongArrayTag([10, 2, 3]), tag2["long_array"])
 
     def test_deepcopy(self) -> None:
-        pass
-        # tag = CompoundTag(key=CompoundTag())
-        # tag2 = copy.deepcopy(tag)
-        #
-        # # check the root data is copied
-        # self.assertIsNot(tag, tag2)
-        # tag["key2"] = CompoundTag()
-        # self.assertNotEqual(tag, tag2)
-        #
-        # # check the contained data is copied
-        # self.assertIsNot(tag.get_compound("key"), tag2.get_compound("key"))
-        # tag.get_compound("key")["key2"] = ByteTag()
-        # self.assertNotEqual(tag, tag2)
-        # self.assertNotEqual(tag.get_compound("key"), tag2.get_compound("key"))
+        tag = CompoundTag({
+            "byte": ByteTag(1),
+            "short": ShortTag(1),
+            "int": IntTag(1),
+            "long": LongTag(1),
+            "float": FloatTag(1),
+            "double": DoubleTag(1),
+            "byte_array": ByteArrayTag([1, 2, 3]),
+            "string": StringTag("hello world"),
+            "list": ListTag(),
+            "compound": CompoundTag(),
+            "int_array": IntArrayTag([1, 2, 3]),
+            "long_array": LongArrayTag([1, 2, 3]),
+        })
+        tag2 = copy.deepcopy(tag)
+
+        # check the root data is copied
+        self.assertIsNot(tag, tag2)
+        self.assertEqual(tag, tag2)
+
+        # Check if modifying the data makes it not equal
+        tag["key"] = CompoundTag()
+        self.assertNotEqual(tag, tag2)
+
+        # Ensure they each have their own data
+        tag["byte"] = ByteTag(2)
+        tag["short"] = ShortTag(2)
+        tag["int"] = IntTag(2)
+        tag["long"] = LongTag(2)
+        tag["float"] = FloatTag(2)
+        tag["double"] = DoubleTag(2)
+        tag["byte_array"] = ByteArrayTag([4, 5, 6])
+        tag["string"] = StringTag("hello world2")
+        tag["list"] = ListTag([ByteTag(1)])
+        tag["compound"] = CompoundTag({"test": ByteTag(1)})
+        tag["int_array"] = IntArrayTag([4, 5, 6])
+        tag["long_array"] = LongArrayTag([4, 5, 6])
+
+        self.assertEqual(ByteTag(1), tag2["byte"])
+        self.assertEqual(ShortTag(1), tag2["short"])
+        self.assertEqual(IntTag(1), tag2["int"])
+        self.assertEqual(LongTag(1), tag2["long"])
+        self.assertEqual(FloatTag(1), tag2["float"])
+        self.assertEqual(DoubleTag(1), tag2["double"])
+        self.assertEqual(ByteArrayTag([1, 2, 3]), tag2["byte_array"])
+        self.assertEqual(StringTag("hello world"), tag2["string"])
+        self.assertEqual(ListTag(), tag2["list"])
+        self.assertEqual(CompoundTag(), tag2["compound"])
+        self.assertEqual(IntArrayTag([1, 2, 3]), tag2["int_array"])
+        self.assertEqual(LongArrayTag([1, 2, 3]), tag2["long_array"])
+
+        # Make sure the contained data is not shared
+        tag = CompoundTag({
+            "byte_array": ByteArrayTag([1, 2, 3]),
+            "list": ListTag(),
+            "compound": CompoundTag(),
+            "int_array": IntArrayTag([1, 2, 3]),
+            "long_array": LongArrayTag([1, 2, 3]),
+        })
+        tag2 = copy.deepcopy(tag)
+
+        tag["list"].append(ByteTag())
+        self.assertEqual(ListTag(), tag2["list"])
+        tag["compound"]["key"] = ByteTag()
+        self.assertEqual(CompoundTag(), tag2["compound"])
+        tag["byte_array"][0] = 10
+        self.assertEqual(ByteArrayTag([1, 2, 3]), tag2["byte_array"])
+        tag["int_array"][0] = 10
+        self.assertEqual(IntArrayTag([1, 2, 3]), tag2["int_array"])
+        tag["long_array"][0] = 10
+        self.assertEqual(LongArrayTag([1, 2, 3]), tag2["long_array"])
 
     def test_hash(self):
         with self.assertRaises(TypeError):

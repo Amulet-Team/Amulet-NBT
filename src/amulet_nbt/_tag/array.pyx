@@ -109,13 +109,17 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
         return str(list(self))
 
     def __reduce__(ByteArrayTag self):
-        raise NotImplementedError
+        return ByteArrayTag, (list(self),)
 
     def __copy__(ByteArrayTag self):
-        raise NotImplementedError
+        return ByteArrayTag.wrap(
+            make_shared[CByteArrayTag](dereference(self.cpp))
+        )
 
     def __deepcopy__(ByteArrayTag self, memo=None):
-        raise NotImplementedError
+        return ByteArrayTag.wrap(
+            make_shared[CByteArrayTag](dereference(self.cpp))
+        )
 
     # Sized
     def __len__(ByteArrayTag self):
@@ -196,13 +200,17 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
         return str(list(self))
 
     def __reduce__(IntArrayTag self):
-        raise NotImplementedError
+        return IntArrayTag, (list(self),)
 
     def __copy__(IntArrayTag self):
-        raise NotImplementedError
+        return IntArrayTag.wrap(
+            make_shared[CIntArrayTag](dereference(self.cpp))
+        )
 
     def __deepcopy__(IntArrayTag self, memo=None):
-        raise NotImplementedError
+        return IntArrayTag.wrap(
+            make_shared[CIntArrayTag](dereference(self.cpp))
+        )
 
     # Sized
     def __len__(IntArrayTag self):
@@ -283,13 +291,17 @@ cdef class LongArrayTag(AbstractBaseArrayTag):
         return str(list(self))
 
     def __reduce__(LongArrayTag self):
-        raise NotImplementedError
+        return LongArrayTag, (list(self),)
 
     def __copy__(LongArrayTag self):
-        raise NotImplementedError
+        return LongArrayTag.wrap(
+            make_shared[CLongArrayTag](dereference(self.cpp))
+        )
 
     def __deepcopy__(LongArrayTag self, memo=None):
-        raise NotImplementedError
+        return LongArrayTag.wrap(
+            make_shared[CLongArrayTag](dereference(self.cpp))
+        )
 
     # Sized
     def __len__(LongArrayTag self):

@@ -77,38 +77,35 @@ class FloatTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
         pass
 
     def test_pickle(self):
-        pass
-        # for cls in self.float_types:
-        #     with self.subTest(cls=cls):
-        #         tag = cls()
-        #
-        #         tag_pickled = pickle.dumps(tag)
-        #         tag_2 = pickle.loads(tag_pickled)
-        #         self.assertIsNot(tag, tag_2)
-        #         self.assertEqual(tag, tag_2)
-        #         self.assertEqual(tag.py_float, tag_2.py_float)
+        for cls in self.float_types:
+            with self.subTest(cls=cls):
+                tag = cls()
+
+                tag_pickled = pickle.dumps(tag)
+                tag_2 = pickle.loads(tag_pickled)
+                self.assertIsNot(tag, tag_2)
+                self.assertEqual(tag, tag_2)
+                self.assertEqual(tag.py_float, tag_2.py_float)
 
     def test_copy(self):
-        pass
-        # for cls in self.float_types:
-        #     with self.subTest(cls=cls):
-        #         tag = cls()
-        #
-        #         tag_copy = copy.copy(tag)
-        #         self.assertIsNot(tag, tag_copy)
-        #         self.assertEqual(tag, tag_copy)
-        #         self.assertEqual(tag.py_float, tag_copy.py_float)
+        for cls in self.float_types:
+            with self.subTest(cls=cls):
+                tag = cls()
+
+                tag_copy = copy.copy(tag)
+                self.assertIsNot(tag, tag_copy)
+                self.assertEqual(tag, tag_copy)
+                self.assertEqual(tag.py_float, tag_copy.py_float)
 
     def test_deepcopy(self) -> None:
-        pass
-        # for cls in self.float_types:
-        #     with self.subTest(cls=cls):
-        #         tag = cls()
-        #
-        #         tag_deepcopy = copy.deepcopy(tag)
-        #         self.assertIsNot(tag, tag_deepcopy)
-        #         self.assertEqual(tag, tag_deepcopy)
-        #         self.assertEqual(tag.py_float, tag_deepcopy.py_float)
+        for cls in self.float_types:
+            with self.subTest(cls=cls):
+                tag = cls()
+
+                tag_deepcopy = copy.deepcopy(tag)
+                self.assertIsNot(tag, tag_deepcopy)
+                self.assertEqual(tag, tag_deepcopy)
+                self.assertEqual(tag.py_float, tag_deepcopy.py_float)
 
     def test_hash(self):
         for cls1, cls2 in itertools.product(self.float_types, repeat=2):

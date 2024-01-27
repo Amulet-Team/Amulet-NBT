@@ -8,13 +8,13 @@
         return str(self.cpp)
 
     def __reduce__({{py_cls}} self):
-        raise NotImplementedError
+        return {{py_cls}}, (self.cpp,)
 
     def __copy__({{py_cls}} self):
-        raise NotImplementedError
+        return {{py_cls}}.wrap(self.cpp)
 
     def __deepcopy__({{py_cls}} self, memo=None):
-        raise NotImplementedError
+        return {{py_cls}}.wrap(self.cpp)
 
     def __hash__({{py_cls}} self):
         return hash(({{tag_id}}, self.cpp))

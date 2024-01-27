@@ -33,6 +33,7 @@ from .float cimport FloatTag, DoubleTag
 from .string cimport StringTag
 from .compound cimport CompoundTag
 from .array cimport ByteArrayTag, IntArrayTag, LongArrayTag
+from .deepcopy cimport CListTagPtr_deepcopy
 # from amulet_nbt._const cimport ID_LIST, CommaSpace, CommaNewline
 # from amulet_nbt._dtype import AnyNBT, EncoderType
 from .compound cimport is_compound_eq
@@ -191,8 +192,7 @@ f"""cdef inline list ListTag_get_slice_{tag_var}(CListTagPtr cpp, object s):
     cdef ptrdiff_t step
     cdef size_t item
     
-    cdef {c_list_cls}* {list_var}
-    {list_var} = &get[{c_list_cls}](dereference(cpp))
+    cdef {c_list_cls}* {list_var} = &get[{c_list_cls}](dereference(cpp))
     
     start, stop, step = _slice_to_range(dereference({list_var}).size(), s)
     return [
@@ -544,13 +544,15 @@ cdef class ListTag(AbstractBaseMutableTag):
         return str(list(self))
 
     def __reduce__(self):
-        raise NotImplementedError
+        return ListTag, (list(self), self.list_data_type)
 
     def __copy__(self):
-        raise NotImplementedError
+        return ListTag.wrap(
+            make_shared[CListTag](dereference(self.cpp))
+        )
 
     def __deepcopy__(self, memo=None):
-        raise NotImplementedError
+        return ListTag.wrap(CListTagPtr_deepcopy(self.cpp))
 
     @property
     def list_data_type(self):

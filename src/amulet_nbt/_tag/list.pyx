@@ -34,6 +34,7 @@ from .float cimport FloatTag, DoubleTag
 from .string cimport StringTag
 from .compound cimport CompoundTag
 from .array cimport ByteArrayTag, IntArrayTag, LongArrayTag
+from .deepcopy cimport CListTagPtr_deepcopy
 # from amulet_nbt._const cimport ID_LIST, CommaSpace, CommaNewline
 # from amulet_nbt._dtype import AnyNBT, EncoderType
 from .compound cimport is_compound_eq
@@ -496,8 +497,7 @@ cdef inline list ListTag_get_slice_byte_tag(CListTagPtr cpp, object s):
     cdef ptrdiff_t step
     cdef size_t item
     
-    cdef CByteList* byte_list
-    byte_list = &get[CByteList](dereference(cpp))
+    cdef CByteList* byte_list = &get[CByteList](dereference(cpp))
     
     start, stop, step = _slice_to_range(dereference(byte_list).size(), s)
     return [
@@ -512,8 +512,7 @@ cdef inline list ListTag_get_slice_short_tag(CListTagPtr cpp, object s):
     cdef ptrdiff_t step
     cdef size_t item
     
-    cdef CShortList* short_list
-    short_list = &get[CShortList](dereference(cpp))
+    cdef CShortList* short_list = &get[CShortList](dereference(cpp))
     
     start, stop, step = _slice_to_range(dereference(short_list).size(), s)
     return [
@@ -528,8 +527,7 @@ cdef inline list ListTag_get_slice_int_tag(CListTagPtr cpp, object s):
     cdef ptrdiff_t step
     cdef size_t item
     
-    cdef CIntList* int_list
-    int_list = &get[CIntList](dereference(cpp))
+    cdef CIntList* int_list = &get[CIntList](dereference(cpp))
     
     start, stop, step = _slice_to_range(dereference(int_list).size(), s)
     return [
@@ -544,8 +542,7 @@ cdef inline list ListTag_get_slice_long_tag(CListTagPtr cpp, object s):
     cdef ptrdiff_t step
     cdef size_t item
     
-    cdef CLongList* long_list
-    long_list = &get[CLongList](dereference(cpp))
+    cdef CLongList* long_list = &get[CLongList](dereference(cpp))
     
     start, stop, step = _slice_to_range(dereference(long_list).size(), s)
     return [
@@ -560,8 +557,7 @@ cdef inline list ListTag_get_slice_float_tag(CListTagPtr cpp, object s):
     cdef ptrdiff_t step
     cdef size_t item
     
-    cdef CFloatList* float_list
-    float_list = &get[CFloatList](dereference(cpp))
+    cdef CFloatList* float_list = &get[CFloatList](dereference(cpp))
     
     start, stop, step = _slice_to_range(dereference(float_list).size(), s)
     return [
@@ -576,8 +572,7 @@ cdef inline list ListTag_get_slice_double_tag(CListTagPtr cpp, object s):
     cdef ptrdiff_t step
     cdef size_t item
     
-    cdef CDoubleList* double_list
-    double_list = &get[CDoubleList](dereference(cpp))
+    cdef CDoubleList* double_list = &get[CDoubleList](dereference(cpp))
     
     start, stop, step = _slice_to_range(dereference(double_list).size(), s)
     return [
@@ -592,8 +587,7 @@ cdef inline list ListTag_get_slice_byte_array_tag(CListTagPtr cpp, object s):
     cdef ptrdiff_t step
     cdef size_t item
     
-    cdef CByteArrayList* byte_array_list
-    byte_array_list = &get[CByteArrayList](dereference(cpp))
+    cdef CByteArrayList* byte_array_list = &get[CByteArrayList](dereference(cpp))
     
     start, stop, step = _slice_to_range(dereference(byte_array_list).size(), s)
     return [
@@ -608,8 +602,7 @@ cdef inline list ListTag_get_slice_string_tag(CListTagPtr cpp, object s):
     cdef ptrdiff_t step
     cdef size_t item
     
-    cdef CStringList* string_list
-    string_list = &get[CStringList](dereference(cpp))
+    cdef CStringList* string_list = &get[CStringList](dereference(cpp))
     
     start, stop, step = _slice_to_range(dereference(string_list).size(), s)
     return [
@@ -624,8 +617,7 @@ cdef inline list ListTag_get_slice_list_tag(CListTagPtr cpp, object s):
     cdef ptrdiff_t step
     cdef size_t item
     
-    cdef CListList* list_list
-    list_list = &get[CListList](dereference(cpp))
+    cdef CListList* list_list = &get[CListList](dereference(cpp))
     
     start, stop, step = _slice_to_range(dereference(list_list).size(), s)
     return [
@@ -640,8 +632,7 @@ cdef inline list ListTag_get_slice_compound_tag(CListTagPtr cpp, object s):
     cdef ptrdiff_t step
     cdef size_t item
     
-    cdef CCompoundList* compound_list
-    compound_list = &get[CCompoundList](dereference(cpp))
+    cdef CCompoundList* compound_list = &get[CCompoundList](dereference(cpp))
     
     start, stop, step = _slice_to_range(dereference(compound_list).size(), s)
     return [
@@ -656,8 +647,7 @@ cdef inline list ListTag_get_slice_int_array_tag(CListTagPtr cpp, object s):
     cdef ptrdiff_t step
     cdef size_t item
     
-    cdef CIntArrayList* int_array_list
-    int_array_list = &get[CIntArrayList](dereference(cpp))
+    cdef CIntArrayList* int_array_list = &get[CIntArrayList](dereference(cpp))
     
     start, stop, step = _slice_to_range(dereference(int_array_list).size(), s)
     return [
@@ -672,8 +662,7 @@ cdef inline list ListTag_get_slice_long_array_tag(CListTagPtr cpp, object s):
     cdef ptrdiff_t step
     cdef size_t item
     
-    cdef CLongArrayList* long_array_list
-    long_array_list = &get[CLongArrayList](dereference(cpp))
+    cdef CLongArrayList* long_array_list = &get[CLongArrayList](dereference(cpp))
     
     start, stop, step = _slice_to_range(dereference(long_array_list).size(), s)
     return [
@@ -2575,13 +2564,15 @@ cdef class ListTag(AbstractBaseMutableTag):
         return str(list(self))
 
     def __reduce__(self):
-        raise NotImplementedError
+        return ListTag, (list(self), self.list_data_type)
 
     def __copy__(self):
-        raise NotImplementedError
+        return ListTag.wrap(
+            make_shared[CListTag](dereference(self.cpp))
+        )
 
     def __deepcopy__(self, memo=None):
-        raise NotImplementedError
+        return ListTag.wrap(CListTagPtr_deepcopy(self.cpp))
 
     @property
     def list_data_type(self):

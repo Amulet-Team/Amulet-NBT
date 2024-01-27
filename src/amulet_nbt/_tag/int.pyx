@@ -59,13 +59,13 @@ cdef class ByteTag(AbstractBaseIntTag):
         return str(self.cpp)
 
     def __reduce__(ByteTag self):
-        raise NotImplementedError
+        return ByteTag, (self.cpp,)
 
     def __copy__(ByteTag self):
-        raise NotImplementedError
+        return ByteTag.wrap(self.cpp)
 
     def __deepcopy__(ByteTag self, memo=None):
-        raise NotImplementedError
+        return ByteTag.wrap(self.cpp)
 
     def __hash__(ByteTag self):
         return hash((1, self.cpp))
@@ -148,13 +148,13 @@ cdef class ShortTag(AbstractBaseIntTag):
         return str(self.cpp)
 
     def __reduce__(ShortTag self):
-        raise NotImplementedError
+        return ShortTag, (self.cpp,)
 
     def __copy__(ShortTag self):
-        raise NotImplementedError
+        return ShortTag.wrap(self.cpp)
 
     def __deepcopy__(ShortTag self, memo=None):
-        raise NotImplementedError
+        return ShortTag.wrap(self.cpp)
 
     def __hash__(ShortTag self):
         return hash((2, self.cpp))
@@ -237,13 +237,13 @@ cdef class IntTag(AbstractBaseIntTag):
         return str(self.cpp)
 
     def __reduce__(IntTag self):
-        raise NotImplementedError
+        return IntTag, (self.cpp,)
 
     def __copy__(IntTag self):
-        raise NotImplementedError
+        return IntTag.wrap(self.cpp)
 
     def __deepcopy__(IntTag self, memo=None):
-        raise NotImplementedError
+        return IntTag.wrap(self.cpp)
 
     def __hash__(IntTag self):
         return hash((3, self.cpp))
@@ -326,13 +326,13 @@ cdef class LongTag(AbstractBaseIntTag):
         return str(self.cpp)
 
     def __reduce__(LongTag self):
-        raise NotImplementedError
+        return LongTag, (self.cpp,)
 
     def __copy__(LongTag self):
-        raise NotImplementedError
+        return LongTag.wrap(self.cpp)
 
     def __deepcopy__(LongTag self, memo=None):
-        raise NotImplementedError
+        return LongTag.wrap(self.cpp)
 
     def __hash__(LongTag self):
         return hash((4, self.cpp))

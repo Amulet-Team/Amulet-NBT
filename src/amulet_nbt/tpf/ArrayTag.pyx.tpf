@@ -42,13 +42,17 @@ cdef class {{dtype.capitalize()}}ArrayTag(AbstractBaseArrayTag):
         return str(list(self))
 
     def __reduce__({{dtype.capitalize()}}ArrayTag self):
-        raise NotImplementedError
+        return {{dtype.capitalize()}}ArrayTag, (list(self),)
 
     def __copy__({{dtype.capitalize()}}ArrayTag self):
-        raise NotImplementedError
+        return {{dtype.capitalize()}}ArrayTag.wrap(
+            make_shared[C{{dtype.capitalize()}}ArrayTag](dereference(self.cpp))
+        )
 
     def __deepcopy__({{dtype.capitalize()}}ArrayTag self, memo=None):
-        raise NotImplementedError
+        return {{dtype.capitalize()}}ArrayTag.wrap(
+            make_shared[C{{dtype.capitalize()}}ArrayTag](dereference(self.cpp))
+        )
 
     # Sized
     def __len__({{dtype.capitalize()}}ArrayTag self):

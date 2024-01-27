@@ -72,13 +72,13 @@ cdef class FloatTag(AbstractBaseFloatTag):
         return str(self.cpp)
 
     def __reduce__(FloatTag self):
-        raise NotImplementedError
+        return FloatTag, (self.cpp,)
 
     def __copy__(FloatTag self):
-        raise NotImplementedError
+        return FloatTag.wrap(self.cpp)
 
     def __deepcopy__(FloatTag self, memo=None):
-        raise NotImplementedError
+        return FloatTag.wrap(self.cpp)
 
     def __hash__(FloatTag self):
         return hash((5, self.cpp))
@@ -152,13 +152,13 @@ cdef class DoubleTag(AbstractBaseFloatTag):
         return str(self.cpp)
 
     def __reduce__(DoubleTag self):
-        raise NotImplementedError
+        return DoubleTag, (self.cpp,)
 
     def __copy__(DoubleTag self):
-        raise NotImplementedError
+        return DoubleTag.wrap(self.cpp)
 
     def __deepcopy__(DoubleTag self, memo=None):
-        raise NotImplementedError
+        return DoubleTag.wrap(self.cpp)
 
     def __hash__(DoubleTag self):
         return hash((6, self.cpp))

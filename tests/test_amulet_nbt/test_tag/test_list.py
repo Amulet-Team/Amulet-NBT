@@ -286,48 +286,117 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         pass
 
     def test_pickle(self):
-        pass
-        # for cls in self.nbt_types:
-        #     with self.subTest(cls=cls):
-        #         tag = ListTag([cls()])
-        #         dump = pickle.dumps(tag)
-        #         tag2 = pickle.loads(dump)
-        #         self.assertEqual(tag, tag2)
-        #         self.assertEqual(tag.list_data_type, tag2.list_data_type)
+        for cls in self.nbt_types:
+            with self.subTest(cls=cls):
+                tag = ListTag([cls()])
+                dump = pickle.dumps(tag)
+                tag2 = pickle.loads(dump)
+                self.assertEqual(tag, tag2)
+                self.assertEqual(tag.list_data_type, tag2.list_data_type)
 
     def test_copy(self) -> None:
-        pass
-        # tag = ListTag([ListTag()])
-        # tag2 = copy.copy(tag)
-        #
-        # self.assertEqual(tag.list_data_type, tag2.list_data_type)
-        #
-        # # check the root data is copied
-        # self.assertIsNot(tag, tag2)
-        # tag.append(ListTag())
-        # self.assertNotEqual(tag, tag2)
-        #
-        # self.assertEqual(tag[0], tag2[0])
-        # tag[0].append(ListTag())
-        # self.assertEqual(tag[0], tag2[0])
+        for cls in self.nbt_types:
+            with self.subTest("copy append", cls=cls):
+                tag = ListTag([])
+                tag2 = copy.copy(tag)
+
+                self.assertEqual(tag.list_data_type, tag2.list_data_type)
+
+                # check the root data is copied
+                self.assertIsNot(tag, tag2)
+                tag.append(cls())
+                self.assertNotEqual(tag, tag2)
+
+        for cls in self.nbt_types:
+            with self.subTest("copy append child", cls=cls):
+                tag = ListTag([ListTag()])
+                tag2 = copy.copy(tag)
+                self.assertEqual(tag, tag2)
+                tag[0].append(ListTag())
+                self.assertEqual(tag, tag2)
+
+        # Make sure the mutable children are not copied
+        tag = ListTag([ListTag()])
+        tag2 = copy.copy(tag)
+        tag[0].append(ByteTag())
+        self.assertEqual(tag, tag2)
+        self.assertEqual(ByteTag(), tag2[0][0])
+
+        tag = ListTag([CompoundTag()])
+        tag2 = copy.copy(tag)
+        tag[0]["key"] = ByteTag()
+        self.assertEqual(tag, tag2)
+        self.assertEqual(ByteTag(), tag2[0]["key"])
+
+        tag = ListTag([ByteArrayTag([1, 2, 3])])
+        tag2 = copy.copy(tag)
+        tag[0][0] = 10
+        self.assertEqual(tag, tag2)
+        self.assertEqual(10, tag2[0][0])
+
+        tag = ListTag([IntArrayTag([1, 2, 3])])
+        tag2 = copy.copy(tag)
+        tag[0][0] = 10
+        self.assertEqual(tag, tag2)
+        self.assertEqual(10, tag2[0][0])
+
+        tag = ListTag([LongArrayTag([1, 2, 3])])
+        tag2 = copy.copy(tag)
+        tag[0][0] = 10
+        self.assertEqual(tag, tag2)
+        self.assertEqual(10, tag2[0][0])
 
     def test_deepcopy(self) -> None:
-        pass
-        # tag = ListTag([ListTag()])
-        # tag2 = copy.deepcopy(tag)
-        #
-        # self.assertEqual(tag.list_data_type, tag2.list_data_type)
-        #
-        # # check the root data is copied
-        # self.assertIsNot(tag, tag2)
-        # tag.append(ListTag())
-        # self.assertNotEqual(tag, tag2)
-        #
-        # # check the contained data is copied
-        # self.assertIsNot(tag[0], tag2[0])
-        # tag[0].append(ListTag())
-        # self.assertNotEqual(tag, tag2)
-        # self.assertNotEqual(tag[0], tag2[0])
+        for cls in self.nbt_types:
+            with self.subTest("deepcopy append", cls=cls):
+                tag = ListTag([])
+                tag2 = copy.deepcopy(tag)
+
+                self.assertEqual(tag.list_data_type, tag2.list_data_type)
+
+                # check the root data is copied
+                self.assertIsNot(tag, tag2)
+                tag.append(cls())
+                self.assertNotEqual(tag, tag2)
+
+        for cls in self.nbt_types:
+            with self.subTest("deepcopy append child", cls=cls):
+                tag = ListTag([ListTag()])
+                tag2 = copy.deepcopy(tag)
+                self.assertEqual(tag, tag2)
+                tag[0].append(ListTag())
+                self.assertNotEqual(tag, tag2)
+
+        # Make sure the mutable children are not copied
+        tag = ListTag([ListTag()])
+        tag2 = copy.deepcopy(tag)
+        tag[0].append(ByteTag())
+        self.assertNotEqual(tag, tag2)
+        self.assertEqual(ListTag(), tag2[0])
+
+        tag = ListTag([CompoundTag()])
+        tag2 = copy.deepcopy(tag)
+        tag[0]["key"] = ByteTag()
+        self.assertNotEqual(tag, tag2)
+        self.assertEqual(CompoundTag(), tag2[0])
+
+        tag = ListTag([ByteArrayTag([1, 2, 3])])
+        tag2 = copy.deepcopy(tag)
+        tag[0][0] = 10
+        self.assertNotEqual(tag, tag2)
+        self.assertEqual(1, tag2[0][0])
+
+        tag = ListTag([IntArrayTag([1, 2, 3])])
+        tag2 = copy.deepcopy(tag)
+        tag[0][0] = 10
+        self.assertNotEqual(tag, tag2)
+        self.assertEqual(1, tag2[0][0])
+
+        tag = ListTag([LongArrayTag([1, 2, 3])])
+        tag2 = copy.deepcopy(tag)
+        tag[0][0] = 10
+        self.assertNotEqual(tag, tag2)
+        self.assertEqual(1, tag2[0][0])
 
     def test_hash(self):
         with self.assertRaises(TypeError):

@@ -56,6 +56,7 @@ from .float cimport FloatTag, DoubleTag
 from .string cimport StringTag
 from .list cimport is_list_eq, ListTag
 from .array cimport ByteArrayTag, IntArrayTag, LongArrayTag
+from .deepcopy cimport CCompoundTagPtr_deepcopy
 
 
 cdef inline bool _is_byte_tag_node_eq(TagNode* a, TagNode* b) noexcept nogil:
@@ -260,13 +261,15 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return str(dict(self))
 
     def __reduce__(self):
-        raise NotImplementedError
+        return CompoundTag, (dict(self),)
 
     def __copy__(self):
-        raise NotImplementedError
+        return CompoundTag.wrap(
+            make_shared[CCompoundTag](dereference(self.cpp))
+        )
 
     def __deepcopy__(self, memo=None):
-        raise NotImplementedError
+        return CompoundTag.wrap(CCompoundTagPtr_deepcopy(self.cpp))
 
     # Sized
     def __len__(self) -> size_t:

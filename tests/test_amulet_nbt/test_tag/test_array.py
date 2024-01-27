@@ -63,37 +63,32 @@ class ArrayTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         pass
 
     def test_pickle(self):
-        pass
-        # for cls1, cls2 in itertools.product(self.array_types, repeat=2):
-        #     for arg1, arg2 in itertools.product(([], [1, 2, 3], [4, 5, 6]), repeat=2):
-        #         with self.subTest(cls1=cls1, cls2=cls2, arg1=arg1, arg2=arg2):
-        #             a = cls1(arg1)
-        #             dump = pickle.dumps(cls2(arg2))
-        #             b = pickle.loads(dump)
-        #             if arg1 == arg2 and cls1 is cls2:
-        #                 self.assertEqual(a, b)
-        #             else:
-        #                 self.assertNotEqual(a, b)
+        for cls1, cls2 in itertools.product(self.array_types, repeat=2):
+            for arg1, arg2 in itertools.product(([], [1, 2, 3], [4, 5, 6]), repeat=2):
+                with self.subTest(cls1=cls1, cls2=cls2, arg1=arg1, arg2=arg2):
+                    a = cls1(arg1)
+                    dump = pickle.dumps(cls2(arg2))
+                    b = pickle.loads(dump)
+                    if arg1 == arg2 and cls1 is cls2:
+                        self.assertEqual(a, b)
+                    else:
+                        self.assertNotEqual(a, b)
 
     def test_copy(self):
-        pass
-        # for cls in self.array_types:
-        #     # shallow copy should keep the same buffer
-        #     inst = cls([1, 2, 3])
-        #     inst2 = copy.copy(inst)
-        #     self.assertEqual(inst, inst2)
-        #     inst[1] = 10
-        #     self.assertEqual(10, inst2[1])
+        for cls in self.array_types:
+            inst = cls([1, 2, 3])
+            inst2 = copy.copy(inst)
+            self.assertEqual(inst, inst2)
+            inst[1] = 10
+            self.assertEqual(2, inst2[1])
 
     def test_deepcopy(self) -> None:
-        pass
-        # for cls in self.array_types:
-        #     # deepcopy should create a new buffer
-        #     inst = cls([1, 2, 3])
-        #     inst2 = copy.deepcopy(inst)
-        #     self.assertEqual(inst, inst2)
-        #     inst[1] = 10
-        #     self.assertNotEqual(10, inst2[1])
+        for cls in self.array_types:
+            inst = cls([1, 2, 3])
+            inst2 = copy.deepcopy(inst)
+            self.assertEqual(inst, inst2)
+            inst[1] = 10
+            self.assertEqual(2, inst2[1])
 
     def test_hash(self):
         for cls in self.array_types:

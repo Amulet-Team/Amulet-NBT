@@ -220,7 +220,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
     def py_data(self) -> Any:
         return dict(self)
 
-    def __eq__(CompoundTag self, object other) -> bool:
+    def __eq__(self, object other) -> bool:
         if not isinstance(other, CompoundTag):
             return False
         cdef CompoundTag tag = other

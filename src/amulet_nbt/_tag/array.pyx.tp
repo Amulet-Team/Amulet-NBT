@@ -29,7 +29,7 @@ from template import include
 
 cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
     @property
-    def np_array(AbstractBaseArrayTag self) -> numpy.ndarray:
+    def np_array(self) -> NDArray[numpy.int8 | numpy.int32 | numpy.int64]:
         """
         A numpy array holding the same internal data.
         Changes to the array will also modify the internal state.
@@ -46,11 +46,11 @@ cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
         return self.np_array
 
     # Sized
-    def __len__(AbstractBaseArrayTag self):
+    def __len__(self) -> int:
         raise NotImplementedError
 
     # Sequence
-    def __getitem__(AbstractBaseArrayTag self, item):
+    def __getitem__(self, item):
         raise NotImplementedError
 
     def __iter__(self):
@@ -63,11 +63,11 @@ cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
         raise NotImplementedError
 
     # MutableSequence
-    def __setitem__(AbstractBaseArrayTag self, key, value):
+    def __setitem__(self, key, value):
         raise NotImplementedError
 
     # Array interface
-    def __array__(AbstractBaseArrayTag self, dtype=None):
+    def __array__(self, dtype=None) -> NDArray[numpy.int8 | numpy.int32 | numpy.int64]:
         raise NotImplementedError
 
 

@@ -16,7 +16,7 @@ cdef class AbstractBaseFloatTag(AbstractBaseNumericTag):
     """Abstract Base Class for all float Tag classes"""
 
     @property
-    def py_float(AbstractBaseNumericTag self) -> float:
+    def py_float(self) -> float:
         """
         A python float representation of the class.
         The returned data is immutable so changes will not mirror the instance.
@@ -37,7 +37,7 @@ cdef class FloatTag(AbstractBaseFloatTag):
     """A single precision float class."""
     tag_id: int = 5
 
-    def __init__(FloatTag self, value = 0):
+    def __init__(self, value = 0):
         self.cpp = float(value)
 
 {{include("amulet_nbt/tpf/FloatTag.pyx.tpf", py_cls="FloatTag", tag_id=5)}}
@@ -47,7 +47,7 @@ cdef class DoubleTag(AbstractBaseFloatTag):
     """A double precision float class."""
     tag_id: int = 6
 
-    def __init__(DoubleTag self, value = 0):
+    def __init__(self, value = 0):
         self.cpp = float(value)
 
 {{include("amulet_nbt/tpf/FloatTag.pyx.tpf", py_cls="DoubleTag", tag_id=6)}}

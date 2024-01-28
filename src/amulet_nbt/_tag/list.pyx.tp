@@ -485,7 +485,7 @@ cdef class ListTag(AbstractBaseMutableTag):
     """
     tag_id: int = 9
 
-    def __init__(ListTag self, object value = (), char list_data_type = 1):
+    def __init__(self, object value = (), char list_data_type = 1):
         self.cpp = make_shared[CListTag]()
 {{
 "\n".join(
@@ -512,7 +512,7 @@ cdef class ListTag(AbstractBaseMutableTag):
         return node
 
     @property
-    def py_list(ListTag self) -> list[ByteTag] | list[ShortTag] | list[IntTag] | list[LongTag] | list[FloatTag] | list[
+    def py_list(self) -> list[ByteTag] | list[ShortTag] | list[IntTag] | list[LongTag] | list[FloatTag] | list[
         DoubleTag] | list[StringTag] | list[CompoundTag] | list[ByteArrayTag] | list[IntArrayTag] | list[LongArrayTag]:
         """
         A python list representation of the class.
@@ -530,16 +530,16 @@ cdef class ListTag(AbstractBaseMutableTag):
         """
         return list(self)
 
-    def __eq__(ListTag self, object other):
+    def __eq__(self, object other):
         if not isinstance(other, ListTag):
             return False
         cdef ListTag tag = other
         return is_list_eq(self.cpp, tag.cpp)
 
-    def __repr__(ListTag self):
+    def __repr__(self):
         return f"ListTag({list(self)!r}, {self.list_data_type})"
 
-    def __str__(ListTag self):
+    def __str__(self):
         return str(list(self))
 
     def __reduce__(self):
@@ -558,11 +558,11 @@ cdef class ListTag(AbstractBaseMutableTag):
         return dereference(self.cpp).index()
 
     # Sized
-    def __len__(ListTag self) -> int:
+    def __len__(self) -> int:
         return ListTag_len(self.cpp)
 
     # Sequence
-    def __getitem__(ListTag self, object item):
+    def __getitem__(self, object item):
         if isinstance(item, int):
             return ListTag_get_item(self.cpp, item)
         elif isinstance(item, slice):
@@ -618,7 +618,7 @@ cdef class ListTag(AbstractBaseMutableTag):
         return sum(1 for v in self if v is value or v == value)
 
     # MutableSequence
-    def __setitem__(ListTag self, object item, object value):
+    def __setitem__(self, object item, object value):
         if isinstance(item, int):
             ListTag_set_item(self.cpp, item, value)
         elif isinstance(item, slice):
@@ -626,7 +626,7 @@ cdef class ListTag(AbstractBaseMutableTag):
         else:
             raise TypeError(f"Unsupported item type {{'{'}}type(item){{'}'}}")
 
-    def __delitem__(ListTag self, object item):
+    def __delitem__(self, object item):
         if isinstance(item, int):
             ListTag_del_item(self.cpp, item)
         elif isinstance(item, slice):
@@ -634,7 +634,7 @@ cdef class ListTag(AbstractBaseMutableTag):
         else:
             raise TypeError(f"Unsupported item type {{'{'}}type(item){{'}'}}")
 
-    def insert(ListTag self, ptrdiff_t index, AbstractBaseTag value not None):
+    def insert(self, ptrdiff_t index, AbstractBaseTag value not None):
         ListTag_insert(self.cpp, index, value)
 
     def append(self, AbstractBaseTag value not None):
@@ -682,7 +682,7 @@ cdef class ListTag(AbstractBaseMutableTag):
         self.extend(values)
         return self
 
-    def copy(ListTag self):
+    def copy(self):
         """Return a shallow copy of the class"""
         return ListTag(self, dereference(self.cpp).index())
 

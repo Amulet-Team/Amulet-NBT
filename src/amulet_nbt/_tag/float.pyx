@@ -16,7 +16,7 @@ cdef class AbstractBaseFloatTag(AbstractBaseNumericTag):
     """Abstract Base Class for all float Tag classes"""
 
     @property
-    def py_float(AbstractBaseNumericTag self) -> float:
+    def py_float(self) -> float:
         """
         A python float representation of the class.
         The returned data is immutable so changes will not mirror the instance.
@@ -37,7 +37,7 @@ cdef class FloatTag(AbstractBaseFloatTag):
     """A single precision float class."""
     tag_id: int = 5
 
-    def __init__(FloatTag self, value = 0):
+    def __init__(self, value = 0):
         self.cpp = float(value)
 
     @staticmethod
@@ -55,58 +55,58 @@ cdef class FloatTag(AbstractBaseFloatTag):
     def py_float(self) -> float:
         return self.cpp
 
-    def __eq__(FloatTag self, other):
+    def __eq__(self, other):
         if not isinstance(other, FloatTag):
             return NotImplemented
         cdef FloatTag other_ = other
         return self.cpp == other_.cpp
 
-    def __repr__(FloatTag self):
+    def __repr__(self):
         return f"FloatTag({self.cpp})"
 
-    def __str__(FloatTag self):
+    def __str__(self):
         return str(self.cpp)
 
-    def __reduce__(FloatTag self):
+    def __reduce__(self):
         return FloatTag, (self.cpp,)
 
-    def __copy__(FloatTag self):
+    def __copy__(self):
         return FloatTag.wrap(self.cpp)
 
-    def __deepcopy__(FloatTag self, memo=None):
+    def __deepcopy__(self, memo=None):
         return FloatTag.wrap(self.cpp)
 
-    def __hash__(FloatTag self):
+    def __hash__(self):
         return hash((5, self.cpp))
 
-    def __int__(FloatTag self):
+    def __int__(self):
         return int(self.cpp)
 
-    def __float__(FloatTag self):
+    def __float__(self):
         return float(self.cpp)
 
-    def __bool__(FloatTag self):
+    def __bool__(self):
         return bool(self.cpp)
 
-    def __ge__(FloatTag self, other):
+    def __ge__(self, other):
         if not isinstance(other, FloatTag):
             return NotImplemented
         cdef FloatTag other_ = other
         return self.cpp >= other_.cpp
 
-    def __gt__(FloatTag self, other):
+    def __gt__(self, other):
         if not isinstance(other, FloatTag):
             return NotImplemented
         cdef FloatTag other_ = other
         return self.cpp > other_.cpp
 
-    def __le__(FloatTag self, other):
+    def __le__(self, other):
         if not isinstance(other, FloatTag):
             return NotImplemented
         cdef FloatTag other_ = other
         return self.cpp <= other_.cpp
 
-    def __lt__(FloatTag self, other):
+    def __lt__(self, other):
         if not isinstance(other, FloatTag):
             return NotImplemented
         cdef FloatTag other_ = other
@@ -117,7 +117,7 @@ cdef class DoubleTag(AbstractBaseFloatTag):
     """A double precision float class."""
     tag_id: int = 6
 
-    def __init__(DoubleTag self, value = 0):
+    def __init__(self, value = 0):
         self.cpp = float(value)
 
     @staticmethod
@@ -135,58 +135,58 @@ cdef class DoubleTag(AbstractBaseFloatTag):
     def py_float(self) -> float:
         return self.cpp
 
-    def __eq__(DoubleTag self, other):
+    def __eq__(self, other):
         if not isinstance(other, DoubleTag):
             return NotImplemented
         cdef DoubleTag other_ = other
         return self.cpp == other_.cpp
 
-    def __repr__(DoubleTag self):
+    def __repr__(self):
         return f"DoubleTag({self.cpp})"
 
-    def __str__(DoubleTag self):
+    def __str__(self):
         return str(self.cpp)
 
-    def __reduce__(DoubleTag self):
+    def __reduce__(self):
         return DoubleTag, (self.cpp,)
 
-    def __copy__(DoubleTag self):
+    def __copy__(self):
         return DoubleTag.wrap(self.cpp)
 
-    def __deepcopy__(DoubleTag self, memo=None):
+    def __deepcopy__(self, memo=None):
         return DoubleTag.wrap(self.cpp)
 
-    def __hash__(DoubleTag self):
+    def __hash__(self):
         return hash((6, self.cpp))
 
-    def __int__(DoubleTag self):
+    def __int__(self):
         return int(self.cpp)
 
-    def __float__(DoubleTag self):
+    def __float__(self):
         return float(self.cpp)
 
-    def __bool__(DoubleTag self):
+    def __bool__(self):
         return bool(self.cpp)
 
-    def __ge__(DoubleTag self, other):
+    def __ge__(self, other):
         if not isinstance(other, DoubleTag):
             return NotImplemented
         cdef DoubleTag other_ = other
         return self.cpp >= other_.cpp
 
-    def __gt__(DoubleTag self, other):
+    def __gt__(self, other):
         if not isinstance(other, DoubleTag):
             return NotImplemented
         cdef DoubleTag other_ = other
         return self.cpp > other_.cpp
 
-    def __le__(DoubleTag self, other):
+    def __le__(self, other):
         if not isinstance(other, DoubleTag):
             return NotImplemented
         cdef DoubleTag other_ = other
         return self.cpp <= other_.cpp
 
-    def __lt__(DoubleTag self, other):
+    def __lt__(self, other):
         if not isinstance(other, DoubleTag):
             return NotImplemented
         cdef DoubleTag other_ = other

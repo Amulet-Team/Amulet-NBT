@@ -26,7 +26,7 @@ from .abc cimport AbstractBaseMutableTag
 
 cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
     @property
-    def np_array(AbstractBaseArrayTag self) -> numpy.ndarray:
+    def np_array(self) -> NDArray[numpy.int8 | numpy.int32 | numpy.int64]:
         """
         A numpy array holding the same internal data.
         Changes to the array will also modify the internal state.
@@ -43,11 +43,11 @@ cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
         return self.np_array
 
     # Sized
-    def __len__(AbstractBaseArrayTag self):
+    def __len__(self) -> int:
         raise NotImplementedError
 
     # Sequence
-    def __getitem__(AbstractBaseArrayTag self, item):
+    def __getitem__(self, item):
         raise NotImplementedError
 
     def __iter__(self):
@@ -60,11 +60,11 @@ cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
         raise NotImplementedError
 
     # MutableSequence
-    def __setitem__(AbstractBaseArrayTag self, key, value):
+    def __setitem__(self, key, value):
         raise NotImplementedError
 
     # Array interface
-    def __array__(AbstractBaseArrayTag self, dtype=None):
+    def __array__(self, dtype=None) -> NDArray[numpy.int8 | numpy.int32 | numpy.int64]:
         raise NotImplementedError
 
 
@@ -73,7 +73,7 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
     """This class behaves like an 1D Numpy signed integer array with each value stored in a byte."""
     tag_id: int = 7
 
-    def __init__(ByteArrayTag self, object value = ()):
+    def __init__(self, object value = ()) -> None:
         cdef numpy.ndarray arr = numpy.asarray(value, numpy.dtype("int8")).ravel()
         self.cpp = make_shared[CByteArrayTag](arr.size)
         cdef size_t i
@@ -92,57 +92,57 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
         return node
 
     @property
-    def np_array(ByteArrayTag self) -> numpy.ndarray:
+    def np_array(self) -> NDArray[numpy.int8]:
         return numpy.asarray(self)
 
-    def __eq__(ByteArrayTag self, object other):
+    def __eq__(self, object other) -> bool:
         if not isinstance(other, ByteArrayTag):
             return False
         cdef ByteArrayTag tag = other
         return dereference(self.cpp) == dereference(tag.cpp)
 
-    def __repr__(ByteArrayTag self):
+    def __repr__(self) -> str:
         return f"ByteArrayTag({list(self)})"
 
-    def __str__(ByteArrayTag self):
+    def __str__(self) -> str:
         return str(list(self))
 
-    def __reduce__(ByteArrayTag self):
+    def __reduce__(self):
         return ByteArrayTag, (list(self),)
 
-    def __copy__(ByteArrayTag self):
+    def __copy__(self) -> ByteArrayTag:
         return ByteArrayTag.wrap(
             make_shared[CByteArrayTag](dereference(self.cpp))
         )
 
-    def __deepcopy__(ByteArrayTag self, memo=None):
+    def __deepcopy__(self, memo=None) -> ByteArrayTag:
         return ByteArrayTag.wrap(
             make_shared[CByteArrayTag](dereference(self.cpp))
         )
 
     # Sized
-    def __len__(ByteArrayTag self):
+    def __len__(self) -> int:
         return dereference(self.cpp).size()
 
     # Sequence
-    def __getitem__(ByteArrayTag self, object item):
+    def __getitem__(self, object item):
         return numpy.asarray(self)[item]
 
-    def __iter__(ByteArrayTag self) -> Iterator[int]:
+    def __iter__(self) -> Iterator[numpy.int8]:
         return iter(numpy.asarray(self))
 
-    def __reversed__(ByteArrayTag self) -> Iterator[int]:
+    def __reversed__(self) -> Iterator[numpy.int8]:
         return reversed(numpy.asarray(self))
 
-    def __contains__(ByteArrayTag self, value):
+    def __contains__(self, value) -> bool:
         return value in numpy.asarray(self)
 
     # MutableSequence
-    def __setitem__(ByteArrayTag self, object item, object value):
+    def __setitem__(self, object item, object value):
         numpy.asarray(self)[item] = value
 
     # Array interface
-    def __array__(ByteArrayTag self, dtype=None):
+    def __array__(self, dtype=None) -> NDArray[numpy.int8]:
         cdef numpy.npy_intp shape[1]
         shape[0] = <numpy.npy_intp> dereference(self.cpp).size()
         cdef numpy.ndarray ndarray = numpy.PyArray_SimpleNewFromData(1, shape, numpy.NPY_INT8, dereference(self.cpp).data())
@@ -150,7 +150,7 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
         numpy.PyArray_SetBaseObject(ndarray, self)
         return ndarray
 #
-#     # cdef str _to_snbt(ByteArrayTag self):
+#     # cdef str _to_snbt(self):
 #     #     cdef long long elem
 #     #     cdef list tags = []
 #     #     for elem in self.cpp:
@@ -164,7 +164,7 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
     """This class behaves like an 1D Numpy signed integer array with each value stored in a int."""
     tag_id: int = 11
 
-    def __init__(IntArrayTag self, object value = ()):
+    def __init__(self, object value = ()) -> None:
         cdef numpy.ndarray arr = numpy.asarray(value, numpy.int32).ravel()
         self.cpp = make_shared[CIntArrayTag](arr.size)
         cdef size_t i
@@ -183,57 +183,57 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
         return node
 
     @property
-    def np_array(IntArrayTag self) -> numpy.ndarray:
+    def np_array(self) -> NDArray[numpy.int32]:
         return numpy.asarray(self)
 
-    def __eq__(IntArrayTag self, object other):
+    def __eq__(self, object other) -> bool:
         if not isinstance(other, IntArrayTag):
             return False
         cdef IntArrayTag tag = other
         return dereference(self.cpp) == dereference(tag.cpp)
 
-    def __repr__(IntArrayTag self):
+    def __repr__(self) -> str:
         return f"IntArrayTag({list(self)})"
 
-    def __str__(IntArrayTag self):
+    def __str__(self) -> str:
         return str(list(self))
 
-    def __reduce__(IntArrayTag self):
+    def __reduce__(self):
         return IntArrayTag, (list(self),)
 
-    def __copy__(IntArrayTag self):
+    def __copy__(self) -> IntArrayTag:
         return IntArrayTag.wrap(
             make_shared[CIntArrayTag](dereference(self.cpp))
         )
 
-    def __deepcopy__(IntArrayTag self, memo=None):
+    def __deepcopy__(self, memo=None) -> IntArrayTag:
         return IntArrayTag.wrap(
             make_shared[CIntArrayTag](dereference(self.cpp))
         )
 
     # Sized
-    def __len__(IntArrayTag self):
+    def __len__(self) -> int:
         return dereference(self.cpp).size()
 
     # Sequence
-    def __getitem__(IntArrayTag self, object item):
+    def __getitem__(self, object item):
         return numpy.asarray(self)[item]
 
-    def __iter__(IntArrayTag self) -> Iterator[int]:
+    def __iter__(self) -> Iterator[numpy.int32]:
         return iter(numpy.asarray(self))
 
-    def __reversed__(IntArrayTag self) -> Iterator[int]:
+    def __reversed__(self) -> Iterator[numpy.int32]:
         return reversed(numpy.asarray(self))
 
-    def __contains__(IntArrayTag self, value):
+    def __contains__(self, value) -> bool:
         return value in numpy.asarray(self)
 
     # MutableSequence
-    def __setitem__(IntArrayTag self, object item, object value):
+    def __setitem__(self, object item, object value):
         numpy.asarray(self)[item] = value
 
     # Array interface
-    def __array__(IntArrayTag self, dtype=None):
+    def __array__(self, dtype=None) -> NDArray[numpy.int32]:
         cdef numpy.npy_intp shape[1]
         shape[0] = <numpy.npy_intp> dereference(self.cpp).size()
         cdef numpy.ndarray ndarray = numpy.PyArray_SimpleNewFromData(1, shape, numpy.NPY_INT32, dereference(self.cpp).data())
@@ -241,7 +241,7 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
         numpy.PyArray_SetBaseObject(ndarray, self)
         return ndarray
 #
-#     # cdef str _to_snbt(IntArrayTag self):
+#     # cdef str _to_snbt(self):
 #     #     cdef long long elem
 #     #     cdef list tags = []
 #     #     for elem in self.cpp:
@@ -255,7 +255,7 @@ cdef class LongArrayTag(AbstractBaseArrayTag):
     """This class behaves like an 1D Numpy signed integer array with each value stored in a long."""
     tag_id: int = 12
 
-    def __init__(LongArrayTag self, object value = ()):
+    def __init__(self, object value = ()) -> None:
         cdef numpy.ndarray arr = numpy.asarray(value, numpy.int64).ravel()
         self.cpp = make_shared[CLongArrayTag](arr.size)
         cdef size_t i
@@ -274,57 +274,57 @@ cdef class LongArrayTag(AbstractBaseArrayTag):
         return node
 
     @property
-    def np_array(LongArrayTag self) -> numpy.ndarray:
+    def np_array(self) -> NDArray[numpy.int64]:
         return numpy.asarray(self)
 
-    def __eq__(LongArrayTag self, object other):
+    def __eq__(self, object other) -> bool:
         if not isinstance(other, LongArrayTag):
             return False
         cdef LongArrayTag tag = other
         return dereference(self.cpp) == dereference(tag.cpp)
 
-    def __repr__(LongArrayTag self):
+    def __repr__(self) -> str:
         return f"LongArrayTag({list(self)})"
 
-    def __str__(LongArrayTag self):
+    def __str__(self) -> str:
         return str(list(self))
 
-    def __reduce__(LongArrayTag self):
+    def __reduce__(self):
         return LongArrayTag, (list(self),)
 
-    def __copy__(LongArrayTag self):
+    def __copy__(self) -> LongArrayTag:
         return LongArrayTag.wrap(
             make_shared[CLongArrayTag](dereference(self.cpp))
         )
 
-    def __deepcopy__(LongArrayTag self, memo=None):
+    def __deepcopy__(self, memo=None) -> LongArrayTag:
         return LongArrayTag.wrap(
             make_shared[CLongArrayTag](dereference(self.cpp))
         )
 
     # Sized
-    def __len__(LongArrayTag self):
+    def __len__(self) -> int:
         return dereference(self.cpp).size()
 
     # Sequence
-    def __getitem__(LongArrayTag self, object item):
+    def __getitem__(self, object item):
         return numpy.asarray(self)[item]
 
-    def __iter__(LongArrayTag self) -> Iterator[int]:
+    def __iter__(self) -> Iterator[numpy.int64]:
         return iter(numpy.asarray(self))
 
-    def __reversed__(LongArrayTag self) -> Iterator[int]:
+    def __reversed__(self) -> Iterator[numpy.int64]:
         return reversed(numpy.asarray(self))
 
-    def __contains__(LongArrayTag self, value):
+    def __contains__(self, value) -> bool:
         return value in numpy.asarray(self)
 
     # MutableSequence
-    def __setitem__(LongArrayTag self, object item, object value):
+    def __setitem__(self, object item, object value):
         numpy.asarray(self)[item] = value
 
     # Array interface
-    def __array__(LongArrayTag self, dtype=None):
+    def __array__(self, dtype=None) -> NDArray[numpy.int64]:
         cdef numpy.npy_intp shape[1]
         shape[0] = <numpy.npy_intp> dereference(self.cpp).size()
         cdef numpy.ndarray ndarray = numpy.PyArray_SimpleNewFromData(1, shape, numpy.NPY_INT64, dereference(self.cpp).data())
@@ -332,7 +332,7 @@ cdef class LongArrayTag(AbstractBaseArrayTag):
         numpy.PyArray_SetBaseObject(ndarray, self)
         return ndarray
 #
-#     # cdef str _to_snbt(LongArrayTag self):
+#     # cdef str _to_snbt(self):
 #     #     cdef long long elem
 #     #     cdef list tags = []
 #     #     for elem in self.cpp:

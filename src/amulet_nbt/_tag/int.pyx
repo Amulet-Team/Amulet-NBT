@@ -16,7 +16,7 @@ cdef class AbstractBaseIntTag(AbstractBaseNumericTag):
     """Abstract Base Class for all int Tag classes"""
 
     @property
-    def py_int(AbstractBaseNumericTag self) -> int:
+    def py_int(self) -> int:
         """
         A python int representation of the class.
         The returned data is immutable so changes will not mirror the instance.
@@ -40,7 +40,7 @@ cdef class ByteTag(AbstractBaseIntTag):
     """
     tag_id: int = 1
 
-    def __init__(ByteTag self, value = 0):
+    def __init__(self, value = 0):
         value = int(value)
         self.cpp = (value & 0x7F) - (value & 0x80)
 
@@ -56,65 +56,65 @@ cdef class ByteTag(AbstractBaseIntTag):
         return node
 
     @property
-    def py_int(ByteTag self) -> int:
+    def py_int(self) -> int:
         """
         A python int representation of the class.
         The returned data is immutable so changes will not mirror the instance.
         """
         return self.cpp
 
-    def __eq__(ByteTag self, other):
+    def __eq__(self, other):
         if not isinstance(other, ByteTag):
             return NotImplemented
         cdef ByteTag other_ = other
         return self.cpp == other_.cpp
 
-    def __repr__(ByteTag self):
+    def __repr__(self):
         return f"ByteTag({self.cpp})"
 
-    def __str__(ByteTag self):
+    def __str__(self):
         return str(self.cpp)
 
-    def __reduce__(ByteTag self):
+    def __reduce__(self):
         return ByteTag, (self.cpp,)
 
-    def __copy__(ByteTag self):
+    def __copy__(self):
         return ByteTag.wrap(self.cpp)
 
-    def __deepcopy__(ByteTag self, memo=None):
+    def __deepcopy__(self, memo=None):
         return ByteTag.wrap(self.cpp)
 
-    def __hash__(ByteTag self):
+    def __hash__(self):
         return hash((1, self.cpp))
 
-    def __int__(ByteTag self):
+    def __int__(self):
         return int(self.cpp)
 
-    def __float__(ByteTag self):
+    def __float__(self):
         return float(self.cpp)
 
-    def __bool__(ByteTag self):
+    def __bool__(self):
         return bool(self.cpp)
 
-    def __ge__(ByteTag self, other):
+    def __ge__(self, other):
         if not isinstance(other, ByteTag):
             return NotImplemented
         cdef ByteTag other_ = other
         return self.cpp >= other_.cpp
 
-    def __gt__(ByteTag self, other):
+    def __gt__(self, other):
         if not isinstance(other, ByteTag):
             return NotImplemented
         cdef ByteTag other_ = other
         return self.cpp > other_.cpp
 
-    def __le__(ByteTag self, other):
+    def __le__(self, other):
         if not isinstance(other, ByteTag):
             return NotImplemented
         cdef ByteTag other_ = other
         return self.cpp <= other_.cpp
 
-    def __lt__(ByteTag self, other):
+    def __lt__(self, other):
         if not isinstance(other, ByteTag):
             return NotImplemented
         cdef ByteTag other_ = other
@@ -128,7 +128,7 @@ cdef class ShortTag(AbstractBaseIntTag):
     """
     tag_id: int = 2
 
-    def __init__(ShortTag self, value = 0):
+    def __init__(self, value = 0):
         value = int(value)
         self.cpp = (value & 0x7FFF) - (value & 0x8000)
 
@@ -144,65 +144,65 @@ cdef class ShortTag(AbstractBaseIntTag):
         return node
 
     @property
-    def py_int(ShortTag self) -> int:
+    def py_int(self) -> int:
         """
         A python int representation of the class.
         The returned data is immutable so changes will not mirror the instance.
         """
         return self.cpp
 
-    def __eq__(ShortTag self, other):
+    def __eq__(self, other):
         if not isinstance(other, ShortTag):
             return NotImplemented
         cdef ShortTag other_ = other
         return self.cpp == other_.cpp
 
-    def __repr__(ShortTag self):
+    def __repr__(self):
         return f"ShortTag({self.cpp})"
 
-    def __str__(ShortTag self):
+    def __str__(self):
         return str(self.cpp)
 
-    def __reduce__(ShortTag self):
+    def __reduce__(self):
         return ShortTag, (self.cpp,)
 
-    def __copy__(ShortTag self):
+    def __copy__(self):
         return ShortTag.wrap(self.cpp)
 
-    def __deepcopy__(ShortTag self, memo=None):
+    def __deepcopy__(self, memo=None):
         return ShortTag.wrap(self.cpp)
 
-    def __hash__(ShortTag self):
+    def __hash__(self):
         return hash((2, self.cpp))
 
-    def __int__(ShortTag self):
+    def __int__(self):
         return int(self.cpp)
 
-    def __float__(ShortTag self):
+    def __float__(self):
         return float(self.cpp)
 
-    def __bool__(ShortTag self):
+    def __bool__(self):
         return bool(self.cpp)
 
-    def __ge__(ShortTag self, other):
+    def __ge__(self, other):
         if not isinstance(other, ShortTag):
             return NotImplemented
         cdef ShortTag other_ = other
         return self.cpp >= other_.cpp
 
-    def __gt__(ShortTag self, other):
+    def __gt__(self, other):
         if not isinstance(other, ShortTag):
             return NotImplemented
         cdef ShortTag other_ = other
         return self.cpp > other_.cpp
 
-    def __le__(ShortTag self, other):
+    def __le__(self, other):
         if not isinstance(other, ShortTag):
             return NotImplemented
         cdef ShortTag other_ = other
         return self.cpp <= other_.cpp
 
-    def __lt__(ShortTag self, other):
+    def __lt__(self, other):
         if not isinstance(other, ShortTag):
             return NotImplemented
         cdef ShortTag other_ = other
@@ -216,7 +216,7 @@ cdef class IntTag(AbstractBaseIntTag):
     """
     tag_id: int = 3
 
-    def __init__(IntTag self, value = 0):
+    def __init__(self, value = 0):
         value = int(value)
         self.cpp = (value & 0x7FFF_FFFF) - (value & 0x8000_0000)
 
@@ -232,65 +232,65 @@ cdef class IntTag(AbstractBaseIntTag):
         return node
 
     @property
-    def py_int(IntTag self) -> int:
+    def py_int(self) -> int:
         """
         A python int representation of the class.
         The returned data is immutable so changes will not mirror the instance.
         """
         return self.cpp
 
-    def __eq__(IntTag self, other):
+    def __eq__(self, other):
         if not isinstance(other, IntTag):
             return NotImplemented
         cdef IntTag other_ = other
         return self.cpp == other_.cpp
 
-    def __repr__(IntTag self):
+    def __repr__(self):
         return f"IntTag({self.cpp})"
 
-    def __str__(IntTag self):
+    def __str__(self):
         return str(self.cpp)
 
-    def __reduce__(IntTag self):
+    def __reduce__(self):
         return IntTag, (self.cpp,)
 
-    def __copy__(IntTag self):
+    def __copy__(self):
         return IntTag.wrap(self.cpp)
 
-    def __deepcopy__(IntTag self, memo=None):
+    def __deepcopy__(self, memo=None):
         return IntTag.wrap(self.cpp)
 
-    def __hash__(IntTag self):
+    def __hash__(self):
         return hash((3, self.cpp))
 
-    def __int__(IntTag self):
+    def __int__(self):
         return int(self.cpp)
 
-    def __float__(IntTag self):
+    def __float__(self):
         return float(self.cpp)
 
-    def __bool__(IntTag self):
+    def __bool__(self):
         return bool(self.cpp)
 
-    def __ge__(IntTag self, other):
+    def __ge__(self, other):
         if not isinstance(other, IntTag):
             return NotImplemented
         cdef IntTag other_ = other
         return self.cpp >= other_.cpp
 
-    def __gt__(IntTag self, other):
+    def __gt__(self, other):
         if not isinstance(other, IntTag):
             return NotImplemented
         cdef IntTag other_ = other
         return self.cpp > other_.cpp
 
-    def __le__(IntTag self, other):
+    def __le__(self, other):
         if not isinstance(other, IntTag):
             return NotImplemented
         cdef IntTag other_ = other
         return self.cpp <= other_.cpp
 
-    def __lt__(IntTag self, other):
+    def __lt__(self, other):
         if not isinstance(other, IntTag):
             return NotImplemented
         cdef IntTag other_ = other
@@ -304,7 +304,7 @@ cdef class LongTag(AbstractBaseIntTag):
     """
     tag_id: int = 4
 
-    def __init__(LongTag self, value = 0):
+    def __init__(self, value = 0):
         value = int(value)
         self.cpp = (value & 0x7FFF_FFFF_FFFF_FFFF) - (value & 0x8000_0000_0000_0000)
 
@@ -320,65 +320,65 @@ cdef class LongTag(AbstractBaseIntTag):
         return node
 
     @property
-    def py_int(LongTag self) -> int:
+    def py_int(self) -> int:
         """
         A python int representation of the class.
         The returned data is immutable so changes will not mirror the instance.
         """
         return self.cpp
 
-    def __eq__(LongTag self, other):
+    def __eq__(self, other):
         if not isinstance(other, LongTag):
             return NotImplemented
         cdef LongTag other_ = other
         return self.cpp == other_.cpp
 
-    def __repr__(LongTag self):
+    def __repr__(self):
         return f"LongTag({self.cpp})"
 
-    def __str__(LongTag self):
+    def __str__(self):
         return str(self.cpp)
 
-    def __reduce__(LongTag self):
+    def __reduce__(self):
         return LongTag, (self.cpp,)
 
-    def __copy__(LongTag self):
+    def __copy__(self):
         return LongTag.wrap(self.cpp)
 
-    def __deepcopy__(LongTag self, memo=None):
+    def __deepcopy__(self, memo=None):
         return LongTag.wrap(self.cpp)
 
-    def __hash__(LongTag self):
+    def __hash__(self):
         return hash((4, self.cpp))
 
-    def __int__(LongTag self):
+    def __int__(self):
         return int(self.cpp)
 
-    def __float__(LongTag self):
+    def __float__(self):
         return float(self.cpp)
 
-    def __bool__(LongTag self):
+    def __bool__(self):
         return bool(self.cpp)
 
-    def __ge__(LongTag self, other):
+    def __ge__(self, other):
         if not isinstance(other, LongTag):
             return NotImplemented
         cdef LongTag other_ = other
         return self.cpp >= other_.cpp
 
-    def __gt__(LongTag self, other):
+    def __gt__(self, other):
         if not isinstance(other, LongTag):
             return NotImplemented
         cdef LongTag other_ = other
         return self.cpp > other_.cpp
 
-    def __le__(LongTag self, other):
+    def __le__(self, other):
         if not isinstance(other, LongTag):
             return NotImplemented
         cdef LongTag other_ = other
         return self.cpp <= other_.cpp
 
-    def __lt__(LongTag self, other):
+    def __lt__(self, other):
         if not isinstance(other, LongTag):
             return NotImplemented
         cdef LongTag other_ = other

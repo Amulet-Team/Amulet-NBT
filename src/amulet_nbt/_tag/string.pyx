@@ -22,7 +22,7 @@ cdef class StringTag(AbstractBaseImmutableTag):
     """A class that behaves like a string."""
     tag_id: int = 8
 
-    def __init__(StringTag self, object value = b""):
+    def __init__(self, object value = b""):
         if isinstance(value, (str, bytes)):
             self.cpp = value
         else:
@@ -40,7 +40,7 @@ cdef class StringTag(AbstractBaseImmutableTag):
         return node
 
     @property
-    def py_str(StringTag self) -> str:
+    def py_str(self) -> str:
         """
         The data stored in the class as a python string.
         In some rare cases the data cannot be decoded to a string and this will raise a UnicodeDecodeError.
@@ -61,7 +61,7 @@ cdef class StringTag(AbstractBaseImmutableTag):
         """
         return <bytes> self.py_str
 
-    def __eq__(StringTag self, other):
+    def __eq__(self, other):
         if not isinstance(other, StringTag):
             return NotImplemented
         cdef StringTag other_ = other
@@ -85,34 +85,34 @@ cdef class StringTag(AbstractBaseImmutableTag):
     def __hash__(self):
         return hash((8, self.cpp))
 
-    # cdef str _to_snbt(StringTag self):
+    # cdef str _to_snbt(self):
     #     return f"\"{escape(self.py_str)}\""
 
     def __len__(self) -> int:
         return self.cpp.size()
 
-    def __ge__(StringTag self, other):
+    def __ge__(self, other):
         cdef StringTag other_
         if isinstance(other, StringTag):
             other_ = other
             return str(self.cpp) >= str(other_.cpp)
         return NotImplemented
 
-    def __gt__(StringTag self, other):
+    def __gt__(self, other):
         cdef StringTag other_
         if isinstance(other, StringTag):
             other_ = other
             return str(self.cpp) > str(other_.cpp)
         return NotImplemented
 
-    def __le__(StringTag self, other):
+    def __le__(self, other):
         cdef StringTag other_
         if isinstance(other, StringTag):
             other_ = other
             return str(self.cpp) <= str(other_.cpp)
         return NotImplemented
 
-    def __lt__(StringTag self, other):
+    def __lt__(self, other):
         cdef StringTag other_
         if isinstance(other, StringTag):
             other_ = other

@@ -305,26 +305,26 @@ cdef class CompoundTag(AbstractBaseMutableTag):
     def fromkeys(cls, keys: Iterable[str], AbstractBaseTag value) -> CompoundTag:
         return cls(dict.fromkeys(keys, value))
 
-{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", tag_cls_name="ByteTag", tag_name="byte")}}
+{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", py_cls="ByteTag", tag_name="byte")}}
 
-{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", tag_cls_name="ShortTag", tag_name="short")}}
+{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", py_cls="ShortTag", tag_name="short")}}
 
-{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", tag_cls_name="IntTag", tag_name="int")}}
+{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", py_cls="IntTag", tag_name="int")}}
 
-{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", tag_cls_name="LongTag", tag_name="long")}}
+{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", py_cls="LongTag", tag_name="long")}}
 
-{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", tag_cls_name="FloatTag", tag_name="float")}}
+{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", py_cls="FloatTag", tag_name="float")}}
 
-{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", tag_cls_name="DoubleTag", tag_name="double")}}
+{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", py_cls="DoubleTag", tag_name="double")}}
 
-{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", tag_cls_name="StringTag", tag_name="string")}}
+{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", py_cls="StringTag", tag_name="string")}}
 
-{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", tag_cls_name="ListTag", tag_name="list")}}
+{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", py_cls="ListTag", tag_name="list")}}
 
-{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", tag_cls_name="CompoundTag", tag_name="compound")}}
+{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", py_cls="CompoundTag", tag_name="compound")}}
 
-{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", tag_cls_name="ByteArrayTag", tag_name="byte_array")}}
+{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", py_cls="ByteArrayTag", tag_name="byte_array")}}
 
-{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", tag_cls_name="IntArrayTag", tag_name="int_array")}}
+{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", py_cls="IntArrayTag", tag_name="int_array")}}
 
-{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", tag_cls_name="LongArrayTag", tag_name="long_array")}}
+{{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", py_cls="LongArrayTag", tag_name="long_array")}}

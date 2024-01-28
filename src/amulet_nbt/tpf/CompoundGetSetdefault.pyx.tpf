@@ -1,11 +1,11 @@
-    cpdef {{tag_cls_name}} get_{{tag_name}}(self, string key, {{tag_cls_name}} default=None):
-        """Get the tag stored in key if it is a {{tag_cls_name}}.
+    cpdef {{py_cls}} get_{{tag_name}}(self, string key, {{py_cls}} default=None):
+        """Get the tag stored in key if it is a {{py_cls}}.
     
         :param key: The key to get
         :param default: The value to return if the key does not exist or the type is wrong. If not defined errors are raised.
-        :return: The {{tag_cls_name}}.
+        :return: The {{py_cls}}.
         :raises: KeyError if the key does not exist
-        :raises: TypeError if the stored type is not a {{tag_cls_name}}
+        :raises: TypeError if the stored type is not a {{py_cls}}
         """
         cdef AbstractBaseTag tag
         try:
@@ -16,20 +16,20 @@
             else:
                 return default
         else:
-            if isinstance(tag, {{tag_cls_name}}):
+            if isinstance(tag, {{py_cls}}):
                 return tag
             elif default is None:
-                raise TypeError(f"Expected tag to be of type {{tag_cls_name}} but got {type(tag)}")
+                raise TypeError(f"Expected tag to be of type {{py_cls}} but got {type(tag)}")
             else:
                 return default
 
-    cpdef {{tag_cls_name}} setdefault_{{tag_name}}(self, string key, {{tag_cls_name}} default=None):
-        """Populate key if not defined or value is not {{tag_cls_name}}. Return the value stored.
+    cpdef {{py_cls}} setdefault_{{tag_name}}(self, string key, {{py_cls}} default=None):
+        """Populate key if not defined or value is not {{py_cls}}. Return the value stored.
     
-        If default is a {{tag_cls_name}} then it will be stored under key else a default instance will be created.
+        If default is a {{py_cls}} then it will be stored under key else a default instance will be created.
         :param key: The key to populate and get
         :param default: The default value to use
-        :return: The {{tag_cls_name}} stored in key
+        :return: The {{py_cls}} stored in key
         :raises: TypeError if the input types are incorrect
         """
         cdef AbstractBaseTag tag
@@ -37,13 +37,13 @@
             tag = self[key]
         except KeyError as e:
             if default is None:
-                tag = self[key] = {{tag_cls_name}}()
+                tag = self[key] = {{py_cls}}()
             else:
                 tag = self[key] = default
         else:
-            if not isinstance(tag, {{tag_cls_name}}):
+            if not isinstance(tag, {{py_cls}}):
                 if default is None:
-                    tag = self[key] = {{tag_cls_name}}()
+                    tag = self[key] = {{py_cls}}()
                 else:
                     tag = self[key] = default
         return tag

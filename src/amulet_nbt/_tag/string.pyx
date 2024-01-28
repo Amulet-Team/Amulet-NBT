@@ -40,11 +40,17 @@ cdef class StringTag(AbstractBaseImmutableTag):
         return node
 
     @property
-    def py_str(StringTag self) -> str | bytes:
+    def py_str(StringTag self) -> str:
         """
-        A python string representation of the class.
+        The data stored in the class as a python string.
+        In some rare cases the data cannot be decoded to a string and this will raise a UnicodeDecodeError.
         """
-        return str(self)
+        return <str> self.cpp
+
+    @property
+    def py_bytes(self) -> bytes:
+        """The bytes stored in the class."""
+        return <bytes> self.cpp
 
     @property
     def py_data(self) -> Any:
@@ -53,7 +59,7 @@ cdef class StringTag(AbstractBaseImmutableTag):
         You would be better off using the py_{type} or np_array properties if you require a fixed type.
         This is here for convenience to get a python representation under the same property name.
         """
-        return self.py_str
+        return <bytes> self.py_str
 
     def __eq__(StringTag self, other):
         if not isinstance(other, StringTag):
@@ -65,10 +71,7 @@ cdef class StringTag(AbstractBaseImmutableTag):
         return f"StringTag(\"{escape(self.py_str)}\")"
 
     def __str__(self):
-        try:
-            return <str> self.cpp
-        except UnicodeDecodeError:
-            return <bytes> self.cpp
+        return <str> self.cpp
 
     def __reduce__(self):
         return StringTag, (self.cpp,)

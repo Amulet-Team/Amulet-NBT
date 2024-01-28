@@ -10,8 +10,6 @@ from .test_abc import AbstractBaseMutableTagTestCase
 from amulet_nbt import AbstractBaseTag, AbstractBaseMutableTag, ByteTag, ShortTag, IntTag, LongTag, FloatTag, DoubleTag, StringTag, ByteArrayTag, ListTag, CompoundTag, IntArrayTag, LongArrayTag
 
 
-
-
 def is_iterable(obj):
     try:
         iter(obj)

@@ -15,6 +15,7 @@ class StringTagTestCase(AbstractBaseImmutableTagTestCase, unittest.TestCase):
     def test_constructor(self) -> None:
         StringTag("value")
         StringTag(StringTag("value"))
+        StringTag(b"\xFF")
 
     def test_equal(self) -> None:
         self.assertEqual(StringTag("value"), StringTag("value"))
@@ -23,9 +24,15 @@ class StringTagTestCase(AbstractBaseImmutableTagTestCase, unittest.TestCase):
         self.assertEqual(StringTag("value"), StringTag(StringTag("value")))
 
     def test_py_data(self) -> None:
-        self.assertIsNot(StringTag("value").py_str, str)
+        self.assertIsInstance(StringTag("value").py_str, str)
+        self.assertIsInstance(StringTag("value").py_bytes, bytes)
         self.assertEqual("value", StringTag("value").py_str)
         self.assertEqual("None", StringTag(None).py_str)
+
+        with self.assertRaises(UnicodeDecodeError):
+            StringTag(b"\xFF").py_str
+
+        self.assertEqual(b"value", StringTag("value").py_bytes)
 
     def test_repr(self) -> None:
         self.assertEqual('StringTag("")', repr(StringTag()))

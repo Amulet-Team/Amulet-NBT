@@ -1,2 +1,100 @@
-{{py:import base64}}
+{{py:
+import base64
+from template import include
+}}
 {{base64.b64decode("IyMgVGhpcyBmaWxlIGlzIGdlbmVyYXRlZCBmcm9tIGEgdGVtcGxhdGUuCiMjIERvIG5vdCBtb2RpZnkgdGhpcyBmaWxlIGRpcmVjdGx5IG9yIHlvdXIgY2hhbmdlcyB3aWxsIGdldCBvdmVyd3JpdHRlbi4KIyMgRWRpdCB0aGUgYWNjb21wYW55aW5nIC5weXgudHAgZmlsZSBpbnN0ZWFkLg==").decode()}}
+# distutils: language = c++
+# distutils: extra_compile_args = -std=c++20 /std:c++20
+# distutils: extra_link_args = -std=c++20 /std:c++20
+# cython: c_string_type=str, c_string_encoding=utf8
+
+import copy
+from libcpp.string cimport string
+
+from .abc cimport AbstractBase, AbstractBaseTag
+from .int cimport ByteTag, ShortTag, IntTag, LongTag
+from .float cimport FloatTag, DoubleTag
+from .string cimport StringTag
+from .list cimport ListTag
+from .compound cimport wrap_node, CompoundTag
+from .array cimport ByteArrayTag, IntArrayTag, LongArrayTag
+
+
+cdef class NamedTag(AbstractBase):
+    def __init__(self, AbstractBaseTag tag = None, string name = b""):
+        if tag is None:
+            tag = CompoundTag()
+        self.tag_node = tag.to_node()
+        self.tag_name = name
+
+    @property
+    def tag(self) -> AbstractBaseTag:
+        return wrap_node(&self.tag_node)
+
+    @tag.setter
+    def tag(self, AbstractBaseTag tag not None):
+        self.tag_node = tag.to_node()
+
+    @property
+    def name(self) -> str | bytes:
+        try:
+            return <str> self.tag_name
+        except UnicodeDecodeError as e:
+            return <bytes> self.tag_name
+
+    @name.setter
+    def name(self, name):
+        self.tag_name = name
+
+    def __eq__(self, other):
+        cdef NamedTag other_
+        if isinstance(other, NamedTag):
+            other_ = other
+            return self.name == other_.name and self.tag == other_.tag
+        return NotImplemented
+
+    def __repr__(self):
+        return f'NamedTag({self.tag!r}, "{self.name}")'
+
+    def __reduce__(self):
+        return NamedTag, (self.tag, self.name)
+
+    def __copy__(self):
+        return NamedTag(self.tag, self.name)
+
+    def __deepcopy__(self, memodict={}):
+        return NamedTag(
+            copy.deepcopy(self.tag),
+            self.name
+        )
+
+    def __getitem__(self, int item):
+        return (self.name, self.tag)[item]
+
+    def __iter__(self):
+        yield self.name
+        yield self.tag
+
+{{include("amulet_nbt/tpf/NamedTagGet.pyx.tpf", py_cls="ByteTag", tag_name="byte")}}
+
+{{include("amulet_nbt/tpf/NamedTagGet.pyx.tpf", py_cls="ShortTag", tag_name="short")}}
+
+{{include("amulet_nbt/tpf/NamedTagGet.pyx.tpf", py_cls="IntTag", tag_name="int")}}
+
+{{include("amulet_nbt/tpf/NamedTagGet.pyx.tpf", py_cls="LongTag", tag_name="long")}}
+
+{{include("amulet_nbt/tpf/NamedTagGet.pyx.tpf", py_cls="FloatTag", tag_name="float")}}
+
+{{include("amulet_nbt/tpf/NamedTagGet.pyx.tpf", py_cls="DoubleTag", tag_name="double")}}
+
+{{include("amulet_nbt/tpf/NamedTagGet.pyx.tpf", py_cls="StringTag", tag_name="string")}}
+
+{{include("amulet_nbt/tpf/NamedTagGet.pyx.tpf", py_cls="ListTag", tag_name="list")}}
+
+{{include("amulet_nbt/tpf/NamedTagGet.pyx.tpf", py_cls="CompoundTag", tag_name="compound")}}
+
+{{include("amulet_nbt/tpf/NamedTagGet.pyx.tpf", py_cls="ByteArrayTag", tag_name="byte_array")}}
+
+{{include("amulet_nbt/tpf/NamedTagGet.pyx.tpf", py_cls="IntArrayTag", tag_name="int_array")}}
+
+{{include("amulet_nbt/tpf/NamedTagGet.pyx.tpf", py_cls="LongArrayTag", tag_name="long_array")}}

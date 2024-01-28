@@ -44,7 +44,7 @@ __all__ = [
     "StringTag",
     "StringTag",
     "TAG_String",
-    # "NamedTag",
+    "NamedTag",
     "ListTag",
     "ListTag",
     "TAG_List",
@@ -111,7 +111,7 @@ from ._tag.string import (
     StringTag as TAG_String,
 )
 
-# from ._tag.named_tag import NamedTag
+from ._tag.named_tag import NamedTag
 
 from ._tag.list import (
     ListTag,

@@ -4,5 +4,5 @@ from amulet_nbt._nbt cimport TagNode
 
 
 cdef class NamedTag(AbstractBase):
+    cdef string tag_name
     cdef TagNode tag_node
-    cdef public string name

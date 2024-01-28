@@ -62,10 +62,6 @@ class AbstractBaseTestCase(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def test_py_data(self) -> None:
-        raise NotImplementedError
-
-    @abstractmethod
     def test_repr(self) -> None:
         raise NotImplementedError
 
@@ -95,7 +91,9 @@ class AbstractBaseTestCase(ABC):
 
 
 class AbstractBaseTagTestCase(AbstractBaseTestCase):
-    pass
+    @abstractmethod
+    def test_py_data(self) -> None:
+        raise NotImplementedError
 
 
 class AbstractBaseImmutableTagTestCase(AbstractBaseTagTestCase):

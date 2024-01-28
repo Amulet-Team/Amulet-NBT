@@ -6,7 +6,7 @@
 # cython: c_string_type=str, c_string_encoding=utf8
 
 from collections.abc import Mapping, Iterator, KeysView, ItemsView, ValuesView
-from typing import Iterable
+from typing import Iterable, Any
 
 from libcpp.string cimport string
 from libcpp cimport bool
@@ -25,28 +25,12 @@ from amulet_nbt._nbt cimport (
     CFloatTag,
     CDoubleTag,
     CStringTag,
-    CListTag,
     CCompoundTag,
-    CByteArrayTag,
-    CIntArrayTag,
-    CLongArrayTag,
     CListTagPtr,
     CCompoundTagPtr,
     CByteArrayTagPtr,
     CIntArrayTagPtr,
     CLongArrayTagPtr,
-    CByteList,
-    CShortList,
-    CIntList,
-    CLongList,
-    CFloatList,
-    CDoubleList,
-    CByteArrayList,
-    CStringList,
-    CListList,
-    CCompoundList,
-    CIntArrayList,
-    CLongArrayList,
     TagNode,
 )
 
@@ -80,15 +64,14 @@ ClassData = (
 {{
 "\n\n\n".join(
 f"""cdef inline bool _is_{tag_var}_node_eq(TagNode* a, TagNode* b) noexcept nogil:
-    if dereference(b).index() != {index}:
-        return False
-    
-    return {
-        f"is_list_eq(get[{c_node_cls}](dereference(a)), get[{c_node_cls}](dereference(b)))" if index == 9 else
-        f"is_compound_eq(get[{c_node_cls}](dereference(a)), get[{c_node_cls}](dereference(b)))" if index == 10 else
-        f"dereference(get[{c_node_cls}](dereference(a))) == dereference(get[{c_node_cls}](dereference(b)))" if index in {7, 11, 12} else
-        f"get[{c_node_cls}](dereference(a)) == get[{c_node_cls}](dereference(b))"
-    }"""
+    if dereference(b).index() == {index}:
+        return {
+            f"is_list_eq(get[{c_node_cls}](dereference(a)), get[{c_node_cls}](dereference(b)))" if index == 9 else
+            f"is_compound_eq(get[{c_node_cls}](dereference(a)), get[{c_node_cls}](dereference(b)))" if index == 10 else
+            f"dereference(get[{c_node_cls}](dereference(a))) == dereference(get[{c_node_cls}](dereference(b)))" if index in {7, 11, 12} else
+            f"get[{c_node_cls}](dereference(a)) == get[{c_node_cls}](dereference(b))"
+        }
+    return False"""
         for index, c_cls, c_node_cls, c_list_cls, py_cls, tag_var, list_var in ClassData
     )
 }}
@@ -165,7 +148,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
     def py_data(self) -> Any:
         return dict(self)
 
-    def __eq__(CompoundTag self, object other):
+    def __eq__(CompoundTag self, object other) -> bool:
         if not isinstance(other, CompoundTag):
             return False
         cdef CompoundTag tag = other
@@ -180,16 +163,16 @@ cdef class CompoundTag(AbstractBaseMutableTag):
     def __reduce__(self):
         return CompoundTag, (dict(self),)
 
-    def __copy__(self):
+    def __copy__(self) -> CompoundTag:
         return CompoundTag.wrap(
             make_shared[CCompoundTag](dereference(self.cpp))
         )
 
-    def __deepcopy__(self, memo=None):
+    def __deepcopy__(self, memo=None) -> CompoundTag:
         return CompoundTag.wrap(CCompoundTagPtr_deepcopy(self.cpp))
 
     # Sized
-    def __len__(self) -> size_t:
+    def __len__(self) -> int:
         return dereference(self.cpp).size()
 
     # Iterable
@@ -213,7 +196,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
 
         return wrap_node(&dereference(it).second)
 
-    def get(self, string key, object default = None, object cls = AbstractBaseTag):
+    def get(self, string key, object default = None, object cls = AbstractBaseTag) -> ByteTag | ShortTag | IntTag | LongTag | FloatTag | DoubleTag | StringTag | ByteArrayTag | ListTag | CompoundTag | IntArrayTag | LongArrayTag:
         cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
 
         if it == dereference(self.cpp).end():
@@ -227,16 +210,16 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         else:
             return default
 
-    def __contains__(self, string key):
+    def __contains__(self, string key) -> bool:
         return dereference(self.cpp).contains(key)
 
-    def keys(self):
+    def keys(self) -> KeysView[str]:
         return KeysView(self)
 
-    def items(self):
+    def items(self) -> ItemsView[str, ByteTag | ShortTag | IntTag | LongTag | FloatTag | DoubleTag | StringTag | ByteArrayTag | ListTag | CompoundTag | IntArrayTag | LongArrayTag]:
         return ItemsView(self)
 
-    def values(self):
+    def values(self) -> ValuesView[ByteTag | ShortTag | IntTag | LongTag | FloatTag | DoubleTag | StringTag | ByteArrayTag | ListTag | CompoundTag | IntArrayTag | LongArrayTag]:
         return ValuesView(self)
 
     # MutableMapping
@@ -248,7 +231,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
 
     __marker = object()
 
-    def pop(self, string key, default=__marker):
+    def pop(self, string key, default=__marker) -> ByteTag | ShortTag | IntTag | LongTag | FloatTag | DoubleTag | StringTag | ByteArrayTag | ListTag | CompoundTag | IntArrayTag | LongArrayTag:
         '''D.pop(k[,d]) -> v, remove specified key and return the corresponding value.
           If key is not found, d is returned if given, otherwise KeyError is raised.
         '''
@@ -263,7 +246,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         dereference(self.cpp).erase(it)
         return tag
 
-    def popitem(self):
+    def popitem(self) -> ByteTag | ShortTag | IntTag | LongTag | FloatTag | DoubleTag | StringTag | ByteArrayTag | ListTag | CompoundTag | IntArrayTag | LongArrayTag:
         '''D.popitem() -> (k, v), remove and return some (key, value) pair
            as a 2-tuple; but raise KeyError if D is empty.
         '''
@@ -276,10 +259,10 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         dereference(self.cpp).erase(it)
         return key, tag
 
-    def clear(self):
+    def clear(self) -> None:
         dereference(self.cpp).clear()
 
-    def update(self, other=(), /, **kwds):
+    def update(self, other=(), /, **kwds) -> None:
         ''' D.update([E, ]**F) -> None.  Update D from mapping/iterable E and F.
             If E present and has a .keys() method, does:     for k in E: D[k] = E[k]
             If E present and lacks .keys() method, does:     for (k, v) in E: D[k] = v
@@ -297,7 +280,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         for key, value in kwds.items():
             self[key] = value
 
-    def setdefault(self, string key, AbstractBaseTag tag = None, object cls = AbstractBaseTag):
+    def setdefault(self, string key, AbstractBaseTag tag = None, object cls = AbstractBaseTag) -> ByteTag | ShortTag | IntTag | LongTag | FloatTag | DoubleTag | StringTag | ByteArrayTag | ListTag | CompoundTag | IntArrayTag | LongArrayTag:
         cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
 
         if it == dereference(self.cpp).end():
@@ -319,7 +302,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return existing_tag
 
     @classmethod
-    def fromkeys(cls, keys: Iterable[str], AbstractBaseTag value):
+    def fromkeys(cls, keys: Iterable[str], AbstractBaseTag value) -> CompoundTag:
         return cls(dict.fromkeys(keys, value))
 
 {{include("amulet_nbt/tpf/CompoundGetSetdefault.pyx.tpf", tag_cls_name="ByteTag", tag_name="byte")}}

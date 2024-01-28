@@ -3,11 +3,12 @@ import pickle
 import itertools
 import unittest
 import faulthandler
+import numpy
 
 faulthandler.enable()
 
 from .test_numeric import AbstractBaseNumericTagTestCase
-from amulet_nbt import AbstractBaseTag, AbstractBaseImmutableTag, AbstractBaseNumericTag, AbstractBaseIntTag
+from amulet_nbt import AbstractBaseTag, AbstractBaseImmutableTag, AbstractBaseNumericTag, AbstractBaseIntTag, ByteTag, ShortTag, IntTag, LongTag
 
 
 class IntTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
@@ -21,6 +22,18 @@ class IntTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
                 int_cls(-5.0)
                 with self.assertRaises(TypeError):
                     int_cls(None)
+
+                # overflow
+                self.assertEqual(ByteTag(-2 ** 7), ByteTag(2 ** 7))
+                self.assertEqual(ShortTag(-2 ** 15), ShortTag(2 ** 15))
+                self.assertEqual(IntTag(-2 ** 31), IntTag(2 ** 31))
+                self.assertEqual(LongTag(-2 ** 63), LongTag(2 ** 63))
+
+                # underflow
+                self.assertEqual(ByteTag(2 ** 7 - 1), ByteTag(-2 ** 7 - 1))
+                self.assertEqual(ShortTag(2 ** 15 - 1), ShortTag(-2 ** 15 - 1))
+                self.assertEqual(IntTag(2 ** 31 - 1), IntTag(-2 ** 31 - 1))
+                self.assertEqual(LongTag(2 ** 63 - 1), LongTag(-2 ** 63 - 1))
 
         for cls in self.nbt_types:
             tag = cls()
@@ -42,6 +55,29 @@ class IntTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
                 for int_cls in self.int_types:
                     with self.subTest(obj=obj, int_cls=int_cls):
                         int_cls(obj)
+
+    def test_numpy_constructor(self):
+        for int_cls in self.int_types:
+            with self.subTest(int_cls=int_cls):
+                self.assertEqual(int_cls(0), int_cls(numpy.uint8(0)))
+                self.assertEqual(int_cls(0), int_cls(numpy.int8(0)))
+                self.assertEqual(int_cls(0), int_cls(numpy.uint16(0)))
+                self.assertEqual(int_cls(0), int_cls(numpy.int16(0)))
+                self.assertEqual(int_cls(0), int_cls(numpy.uint32(0)))
+                self.assertEqual(int_cls(0), int_cls(numpy.int32(0)))
+                self.assertEqual(int_cls(0), int_cls(numpy.uint64(0)))
+                self.assertEqual(int_cls(0), int_cls(numpy.int64(0)))
+
+                self.assertEqual(int_cls(-1), int_cls(numpy.int8(-1)))
+                self.assertEqual(int_cls(-1), int_cls(numpy.int16(-1)))
+                self.assertEqual(int_cls(-1), int_cls(numpy.int32(-1)))
+                self.assertEqual(int_cls(-1), int_cls(numpy.int64(-1)))
+
+        # Overflow
+        self.assertEqual(ByteTag(-2**7), ByteTag(numpy.uint64(2**7)))
+        self.assertEqual(ShortTag(-2**15), ShortTag(numpy.uint64(2**15)))
+        self.assertEqual(IntTag(-2**31), IntTag(numpy.uint64(2**31)))
+        self.assertEqual(LongTag(-2**63), LongTag(numpy.uint64(2**63)))
 
     def test_equal(self) -> None:
         for cls1 in self.int_types:

@@ -3,7 +3,6 @@
 
 from typing import Any
 
-from libc.stdint cimport int64_t
 from libc.math cimport ceil
 from libcpp cimport bool
 from libcpp.memory cimport make_shared

@@ -11,7 +11,6 @@ cdef class ByteTag(AbstractBaseIntTag):
 
     @staticmethod
     cdef ByteTag wrap(CByteTag)
-    cdef CByteTag _sanitise_value(self, value)
 
 
 cdef class ShortTag(AbstractBaseIntTag):
@@ -19,7 +18,6 @@ cdef class ShortTag(AbstractBaseIntTag):
 
     @staticmethod
     cdef ShortTag wrap(CShortTag)
-    cdef CShortTag _sanitise_value(self, value)
 
 
 cdef class IntTag(AbstractBaseIntTag):
@@ -27,7 +25,6 @@ cdef class IntTag(AbstractBaseIntTag):
 
     @staticmethod
     cdef IntTag wrap(CIntTag)
-    cdef CIntTag _sanitise_value(self, value)
 
 
 cdef class LongTag(AbstractBaseIntTag):
@@ -35,4 +32,3 @@ cdef class LongTag(AbstractBaseIntTag):
 
     @staticmethod
     cdef LongTag wrap(CLongTag)
-    cdef CLongTag _sanitise_value(self, value)

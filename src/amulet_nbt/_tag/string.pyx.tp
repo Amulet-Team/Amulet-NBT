@@ -6,11 +6,6 @@
 # cython: c_string_type=str, c_string_encoding=utf8
 
 from typing import Any
-from io import BytesIO
-from copy import deepcopy
-import warnings
-
-from libcpp.string cimport string
 
 from amulet_nbt._nbt cimport TagNode, CStringTag
 from .abc cimport AbstractBaseImmutableTag

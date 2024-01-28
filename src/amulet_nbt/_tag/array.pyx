@@ -18,8 +18,7 @@ from libc.stdint cimport (
     int64_t,
 )
 from libcpp.memory cimport make_shared
-from amulet_nbt._nbt.array cimport Array
-from amulet_nbt._nbt cimport TagNode, CByteTag, CIntTag, CLongTag, CByteArrayTag, CIntArrayTag, CLongArrayTag
+from amulet_nbt._nbt cimport TagNode, CByteArrayTag, CIntArrayTag, CLongArrayTag
 from .abc cimport AbstractBaseMutableTag
 # from amulet_nbt._const cimport CommaSpace, ID_BYTE_ARRAY, ID_INT_ARRAY, ID_LONG_ARRAY
 # from amulet_nbt._dtype import EncoderType

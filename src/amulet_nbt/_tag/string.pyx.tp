@@ -43,7 +43,7 @@ cdef class StringTag(AbstractBaseImmutableTag):
     def py_str(self) -> str:
         """
         The data stored in the class as a python string.
-        In some rare cases the data cannot be decoded to a string and this will raise a TypeError.
+        In some rare cases the data cannot be decoded to a string and this will raise a UnicodeDecodeError.
         """
         return <str> self.cpp
 
@@ -54,7 +54,6 @@ cdef class StringTag(AbstractBaseImmutableTag):
 
     @property
     def py_data(self) -> Any:
-        """
         return <bytes> self.py_str
 
 {{include("amulet_nbt/tpf/ImmutableTag.pyx.tpf", py_cls="StringTag")}}

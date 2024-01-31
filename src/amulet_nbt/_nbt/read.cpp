@@ -1,225 +1,135 @@
 #include "read.hpp"
 
-void validate_stream(std::istream, stream){
-    if (!stream){
-        throw std::runtime_error("Error reading from the input stream.");
+CStringTag read_string_tag(BinaryReader& reader){
+    std::uint16_t length = reader.readNumeric<std::uint16_t>();
+    return reader.readString(length);
+};
+
+
+TagNode read_node(BinaryReader& reader, std::uint8_t tag_id);
+
+
+CCompoundTagPtr read_compound_tag(BinaryReader& reader){
+    CCompoundTagPtr tag = std::make_shared<CCompoundTag>();
+    while (true){
+        std::uint8_t tag_id = reader.readNumeric<std::uint8_t>();
+        if (tag_id == 0){
+            break;
+        }
+        CStringTag name = read_string_tag(reader);
+        TagNode node = read_node(reader, tag_id);
+        (*tag)[name] = node;
     }
-}
+    return tag;
+};
+
 
 template <typename T>
-T read_number(std::istream stream, std::endian endianness){
-    T tag;
-    stream.read(reinterpret_cast<char*>(&tag), sizeof(tag));
-    validate_stream(stream);
-    swap_to_endian(tag, endianness);
+std::shared_ptr<Array<T>> read_array_tag(BinaryReader& reader){
+    std::int32_t length = reader.readNumeric<std::int32_t>();
+    std::shared_ptr<Array<T>> tag = std::make_shared<Array<T>>(length);
+    for (size_t i = 0; i < length; i++){
+        reader.readNumericInto((*tag)[i]);
+    }
     return tag;
 }
 
-ByteTag read_byte_tag(std::istream stream, std::endian endianness){
-    return read_number(stream, endianness);
-};
 
-ShortTag read_short_tag(std::istream stream, std::endian endianness){
-    return read_number(stream, endianness);
-};
-
-IntTag read_int_tag(std::istream stream, std::endian endianness){
-    return read_number(stream, endianness);
-};
-
-LongTag read_long_tag(std::istream stream, std::endian endianness){
-    return read_number(stream, endianness);
-};
-
-FloatTag read_float_tag(std::istream stream, std::endian endianness){
-    return read_number(stream, endianness);
-};
-
-DoubleTag read_double_tag(std::istream stream, std::endian endianness){
-    return read_number(stream, endianness);
-};
-
-StringTag read_string_tag(std::istream stream, std::endian endianness){
-    std::uint16_t length;
-    stream.read(reinterpret_cast<char*>(&length), sizeof(length));
-    validate_stream(stream);
-    swap_to_endian(length, endianness);
-    StringTag tag;
-    tag.reserve(length);
-    stream.read(reinterpret_cast<char*>(&tag[0]), length);
-    validate_stream(stream);
+template <typename T>
+CListTagPtr read_numeric_list_tag(BinaryReader& reader, std::int32_t length){
+    CListTagPtr tag = std::make_shared<CListTag>(std::vector<T>(length));
+    std::vector<T>& list = std::get<std::vector<T>>(*tag);
+    for (std::int32_t i = 0; i < length; i++){
+        reader.readNumericInto<T>(list[i]);
+    }
     return tag;
-};
+}
 
-ListTagPtr read_list_tag(std::istream stream, std::endian endianness){
-    std::uint8_t tag_type;
-    stream.read(reinterpret_cast<char*>(&tag_type), sizeof(tag_type));
-    validate_stream(stream);
 
-    std::int32_t length;
-    stream.read(reinterpret_cast<char*>(&length), sizeof(length));
-    validate_stream(stream);
-    swap_to_endian(length, endianness);
+template <typename T, T (*readTag)(BinaryReader&)>
+CListTagPtr read_template_list_tag(BinaryReader& reader, std::int32_t length){
+    CListTagPtr tag = std::make_shared<CListTag>(std::vector<T>(length));
+    std::vector<T>& list = std::get<std::vector<T>>(*tag);
+    for (std::int32_t i = 0; i < length; i++){
+        list[i] = readTag(reader);
+    }
+    return tag;
+}
 
-    ListTagPtr tag;
+
+CListTagPtr read_list_tag(BinaryReader& reader){
+    std::uint8_t tag_type = reader.readNumeric<std::uint8_t>();
+    std::int32_t length = reader.readNumeric<std::int32_t>();
+
     switch(tag_type){
         case 1:
-            tag = std::make_shared<ListTag>(std::vector<ByteTag>(length));
-            for (std::int32_t i = 0; i < length; i++){
-                (*tag)[i] = read_byte_tag(stream, endianness);
-            }
-            break;
+            return read_numeric_list_tag<CByteTag>(reader, length);
         case 2:
-            tag = std::make_shared<ListTag>(std::vector<ShortTag>(length));
-            for (std::int32_t i = 0; i < length; i++){
-                (*tag)[i] = read_short_tag(stream, endianness);
-            }
-            break;
+            return read_numeric_list_tag<CShortTag>(reader, length);
         case 3:
-            tag = std::make_shared<ListTag>(std::vector<IntTag>(length));
-            for (std::int32_t i = 0; i < length; i++){
-                (*tag)[i] = read_int_tag(stream, endianness);
-            }
-            break;
+            return read_numeric_list_tag<CIntTag>(reader, length);
         case 4:
-            tag = std::make_shared<ListTag>(std::vector<LongTag>(length));
-            for (std::int32_t i = 0; i < length; i++){
-                (*tag)[i] = read_long_tag(stream, endianness);
-            }
-            break;
+            return read_numeric_list_tag<CLongTag>(reader, length);
         case 5:
-            tag = std::make_shared<ListTag>(std::vector<FloatTag>(length));
-            for (std::int32_t i = 0; i < length; i++){
-                (*tag)[i] = read_float_tag(stream, endianness);
-            }
-            break;
+            return read_numeric_list_tag<CFloatTag>(reader, length);
         case 6:
-            tag = std::make_shared<ListTag>(std::vector<DoubleTag>(length));
-            for (std::int32_t i = 0; i < length; i++){
-                (*tag)[i] = read_double_tag(stream, endianness);
-            }
-            break;
+            return read_numeric_list_tag<CDoubleTag>(reader, length);
         case 8:
-            tag = std::make_shared<ListTag>(std::vector<StringTag>(length));
-            for (std::int32_t i = 0; i < length; i++){
-                (*tag)[i] = read_string_tag(stream, endianness);
-            }
-            break;
+            return read_template_list_tag<CStringTag, read_string_tag>(reader, length);
         case 9:
-            tag = std::make_shared<ListTag>(std::vector<ListTagPtr>(length));
-            for (std::int32_t i = 0; i < length; i++){
-                (*tag)[i] = read_list_tag(stream, endianness);
-            }
-            break;
+            return read_template_list_tag<CListTagPtr, read_list_tag>(reader, length);
         case 10:
-            tag = std::make_shared<ListTag>(std::vector<CompoundTagPtr>(length));
-            for (std::int32_t i = 0; i < length; i++){
-                (*tag)[i] = read_compound_tag(stream, endianness);
-            }
-            break;
+            return read_template_list_tag<CCompoundTagPtr, read_compound_tag>(reader, length);
         case 7:
-            tag = std::make_shared<ListTag>(std::vector<ByteArrayTagPtr>(length));
-            for (std::int32_t i = 0; i < length; i++){
-                (*tag)[i] = read_byte_array_tag(stream, endianness);
-            }
-            break;
+            return read_template_list_tag<CByteArrayTagPtr, read_array_tag<CByteTag>>(reader, length);
         case 11:
-            tag = std::make_shared<ListTag>(std::vector<IntArrayTagPtr>(length));
-            for (std::int32_t i = 0; i < length; i++){
-                (*tag)[i] = read_int_array_tag(stream, endianness);
-            }
-            break;
+            return read_template_list_tag<CIntArrayTagPtr, read_array_tag<CIntTag>>(reader, length);
         case 12:
-            tag = std::make_shared<ListTag>(std::vector<LongArrayTagPtr>(length));
-            for (std::int32_t i = 0; i < length; i++){
-                (*tag)[i] = read_long_array_tag(stream, endianness);
-            }
-            break;
+            return read_template_list_tag<CLongArrayTagPtr, read_array_tag<CLongTag>>(reader, length);
         default:
             throw std::runtime_error("Unsupported tag type");
     }
-    return tag;
 };
 
-CompoundTagPtr read_compound_tag(std::istream stream, std::endian endianness){
-    CompoundTagPtr tag = std::make_shared<CompoundTag>();
-    std::uint8_t tag_type;
-    do {
-        stream.read(reinterpret_cast<char*>(&tag_type), sizeof(tag_type));
-        validate_stream(stream);
-        StringTag name = read_string_tag(stream, endianness);
-        TagNode node = read_node(stream, endianness, tag_type);
-        tag[name] = node;
-    } while (tag_type);
-    return tag;
-};
 
-template <typename T>
-std::shared_ptr<Array<T>> read_array(std::istream stream, std::endian endianness){
-    std::int32_t length;
-    stream.read(reinterpret_cast<char*>(&length), sizeof(length));
-    validate_stream(stream);
-    swap_to_endian(length, endianness);
-
-    std::shared_ptr<Array<T>> tag = std::make_shared<Array<T>>(length);
-    if (length){
-        stream.read(reinterpret_cast<char*>(tag->data()), sizeof(T) * length);
-        validate_stream(stream);
-        swap_array_to_endian(tag, endianness);
-    }
-    return tag;
-}
-
-ByteArrayTagPtr read_byte_array_tag(std::istream stream, std::endian endianness){
-    return read_array<ByteTag>(stream, endianness);
-};
-
-IntArrayTagPtr read_int_array_tag(std::istream stream, std::endian endianness){
-    return read_array<IntTag>(stream, endianness);
-};
-
-LongArrayTagPtr read_long_array_tag(std::istream stream, std::endian endianness){
-    return read_array<LongTag>(stream, endianness);
-};
-
-TagNode read_node(std::istream stream, std::endian endianness, std::uint8_t tag_type){
+TagNode read_node(BinaryReader& reader, std::uint8_t tag_id){
     TagNode node;
-    switch(tag_type){
+    switch(tag_id){
         case 1:
-            node = read_byte_tag(stream, endianness);
+            node = reader.readNumeric<CByteTag>();
             break;
         case 2:
-            node = read_short_tag(stream, endianness);
+            node = reader.readNumeric<CShortTag>();
             break;
         case 3:
-            node = read_int_tag(stream, endianness);
+            node = reader.readNumeric<CIntTag>();
             break;
         case 4:
-            node = read_long_tag(stream, endianness);
+            node = reader.readNumeric<CLongTag>();
             break;
         case 5:
-            node = read_float_tag(stream, endianness);
+            node = reader.readNumeric<CFloatTag>();
             break;
         case 6:
-            node = read_double_tag(stream, endianness);
+            node = reader.readNumeric<CDoubleTag>();
             break;
         case 8:
-            node = read_string_tag(stream, endianness);
+            node = read_string_tag(reader);
             break;
         case 9:
-            node = read_list_tag(stream, endianness);
+            node = read_list_tag(reader);
             break;
         case 10:
-            node = read_compound_tag(stream, endianness);
+            node = read_compound_tag(reader);
             break;
         case 7:
-            node = read_byte_array_tag(stream, endianness);
+            node = read_array_tag<CByteTag>(reader);
             break;
         case 11:
-            node = read_int_array_tag(stream, endianness);
+            node = read_array_tag<CIntTag>(reader);
             break;
         case 12:
-            node = read_long_array_tag(stream, endianness);
+            node = read_array_tag<CLongTag>(reader);
             break;
         default:
             throw std::runtime_error("Unsupported tag type");
@@ -227,13 +137,16 @@ TagNode read_node(std::istream stream, std::endian endianness, std::uint8_t tag_
     return node;
 };
 
-// Read a type byte followed by a name followed by a payload of that type
-std::pair<std::string, TagNode> read_named_tag(std::istream stream, std::endian endianness){
-    std::uint8_t tag_type;
-    stream.read(reinterpret_cast<char*>(&tag_type), sizeof(tag_type));
-    validate_stream(stream);
 
-    StringTag name = read_string_tag(stream, endianness);
-    TagNode node = read_node(stream, endianness, tag_type);
+std::pair<std::string, TagNode> read_named_tag(BinaryReader& reader){
+    std::uint8_t tag_id = reader.readNumeric<std::uint8_t>();
+    std::string name = read_string_tag(reader);
+    TagNode node = read_node(reader, tag_id);
     return std::make_pair(name, node);
-};
+}
+
+
+std::pair<std::string, TagNode> read_named_tag(std::string& raw, std::endian endian){
+    BinaryReader reader(raw, endian);
+    return read_named_tag(reader);
+}

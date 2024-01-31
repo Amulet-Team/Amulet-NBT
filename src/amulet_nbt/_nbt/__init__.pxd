@@ -3,20 +3,6 @@
 # distutils: extra_compile_args = -std=c++20 /std:c++20
 # distutils: extra_link_args = -std=c++20 /std:c++20
 
-from libc.stdint cimport (
-    int8_t,
-    int16_t,
-    int32_t,
-    int64_t
-)
-from libcpp.string cimport string
-from libcpp.memory cimport shared_ptr
-from libcpp.unordered_map cimport unordered_map
-from libcpp.pair cimport pair
-from libcpp.vector cimport vector
-from amulet_nbt._libcpp.variant cimport variant
-from amulet_nbt._nbt.array cimport Array
-
 
 from amulet_nbt._nbt.nbt cimport (
     TagNode,
@@ -51,6 +37,4 @@ from amulet_nbt._nbt.nbt cimport (
     CLongArrayList,
 )
 
-
-cdef extern from "read.hpp" nogil:
-    pair[string, TagNode] read_named_tag(istream, endian) except +
+from amulet_nbt._nbt.read cimport read_named_tag

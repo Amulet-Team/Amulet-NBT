@@ -11,4 +11,4 @@
 
 // Read a type byte followed by a name followed by a payload of that type
 std::pair<std::string, TagNode> read_named_tag(BinaryReader&);
-std::pair<std::string, TagNode> read_named_tag(std::string&, std::endian);
+std::pair<std::string, TagNode> read_named_tag(const std::string&, std::endian);

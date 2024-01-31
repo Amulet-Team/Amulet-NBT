@@ -36,7 +36,8 @@ std::shared_ptr<Array<T>> read_array_tag(BinaryReader& reader){
 
 
 template <typename T>
-CListTagPtr read_numeric_list_tag(BinaryReader& reader, std::int32_t length){
+CListTagPtr read_numeric_list_tag(BinaryReader& reader){
+    std::int32_t length = reader.readNumeric<std::int32_t>();
     CListTagPtr tag = std::make_shared<CListTag>(std::vector<T>(length));
     std::vector<T>& list = std::get<std::vector<T>>(*tag);
     for (std::int32_t i = 0; i < length; i++){
@@ -47,7 +48,8 @@ CListTagPtr read_numeric_list_tag(BinaryReader& reader, std::int32_t length){
 
 
 template <typename T, T (*readTag)(BinaryReader&)>
-CListTagPtr read_template_list_tag(BinaryReader& reader, std::int32_t length){
+CListTagPtr read_template_list_tag(BinaryReader& reader){
+    std::int32_t length = reader.readNumeric<std::int32_t>();
     CListTagPtr tag = std::make_shared<CListTag>(std::vector<T>(length));
     std::vector<T>& list = std::get<std::vector<T>>(*tag);
     for (std::int32_t i = 0; i < length; i++){
@@ -59,33 +61,31 @@ CListTagPtr read_template_list_tag(BinaryReader& reader, std::int32_t length){
 
 CListTagPtr read_list_tag(BinaryReader& reader){
     std::uint8_t tag_type = reader.readNumeric<std::uint8_t>();
-    std::int32_t length = reader.readNumeric<std::int32_t>();
-
     switch(tag_type){
         case 1:
-            return read_numeric_list_tag<CByteTag>(reader, length);
+            return read_numeric_list_tag<CByteTag>(reader);
         case 2:
-            return read_numeric_list_tag<CShortTag>(reader, length);
+            return read_numeric_list_tag<CShortTag>(reader);
         case 3:
-            return read_numeric_list_tag<CIntTag>(reader, length);
+            return read_numeric_list_tag<CIntTag>(reader);
         case 4:
-            return read_numeric_list_tag<CLongTag>(reader, length);
+            return read_numeric_list_tag<CLongTag>(reader);
         case 5:
-            return read_numeric_list_tag<CFloatTag>(reader, length);
+            return read_numeric_list_tag<CFloatTag>(reader);
         case 6:
-            return read_numeric_list_tag<CDoubleTag>(reader, length);
-        case 8:
-            return read_template_list_tag<CStringTag, read_string_tag>(reader, length);
-        case 9:
-            return read_template_list_tag<CListTagPtr, read_list_tag>(reader, length);
-        case 10:
-            return read_template_list_tag<CCompoundTagPtr, read_compound_tag>(reader, length);
+            return read_numeric_list_tag<CDoubleTag>(reader);
         case 7:
-            return read_template_list_tag<CByteArrayTagPtr, read_array_tag<CByteTag>>(reader, length);
+            return read_template_list_tag<CByteArrayTagPtr, read_array_tag<CByteTag>>(reader);
+        case 8:
+            return read_template_list_tag<CStringTag, read_string_tag>(reader);
+        case 9:
+            return read_template_list_tag<CListTagPtr, read_list_tag>(reader);
+        case 10:
+            return read_template_list_tag<CCompoundTagPtr, read_compound_tag>(reader);
         case 11:
-            return read_template_list_tag<CIntArrayTagPtr, read_array_tag<CIntTag>>(reader, length);
+            return read_template_list_tag<CIntArrayTagPtr, read_array_tag<CIntTag>>(reader);
         case 12:
-            return read_template_list_tag<CLongArrayTagPtr, read_array_tag<CLongTag>>(reader, length);
+            return read_template_list_tag<CLongArrayTagPtr, read_array_tag<CLongTag>>(reader);
         default:
             throw std::runtime_error("Unsupported tag type");
     }
@@ -146,7 +146,7 @@ std::pair<std::string, TagNode> read_named_tag(BinaryReader& reader){
 }
 
 
-std::pair<std::string, TagNode> read_named_tag(std::string& raw, std::endian endian){
-    BinaryReader reader(raw, endian);
+std::pair<std::string, TagNode> read_named_tag(const std::string& raw, std::endian endianness){
+    BinaryReader reader(raw, endianness);
     return read_named_tag(reader);
 }

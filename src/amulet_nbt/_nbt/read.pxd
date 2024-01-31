@@ -10,4 +10,4 @@ from amulet_nbt._libcpp.endian cimport endian
 
 
 cdef extern from "read.hpp" nogil:
-    pair[string, TagNode] read_named_tag(string&, endian) except +
+    pair[string, TagNode] read_named_tag(const string&, endian) except +

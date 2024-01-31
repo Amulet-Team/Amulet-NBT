@@ -38,3 +38,4 @@ from amulet_nbt._nbt.nbt cimport (
 )
 
 from amulet_nbt._nbt.read cimport read_named_tag
+from amulet_nbt._nbt.write cimport write_named_tag

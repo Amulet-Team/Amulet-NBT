@@ -8,6 +8,8 @@
 #include "../_binary/writer.hpp"
 #include "nbt.hpp"
 #include "array.hpp"
+#include "encoding.hpp"
 
 // Write a name and TagNode to a binary sequence
-std::string write_named_tag(const std::string&, const TagNode&, std::endian);
+std::string write_named_tag(const std::string&, const TagNode&, std::endian, StringEncode);
+std::string write_named_tag(const std::string&, const TagNode&, BinaryEncoding);

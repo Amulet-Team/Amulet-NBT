@@ -5,8 +5,8 @@
 
 from libcpp.string cimport string
 from libcpp.pair cimport pair
-from .nbt cimport TagNode
 from amulet_nbt._libcpp.endian cimport endian
+from amulet_nbt._tag._cpp cimport TagNode
 
 
 cdef extern from "read.hpp" nogil:

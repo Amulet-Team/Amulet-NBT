@@ -1,5 +1,5 @@
 from libcpp.string cimport string
-from .nbt cimport TagNode
+from amulet_nbt._tag._cpp.nbt cimport TagNode
 from amulet_nbt._libcpp.endian cimport endian
 
 

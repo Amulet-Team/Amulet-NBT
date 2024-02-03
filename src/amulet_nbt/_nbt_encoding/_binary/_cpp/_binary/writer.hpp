@@ -7,15 +7,23 @@
 #include <algorithm>
 #include <bit>
 #include <format>
+#include <functional>
+
+
+typedef std::function<std::string(const std::string&)> StringEncode;
 
 
 class BinaryWriter {
 private:
     std::string data;
     std::endian endianness;
+    StringEncode stringEncode;
 
 public:
-    BinaryWriter(std::endian endianness) : endianness(endianness) {}
+    BinaryWriter(
+        std::endian endianness,
+        StringEncode stringEncode
+    ) : endianness(endianness), stringEncode(stringEncode) {}
 
     /**
      * Fix the endianness of the numeric value and write it to the buffer.
@@ -35,7 +43,7 @@ public:
     }
 
     void writeString(const std::string& value) {
-        data.append(value);
+        data.append(stringEncode(value));
     }
 
     std::string getBuffer(){

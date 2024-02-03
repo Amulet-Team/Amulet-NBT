@@ -78,16 +78,16 @@ void write_list_tag(BinaryWriter& writer, const CListTagPtr& value){
             write_numeric_list_tag<CDoubleTag>(writer, std::get<CDoubleList>(*value));
         case 7:
             write_template_list_tag<CByteArrayTagPtr, write_array_tag<CByteTag>>(writer, std::get<CByteArrayList>(*value));
-//        case 8:
-//            write_template_list_tag<CStringTag, write_string_tag>(writer, std::get<CStringList>(*value));
-//        case 9:
-//            write_template_list_tag<CListTagPtr, write_list_tag>(writer, std::get<CListList>(*value));
-//        case 10:
-//            write_template_list_tag<CCompoundTagPtr, write_compound_tag>(writer, std::get<CCompoundList>(*value));
-//        case 11:
-//            write_template_list_tag<CIntArrayTagPtr, write_array_tag<CIntTag>>(writer, std::get<CIntArrayList>(*value));
-//        case 12:
-//            write_template_list_tag<CLongArrayTagPtr, write_array_tag<CLongTag>>(writer, std::get<CLongArrayList>(*value));
+        case 8:
+            write_template_list_tag<CStringTag, write_string_tag>(writer, std::get<CStringList>(*value));
+        case 9:
+            write_template_list_tag<CListTagPtr, write_list_tag>(writer, std::get<CListList>(*value));
+        case 10:
+            write_template_list_tag<CCompoundTagPtr, write_compound_tag>(writer, std::get<CCompoundList>(*value));
+        case 11:
+            write_template_list_tag<CIntArrayTagPtr, write_array_tag<CIntTag>>(writer, std::get<CIntArrayList>(*value));
+        case 12:
+            write_template_list_tag<CLongArrayTagPtr, write_array_tag<CLongTag>>(writer, std::get<CLongArrayList>(*value));
         default:
             throw std::runtime_error("Unsupported tag type");
     }
@@ -145,8 +145,19 @@ void write_named_tag(BinaryWriter& writer, const std::string& name, const TagNod
 }
 
 
-std::string write_named_tag(const std::string& name, const TagNode& node, std::endian endianness){
-    BinaryWriter writer(endianness);
+std::string write_named_tag(const std::string& name, const TagNode& node, std::endian endianness, StringEncode stringEncode){
+    BinaryWriter writer(endianness, stringEncode);
     write_named_tag(writer, name, node);
     return writer.getBuffer();
+}
+
+std::string write_named_tag(const std::string& name, const TagNode& node, BinaryEncoding encoding){
+    std::endian endianness
+    switch (encoding) {
+        case Java:
+            endianness = std::endian::big
+        case Bedrock:
+            endianness = std::endian::little
+    }
+    return write_named_tag(name, node, endianness);
 }

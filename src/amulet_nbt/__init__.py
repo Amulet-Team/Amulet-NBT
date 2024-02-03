@@ -55,10 +55,10 @@ __all__ = [
     # "load_array",
     # "ReadContext",
     # "from_snbt",
-    # "NBTError",
-    # "NBTLoadError",
-    # "NBTFormatError",
-    # "SNBTParseError",
+    "NBTError",
+    "NBTLoadError",
+    "NBTFormatError",
+    "SNBTParseError",
     # "SNBTType",
     # "IntType",
     # "FloatType",
@@ -126,7 +126,7 @@ from ._tag.compound import (
 # from ._load_nbt import load, load_many, load_array, ReadContext
 # from ._load_snbt import from_snbt
 
-# from ._errors import NBTError, NBTLoadError, NBTFormatError, SNBTParseError
+from ._errors import NBTError, NBTLoadError, NBTFormatError, SNBTParseError
 
 # from ._dtype import SNBTType, IntType, FloatType, NumberType, ArrayType, AnyNBT
 

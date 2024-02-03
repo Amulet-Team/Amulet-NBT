@@ -1,5 +1,5 @@
 import unittest
-from amulet_nbt import mutf8_to_utf8, utf8_to_mutf8, utf8_to_utf8
+from amulet_nbt import mutf8_encoding, utf8_encoding
 
 
 class TestUTF(unittest.TestCase):
@@ -12,12 +12,13 @@ class TestUTF(unittest.TestCase):
             except Exception:
                 pass
             else:
-                self.assertEqual(utf8_to_utf8(utf8), utf8)
-                mutf8 = utf8_to_mutf8(utf8)
+                self.assertEqual(utf8_encoding.encode(utf8), utf8)
+                self.assertEqual(utf8_encoding.decode(utf8), utf8)
+                mutf8 = mutf8_encoding.encode(utf8)
                 if 0 < i < 65536:
                     self.assertEqual(mutf8, utf8)
                 else:
-                    self.assertEqual(utf8, mutf8_to_utf8(mutf8))
+                    self.assertEqual(utf8, mutf8_encoding.decode(mutf8))
 
     def test_powers(self):
         for v, mutf8_true in (
@@ -46,8 +47,8 @@ class TestUTF(unittest.TestCase):
         ):
             with self.subTest(f"Character {v}"):
                 utf8 = chr(v).encode()
-                self.assertEqual(utf8_to_mutf8(utf8), mutf8_true)
-                self.assertEqual(mutf8_to_utf8(mutf8_true), utf8)
+                self.assertEqual(mutf8_encoding.encode(utf8), mutf8_true)
+                self.assertEqual(mutf8_encoding.decode(mutf8_true), utf8)
 
 
 if __name__ == "__main__":

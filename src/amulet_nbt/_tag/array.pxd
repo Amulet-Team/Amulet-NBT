@@ -1,5 +1,5 @@
 from amulet_nbt._tag.abc cimport AbstractBaseMutableTag
-from amulet_nbt._nbt cimport (
+from amulet_nbt._tag._cpp cimport (
     CByteArrayTagPtr,
     CIntArrayTagPtr,
     CLongArrayTagPtr

@@ -1,5 +1,5 @@
 from amulet_nbt._tag.numeric cimport AbstractBaseNumericTag
-from amulet_nbt._nbt cimport CByteTag, CShortTag, CIntTag, CLongTag
+from amulet_nbt._tag._cpp cimport CByteTag, CShortTag, CIntTag, CLongTag
 
 
 cdef class AbstractBaseIntTag(AbstractBaseNumericTag):

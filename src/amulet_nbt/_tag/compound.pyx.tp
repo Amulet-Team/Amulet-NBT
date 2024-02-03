@@ -13,11 +13,11 @@ from libcpp cimport bool
 from libcpp.memory cimport make_shared
 from cython.operator cimport dereference, postincrement
 
-from amulet_nbt._nbt cimport CCompoundTag, CCompoundTagPtr, CIntTag, TagNode
+from amulet_nbt._tag._cpp cimport CCompoundTag, CCompoundTagPtr, CIntTag, TagNode
 from amulet_nbt._libcpp.variant cimport get
 from .abc cimport AbstractBaseTag, AbstractBaseMutableTag
 
-from amulet_nbt._nbt cimport (
+from amulet_nbt._tag._cpp cimport (
     CByteTag,
     CShortTag,
     CIntTag,

@@ -5,7 +5,7 @@
 
 from typing import Any
 
-from amulet_nbt._nbt cimport TagNode, CFloatTag, CDoubleTag
+from amulet_nbt._tag._cpp cimport TagNode, CFloatTag, CDoubleTag
 from .numeric cimport AbstractBaseNumericTag
 # from amulet_nbt._const cimport ID_FLOAT, ID_DOUBLE
 # from amulet_nbt._dtype import EncoderType

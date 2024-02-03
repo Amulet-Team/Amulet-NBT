@@ -119,3 +119,9 @@ temp
 *.vs/
 *.vcxproj*
 *.sln
+
+# C++ files
+*.c
+!**/_cpp/**/*.c
+*.cpp
+!**/_cpp/**/*.cpp

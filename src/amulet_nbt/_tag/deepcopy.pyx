@@ -3,7 +3,7 @@ from cython.operator cimport dereference, postincrement
 
 from amulet_nbt._libcpp.variant cimport get
 
-from amulet_nbt._nbt cimport (
+from amulet_nbt._tag._cpp cimport (
     CByteTag,
     CShortTag,
     CIntTag,

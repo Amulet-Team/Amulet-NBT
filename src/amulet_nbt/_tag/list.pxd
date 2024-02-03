@@ -1,6 +1,6 @@
 from libcpp cimport bool
 from amulet_nbt._tag.abc cimport AbstractBaseMutableTag, AbstractBaseTag
-from amulet_nbt._nbt cimport CListTagPtr
+from amulet_nbt._tag._cpp cimport CListTagPtr
 
 from amulet_nbt._tag.int cimport ByteTag, ShortTag, IntTag, LongTag
 from amulet_nbt._tag.float cimport FloatTag, DoubleTag

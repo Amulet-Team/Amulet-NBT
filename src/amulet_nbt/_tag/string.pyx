@@ -8,7 +8,7 @@
 
 from typing import Any
 
-from amulet_nbt._nbt cimport TagNode, CStringTag
+from amulet_nbt._tag._cpp cimport TagNode, CStringTag
 from .abc cimport AbstractBaseImmutableTag
 # from amulet_nbt._const cimport ID_STRING
 # from amulet_nbt._dtype import EncoderType

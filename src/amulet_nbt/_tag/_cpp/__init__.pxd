@@ -4,7 +4,7 @@
 # distutils: extra_link_args = -std=c++20 /std:c++20
 
 
-from amulet_nbt._nbt.nbt cimport (
+from amulet_nbt._tag._cpp.nbt cimport (
     TagNode,
     CByteTag,
     CShortTag,
@@ -37,5 +37,4 @@ from amulet_nbt._nbt.nbt cimport (
     CLongArrayList,
 )
 
-from amulet_nbt._nbt.read cimport read_named_tag
-from amulet_nbt._nbt.write cimport write_named_tag
+from amulet_nbt._tag._cpp.array cimport Array

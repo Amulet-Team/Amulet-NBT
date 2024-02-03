@@ -1,7 +1,7 @@
 from libcpp cimport bool
 from libcpp.string cimport string
 
-from amulet_nbt._nbt cimport CCompoundTagPtr, TagNode
+from amulet_nbt._tag._cpp cimport CCompoundTagPtr, TagNode
 
 from .abc cimport AbstractBaseTag, AbstractBaseMutableTag
 from .int cimport ByteTag, ShortTag, IntTag, LongTag

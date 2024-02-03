@@ -14,7 +14,7 @@ from libcpp.memory cimport shared_ptr
 from libcpp.unordered_map cimport unordered_map
 from libcpp.vector cimport vector
 from amulet_nbt._libcpp.variant cimport variant
-from amulet_nbt._nbt.array cimport Array
+from .array cimport Array
 
 
 cdef extern from "nbt.hpp" nogil:

@@ -8,7 +8,7 @@
 #include "utf8.hpp"
 
 
-std::vector<size_t> read_mutf8(std::string &src) {
+std::vector<size_t> read_mutf8(const std::string &src) {
     std::vector<size_t> dst;
 
     for (size_t index = 0; index < src.size(); index++) {
@@ -136,7 +136,7 @@ void write_mutf8(std::string& dst, std::vector<size_t> src) {
 
 
 // Decode a modified utf-8 byte sequence to a regular utf-8 byte sequence
-std::string mutf8_to_utf8(std::string& src) {
+std::string mutf8_to_utf8(const std::string& src) {
     std::string dst;
     write_utf8(dst, read_mutf8(src));
     return dst;
@@ -144,7 +144,7 @@ std::string mutf8_to_utf8(std::string& src) {
 
 
 // Decode a modified utf-8 byte sequence to a regular utf-8 byte sequence
-std::string utf8_to_mutf8(std::string& src) {
+std::string utf8_to_mutf8(const std::string& src) {
     std::string dst;
     write_mutf8(dst, read_utf8(src));
     return dst;

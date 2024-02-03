@@ -7,7 +7,7 @@
 #include <stdexcept>
 
 
-std::vector<size_t> read_utf8(std::string& src) {
+std::vector<size_t> read_utf8(const std::string& src) {
     std::vector<size_t> dst;
 
     for (size_t index = 0; index < src.size(); index++) {
@@ -119,7 +119,7 @@ void write_utf8(std::string &dst, std::vector<size_t> src) {
 
 
 // Validate a utf-8 byte sequence and convert to itself.
-std::string utf8_to_utf8(std::string& src) {
+std::string utf8_to_utf8(const std::string& src) {
     std::string dst;
     write_utf8(dst, read_utf8(src));
     return dst;

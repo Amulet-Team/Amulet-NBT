@@ -2,6 +2,7 @@ import unittest
 import itertools
 import copy
 import pickle
+import gzip
 import faulthandler
 faulthandler.enable()
 
@@ -9,12 +10,23 @@ from amulet_nbt import (
     AbstractBaseNumericTag,
     AbstractBaseArrayTag,
     NamedTag,
-    CompoundTag,
     ByteTag,
+    ShortTag,
+    IntTag,
+    LongTag,
+    FloatTag,
+    DoubleTag,
+    StringTag,
     ListTag,
+    CompoundTag,
+    ByteArrayTag,
+    IntArrayTag,
+    LongArrayTag,
     mutf8_encoding,
     utf8_encoding,
     utf8_escape_encoding,
+    load as load_nbt
+
 )
 
 from .test_abc import AbstractBaseTestCase, TagNameMap
@@ -199,6 +211,32 @@ class NamedTagTestCase(AbstractBaseTestCase, unittest.TestCase):
                             tag.to_nbt(compressed=compressed, little_endian=little_endian, string_encoding=string_encoding, name=name),
                             named_tag.to_nbt(compressed=compressed, little_endian=little_endian, string_encoding=string_encoding),
                         )
+
+    def test_from_nbt(self) -> None:
+        for bnbt, correct_named_tag in (
+            (b"\x01\x00\x00\x01", NamedTag(ByteTag(1))),
+            (b"\x02\x00\x00\x00\x01", NamedTag(ShortTag(1))),
+            (b"\x03\x00\x00\x00\x00\x00\x01", NamedTag(IntTag(1))),
+            (b"\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01", NamedTag(LongTag(1))),
+            (b"\x05\x00\x00\x3F\x80\x00\x00", NamedTag(FloatTag(1))),
+            (b"\x06\x00\x00\x3F\xf0\x00\x00\x00\x00\x00\x00", NamedTag(DoubleTag(1))),
+            (b"\x07\x00\x00\x00\x00\x00\x00", NamedTag(ByteArrayTag())),
+            (b"\x08\x00\x00\x00\x0Bhello world", NamedTag(StringTag("hello world"))),
+            (b"\x09\x00\x00\x01\x00\x00\x00\x00", NamedTag(ListTag())),
+            (b"\x0A\x00\x00\x00", NamedTag(CompoundTag())),
+            (b"\x0B\x00\x00\x00\x00\x00\x00", NamedTag(IntArrayTag())),
+            (b"\x0C\x00\x00\x00\x00\x00\x00", NamedTag(LongArrayTag())),
+        ):
+            with self.subTest(str(bnbt)):
+                named_tag = load_nbt(bnbt, compressed=False)
+                self.assertIsInstance(named_tag, NamedTag)
+                self.assertEqual(correct_named_tag, named_tag)
+                self.assertEqual(correct_named_tag.tag, named_tag.tag)
+
+        self.assertEqual(
+            "hello world",
+            load_nbt(b"\x01\x00\x0Bhello world\x01", compressed=False).name
+        )
 
 
 if __name__ == "__main__":

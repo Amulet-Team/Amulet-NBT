@@ -7,7 +7,7 @@ import faulthandler
 faulthandler.enable()
 
 from .test_abc import AbstractBaseMutableTagTestCase
-from amulet_nbt import AbstractBaseTag, AbstractBaseMutableTag, ByteTag, ShortTag, IntTag, LongTag, FloatTag, DoubleTag, StringTag, ByteArrayTag, ListTag, CompoundTag, IntArrayTag, LongArrayTag
+from amulet_nbt import AbstractBaseTag, AbstractBaseMutableTag, ByteTag, ShortTag, IntTag, LongTag, FloatTag, DoubleTag, StringTag, ByteArrayTag, ListTag, CompoundTag, IntArrayTag, LongArrayTag, load as load_nbt, NBTFormatError
 
 
 def is_iterable(obj):
@@ -808,6 +808,24 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 compressed=False, little_endian=True
             ),
         )
+
+    def test_from_nbt(self):
+        self.assertEqual(
+            ListTag([], 1), load_nbt(b"\x09\x00\x00\x01\xFF\xFF\xFF\xFF").list
+        )
+
+        with self.assertRaises(NBTFormatError):
+            load_nbt(b"\x09")
+        with self.assertRaises(NBTFormatError):
+            load_nbt(b"\x09\x00\x00")
+        with self.assertRaises(NBTFormatError):
+            load_nbt(b"\x09\x00\x00\x00")
+        with self.assertRaises(NBTFormatError):
+            load_nbt(b"\x09\x00\x00\x00\x00")
+        with self.assertRaises(NBTFormatError):
+            load_nbt(b"\x09\x00\x00\x00\x00\x00")
+        with self.assertRaises(NBTFormatError):
+            load_nbt(b"\x09\x00\x00\x00\x00\x00\x00")
 
 
 if __name__ == '__main__':

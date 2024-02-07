@@ -51,9 +51,10 @@ __all__ = [
     "CompoundTag",
     "CompoundTag",
     "TAG_Compound",
-    # "load",
-    # "load_array",
-    # "ReadContext",
+    "load",
+    "load_array",
+    "ReadContext",
+    "ReadOffset",
     # "from_snbt",
     "NBTError",
     "NBTLoadError",
@@ -122,7 +123,7 @@ from ._tag.compound import (
 )
 
 # Load functions
-# from ._load_nbt import load, load_many, load_array, ReadContext
+from amulet_nbt._nbt_encoding._binary import load, load_array, ReadOffset
 # from ._load_snbt import from_snbt
 
 from ._errors import NBTError, NBTLoadError, NBTFormatError, SNBTParseError
@@ -136,3 +137,10 @@ from ._string_encoding import (
     utf8_encoding,
     utf8_escape_encoding
 )
+
+
+def __getattr__(name):
+    import warnings
+    if name == "ReadContext":
+        warnings.warn("ReadContext is depreciated. Use ReadOffset instead.", DeprecationWarning)
+        return ReadOffset

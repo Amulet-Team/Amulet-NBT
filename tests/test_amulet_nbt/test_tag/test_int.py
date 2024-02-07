@@ -8,7 +8,7 @@ import numpy
 faulthandler.enable()
 
 from .test_numeric import AbstractBaseNumericTagTestCase
-from amulet_nbt import AbstractBaseTag, AbstractBaseImmutableTag, AbstractBaseNumericTag, AbstractBaseIntTag, ByteTag, ShortTag, IntTag, LongTag
+from amulet_nbt import AbstractBaseTag, AbstractBaseImmutableTag, AbstractBaseNumericTag, AbstractBaseIntTag, ByteTag, ShortTag, IntTag, LongTag, load as load_nbt
 
 
 class IntTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
@@ -273,6 +273,44 @@ class IntTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
         self.assertEqual(
             b"\x04\x00\x00\x05\x00\x00\x00\x00\x00\x00\x00",
             LongTag(5).to_nbt(compressed=False, little_endian=True),
+        )
+
+    def test_from_nbt(self):
+        self.assertEqual(
+            ByteTag(5),
+            load_nbt(b"\x01\x00\x00\x05", little_endian=False).byte,
+        )
+        self.assertEqual(
+            ByteTag(5),
+            load_nbt(b"\x01\x00\x00\x05", little_endian=True).byte,
+        )
+        self.assertEqual(
+            ShortTag(5),
+            load_nbt(b"\x02\x00\x00\x00\x05", little_endian=False).short,
+        )
+        self.assertEqual(
+            ShortTag(5),
+            load_nbt(b"\x02\x00\x00\x05\x00", little_endian=True).short,
+        )
+        self.assertEqual(
+            IntTag(5),
+            load_nbt(b"\x03\x00\x00\x00\x00\x00\x05", little_endian=False).int,
+        )
+        self.assertEqual(
+            IntTag(5),
+            load_nbt(b"\x03\x00\x00\x05\x00\x00\x00", little_endian=True).int,
+        )
+        self.assertEqual(
+            LongTag(5),
+            load_nbt(
+                b"\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x05", little_endian=False
+            ).long,
+        )
+        self.assertEqual(
+            LongTag(5),
+            load_nbt(
+                b"\x04\x00\x00\x05\x00\x00\x00\x00\x00\x00\x00", little_endian=True
+            ).long,
         )
 
 

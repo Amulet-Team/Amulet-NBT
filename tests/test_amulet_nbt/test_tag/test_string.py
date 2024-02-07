@@ -8,7 +8,7 @@ faulthandler.enable()
 
 from .test_abc import AbstractBaseImmutableTagTestCase
 
-from amulet_nbt import StringTag, AbstractBaseTag, AbstractBaseImmutableTag, utf8_escape_encoding
+from amulet_nbt import StringTag, AbstractBaseTag, AbstractBaseImmutableTag, utf8_escape_encoding, load as load_nbt, NBTFormatError
 
 
 class StringTagTestCase(AbstractBaseImmutableTagTestCase, unittest.TestCase):
@@ -122,6 +122,43 @@ class StringTagTestCase(AbstractBaseImmutableTagTestCase, unittest.TestCase):
                 compressed=False, little_endian=True, string_encoding=utf8_escape_encoding
             ),
         )
+
+    def test_from_nbt(self):
+        self.assertEqual(
+            StringTag(),
+            load_nbt(
+                b"\x08\x00\x00\x00\x00", compressed=False, little_endian=False
+            ).string,
+        )
+        self.assertEqual(
+            StringTag(),
+            load_nbt(
+                b"\x08\x00\x00\x00\x00", compressed=False, little_endian=True
+            ).string,
+        )
+        self.assertEqual(
+            StringTag("test"),
+            load_nbt(
+                b"\x08\x00\x00\x00\x04test", compressed=False, little_endian=False
+            ).string,
+        )
+        self.assertEqual(
+            StringTag("test"),
+            load_nbt(
+                b"\x08\x00\x00\x04\x00test", compressed=False, little_endian=True
+            ).string,
+        )
+        self.assertEqual(
+            StringTag("🏹"),
+            load_nbt(
+                b"\x08\x00\x00\x00\x06\xed\xa0\xbc\xed\xbf\xb9",
+                compressed=False,
+                little_endian=False,
+            ).string,
+        )
+
+        with self.assertRaises(NBTFormatError):
+            load_nbt(b"\x08\x00\x00\x00\x05abcd")
 
 
 if __name__ == "__main__":

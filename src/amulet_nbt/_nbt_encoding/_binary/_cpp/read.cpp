@@ -27,6 +27,7 @@ CCompoundTagPtr read_compound_tag(BinaryReader& reader){
 template <typename T>
 std::shared_ptr<Array<T>> read_array_tag(BinaryReader& reader){
     std::int32_t length = reader.readNumeric<std::int32_t>();
+    if (length < 0){length = 0;}
     std::shared_ptr<Array<T>> tag = std::make_shared<Array<T>>(length);
     for (size_t i = 0; i < length; i++){
         reader.readNumericInto((*tag)[i]);
@@ -38,6 +39,7 @@ std::shared_ptr<Array<T>> read_array_tag(BinaryReader& reader){
 template <typename T>
 CListTagPtr read_numeric_list_tag(BinaryReader& reader){
     std::int32_t length = reader.readNumeric<std::int32_t>();
+    if (length < 0){length = 0;}
     CListTagPtr tag = std::make_shared<CListTag>(std::vector<T>(length));
     std::vector<T>& list = std::get<std::vector<T>>(*tag);
     for (std::int32_t i = 0; i < length; i++){
@@ -50,6 +52,7 @@ CListTagPtr read_numeric_list_tag(BinaryReader& reader){
 template <typename T, T (*readTag)(BinaryReader&)>
 CListTagPtr read_template_list_tag(BinaryReader& reader){
     std::int32_t length = reader.readNumeric<std::int32_t>();
+    if (length < 0){length = 0;}
     CListTagPtr tag = std::make_shared<CListTag>(std::vector<T>(length));
     std::vector<T>& list = std::get<std::vector<T>>(*tag);
     for (std::int32_t i = 0; i < length; i++){
@@ -59,9 +62,19 @@ CListTagPtr read_template_list_tag(BinaryReader& reader){
 }
 
 
+CListTagPtr read_void_list_tag(BinaryReader& reader){
+    std::int32_t length = reader.readNumeric<std::int32_t>();
+    if (length < 0){length = 0;}
+    if (length != 0){throw std::runtime_error("Void list tag must have a length of 0");}
+    return std::make_shared<CListTag>();
+}
+
+
 CListTagPtr read_list_tag(BinaryReader& reader){
     std::uint8_t tag_type = reader.readNumeric<std::uint8_t>();
     switch(tag_type){
+        case 0:
+            return read_void_list_tag(reader);
         case 1:
             return read_numeric_list_tag<CByteTag>(reader);
         case 2:
@@ -87,7 +100,7 @@ CListTagPtr read_list_tag(BinaryReader& reader){
         case 12:
             return read_template_list_tag<CLongArrayTagPtr, read_array_tag<CLongTag>>(reader);
         default:
-            throw std::runtime_error("Unsupported tag type");
+            throw std::runtime_error("This shouldn't happen");
     }
 };
 
@@ -146,17 +159,24 @@ std::pair<std::string, TagNode> read_named_tag(BinaryReader& reader){
 }
 
 
-std::pair<std::string, TagNode> read_named_tag(const std::string& raw, std::endian endianness, StringDecode stringDecode){
+std::pair<std::string, TagNode> read_named_tag(const std::string& raw, std::endian endianness, StringDecode stringDecode, size_t& offset){
     BinaryReader reader(raw, endianness, stringDecode);
     return read_named_tag(reader);
 }
 
-std::pair<std::string, TagNode> read_named_tag(const std::string& raw, BinaryEncoding encoding){
-    switch (encoding) {
-        case Java:
-            return read_named_tag(raw, std::endian::big, mutf8_to_utf8);
-        case Bedrock:
-            // TODO: this should escape invalid utf-8 sequences
-            return read_named_tag(raw, std::endian::little, [](const std::string& input) -> std::string {return input});
-    }
+
+std::pair<std::string, TagNode> read_named_tag(const std::string& raw, std::endian endianness, StringDecode stringDecode){
+    size_t offset;
+    return read_named_tag(raw, endianness, stringDecode, offset);
 }
+
+
+//std::pair<std::string, TagNode> read_named_tag(const std::string& raw, BinaryEncoding encoding){
+//    switch (encoding) {
+//        case Java:
+//            return read_named_tag(raw, std::endian::big, mutf8_to_utf8);
+//        case Bedrock:
+//            // TODO: this should escape invalid utf-8 sequences
+//            return read_named_tag(raw, std::endian::little, [](const std::string& input) -> std::string {return input});
+//    }
+//}

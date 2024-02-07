@@ -42,8 +42,12 @@ public:
         }
     }
 
+    std::string encodeString(const std::string& value) {
+        return stringEncode(value);
+    }
+
     void writeString(const std::string& value) {
-        data.append(stringEncode(value));
+        data.append(value);
     }
 
     std::string getBuffer(){

@@ -1,5 +1,14 @@
 from copy import copy
 from typing import Any
+import gzip
+
+from libcpp cimport bool
+from libcpp.string cimport string
+
+from amulet_nbt._libcpp.endian cimport endian
+from amulet_nbt._string_encoding cimport StringEncoding
+from amulet_nbt._string_encoding._cpp cimport CStringEncode
+from amulet_nbt._string_encoding import mutf8_encoding
 
 
 cdef class AbstractBase:
@@ -20,6 +29,38 @@ cdef class AbstractBaseTag(AbstractBase):
         You would be better off using the py_{type} or np_array properties if you require a fixed type.
         This is here for convenience to get a python representation under the same property name.
         """
+        raise NotImplementedError
+
+    def to_nbt(
+        self,
+        *,
+        bool compressed=True,
+        bool little_endian=False,
+        string_encoding: StringEncoding = mutf8_encoding,
+        string name = b"",
+    ):
+        """
+        Get the data in binary NBT format.
+
+        :param compressed: Should the bytes be compressed with gzip.
+        :param little_endian: Should the bytes be saved in little endian format.
+        :param string_encoding: A function to encode strings to bytes.
+        :param name: The root tag name.
+        :return: The binary NBT representation of the class.
+        """
+        cdef endian endianness = endian.little if little_endian else endian.big
+
+        cdef bytes data = self.write_tag(
+            name,
+            endianness,
+            string_encoding.encode_cpp
+        )
+
+        if compressed:
+            return gzip.compress(data)
+        return data
+
+    cdef string write_tag(self, string name, endian endianness, CStringEncode string_encode):
         raise NotImplementedError
 
     def __eq__(self, other):

@@ -1,6 +1,7 @@
 ## This file is generated from a template.
 ## Do not modify this file directly or your changes will get overwritten.
 ## Edit the accompanying .pyx.tp file instead.
+# cython: language_level=3, boundscheck=False, wraparound=False
 # distutils: language = c++
 # distutils: extra_compile_args = -std=c++20 /std:c++20
 # distutils: extra_link_args = -std=c++20 /std:c++20
@@ -13,6 +14,9 @@ from libcpp.string cimport string
 from libcpp cimport bool
 from libcpp.memory cimport make_shared
 from cython.operator cimport dereference, postincrement
+from amulet_nbt._libcpp.endian cimport endian
+from amulet_nbt._string_encoding._cpp cimport CStringEncode
+from amulet_nbt._nbt_encoding._binary cimport write_named_tag
 
 from amulet_nbt._tag._cpp cimport CCompoundTag, CCompoundTagPtr, CIntTag, TagNode
 from amulet_nbt._libcpp.variant cimport get
@@ -219,6 +223,9 @@ cdef class CompoundTag(AbstractBaseMutableTag):
     @property
     def py_data(self) -> Any:
         return dict(self)
+
+    cdef string write_tag(self, string name, endian endianness, CStringEncode string_encode):
+        return write_named_tag[CCompoundTagPtr](name, self.cpp, endianness, string_encode)
 
     def __eq__(self, object other) -> bool:
         if not isinstance(other, CompoundTag):

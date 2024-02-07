@@ -1,14 +1,22 @@
 ## This file is generated from a template.
 ## Do not modify this file directly or your changes will get overwritten.
 ## Edit the accompanying .pyx.tp file instead.
+# cython: language_level=3, boundscheck=False, wraparound=False
+# distutils: language = c++
+# distutils: extra_compile_args = -std=c++20 /std:c++20
+# distutils: extra_link_args = -std=c++20 /std:c++20
 
 from typing import Any
 
 from libc.math cimport ceil
 from libcpp cimport bool
 from libcpp.memory cimport make_shared
+from libcpp.string cimport string
 from cython.operator cimport dereference
-from amulet_nbt._libcpp.variant cimport get
+from amulet_nbt._libcpp.variant cimport get, monostate
+from amulet_nbt._libcpp.endian cimport endian
+from amulet_nbt._string_encoding._cpp cimport CStringEncode
+from amulet_nbt._nbt_encoding._binary cimport write_named_tag
 
 from amulet_nbt._tag._cpp cimport (
     TagNode,
@@ -34,8 +42,6 @@ from .string cimport StringTag
 from .compound cimport CompoundTag
 from .array cimport ByteArrayTag, IntArrayTag, LongArrayTag
 from .deepcopy cimport CListTagPtr_deepcopy
-# from amulet_nbt._const cimport ID_LIST, CommaSpace, CommaNewline
-# from amulet_nbt._dtype import AnyNBT, EncoderType
 from .compound cimport is_compound_eq
 
 
@@ -2544,6 +2550,9 @@ cdef class ListTag(AbstractBaseMutableTag):
     @property
     def py_data(self) -> Any:
         return list(self)
+
+    cdef string write_tag(self, string name, endian endianness, CStringEncode string_encode):
+        return write_named_tag[CListTagPtr](name, self.cpp, endianness, string_encode)
 
     def __eq__(self, object other):
         if not isinstance(other, ListTag):

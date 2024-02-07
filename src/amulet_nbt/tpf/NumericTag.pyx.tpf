@@ -1,4 +1,7 @@
 {{py:from template import include}}
+    cdef string write_tag(self, string name, endian endianness, CStringEncode string_encode):
+        return write_named_tag[C{{py_cls}}](name, self.cpp, endianness, string_encode)
+
 {{include("amulet_nbt/tpf/ImmutableTag.pyx.tpf", **locals())}}
 
     def __repr__(self):

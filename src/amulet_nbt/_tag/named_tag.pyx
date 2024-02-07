@@ -7,7 +7,14 @@
 # cython: c_string_type=str, c_string_encoding=utf8
 
 import copy
+import gzip
 from libcpp.string cimport string
+from libcpp cimport bool
+from amulet_nbt._libcpp.endian cimport endian
+from amulet_nbt._string_encoding cimport StringEncoding
+from amulet_nbt._string_encoding import mutf8_encoding
+from amulet_nbt._string_encoding._cpp cimport CStringEncode
+from amulet_nbt._nbt_encoding._binary cimport write_named_tag
 
 from .abc cimport AbstractBase, AbstractBaseTag
 from .int cimport ByteTag, ShortTag, IntTag, LongTag
@@ -43,6 +50,36 @@ cdef class NamedTag(AbstractBase):
     @name.setter
     def name(self, name):
         self.tag_name = name
+
+    def to_nbt(
+        self,
+        *,
+        bool compressed=True,
+        bool little_endian=False,
+        string_encoding: StringEncoding = mutf8_encoding,
+    ):
+        """
+        Get the data in binary NBT format.
+
+        :param compressed: Should the bytes be compressed with gzip.
+        :param little_endian: Should the bytes be saved in little endian format.
+        :param string_encoding: A function to encode strings to bytes.
+        :param name: The root tag name.
+        :return: The binary NBT representation of the class.
+        """
+        cdef endian endianness = endian.little if little_endian else endian.big
+
+        cdef bytes data = self.write_tag(
+            endianness,
+            string_encoding.encode_cpp
+        )
+
+        if compressed:
+            return gzip.compress(data)
+        return data
+
+    cdef string write_tag(self, endian endianness, CStringEncode string_encode):
+        return write_named_tag[TagNode](self.tag_name, self.tag_node, endianness, string_encode)
 
     def __eq__(self, other):
         cdef NamedTag other_

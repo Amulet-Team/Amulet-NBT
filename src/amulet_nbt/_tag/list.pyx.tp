@@ -493,15 +493,17 @@ cdef class ListTag(AbstractBaseMutableTag):
 
     def __init__(self, object value = (), char list_data_type = 1):
         self.cpp = make_shared[CListTag]()
+        if list_data_type == 0:
+            dereference(self.cpp).emplace[monostate]()
 {{
 "\n".join(
-    f"""        {"el" * (index != 1)}if list_data_type == {index}:
+    f"""        elif list_data_type == {index}:
             dereference(self.cpp).emplace[{c_list_cls}]()"""
     for index, c_cls, c_node_cls, c_list_cls, py_cls, tag_var, list_var in ClassData
 )
 }}
         else:
-            raise ValueError(f"list_data_type must be between 1 and 12. Got {{'{'}}list_data_type{{'}'}}")
+            raise ValueError(f"list_data_type must be between 0 and 12. Got {{'{'}}list_data_type{{'}'}}")
 
         for tag in value:
             self.append(tag)

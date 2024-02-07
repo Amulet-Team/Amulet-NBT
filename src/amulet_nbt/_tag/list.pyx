@@ -2496,7 +2496,9 @@ cdef class ListTag(AbstractBaseMutableTag):
 
     def __init__(self, object value = (), char list_data_type = 1):
         self.cpp = make_shared[CListTag]()
-        if list_data_type == 1:
+        if list_data_type == 0:
+            dereference(self.cpp).emplace[monostate]()
+        elif list_data_type == 1:
             dereference(self.cpp).emplace[CByteList]()
         elif list_data_type == 2:
             dereference(self.cpp).emplace[CShortList]()
@@ -2521,7 +2523,7 @@ cdef class ListTag(AbstractBaseMutableTag):
         elif list_data_type == 12:
             dereference(self.cpp).emplace[CLongArrayList]()
         else:
-            raise ValueError(f"list_data_type must be between 1 and 12. Got {list_data_type}")
+            raise ValueError(f"list_data_type must be between 0 and 12. Got {list_data_type}")
 
         for tag in value:
             self.append(tag)

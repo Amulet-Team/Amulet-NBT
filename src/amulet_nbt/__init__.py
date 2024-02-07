@@ -65,10 +65,9 @@ __all__ = [
     # "NumberType",
     # "ArrayType",
     # "AnyNBT",
-    # "utf8_decoder",
-    # "utf8_encoder",
-    # "utf8_escape_decoder",
-    # "utf8_escape_encoder",
+    "mutf8_encoding",
+    "utf8_encoding",
+    "utf8_escape_encoding",
 ]
 
 from ._tag.abc import (
@@ -132,4 +131,8 @@ from ._errors import NBTError, NBTLoadError, NBTFormatError, SNBTParseError
 
 # from ._util import utf8_decoder, utf8_encoder, utf8_escape_decoder, utf8_escape_encoder
 
-from ._utf8 import mutf8_to_utf8, utf8_to_mutf8, utf8_to_utf8
+from ._string_encoding import (
+    mutf8_encoding,
+    utf8_encoding,
+    utf8_escape_encoding
+)

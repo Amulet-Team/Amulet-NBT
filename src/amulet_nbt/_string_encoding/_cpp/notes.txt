@@ -41,5 +41,5 @@ Values >= 65536 first have 65536 subtracted from them
 It is then split into the high 10 bits and the low 10 bits and encoded as two 3 byte characters
 See the wiki page for UTF-16 for more info
                             11101101 1010TSRQ 10PONMLK 11101101 1011JIHG 10FEDCBA
-2**16		65536			11101101 10100001 10000000 11101101 10110000 10000000
+2**16		65536			11101101 10100000 10000000 11101101 10110000 10000000
 0x10ffff	1114111			11101101 10100000 10111111 11101101 10111111 10111111

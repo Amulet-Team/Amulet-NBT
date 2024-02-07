@@ -18,15 +18,18 @@ cdef class StringEncoding:
         return self.decode_cpp(data)
 
 
-cdef StringEncoding mutf8_encoding = StringEncoding()
-mutf8_encoding.decode_cpp = mutf8_to_utf8
-mutf8_encoding.encode_cpp = utf8_to_mutf8
+cdef StringEncoding _mutf8_encoding = StringEncoding()
+_mutf8_encoding.decode_cpp = mutf8_to_utf8
+_mutf8_encoding.encode_cpp = utf8_to_mutf8
+mutf8_encoding = _mutf8_encoding
 
-cdef StringEncoding utf8_encoding = StringEncoding()
-utf8_encoding.decode_cpp = utf8_to_utf8
-utf8_encoding.encode_cpp = utf8_to_utf8
+cdef StringEncoding _utf8_encoding = StringEncoding()
+_utf8_encoding.decode_cpp = utf8_to_utf8
+_utf8_encoding.encode_cpp = utf8_to_utf8
+utf8_encoding = _utf8_encoding
 
 # TODO: implement this
-cdef StringEncoding utf8_escape_encoding = StringEncoding()
-utf8_escape_encoding.decode_cpp = utf8_to_utf8
-utf8_escape_encoding.encode_cpp = utf8_to_utf8
+cdef StringEncoding _utf8_escape_encoding = StringEncoding()
+_utf8_escape_encoding.decode_cpp = utf8_to_utf8
+_utf8_escape_encoding.encode_cpp = utf8_to_utf8
+utf8_escape_encoding = _utf8_escape_encoding

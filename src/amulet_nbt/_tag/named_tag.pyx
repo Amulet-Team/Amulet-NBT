@@ -1,6 +1,7 @@
 ## This file is generated from a template.
 ## Do not modify this file directly or your changes will get overwritten.
 ## Edit the accompanying .pyx.tp file instead.
+# cython: language_level=3, boundscheck=False, wraparound=False
 # distutils: language = c++
 # distutils: extra_compile_args = -std=c++20 /std:c++20
 # distutils: extra_link_args = -std=c++20 /std:c++20
@@ -103,7 +104,11 @@ cdef class NamedTag(AbstractBase):
             self.name
         )
 
-    def __getitem__(self, int item):
+    def __getitem__(self, ptrdiff_t item):
+        if item < 0:
+            item += 2
+        if not 0 <= item <= 1:
+            raise IndexError("Index out of range")
         return (self.name, self.tag)[item]
 
     def __iter__(self):

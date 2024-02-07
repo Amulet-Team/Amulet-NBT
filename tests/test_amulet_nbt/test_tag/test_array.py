@@ -9,7 +9,7 @@ faulthandler.enable()
 
 from .test_abc import AbstractBaseMutableTagTestCase
 
-from amulet_nbt import AbstractBaseTag, AbstractBaseMutableTag, AbstractBaseArrayTag
+from amulet_nbt import AbstractBaseTag, AbstractBaseMutableTag, AbstractBaseArrayTag, ByteArrayTag, IntArrayTag, LongArrayTag
 
 
 class ArrayTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
@@ -146,6 +146,56 @@ class ArrayTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                     [-3, -2, -1, 0, 1, 2, 3],
                     numpy.asarray(cls([-3, -2, -1, 0, 1, 2, 3])),
                 )
+
+    def test_to_nbt(self):
+        self.assertEqual(
+            b"\x07\x00\x00\x00\x00\x00\x00",
+            ByteArrayTag().to_nbt(compressed=False, little_endian=False),
+        )
+        self.assertEqual(
+            b"\x07\x00\x00\x00\x00\x00\x07\xFD\xFE\xFF\x00\x01\x02\x03",
+            ByteArrayTag([-3, -2, -1, 0, 1, 2, 3]).to_nbt(
+                compressed=False, little_endian=False
+            ),
+        )
+        self.assertEqual(
+            b"\x07\x00\x00\x07\x00\x00\x00\xFD\xFE\xFF\x00\x01\x02\x03",
+            ByteArrayTag([-3, -2, -1, 0, 1, 2, 3]).to_nbt(
+                compressed=False, little_endian=True
+            ),
+        )
+        self.assertEqual(
+            b"\x0B\x00\x00\x00\x00\x00\x00",
+            IntArrayTag().to_nbt(compressed=False, little_endian=False),
+        )
+        self.assertEqual(
+            b"\x0B\x00\x00\x00\x00\x00\x07\xFF\xFF\xFF\xFD\xFF\xFF\xFF\xFE\xFF\xFF\xFF\xFF\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x02\x00\x00\x00\x03",
+            IntArrayTag([-3, -2, -1, 0, 1, 2, 3]).to_nbt(
+                compressed=False, little_endian=False
+            ),
+        )
+        self.assertEqual(
+            b"\x0B\x00\x00\x07\x00\x00\x00\xFD\xFF\xFF\xFF\xFE\xFF\xFF\xFF\xFF\xFF\xFF\xFF\x00\x00\x00\x00\x01\x00\x00\x00\x02\x00\x00\x00\x03\x00\x00\x00",
+            IntArrayTag([-3, -2, -1, 0, 1, 2, 3]).to_nbt(
+                compressed=False, little_endian=True
+            ),
+        )
+        self.assertEqual(
+            b"\x0C\x00\x00\x00\x00\x00\x00",
+            LongArrayTag().to_nbt(compressed=False, little_endian=False),
+        )
+        self.assertEqual(
+            b"\x0C\x00\x00\x00\x00\x00\x07\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFD\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFE\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\x03",
+            LongArrayTag([-3, -2, -1, 0, 1, 2, 3]).to_nbt(
+                compressed=False, little_endian=False
+            ),
+        )
+        self.assertEqual(
+            b"\x0C\x00\x00\x07\x00\x00\x00\xFD\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFE\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00",
+            LongArrayTag([-3, -2, -1, 0, 1, 2, 3]).to_nbt(
+                compressed=False, little_endian=True
+            ),
+        )
 
 
 if __name__ == "__main__":

@@ -241,6 +241,40 @@ class IntTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
                 self.assertEqual(False, bool(cls(0)))
                 self.assertEqual(True, bool(cls(5.5)))
 
+    def test_to_nbt(self):
+        self.assertEqual(
+            b"\x01\x00\x00\x05",
+            ByteTag(5).to_nbt(compressed=False, little_endian=False),
+        )
+        self.assertEqual(
+            b"\x01\x00\x00\x05",
+            ByteTag(5).to_nbt(compressed=False, little_endian=True),
+        )
+        self.assertEqual(
+            b"\x02\x00\x00\x00\x05",
+            ShortTag(5).to_nbt(compressed=False, little_endian=False),
+        )
+        self.assertEqual(
+            b"\x02\x00\x00\x05\x00",
+            ShortTag(5).to_nbt(compressed=False, little_endian=True),
+        )
+        self.assertEqual(
+            b"\x03\x00\x00\x00\x00\x00\x05",
+            IntTag(5).to_nbt(compressed=False, little_endian=False),
+        )
+        self.assertEqual(
+            b"\x03\x00\x00\x05\x00\x00\x00",
+            IntTag(5).to_nbt(compressed=False, little_endian=True),
+        )
+        self.assertEqual(
+            b"\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x05",
+            LongTag(5).to_nbt(compressed=False, little_endian=False),
+        )
+        self.assertEqual(
+            b"\x04\x00\x00\x05\x00\x00\x00\x00\x00\x00\x00",
+            LongTag(5).to_nbt(compressed=False, little_endian=True),
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

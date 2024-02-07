@@ -8,7 +8,7 @@ faulthandler.enable()
 
 from .test_abc import AbstractBaseImmutableTagTestCase
 
-from amulet_nbt import StringTag, AbstractBaseTag, AbstractBaseImmutableTag
+from amulet_nbt import StringTag, AbstractBaseTag, AbstractBaseImmutableTag, utf8_escape_encoding
 
 
 class StringTagTestCase(AbstractBaseImmutableTagTestCase, unittest.TestCase):
@@ -93,6 +93,35 @@ class StringTagTestCase(AbstractBaseImmutableTagTestCase, unittest.TestCase):
         self.assertTrue(StringTag("val1") >= StringTag("val0"))
         self.assertTrue(StringTag("val1") >= StringTag("val1"))
         self.assertFalse(StringTag("val1") >= StringTag("val2"))
+
+    def test_to_nbt(self):
+        self.assertEqual(
+            b"\x08\x00\x00\x00\x00",
+            StringTag().to_nbt(compressed=False, little_endian=False),
+        )
+        self.assertEqual(
+            b"\x08\x00\x00\x00\x00",
+            StringTag().to_nbt(compressed=False, little_endian=True),
+        )
+        self.assertEqual(
+            b"\x08\x00\x00\x00\x04test",
+            StringTag("test").to_nbt(compressed=False, little_endian=False),
+        )
+        self.assertEqual(
+            b"\x08\x00\x00\x04\x00test",
+            StringTag("test").to_nbt(compressed=False, little_endian=True),
+        )
+        # default string encoder is the Java Modified UTF-8 encoder
+        self.assertEqual(
+            b"\x08\x00\x00\x00\x06\xed\xa0\xbc\xed\xbf\xb9",
+            StringTag("🏹").to_nbt(compressed=False, little_endian=False),
+        )
+        self.assertEqual(
+            b"\x08\x00\x00\x04\x00\xf0\x9f\x8f\xb9",
+            StringTag("🏹").to_nbt(
+                compressed=False, little_endian=True, string_encoding=utf8_escape_encoding
+            ),
+        )
 
 
 if __name__ == "__main__":

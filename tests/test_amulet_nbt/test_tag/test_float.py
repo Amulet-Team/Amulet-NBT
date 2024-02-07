@@ -7,7 +7,7 @@ import faulthandler
 faulthandler.enable()
 
 from .test_numeric import AbstractBaseNumericTagTestCase
-from amulet_nbt import AbstractBaseTag, AbstractBaseImmutableTag, AbstractBaseNumericTag, AbstractBaseFloatTag
+from amulet_nbt import AbstractBaseTag, AbstractBaseImmutableTag, AbstractBaseNumericTag, AbstractBaseFloatTag, FloatTag, DoubleTag
 
 
 class FloatTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
@@ -209,6 +209,24 @@ class FloatTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
                 self.assertIsInstance(bool(cls(5.5)), bool)
                 self.assertEqual(False, bool(cls(0)))
                 self.assertEqual(True, bool(cls(5.5)))
+
+    def test_to_nbt(self):
+        self.assertEqual(
+            b"\x05\x00\x00\x40\xa0\x00\x00",
+            FloatTag(5).to_nbt(compressed=False, little_endian=False),
+        )
+        self.assertEqual(
+            b"\x05\x00\x00\x00\x00\xa0\x40",
+            FloatTag(5).to_nbt(compressed=False, little_endian=True),
+        )
+        self.assertEqual(
+            b"\x06\x00\x00\x40\x14\x00\x00\x00\x00\x00\x00",
+            DoubleTag(5).to_nbt(compressed=False, little_endian=False),
+        )
+        self.assertEqual(
+            b"\x06\x00\x00\x00\x00\x00\x00\x00\x00\x14\x40",
+            DoubleTag(5).to_nbt(compressed=False, little_endian=True),
+        )
 
 
 if __name__ == "__main__":

@@ -12,6 +12,9 @@ from amulet_nbt import (
     CompoundTag,
     ByteTag,
     ListTag,
+    mutf8_encoding,
+    utf8_encoding,
+    utf8_escape_encoding,
 )
 
 from .test_abc import AbstractBaseTestCase, TagNameMap
@@ -183,6 +186,19 @@ class NamedTagTestCase(AbstractBaseTestCase, unittest.TestCase):
         self.assertEqual(tag, named_tag[1])
         with self.assertRaises(IndexError):
             named_tag[2]
+
+    def test_to_nbt(self) -> None:
+        for cls in self.nbt_types:
+            tag = cls()
+            name = "hello world"
+            named_tag = NamedTag(tag, name)
+            for little_endian in (True, False):
+                for compressed in (True, False):
+                    for string_encoding in (mutf8_encoding, utf8_encoding, utf8_escape_encoding):
+                        self.assertEqual(
+                            tag.to_nbt(compressed=compressed, little_endian=little_endian, string_encoding=string_encoding, name=name),
+                            named_tag.to_nbt(compressed=compressed, little_endian=little_endian, string_encoding=string_encoding),
+                        )
 
 
 if __name__ == "__main__":

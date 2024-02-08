@@ -5,7 +5,7 @@
 # distutils: extra_compile_args = -std=c++20 /std:c++20
 # distutils: extra_link_args = -std=c++20 /std:c++20
 
-from typing import Any
+from typing import Any, Type
 
 from libc.math cimport ceil
 from libcpp cimport bool

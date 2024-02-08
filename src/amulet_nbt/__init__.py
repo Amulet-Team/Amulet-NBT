@@ -1,6 +1,5 @@
-# Base Types
-import warnings
 import re
+from typing import Union
 
 from . import _version
 
@@ -59,12 +58,12 @@ __all__ = [
     "NBTLoadError",
     "NBTFormatError",
     "SNBTParseError",
-    # "SNBTType",
-    # "IntType",
-    # "FloatType",
-    # "NumberType",
-    # "ArrayType",
-    # "AnyNBT",
+    "SNBTType",
+    "IntType",
+    "FloatType",
+    "NumberType",
+    "ArrayType",
+    "AnyNBT",
     "mutf8_encoding",
     "utf8_encoding",
     "utf8_escape_encoding",
@@ -129,11 +128,34 @@ from amulet_nbt._nbt_encoding._binary import load, load_array, ReadOffset
 
 from ._errors import NBTError, NBTLoadError, NBTFormatError, SNBTParseError
 
-# from ._dtype import SNBTType, IntType, FloatType, NumberType, ArrayType, AnyNBT
-
 from ._string_encoding import (
     mutf8_encoding,
     utf8_encoding,
     utf8_escape_encoding
 )
 from ._nbt_encoding._binary.encoding_preset import java_encoding, bedrock_encoding
+
+SNBTType = str
+
+IntType = Union[ByteTag, ShortTag, IntTag, LongTag]
+
+FloatType = Union[FloatTag, DoubleTag]
+
+NumberType = Union[ByteTag, ShortTag, IntTag, LongTag, FloatTag, DoubleTag]
+
+ArrayType = Union[ByteArrayTag, IntArrayTag, LongArrayTag]
+
+AnyNBT = Union[
+    ByteTag,
+    ShortTag,
+    IntTag,
+    LongTag,
+    FloatTag,
+    DoubleTag,
+    ByteArrayTag,
+    StringTag,
+    ListTag,
+    CompoundTag,
+    IntArrayTag,
+    LongArrayTag,
+]

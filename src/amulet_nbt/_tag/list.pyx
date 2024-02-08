@@ -2578,6 +2578,24 @@ cdef class ListTag(AbstractBaseMutableTag):
     def element_tag_id(self) -> int:
         return dereference(self.cpp).index()
 
+    @property
+    def element_class(self) -> None | Type[ByteTag] | Type[ShortTag] | Type[IntTag] | Type[LongTag] | Type[FloatTag] | Type[DoubleTag] | Type[StringTag] | Type[ByteArrayTag] | Type[ListTag] | Type[CompoundTag] | Type[IntArrayTag] | Type[LongArrayTag]:
+        return (
+            None,
+            ByteTag,
+            ShortTag,
+            IntTag,
+            LongTag,
+            FloatTag,
+            DoubleTag,
+            StringTag,
+            ByteArrayTag,
+            ListTag,
+            CompoundTag,
+            IntArrayTag,
+            LongArrayTag,
+        )[self.element_tag_id]
+
     # Sized
     def __len__(self) -> int:
         return ListTag_len(self.cpp)

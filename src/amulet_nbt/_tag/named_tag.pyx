@@ -16,6 +16,7 @@ from amulet_nbt._string_encoding cimport StringEncoding
 from amulet_nbt._string_encoding import mutf8_encoding
 from amulet_nbt._string_encoding._cpp cimport CStringEncode
 from amulet_nbt._nbt_encoding._binary cimport write_named_tag
+from amulet_nbt._nbt_encoding._binary.encoding_preset cimport EncodingPreset
 
 from .abc cimport AbstractBase, AbstractBaseTag
 from .int cimport ByteTag, ShortTag, IntTag, LongTag
@@ -55,6 +56,7 @@ cdef class NamedTag(AbstractBase):
     def to_nbt(
         self,
         *,
+        EncodingPreset preset = None,
         bool compressed=True,
         bool little_endian=False,
         string_encoding: StringEncoding = mutf8_encoding,
@@ -62,13 +64,21 @@ cdef class NamedTag(AbstractBase):
         """
         Get the data in binary NBT format.
 
+        :param preset: A class containing compression, endianness and encoding presets.
         :param compressed: Should the bytes be compressed with gzip.
         :param little_endian: Should the bytes be saved in little endian format.
         :param string_encoding: A function to encode strings to bytes.
         :param name: The root tag name.
         :return: The binary NBT representation of the class.
         """
-        cdef endian endianness = endian.little if little_endian else endian.big
+        cdef endian endianness
+
+        if preset is not None:
+            endianness = preset.endianness
+            compressed = preset.compressed
+            string_encoding = preset.string_encoding
+        else:
+            endianness = endian.little if little_endian else endian.big
 
         cdef bytes data = self.write_tag(
             endianness,

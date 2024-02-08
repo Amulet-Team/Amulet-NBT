@@ -38,7 +38,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 ListTag(ListTag([cls(), cls(), cls()]))
                 ListTag(ListTag((cls(), cls(), cls())))
 
-                self.assertEqual(cls.tag_id, ListTag([cls()]).list_data_type)
+                self.assertEqual(cls.tag_id, ListTag([cls()]).element_tag_id)
 
                 with self.assertRaises(TypeError):
                     ListTag(None)
@@ -69,7 +69,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         for i1, i2 in itertools.product(range(1, 13), repeat=2):
             with self.subTest(i1=i1, i2=i2):
                 self.assertEqual(
-                    ListTag([], list_data_type=i1), ListTag([], list_data_type=i2)
+                    ListTag([], element_tag_id=i1), ListTag([], element_tag_id=i2)
                 )
 
     def test_py_data(self) -> None:
@@ -290,7 +290,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 dump = pickle.dumps(tag)
                 tag2 = pickle.loads(dump)
                 self.assertEqual(tag, tag2)
-                self.assertEqual(tag.list_data_type, tag2.list_data_type)
+                self.assertEqual(tag.element_tag_id, tag2.element_tag_id)
 
     def test_copy(self) -> None:
         for cls in self.nbt_types:
@@ -298,7 +298,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 tag = ListTag([])
                 tag2 = copy.copy(tag)
 
-                self.assertEqual(tag.list_data_type, tag2.list_data_type)
+                self.assertEqual(tag.element_tag_id, tag2.element_tag_id)
 
                 # check the root data is copied
                 self.assertIsNot(tag, tag2)
@@ -350,7 +350,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 tag = ListTag([])
                 tag2 = copy.deepcopy(tag)
 
-                self.assertEqual(tag.list_data_type, tag2.list_data_type)
+                self.assertEqual(tag.element_tag_id, tag2.element_tag_id)
 
                 # check the root data is copied
                 self.assertIsNot(tag, tag2)
@@ -429,7 +429,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                     tag = ListTag([cls1()])
                     tag[0] = cls2()
                     self.assertEqual(ListTag([cls2()]), tag)
-                    self.assertEqual(cls2.tag_id, tag.list_data_type)
+                    self.assertEqual(cls2.tag_id, tag.element_tag_id)
 
             with self.subTest("Overwrite one value of many", cls1=cls1, cls2=cls2):
                 a, b, c = cls1(), cls1(), cls1()
@@ -442,7 +442,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 else:
                     with self.assertRaises(TypeError):
                         tag[1] = cls2()
-                self.assertEqual(cls1.tag_id, tag.list_data_type)
+                self.assertEqual(cls1.tag_id, tag.element_tag_id)
 
             with self.subTest("Overwrite full slice", cls1=cls1, cls2=cls2):
                 # TODO: I feel like this should work with different types because you are replacing all the values
@@ -453,7 +453,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                     tag[:] = [d]
                     self.assertEqual(1, len(tag))
                     self.assertEqual(d, tag[0])
-                    self.assertEqual(cls2.tag_id, tag.list_data_type)
+                    self.assertEqual(cls2.tag_id, tag.element_tag_id)
 
             with self.subTest("Overwrite partial slice", cls1=cls1, cls2=cls2):
                 a, b, c = cls1(), cls1(), cls1()
@@ -468,7 +468,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 else:
                     with self.assertRaises(TypeError):
                         tag[1:] = [cls2(), cls2()]
-                self.assertEqual(cls1.tag_id, tag.list_data_type)
+                self.assertEqual(cls1.tag_id, tag.element_tag_id)
 
             with self.subTest("Overwrite stepped slice", cls1=cls1, cls2=cls2):
                 a, b, c = cls1(), cls1(), cls1()
@@ -483,7 +483,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 else:
                     with self.assertRaises(TypeError):
                         tag[::2] = [cls2(), cls2()]
-                self.assertEqual(cls1.tag_id, tag.list_data_type)
+                self.assertEqual(cls1.tag_id, tag.element_tag_id)
 
             with self.subTest("Overwrite slice (expand)", cls1=cls1, cls2=cls2):
                 a, b, c = cls1(), cls1(), cls1()
@@ -499,7 +499,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 else:
                     with self.assertRaises(TypeError):
                         tag[1:] = [cls2(), cls2(), cls2()]
-                self.assertEqual(cls1.tag_id, tag.list_data_type)
+                self.assertEqual(cls1.tag_id, tag.element_tag_id)
 
             with self.subTest("Overwrite slice (contract)", cls1=cls1, cls2=cls2):
                 a, b, c = cls1(), cls1(), cls1()
@@ -513,7 +513,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 else:
                     with self.assertRaises(TypeError):
                         tag[1:] = [cls2()]
-                self.assertEqual(cls1.tag_id, tag.list_data_type)
+                self.assertEqual(cls1.tag_id, tag.element_tag_id)
 
     def test_delitem(self) -> None:
         tag = ListTag([StringTag("val1"), StringTag("val2"), StringTag("val3")])
@@ -548,7 +548,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 tag = ListTag()
                 tag.insert(0, cls())
                 self.assertEqual(ListTag([cls()]), tag)
-                self.assertEqual(cls.tag_id, tag.list_data_type)
+                self.assertEqual(cls.tag_id, tag.element_tag_id)
 
         for obj in self.not_nbt:
             with self.subTest(val=obj), self.assertRaises(TypeError):
@@ -633,7 +633,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 tag = ListTag()
                 tag.append(cls1())
                 self.assertEqual(ListTag([cls1()]), tag)
-                self.assertEqual(cls1.tag_id, tag.list_data_type)
+                self.assertEqual(cls1.tag_id, tag.element_tag_id)
 
             for cls2 in self.nbt_types:
                 with self.subTest(cls1=cls1, cls2=cls2):
@@ -660,7 +660,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
             with self.subTest(cls=cls):
                 tag = ListTag()
                 tag.extend([cls()])
-                self.assertEqual(cls.tag_id, tag.list_data_type)
+                self.assertEqual(cls.tag_id, tag.element_tag_id)
 
         for obj in self.not_nbt:
             with self.subTest(val=obj):
@@ -722,7 +722,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
             with self.subTest(cls1=cls1, cls2=cls2):
                 tag = ListTag()
                 tag += [cls1()]
-                self.assertEqual(cls1.tag_id, tag.list_data_type)
+                self.assertEqual(cls1.tag_id, tag.element_tag_id)
                 if cls1 is cls2:
                     tag += [cls2()]
                     tag += ListTag([cls2()])
@@ -731,7 +731,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                         tag += [cls2()]
                     with self.assertRaises(TypeError):
                         tag += ListTag([cls2()])
-                self.assertEqual(cls1.tag_id, tag.list_data_type)
+                self.assertEqual(cls1.tag_id, tag.element_tag_id)
 
         tag = ListTag()
         for obj in self.not_nbt:
@@ -750,11 +750,11 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
     def test_to_nbt(self):
         self.assertEqual(
             b"\x09\x00\x00\x00\x00\x00\x00\x00",
-            ListTag(list_data_type=0).to_nbt(compressed=False, little_endian=False),
+            ListTag(element_tag_id=0).to_nbt(compressed=False, little_endian=False),
         )
         self.assertEqual(
             b"\x09\x00\x00\x00\x00\x00\x00\x00",
-            ListTag(list_data_type=0).to_nbt(compressed=False, little_endian=True),
+            ListTag(element_tag_id=0).to_nbt(compressed=False, little_endian=True),
         )
 
         self.assertEqual(

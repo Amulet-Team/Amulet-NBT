@@ -2489,36 +2489,36 @@ cdef class ListTag(AbstractBaseMutableTag):
     """
     tag_id: int = 9
 
-    def __init__(self, object value = (), char list_data_type = 1):
+    def __init__(self, object value = (), char element_tag_id = 1) -> None:
         self.cpp = make_shared[CListTag]()
-        if list_data_type == 0:
+        if element_tag_id == 0:
             dereference(self.cpp).emplace[monostate]()
-        elif list_data_type == 1:
+        elif element_tag_id == 1:
             dereference(self.cpp).emplace[CByteList]()
-        elif list_data_type == 2:
+        elif element_tag_id == 2:
             dereference(self.cpp).emplace[CShortList]()
-        elif list_data_type == 3:
+        elif element_tag_id == 3:
             dereference(self.cpp).emplace[CIntList]()
-        elif list_data_type == 4:
+        elif element_tag_id == 4:
             dereference(self.cpp).emplace[CLongList]()
-        elif list_data_type == 5:
+        elif element_tag_id == 5:
             dereference(self.cpp).emplace[CFloatList]()
-        elif list_data_type == 6:
+        elif element_tag_id == 6:
             dereference(self.cpp).emplace[CDoubleList]()
-        elif list_data_type == 7:
+        elif element_tag_id == 7:
             dereference(self.cpp).emplace[CByteArrayList]()
-        elif list_data_type == 8:
+        elif element_tag_id == 8:
             dereference(self.cpp).emplace[CStringList]()
-        elif list_data_type == 9:
+        elif element_tag_id == 9:
             dereference(self.cpp).emplace[CListList]()
-        elif list_data_type == 10:
+        elif element_tag_id == 10:
             dereference(self.cpp).emplace[CCompoundList]()
-        elif list_data_type == 11:
+        elif element_tag_id == 11:
             dereference(self.cpp).emplace[CIntArrayList]()
-        elif list_data_type == 12:
+        elif element_tag_id == 12:
             dereference(self.cpp).emplace[CLongArrayList]()
         else:
-            raise ValueError(f"list_data_type must be between 0 and 12. Got {list_data_type}")
+            raise ValueError(f"element_tag_id must be between 0 and 12. Got {element_tag_id}")
 
         for tag in value:
             self.append(tag)
@@ -2558,13 +2558,13 @@ cdef class ListTag(AbstractBaseMutableTag):
         return is_list_eq(self.cpp, tag.cpp)
 
     def __repr__(self):
-        return f"ListTag({list(self)!r}, {self.list_data_type})"
+        return f"ListTag({list(self)!r}, {self.element_tag_id})"
 
     def __str__(self):
         return str(list(self))
 
     def __reduce__(self):
-        return ListTag, (list(self), self.list_data_type)
+        return ListTag, (list(self), self.element_tag_id)
 
     def __copy__(self):
         return ListTag.wrap(
@@ -2575,7 +2575,7 @@ cdef class ListTag(AbstractBaseMutableTag):
         return ListTag.wrap(CListTagPtr_deepcopy(self.cpp))
 
     @property
-    def list_data_type(self):
+    def element_tag_id(self) -> int:
         return dereference(self.cpp).index()
 
     # Sized

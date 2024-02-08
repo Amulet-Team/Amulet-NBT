@@ -486,19 +486,19 @@ cdef class ListTag(AbstractBaseMutableTag):
     """
     tag_id: int = 9
 
-    def __init__(self, object value = (), char list_data_type = 1):
+    def __init__(self, object value = (), char element_tag_id = 1) -> None:
         self.cpp = make_shared[CListTag]()
-        if list_data_type == 0:
+        if element_tag_id == 0:
             dereference(self.cpp).emplace[monostate]()
 {{
 "\n".join(
-    f"""        elif list_data_type == {index}:
+    f"""        elif element_tag_id == {index}:
             dereference(self.cpp).emplace[{c_list_cls}]()"""
     for index, c_cls, c_node_cls, c_list_cls, py_cls, tag_var, list_var in ClassData
 )
 }}
         else:
-            raise ValueError(f"list_data_type must be between 0 and 12. Got {{'{'}}list_data_type{{'}'}}")
+            raise ValueError(f"element_tag_id must be between 0 and 12. Got {{'{'}}element_tag_id{{'}'}}")
 
         for tag in value:
             self.append(tag)
@@ -538,13 +538,13 @@ cdef class ListTag(AbstractBaseMutableTag):
         return is_list_eq(self.cpp, tag.cpp)
 
     def __repr__(self):
-        return f"ListTag({list(self)!r}, {self.list_data_type})"
+        return f"ListTag({list(self)!r}, {self.element_tag_id})"
 
     def __str__(self):
         return str(list(self))
 
     def __reduce__(self):
-        return ListTag, (list(self), self.list_data_type)
+        return ListTag, (list(self), self.element_tag_id)
 
     def __copy__(self):
         return ListTag.wrap(
@@ -555,7 +555,7 @@ cdef class ListTag(AbstractBaseMutableTag):
         return ListTag.wrap(CListTagPtr_deepcopy(self.cpp))
 
     @property
-    def list_data_type(self):
+    def element_tag_id(self) -> int:
         return dereference(self.cpp).index()
 
     # Sized

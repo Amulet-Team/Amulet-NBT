@@ -443,7 +443,7 @@ cdef inline AbstractBaseTag ListTag_get_item(CListTagPtr cpp, ptrdiff_t item):
     elif index == 12:
         return ListTag_get_item_long_array_tag(cpp, item)
     else:
-        raise RuntimeError("ListTag type has not been set.")
+        raise IndexError("ListTag index out of range.")
 
 
 cdef (size_t, size_t, ptrdiff_t) _slice_to_range(size_t target_len, object s):
@@ -703,7 +703,7 @@ cdef inline list ListTag_get_slice(CListTagPtr cpp, object s):
     elif index == 12:
         return ListTag_get_slice_long_array_tag(cpp, s)
     else:
-        raise RuntimeError("ListTag type has not been set.")
+        return []
 
 
 cdef inline void ListTag_set_item_byte_tag(CListTagPtr cpp, ptrdiff_t item, ByteTag value):
@@ -1559,7 +1559,6 @@ cdef inline void ListTag_set_slice_long_array_tag(CListTagPtr cpp, object s, lis
             raise TypeError("NBT ListTag item mismatch.")
 
 
-
 cdef inline void _set_slice_empty(CListTagPtr cpp, object s):
     cdef size_t index = dereference(cpp).index()
     if index == 1:
@@ -1586,8 +1585,6 @@ cdef inline void _set_slice_empty(CListTagPtr cpp, object s):
         ListTag_set_slice_int_array_tag(cpp, s, [])
     elif index == 12:
         ListTag_set_slice_long_array_tag(cpp, s, [])
-    else:
-        raise RuntimeError("ListTag type has not been set.")
 
 
 cdef inline void ListTag_set_slice(CListTagPtr cpp, object s, object value):
@@ -1760,7 +1757,7 @@ cdef inline void ListTag_del_item(CListTagPtr cpp, ptrdiff_t item):
     elif index == 12:
         ListTag_del_item_long_array_tag(cpp, item)
     else:
-        raise RuntimeError("ListTag type has not been set.")
+        raise IndexError("ListTag assignment index out of range.")
 
 
 cdef inline void ListTag_del_slice_byte_tag(CListTagPtr cpp, object s):
@@ -2041,8 +2038,6 @@ cdef inline void ListTag_del_slice(CListTagPtr cpp, object s):
         ListTag_del_slice_int_array_tag(cpp, s)
     elif index == 12:
         ListTag_del_slice_long_array_tag(cpp, s)
-    else:
-        raise RuntimeError("ListTag type has not been set.")
 
 
 cdef inline void ListTag_insert_byte_tag(CListTagPtr cpp, ptrdiff_t item, ByteTag value):

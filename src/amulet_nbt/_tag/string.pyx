@@ -89,9 +89,6 @@ cdef class StringTag(AbstractBaseImmutableTag):
     # cdef str _to_snbt(self):
     #     return f"\"{escape(self.py_str)}\""
 
-    def __len__(self) -> int:
-        return self.cpp.size()
-
     def __ge__(self, other: Any) -> bool:
         cdef StringTag other_
         if isinstance(other, StringTag):

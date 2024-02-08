@@ -53,7 +53,6 @@ __all__ = [
     "TAG_Compound",
     "load",
     "load_array",
-    "ReadContext",
     "ReadOffset",
     # "from_snbt",
     "NBTError",
@@ -69,6 +68,8 @@ __all__ = [
     "mutf8_encoding",
     "utf8_encoding",
     "utf8_escape_encoding",
+    "java_encoding",
+    "bedrock_encoding"
 ]
 
 from ._tag.abc import (
@@ -130,17 +131,9 @@ from ._errors import NBTError, NBTLoadError, NBTFormatError, SNBTParseError
 
 # from ._dtype import SNBTType, IntType, FloatType, NumberType, ArrayType, AnyNBT
 
-# from ._util import utf8_decoder, utf8_encoder, utf8_escape_decoder, utf8_escape_encoder
-
 from ._string_encoding import (
     mutf8_encoding,
     utf8_encoding,
     utf8_escape_encoding
 )
-
-
-def __getattr__(name):
-    import warnings
-    if name == "ReadContext":
-        warnings.warn("ReadContext is depreciated. Use ReadOffset instead.", DeprecationWarning)
-        return ReadOffset
+from ._nbt_encoding._binary.encoding_preset import java_encoding, bedrock_encoding

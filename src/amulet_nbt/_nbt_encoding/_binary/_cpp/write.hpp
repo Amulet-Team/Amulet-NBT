@@ -9,7 +9,6 @@
 #include "_binary/writer.hpp"
 #include "nbt.hpp"
 #include "array.hpp"
-#include "encoding.hpp"
 
 
 template<typename V, typename T, size_t I = 0>

@@ -8,7 +8,6 @@ import gzip
 import zlib
 from typing import Union, BinaryIO
 import os
-import warnings
 
 from libcpp cimport bool
 from libcpp.pair cimport pair
@@ -22,6 +21,7 @@ from amulet_nbt._tag.named_tag cimport NamedTag
 from amulet_nbt._string_encoding cimport StringEncoding
 from amulet_nbt._string_encoding import mutf8_encoding
 from amulet_nbt._errors import NBTLoadError, NBTFormatError
+from amulet_nbt._nbt_encoding._binary.encoding_preset cimport EncodingPreset
 
 
 cdef class ReadOffset:
@@ -30,7 +30,7 @@ cdef class ReadOffset:
 
 cdef string get_buffer(
     object filepath_or_buffer: Union[str, bytes, BinaryIO, memoryview, None],
-    bint compressed=True,
+    bool compressed=True,
 ):
     cdef string data
     if isinstance(filepath_or_buffer, str):
@@ -62,19 +62,23 @@ cdef string get_buffer(
 def load(
     object filepath_or_buffer: Union[str, bytes, BinaryIO, memoryview, None],
     *,
-    bint compressed: bool=True,
-    bint little_endian: bool = False,
+    EncodingPreset preset = None,
+    bool compressed = True,
+    bool little_endian = False,
     StringEncoding string_encoding not None = mutf8_encoding,
-    ReadOffset read_context = None,
     ReadOffset read_offset = None,
 ) -> NamedTag:
-    if read_context is not None:
-        warnings.warn("read_context argument is depreciated. Use read_offset instead.", DeprecationWarning)
-        read_offset = read_context
+    cdef endian endianness
+
+    if preset is not None:
+        endianness = preset.endianness
+        compressed = preset.compressed
+        string_encoding = preset.string_encoding
+    else:
+        endianness = endian.little if little_endian else endian.big
 
     cdef string buffer = get_buffer(filepath_or_buffer, compressed)
     cdef size_t offset = 0
-    cdef endian endianness = endian.little if little_endian else endian.big
     cdef pair[string, TagNode] named_tag
 
     try:
@@ -92,22 +96,26 @@ def load_array(
     object filepath_or_buffer: Union[str, bytes, BinaryIO, memoryview, None],
     *,
     int count = 1,
-    bint compressed: bool=True,
-    bint little_endian: bool = False,
+    EncodingPreset preset = None,
+    bool compressed =True,
+    bool little_endian = False,
     StringEncoding string_encoding = mutf8_encoding,
-    ReadOffset read_context = None,
     ReadOffset read_offset = None,
 ) -> list[NamedTag]:
     if count < -1:
         raise ValueError("Count must be -1 or higher")
 
-    if read_context is not None:
-        warnings.warn("read_context argument is depreciated. Use read_offset instead.", DeprecationWarning)
-        read_offset = read_context
+    cdef endian endianness
+
+    if preset is not None:
+        endianness = preset.endianness
+        compressed = preset.compressed
+        string_encoding = preset.string_encoding
+    else:
+        endianness = endian.little if little_endian else endian.big
 
     cdef string buffer = get_buffer(filepath_or_buffer, compressed)
     cdef size_t offset = 0
-    cdef endian endianness = endian.little if little_endian else endian.big
     cdef pair[string, TagNode] named_tag
     cdef list results = []
     cdef size_t i

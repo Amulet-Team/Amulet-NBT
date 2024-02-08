@@ -1,4 +1,0 @@
-enum BinaryEncoding {
-    Java,
-    Bedrock
-};

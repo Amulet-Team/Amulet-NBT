@@ -169,14 +169,3 @@ std::pair<std::string, TagNode> read_named_tag(const std::string& raw, std::endi
     size_t offset;
     return read_named_tag(raw, endianness, stringDecode, offset);
 }
-
-
-//std::pair<std::string, TagNode> read_named_tag(const std::string& raw, BinaryEncoding encoding){
-//    switch (encoding) {
-//        case Java:
-//            return read_named_tag(raw, std::endian::big, mutf8_to_utf8);
-//        case Bedrock:
-//            // TODO: this should escape invalid utf-8 sequences
-//            return read_named_tag(raw, std::endian::little, [](const std::string& input) -> std::string {return input});
-//    }
-//}

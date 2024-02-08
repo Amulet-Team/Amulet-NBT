@@ -16,4 +16,3 @@
 std::pair<std::string, TagNode> read_named_tag(BinaryReader&);
 std::pair<std::string, TagNode> read_named_tag(const std::string&, std::endian, StringDecode, size_t&);
 std::pair<std::string, TagNode> read_named_tag(const std::string&, std::endian, StringDecode);
-//std::pair<std::string, TagNode> read_named_tag(const std::string&, BinaryEncoding);

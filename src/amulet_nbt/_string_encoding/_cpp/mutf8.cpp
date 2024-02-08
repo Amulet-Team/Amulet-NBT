@@ -98,9 +98,9 @@ std::vector<size_t> read_mutf8(const std::string &src) {
 }
 
 
-void write_mutf8(std::string& dst, std::vector<size_t> src) {
+void write_mutf8(std::string& dst, const std::vector<size_t>& src) {
     for (size_t index = 0; index < src.size(); index++) {
-        size_t& c = src[index];
+        const size_t& c = src[index];
         if (c == 0) {
             dst.push_back(0xC0);
             dst.push_back(0x80);
@@ -143,7 +143,7 @@ std::string mutf8_to_utf8(const std::string& src) {
 }
 
 
-// Decode a modified utf-8 byte sequence to a regular utf-8 byte sequence
+// Encode a regular utf-8 byte sequence to a modified utf-8 byte sequence
 std::string utf8_to_mutf8(const std::string& src) {
     std::string dst;
     write_mutf8(dst, read_utf8(src));

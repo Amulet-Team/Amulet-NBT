@@ -122,6 +122,18 @@ class StringTagTestCase(AbstractBaseImmutableTagTestCase, unittest.TestCase):
                 compressed=False, little_endian=True, string_encoding=utf8_escape_encoding
             ),
         )
+        self.assertEqual(
+            b"\x08\x00\x00\x04\x00\xff\xfe\xfd\xfc",
+            StringTag("␛xff␛xfe␛xfd␛xfc").to_nbt(
+                compressed=False, little_endian=True, string_encoding=utf8_escape_encoding
+            ),
+        )
+        self.assertEqual(
+            b"\x08\x00\x00\x04\x00\xff\xfe\xfd\xfc",
+            StringTag("␛xFF␛xFE␛xFD␛xFC").to_nbt(
+                compressed=False, little_endian=True, string_encoding=utf8_escape_encoding
+            ),
+        )
 
     def test_from_nbt(self):
         self.assertEqual(
@@ -154,6 +166,25 @@ class StringTagTestCase(AbstractBaseImmutableTagTestCase, unittest.TestCase):
                 b"\x08\x00\x00\x00\x06\xed\xa0\xbc\xed\xbf\xb9",
                 compressed=False,
                 little_endian=False,
+            ).string,
+        )
+        self.assertEqual(
+            StringTag("🏹"),
+            load_nbt(
+                b"\x08\x00\x00\x04\x00\xf0\x9f\x8f\xb9",
+                compressed=False,
+                little_endian=True,
+                string_encoding=utf8_escape_encoding,
+            ).string,
+        )
+        # test invalid utf-8 string
+        self.assertEqual(
+            StringTag("␛xff␛xfe␛xfd␛xfc"),
+            load_nbt(
+                b"\x08\x00\x00\x04\x00\xff\xfe\xfd\xfc",
+                compressed=False,
+                little_endian=True,
+                string_encoding=utf8_escape_encoding,
             ).string,
         )
 

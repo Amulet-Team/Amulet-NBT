@@ -3,7 +3,7 @@
 # distutils: extra_link_args = -std=c++20 /std:c++20
 # distutils: sources = [src/amulet_nbt/_string_encoding/_cpp/mutf8.cpp, src/amulet_nbt/_string_encoding/_cpp/utf8.cpp]
 
-from ._cpp.utf8 cimport utf8_to_utf8 as utf8_to_utf8
+from ._cpp.utf8 cimport utf8_to_utf8, utf8_escape_to_utf8, utf8_to_utf8_escape
 from ._cpp.mutf8 cimport (
     mutf8_to_utf8,
     utf8_to_mutf8
@@ -30,6 +30,6 @@ utf8_encoding = _utf8_encoding
 
 # TODO: implement this
 cdef StringEncoding _utf8_escape_encoding = StringEncoding()
-_utf8_escape_encoding.decode_cpp = utf8_to_utf8
-_utf8_escape_encoding.encode_cpp = utf8_to_utf8
+_utf8_escape_encoding.decode_cpp = utf8_escape_to_utf8
+_utf8_escape_encoding.encode_cpp = utf8_to_utf8_escape
 utf8_escape_encoding = _utf8_escape_encoding

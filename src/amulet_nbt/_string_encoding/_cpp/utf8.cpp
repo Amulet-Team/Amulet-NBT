@@ -5,9 +5,22 @@
 #include <string>
 #include <vector>
 #include <stdexcept>
+#include <format>
 
 
-std::vector<size_t> read_utf8(const std::string& src) {
+const size_t HexChars[16] = {48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102};
+
+
+inline void push_escape(std::vector<size_t>& dst, const uint8_t& b){
+    dst.push_back(9243); // ␛
+    dst.push_back(120); // x
+    dst.push_back(HexChars[b >> 4]);
+    dst.push_back(HexChars[b & 15]);
+}
+
+
+template <bool escapeErrors>
+constexpr std::vector<size_t> _read_utf8(const std::string& src) {
     std::vector<size_t> dst;
 
     for (size_t index = 0; index < src.size(); index++) {
@@ -20,15 +33,30 @@ std::vector<size_t> read_utf8(const std::string& src) {
         else if ((b1 & 0b11100000) == 0b11000000) {
             // 2 byte codepoint.
             if (index + 1 >= src.size()) {
-                throw std::invalid_argument("2-byte codepoint started at index " + std::to_string(index) + ", but input too short to finish.");
+                if constexpr (escapeErrors){
+                    push_escape(dst, b1);
+                    continue;
+                } else {
+                    throw std::invalid_argument("2-byte codepoint started at index " + std::to_string(index) + ", but input too short to finish.");
+                }
             }
             uint8_t b2 = src[index + 1];
             if ((b2 & 0b11000000) != 0b10000000) {
-                throw std::invalid_argument("2-byte codepoint started at index " + std::to_string(index) + ", but format bits of byte 2 are incorrect.");
+                if constexpr (escapeErrors){
+                    push_escape(dst, b1);
+                    continue;
+                } else {
+                    throw std::invalid_argument("2-byte codepoint started at index " + std::to_string(index) + ", but format bits of byte 2 are incorrect.");
+                }
             }
             size_t value = (0b00011111 & b1) << 6 | (0b00111111 & b2);
             if (0 < value && value < 0x80) {
-                throw std::invalid_argument("2-byte codepoint at index " + std::to_string(index) + " has invalid value.");
+                if constexpr (escapeErrors){
+                    push_escape(dst, b1);
+                    continue;
+                } else {
+                    throw std::invalid_argument("2-byte codepoint at index " + std::to_string(index) + " has invalid value.");
+                }
             }
             dst.push_back(value);
             index++;
@@ -36,20 +64,40 @@ std::vector<size_t> read_utf8(const std::string& src) {
         else if ((b1 & 0b11110000) == 0b11100000) {
             // 3 codepoint.
             if (index + 2 >= src.size()) {
-                throw std::invalid_argument("3-byte codepoint started at index " + std::to_string(index) + ", but input too short to finish.");
+                if constexpr (escapeErrors){
+                    push_escape(dst, b1);
+                    continue;
+                } else {
+                    throw std::invalid_argument("3-byte codepoint started at index " + std::to_string(index) + ", but input too short to finish.");
+                }
             }
             uint8_t b2 = src[index + 1];
             uint8_t b3 = src[index + 2];
 
             if ((b2 & 0b11000000) != 0b10000000) {
-                throw std::invalid_argument("3-byte codepoint started at index " + std::to_string(index) + ", but format bits of byte 2 are incorrect.");
+                if constexpr (escapeErrors){
+                    push_escape(dst, b1);
+                    continue;
+                } else {
+                    throw std::invalid_argument("3-byte codepoint started at index " + std::to_string(index) + ", but format bits of byte 2 are incorrect.");
+                }
             }
             if ((b3 & 0b11000000) != 0b10000000) {
-                throw std::invalid_argument("3-byte codepoint started at index " + std::to_string(index) + ", but format bits of byte 3 are incorrect.");
+                if constexpr (escapeErrors){
+                    push_escape(dst, b1);
+                    continue;
+                } else {
+                    throw std::invalid_argument("3-byte codepoint started at index " + std::to_string(index) + ", but format bits of byte 3 are incorrect.");
+                }
             }
             size_t value = ((0b00001111 & b1) << 12) | ((0b00111111 & b2) << 6) | (0b00111111 & b3);
             if (value < 0x800 || (0xD800 <= value && value <= 0xDFFF)) {
-                throw std::invalid_argument("3-byte codepoint at index " + std::to_string(index) + " has invalid value.");
+                if constexpr (escapeErrors){
+                    push_escape(dst, b1);
+                    continue;
+                } else {
+                    throw std::invalid_argument("3-byte codepoint at index " + std::to_string(index) + " has invalid value.");
+                }
             }
             dst.push_back(value);
             index += 2;
@@ -57,39 +105,81 @@ std::vector<size_t> read_utf8(const std::string& src) {
         else if ((b1 & 0b11111000) == 0b11110000) {
             // 4 codepoint.
             if (index + 3 >= src.size()) {
-                throw std::invalid_argument("4-byte codepoint started at index " + std::to_string(index) + ", but input too short to finish.");
+                if constexpr (escapeErrors){
+                    push_escape(dst, b1);
+                    continue;
+                } else {
+                    throw std::invalid_argument("4-byte codepoint started at index " + std::to_string(index) + ", but input too short to finish.");
+                }
             }
             uint8_t b2 = src[index + 1];
             uint8_t b3 = src[index + 2];
             uint8_t b4 = src[index + 3];
 
             if ((b2 & 0b11000000) != 0b10000000) {
-                throw std::invalid_argument("4-byte codepoint started at index " + std::to_string(index) + ", but format bits of byte 2 are incorrect.");
+                if constexpr (escapeErrors){
+                    push_escape(dst, b1);
+                    continue;
+                } else {
+                    throw std::invalid_argument("4-byte codepoint started at index " + std::to_string(index) + ", but format bits of byte 2 are incorrect.");
+                }
             }
             if ((b3 & 0b11000000) != 0b10000000) {
-                throw std::invalid_argument("4-byte codepoint started at index " + std::to_string(index) + ", but format bits of byte 3 are incorrect.");
+                if constexpr (escapeErrors){
+                    push_escape(dst, b1);
+                    continue;
+                } else {
+                    throw std::invalid_argument("4-byte codepoint started at index " + std::to_string(index) + ", but format bits of byte 3 are incorrect.");
+                }
             }
             if ((b4 & 0b11000000) != 0b10000000) {
-                throw std::invalid_argument("4-byte codepoint started at index " + std::to_string(index) + ", but format bits of byte 4 are incorrect.");
+                if constexpr (escapeErrors){
+                    push_escape(dst, b1);
+                    continue;
+                } else {
+                    throw std::invalid_argument("4-byte codepoint started at index " + std::to_string(index) + ", but format bits of byte 4 are incorrect.");
+                }
             }
             size_t value = ((0b00000111 & b1) << 18) | ((0b00111111 & b2) << 12) | ((0b00111111 & b3) << 6) | (0b00111111 & b4);
             if (value < 0x10000) {
-                throw std::invalid_argument("4-byte codepoint at index " + std::to_string(index) + " has invalid value.");
+                if constexpr (escapeErrors){
+                    push_escape(dst, b1);
+                    continue;
+                } else {
+                    throw std::invalid_argument("4-byte codepoint at index " + std::to_string(index) + " has invalid value.");
+                }
             }
             dst.push_back(value);
             index += 3;
         }
         else {
-            throw std::invalid_argument("Invalid byte at index " + std::to_string(index));
+            if constexpr (escapeErrors){
+                push_escape(dst, b1);
+                continue;
+            } else {
+                throw std::invalid_argument("Invalid byte at index " + std::to_string(index));
+            }
         }
     }
     return dst;
 }
 
 
-void write_utf8(std::string &dst, std::vector<size_t> src) {
+inline char char_to_hex(const size_t& c){
+    char index = -1;
+    if (48 <= c && c <= 57){
+        index = c - 48;
+    } else if (65 <= (c & ~0b0100000) && (c & ~0b0100000) <= 70) {
+        index = (c & ~0b0100000) - 65 + 10;
+    }
+    return index;
+}
+
+
+template <bool escapeErrors>
+constexpr void _write_utf8(std::string &dst, const std::vector<size_t>& src) {
     for (size_t index = 0; index < src.size(); index++) {
-        size_t& c = src[index];
+        const size_t& c = src[index];
         if (c <= 127) {
             dst.push_back(c & 0b01111111);
         }
@@ -98,6 +188,21 @@ void write_utf8(std::string &dst, std::vector<size_t> src) {
             dst.push_back(0b10000000 | 0b00111111 & c);
         }
         else if (c <= 65535) {
+            if constexpr (escapeErrors){
+                if (c == 9243 && src.size() >= index + 4 && src[index + 1] == 120){
+                    // If the array is long enough and contains the characters ␛x
+                    char upper = char_to_hex(src[index + 2]);
+                    if (upper >= 0){
+                        char lower = char_to_hex(src[index + 3]);
+                        if (lower >= 0){
+                            // followed by two hex characters
+                            dst.push_back((upper << 4) + lower);
+                            index += 3;
+                            continue;
+                        }
+                    }
+                }
+            }
             if ((c >= 0xD800) && (c <= 0xDFFF)){
                 throw std::invalid_argument("code point at index " + std::to_string(index) + " cannot be encoded.");
             }
@@ -118,9 +223,45 @@ void write_utf8(std::string &dst, std::vector<size_t> src) {
 }
 
 
+std::vector<size_t> read_utf8(const std::string& src) {
+    return _read_utf8<false>(src);
+}
+
+
+void write_utf8(std::string &dst, const std::vector<size_t>& src) {
+    return _write_utf8<false>(dst, src);
+}
+
+
 // Validate a utf-8 byte sequence and convert to itself.
 std::string utf8_to_utf8(const std::string& src) {
     std::string dst;
     write_utf8(dst, read_utf8(src));
+    return dst;
+}
+
+
+std::vector<size_t> read_utf8_escape(const std::string& src) {
+    return _read_utf8<true>(src);
+}
+
+
+void write_utf8_escape(std::string &dst, const std::vector<size_t>& src) {
+    return _write_utf8<true>(dst, src);
+}
+
+
+// Decode a utf-8 escape byte sequence to a regular utf-8 byte sequence
+std::string utf8_escape_to_utf8(const std::string& src) {
+    std::string dst;
+    write_utf8(dst, read_utf8_escape(src));
+    return dst;
+}
+
+
+// Encode a regular utf-8 byte sequence to a utf-8 escape byte sequence
+std::string utf8_to_utf8_escape(const std::string& src) {
+    std::string dst;
+    write_utf8_escape(dst, read_utf8(src));
     return dst;
 }

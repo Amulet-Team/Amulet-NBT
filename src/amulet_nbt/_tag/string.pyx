@@ -7,7 +7,7 @@
 # distutils: extra_link_args = -std=c++20 /std:c++20
 # cython: c_string_type=str, c_string_encoding=utf8
 
-from typing import Any
+from typing import Any, Iterator
 
 from libcpp.string cimport string
 from amulet_nbt._libcpp.endian cimport endian
@@ -25,7 +25,7 @@ cdef class StringTag(AbstractBaseImmutableTag):
     """A class that behaves like a string."""
     tag_id: int = 8
 
-    def __init__(self, object value = b""):
+    def __init__(self, object value = b"") -> None:
         if isinstance(value, (str, bytes)):
             self.cpp = value
         else:
@@ -62,28 +62,28 @@ cdef class StringTag(AbstractBaseImmutableTag):
     cdef string write_tag(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[CStringTag](name, self.cpp, endianness, string_encode)
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if not isinstance(other, StringTag):
             return NotImplemented
         cdef StringTag other_ = other
         return self.cpp == other_.cpp
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"StringTag(\"{escape(self.py_str)}\")"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return <str> self.cpp
 
     def __reduce__(self):
         return StringTag, (self.cpp,)
 
-    def __copy__(self):
+    def __copy__(self) -> StringTag:
         return StringTag.wrap(self.cpp)
 
-    def __deepcopy__(self, memo=None):
+    def __deepcopy__(self, memo=None) -> StringTag:
         return StringTag.wrap(self.cpp)
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash((8, self.cpp))
 
     # cdef str _to_snbt(self):
@@ -92,28 +92,28 @@ cdef class StringTag(AbstractBaseImmutableTag):
     def __len__(self) -> int:
         return self.cpp.size()
 
-    def __ge__(self, other):
+    def __ge__(self, other: Any) -> bool:
         cdef StringTag other_
         if isinstance(other, StringTag):
             other_ = other
             return str(self.cpp) >= str(other_.cpp)
         return NotImplemented
 
-    def __gt__(self, other):
+    def __gt__(self, other: Any) -> bool:
         cdef StringTag other_
         if isinstance(other, StringTag):
             other_ = other
             return str(self.cpp) > str(other_.cpp)
         return NotImplemented
 
-    def __le__(self, other):
+    def __le__(self, other: Any) -> bool:
         cdef StringTag other_
         if isinstance(other, StringTag):
             other_ = other
             return str(self.cpp) <= str(other_.cpp)
         return NotImplemented
 
-    def __lt__(self, other):
+    def __lt__(self, other: Any) -> bool:
         cdef StringTag other_
         if isinstance(other, StringTag):
             other_ = other

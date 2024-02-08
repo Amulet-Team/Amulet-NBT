@@ -28,7 +28,7 @@ from .array cimport ByteArrayTag, IntArrayTag, LongArrayTag
 
 
 cdef class NamedTag(AbstractBase):
-    def __init__(self, AbstractBaseTag tag = None, string name = b""):
+    def __init__(self, AbstractBaseTag tag = None, string name = b"") -> None:
         if tag is None:
             tag = CompoundTag()
         self.tag_node = tag.to_node()
@@ -39,7 +39,7 @@ cdef class NamedTag(AbstractBase):
         return wrap_node(&self.tag_node)
 
     @tag.setter
-    def tag(self, AbstractBaseTag tag not None):
+    def tag(self, AbstractBaseTag tag not None) -> None:
         self.tag_node = tag.to_node()
 
     @property
@@ -50,7 +50,7 @@ cdef class NamedTag(AbstractBase):
             return <bytes> self.tag_name
 
     @name.setter
-    def name(self, name):
+    def name(self, name) -> None:
         self.tag_name = name
 
     def to_nbt(
@@ -133,23 +133,23 @@ cdef class NamedTag(AbstractBase):
     cdef string write_tag(self, endian endianness, CStringEncode string_encode):
         return write_named_tag[TagNode](self.tag_name, self.tag_node, endianness, string_encode)
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         cdef NamedTag other_
         if isinstance(other, NamedTag):
             other_ = other
             return self.name == other_.name and self.tag == other_.tag
         return NotImplemented
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'NamedTag({self.tag!r}, "{self.name}")'
 
     def __reduce__(self):
         return NamedTag, (self.tag, self.name)
 
-    def __copy__(self):
+    def __copy__(self) -> NamedTag:
         return NamedTag(self.tag, self.name)
 
-    def __deepcopy__(self, memodict={}):
+    def __deepcopy__(self, memodict={}) -> NamedTag:
         return NamedTag(
             copy.deepcopy(self.tag),
             self.name

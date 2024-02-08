@@ -39,7 +39,7 @@ cdef class ByteTag(AbstractBaseIntTag):
     """
     tag_id: int = 1
 
-    def __init__(self, value = 0):
+    def __init__(self, value = 0) -> None:
         value = int(value)
         self.cpp = (value & 0x7F) - (value & 0x80)
 
@@ -53,7 +53,7 @@ cdef class ShortTag(AbstractBaseIntTag):
     """
     tag_id: int = 2
 
-    def __init__(self, value = 0):
+    def __init__(self, value = 0) -> None:
         value = int(value)
         self.cpp = (value & 0x7FFF) - (value & 0x8000)
 
@@ -67,7 +67,7 @@ cdef class IntTag(AbstractBaseIntTag):
     """
     tag_id: int = 3
 
-    def __init__(self, value = 0):
+    def __init__(self, value = 0) -> None:
         value = int(value)
         self.cpp = (value & 0x7FFF_FFFF) - (value & 0x8000_0000)
 
@@ -81,7 +81,7 @@ cdef class LongTag(AbstractBaseIntTag):
     """
     tag_id: int = 4
 
-    def __init__(self, value = 0):
+    def __init__(self, value = 0) -> None:
         value = int(value)
         self.cpp = (value & 0x7FFF_FFFF_FFFF_FFFF) - (value & 0x8000_0000_0000_0000)
 

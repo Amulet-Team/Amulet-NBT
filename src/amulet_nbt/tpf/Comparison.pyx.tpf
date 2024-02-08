@@ -1,6 +1,6 @@
 {{
 "\n\n".join(
-    f"""    def {meth}(self, other):
+    f"""    def {meth}(self, other: Any) -> bool:
         if not isinstance(other, {py_cls}):
             return NotImplemented
         cdef {py_cls} other_ = other

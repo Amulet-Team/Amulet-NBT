@@ -46,7 +46,7 @@ cdef class AbstractBaseTag(AbstractBase):
         bool little_endian=False,
         StringEncoding string_encoding = mutf8_encoding,
         string name = b"",
-    ):
+    ) -> bytes:
         """
         Get the data in binary NBT format.
 
@@ -120,7 +120,7 @@ cdef class AbstractBaseTag(AbstractBase):
     cdef string write_tag(self, string name, endian endianness, CStringEncode string_encode):
         raise NotImplementedError
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         """
         Check if the instance is equal to another instance.
         This will only return True if the tag type is the same and the data contained is the same.
@@ -135,7 +135,7 @@ cdef class AbstractBaseTag(AbstractBase):
         """
         raise NotImplementedError
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """
         A string representation of the object to show how it can be constructed.
         >>> from amulet_nbt import ByteTag
@@ -144,7 +144,7 @@ cdef class AbstractBaseTag(AbstractBase):
         """
         raise NotImplementedError
 
-    def __str__(self):
+    def __str__(self) -> str:
         """A string representation of the object."""
         raise NotImplementedError
 
@@ -178,7 +178,8 @@ cdef class AbstractBaseTag(AbstractBase):
 
 cdef class AbstractBaseImmutableTag(AbstractBaseTag):
     """Abstract Base Class for all immutable Tag classes"""
-    def __hash__(self):
+    def __hash__(self) -> int:
+        """A hash of the data in the class."""
         raise NotImplementedError
 
 

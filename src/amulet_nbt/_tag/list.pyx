@@ -2551,27 +2551,27 @@ cdef class ListTag(AbstractBaseMutableTag):
     cdef string write_tag(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[CListTagPtr](name, self.cpp, endianness, string_encode)
 
-    def __eq__(self, object other):
+    def __eq__(self, object other) -> bool:
         if not isinstance(other, ListTag):
             return False
         cdef ListTag tag = other
         return is_list_eq(self.cpp, tag.cpp)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"ListTag({list(self)!r}, {self.element_tag_id})"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(list(self))
 
     def __reduce__(self):
         return ListTag, (list(self), self.element_tag_id)
 
-    def __copy__(self):
+    def __copy__(self) -> ListTag:
         return ListTag.wrap(
             make_shared[CListTag](dereference(self.cpp))
         )
 
-    def __deepcopy__(self, memo=None):
+    def __deepcopy__(self, memo=None) -> ListTag:
         return ListTag.wrap(CListTagPtr_deepcopy(self.cpp))
 
     @property

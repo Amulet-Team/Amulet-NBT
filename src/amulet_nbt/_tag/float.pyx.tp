@@ -36,7 +36,7 @@ cdef class FloatTag(AbstractBaseFloatTag):
     """A single precision float class."""
     tag_id: int = 5
 
-    def __init__(self, value = 0):
+    def __init__(self, value = 0) -> None:
         self.cpp = float(value)
 
 {{include("amulet_nbt/tpf/FloatTag.pyx.tpf", py_cls="FloatTag", tag_id=5)}}
@@ -46,7 +46,7 @@ cdef class DoubleTag(AbstractBaseFloatTag):
     """A double precision float class."""
     tag_id: int = 6
 
-    def __init__(self, value = 0):
+    def __init__(self, value = 0) -> None:
         self.cpp = float(value)
 
 {{include("amulet_nbt/tpf/FloatTag.pyx.tpf", py_cls="DoubleTag", tag_id=6)}}

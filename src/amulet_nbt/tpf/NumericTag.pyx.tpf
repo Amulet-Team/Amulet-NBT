@@ -4,31 +4,31 @@
 
 {{include("amulet_nbt/tpf/ImmutableTag.pyx.tpf", **locals())}}
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{{py_cls}}({self.cpp})"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.cpp)
 
     def __reduce__(self):
         return {{py_cls}}, (self.cpp,)
 
-    def __copy__(self):
+    def __copy__(self) -> {{py_cls}}:
         return {{py_cls}}.wrap(self.cpp)
 
-    def __deepcopy__(self, memo=None):
+    def __deepcopy__(self, memo=None) -> {{py_cls}}:
         return {{py_cls}}.wrap(self.cpp)
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(({{tag_id}}, self.cpp))
 
-    def __int__(self):
+    def __int__(self) -> int:
         return int(self.cpp)
 
-    def __float__(self):
+    def __float__(self) -> float:
         return float(self.cpp)
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         return bool(self.cpp)
 
 {{include("amulet_nbt/tpf/Comparison.pyx.tpf", **locals())}}

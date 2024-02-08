@@ -89,6 +89,47 @@ cdef class NamedTag(AbstractBase):
             return gzip.compress(data)
         return data
 
+    def save_to(
+        self,
+        object filepath_or_buffer=None,
+        *,
+        EncodingPreset preset = None,
+        bool compressed=True,
+        bool little_endian=False,
+        StringEncoding string_encoding = mutf8_encoding,
+        string name = b"",
+    ) -> bytes:
+        """
+        Convert the data to the binary NBT format. Optionally write to a file.
+
+        If filepath_or_buffer is a valid file path in string form the data will be written to that file.
+
+        If filepath_or_buffer is a file like object the bytes will be written to it using .write method.
+
+        :param filepath_or_buffer: A path or writeable object to write the data to.
+        :param preset: A class containing compression, endianness and encoding presets.
+        :param compressed: Should the bytes be compressed with gzip. Ignored if preset is defined.
+        :param little_endian: Should the bytes be saved in little endian format. Ignored if preset is defined.
+        :param string_encoding: The StringEncoding to use. Ignored if preset is defined.
+        :param name: The root tag name.
+        :return: The binary NBT representation of the class.
+        """
+        data = self.to_nbt(
+            preset=preset,
+            compressed=compressed,
+            little_endian=little_endian,
+            string_encoding=string_encoding,
+            name=name,
+        )
+
+        if filepath_or_buffer is not None:
+            if isinstance(filepath_or_buffer, str):
+                with open(filepath_or_buffer, 'wb') as fp:
+                    fp.write(data)
+            else:
+                filepath_or_buffer.write(data)
+        return data
+
     cdef string write_tag(self, endian endianness, CStringEncode string_encode):
         return write_named_tag[TagNode](self.tag_name, self.tag_node, endianness, string_encode)
 

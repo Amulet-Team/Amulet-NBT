@@ -7,8 +7,8 @@
 #include <type_traits>
 
 #include "_binary/writer.hpp"
-#include "nbt.hpp"
-#include "array.hpp"
+#include "../../../_tag/_cpp/nbt.hpp"
+#include "../../../_tag/_cpp/array.hpp"
 
 
 template<typename V, typename T, size_t I = 0>

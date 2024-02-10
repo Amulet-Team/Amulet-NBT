@@ -6,8 +6,8 @@
 #include <variant>
 
 #include "_binary/reader.hpp"
-#include "nbt.hpp"
-#include "array.hpp"
+#include "../../../_tag/_cpp/nbt.hpp"
+#include "../../../_tag/_cpp/array.hpp"
 #include "../../../_string_encoding/_cpp/utf8.hpp"
 #include "../../../_string_encoding/_cpp/mutf8.hpp"
 

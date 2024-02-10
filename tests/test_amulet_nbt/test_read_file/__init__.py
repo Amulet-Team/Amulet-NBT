@@ -2,8 +2,7 @@ import os
 import unittest
 from amulet_nbt import CompoundTag, load, from_snbt, NamedTag
 
-TESTS_DIR = os.path.dirname(__file__)
-DATA_DIR = os.path.join(TESTS_DIR, "src")
+DATA_DIR = os.path.join(os.path.dirname(__file__), "src")
 
 
 class FileNBTTests(unittest.TestCase):

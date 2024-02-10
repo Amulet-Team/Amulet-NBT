@@ -179,7 +179,7 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
     def np_array(self) -> NDArray[numpy.int8]:
         return numpy.asarray(self)
 
-    cdef string write_tag(self, string name, endian endianness, CStringEncode string_encode):
+    cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[CByteArrayTagPtr](name, self.cpp, endianness, string_encode)
 
     def __eq__(self, object other) -> bool:
@@ -361,7 +361,7 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
     def np_array(self) -> NDArray[numpy.int32]:
         return numpy.asarray(self)
 
-    cdef string write_tag(self, string name, endian endianness, CStringEncode string_encode):
+    cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[CIntArrayTagPtr](name, self.cpp, endianness, string_encode)
 
     def __eq__(self, object other) -> bool:
@@ -543,7 +543,7 @@ cdef class LongArrayTag(AbstractBaseArrayTag):
     def np_array(self) -> NDArray[numpy.int64]:
         return numpy.asarray(self)
 
-    cdef string write_tag(self, string name, endian endianness, CStringEncode string_encode):
+    cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[CLongArrayTagPtr](name, self.cpp, endianness, string_encode)
 
     def __eq__(self, object other) -> bool:

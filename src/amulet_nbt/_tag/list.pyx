@@ -2548,7 +2548,7 @@ cdef class ListTag(AbstractBaseMutableTag):
     def py_data(self) -> Any:
         return list(self)
 
-    cdef string write_tag(self, string name, endian endianness, CStringEncode string_encode):
+    cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[CListTagPtr](name, self.cpp, endianness, string_encode)
 
     def __eq__(self, object other) -> bool:

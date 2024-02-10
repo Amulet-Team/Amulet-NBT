@@ -8,4 +8,4 @@ from amulet_nbt._string_encoding._cpp cimport CStringEncode
 cdef class NamedTag(AbstractBase):
     cdef string tag_name
     cdef TagNode tag_node
-    cdef string write_tag(self, endian endianness, CStringEncode string_encode)
+    cdef string write_nbt(self, endian endianness, CStringEncode string_encode)

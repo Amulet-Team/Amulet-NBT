@@ -30,7 +30,7 @@ cdef class {{dtype.capitalize()}}ArrayTag(AbstractBaseArrayTag):
     def np_array(self) -> NDArray[numpy.int{{width*8}}]:
         return numpy.asarray(self)
 
-    cdef string write_tag(self, string name, endian endianness, CStringEncode string_encode):
+    cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[C{{dtype.capitalize()}}ArrayTagPtr](name, self.cpp, endianness, string_encode)
 
     def __eq__(self, object other) -> bool:

@@ -59,7 +59,7 @@ cdef class StringTag(AbstractBaseImmutableTag):
     def py_data(self) -> Any:
         return <bytes> self.py_str
 
-    cdef string write_tag(self, string name, endian endianness, CStringEncode string_encode):
+    cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[CStringTag](name, self.cpp, endianness, string_encode)
 
 {{include("amulet_nbt/tpf/ImmutableTag.pyx.tpf", py_cls="StringTag")}}

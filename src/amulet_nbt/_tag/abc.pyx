@@ -66,7 +66,7 @@ cdef class AbstractBaseTag(AbstractBase):
         else:
             endianness = endian.little if little_endian else endian.big
 
-        cdef bytes data = self.write_tag(
+        cdef bytes data = self.write_nbt(
             name,
             endianness,
             string_encoding.encode_cpp
@@ -117,7 +117,7 @@ cdef class AbstractBaseTag(AbstractBase):
                 filepath_or_buffer.write(data)
         return data
 
-    cdef string write_tag(self, string name, endian endianness, CStringEncode string_encode):
+    cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         raise NotImplementedError
 
     def __eq__(self, other) -> bool:

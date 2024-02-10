@@ -54,7 +54,7 @@ cdef class FloatTag(AbstractBaseFloatTag):
     def py_float(self) -> float:
         return self.cpp
 
-    cdef string write_tag(self, string name, endian endianness, CStringEncode string_encode):
+    cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[CFloatTag](name, self.cpp, endianness, string_encode)
 
     def __eq__(self, other) -> bool:
@@ -137,7 +137,7 @@ cdef class DoubleTag(AbstractBaseFloatTag):
     def py_float(self) -> float:
         return self.cpp
 
-    cdef string write_tag(self, string name, endian endianness, CStringEncode string_encode):
+    cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[CDoubleTag](name, self.cpp, endianness, string_encode)
 
     def __eq__(self, other) -> bool:

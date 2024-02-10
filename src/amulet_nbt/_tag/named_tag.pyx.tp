@@ -81,7 +81,7 @@ cdef class NamedTag(AbstractBase):
         else:
             endianness = endian.little if little_endian else endian.big
 
-        cdef bytes data = self.write_tag(
+        cdef bytes data = self.write_nbt(
             endianness,
             string_encoding.encode_cpp
         )
@@ -128,7 +128,7 @@ cdef class NamedTag(AbstractBase):
                 filepath_or_buffer.write(data)
         return data
 
-    cdef string write_tag(self, endian endianness, CStringEncode string_encode):
+    cdef string write_nbt(self, endian endianness, CStringEncode string_encode):
         return write_named_tag[TagNode](self.tag_name, self.tag_node, endianness, string_encode)
 
     def __eq__(self, other) -> bool:

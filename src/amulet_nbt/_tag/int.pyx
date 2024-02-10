@@ -62,7 +62,7 @@ cdef class ByteTag(AbstractBaseIntTag):
         """
         return self.cpp
 
-    cdef string write_tag(self, string name, endian endianness, CStringEncode string_encode):
+    cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[CByteTag](name, self.cpp, endianness, string_encode)
 
     def __eq__(self, other) -> bool:
@@ -153,7 +153,7 @@ cdef class ShortTag(AbstractBaseIntTag):
         """
         return self.cpp
 
-    cdef string write_tag(self, string name, endian endianness, CStringEncode string_encode):
+    cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[CShortTag](name, self.cpp, endianness, string_encode)
 
     def __eq__(self, other) -> bool:
@@ -244,7 +244,7 @@ cdef class IntTag(AbstractBaseIntTag):
         """
         return self.cpp
 
-    cdef string write_tag(self, string name, endian endianness, CStringEncode string_encode):
+    cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[CIntTag](name, self.cpp, endianness, string_encode)
 
     def __eq__(self, other) -> bool:
@@ -335,7 +335,7 @@ cdef class LongTag(AbstractBaseIntTag):
         """
         return self.cpp
 
-    cdef string write_tag(self, string name, endian endianness, CStringEncode string_encode):
+    cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[CLongTag](name, self.cpp, endianness, string_encode)
 
     def __eq__(self, other) -> bool:

@@ -12,7 +12,7 @@ cdef class AbstractBase:
 
 cdef class AbstractBaseTag(AbstractBase):
     cdef TagNode to_node(self)
-    cdef string write_tag(self, string, endian, CStringEncode)
+    cdef string write_nbt(self, string, endian, CStringEncode)
 
 
 cdef class AbstractBaseImmutableTag(AbstractBaseTag):

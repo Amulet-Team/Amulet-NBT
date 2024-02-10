@@ -23,17 +23,17 @@ def include(rel_path, **kwargs):
 
 
 class TempitaManager:
-    def __init__(self):
+    def __init__(self) -> None:
         self.files: List[TempitaFile] = []
         for path in glob.glob(os.path.join(SRC_PATH, "**", "*.tp"), recursive=True):
             rel_path = os.path.relpath(path, SRC_PATH)
             save_path = path[:-3]
             self.files.append(TempitaFile(path, rel_path, save_path))
 
-    def changed(self):
+    def changed(self) -> bool:
         return any(file.changed for file in self.files)
 
-    def build(self):
+    def build(self) -> None:
         for file in self.files:
             file.build()
 
@@ -63,7 +63,7 @@ class TempitaFile:
         """Has the source changed since the last bake."""
         return self.baked != self.written
 
-    def build(self):
+    def build(self) -> None:
         """Build all changes and overwrite the previous bake."""
         print(f"Baking tempita file {self.rel_path}")
         baked = self.baked
@@ -73,7 +73,7 @@ class TempitaFile:
                 cy.write(baked)
 
 
-def changed():
+def changed() -> bool:
     """Have the source files changed since the last time tempita was run."""
     return TempitaManager().changed()
 

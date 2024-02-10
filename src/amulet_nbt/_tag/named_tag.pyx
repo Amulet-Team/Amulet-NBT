@@ -60,7 +60,7 @@ cdef class NamedTag(AbstractBase):
         bool compressed=True,
         bool little_endian=False,
         string_encoding: StringEncoding = mutf8_encoding,
-    ):
+    ) -> bytes:
         """
         Get the data in binary NBT format.
 
@@ -68,7 +68,6 @@ cdef class NamedTag(AbstractBase):
         :param compressed: Should the bytes be compressed with gzip.
         :param little_endian: Should the bytes be saved in little endian format.
         :param string_encoding: A function to encode strings to bytes.
-        :param name: The root tag name.
         :return: The binary NBT representation of the class.
         """
         cdef endian endianness
@@ -97,7 +96,6 @@ cdef class NamedTag(AbstractBase):
         bool compressed=True,
         bool little_endian=False,
         StringEncoding string_encoding = mutf8_encoding,
-        string name = b"",
     ) -> bytes:
         """
         Convert the data to the binary NBT format. Optionally write to a file.
@@ -111,7 +109,6 @@ cdef class NamedTag(AbstractBase):
         :param compressed: Should the bytes be compressed with gzip. Ignored if preset is defined.
         :param little_endian: Should the bytes be saved in little endian format. Ignored if preset is defined.
         :param string_encoding: The StringEncoding to use. Ignored if preset is defined.
-        :param name: The root tag name.
         :return: The binary NBT representation of the class.
         """
         data = self.to_nbt(
@@ -119,7 +116,6 @@ cdef class NamedTag(AbstractBase):
             compressed=compressed,
             little_endian=little_endian,
             string_encoding=string_encoding,
-            name=name,
         )
 
         if filepath_or_buffer is not None:

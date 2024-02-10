@@ -218,6 +218,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
 
     @property
     def py_dict(self) -> dict[str, ByteTag | ShortTag | IntTag | LongTag | FloatTag | DoubleTag | StringTag | ByteArrayTag | ListTag | CompoundTag | IntArrayTag | LongArrayTag]:
+        """A shallow copy of the CompoundTag as a python dictionary."""
         return dict(self)
 
     @property
@@ -276,6 +277,16 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return wrap_node(&dereference(it).second)
 
     def get(self, string key, object default = None, object cls = AbstractBaseTag) -> ByteTag | ShortTag | IntTag | LongTag | FloatTag | DoubleTag | StringTag | ByteArrayTag | ListTag | CompoundTag | IntArrayTag | LongArrayTag:
+        """
+        Get an item from the CompoundTag.
+
+        :param key: The key to get
+        :param default: The value to return if the key does not exist or the type is wrong. If not defined and the type is not correct a TypeError is raised.
+        :param cls: The class that the stored tag must inherit from. If the type is incorrect default is returned if defined else a TypeError is raised.
+        :return: The tag stored in the CompoundTag if the type is correct else default if defined.
+        :raises: KeyError if the key does not exist.
+        :raises: TypeError if the stored type is not a subclass of cls.
+        """
         cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
 
         if it == dereference(self.cpp).end():

@@ -556,10 +556,29 @@ cdef class ListTag(AbstractBaseMutableTag):
 
     @property
     def element_tag_id(self) -> int:
+        """
+        The numerical id of the element type in this list.
+        Will be an int in the range 0-12.
+        """
         return dereference(self.cpp).index()
 
     @property
-    def element_class(self) -> None | Type[ByteTag] | Type[ShortTag] | Type[IntTag] | Type[LongTag] | Type[FloatTag] | Type[DoubleTag] | Type[StringTag] | Type[ByteArrayTag] | Type[ListTag] | Type[CompoundTag] | Type[IntArrayTag] | Type[LongArrayTag]:
+    def element_class(self) -> (
+        None |
+        Type[ByteTag] |
+        Type[ShortTag] |
+        Type[IntTag] |
+        Type[LongTag] |
+        Type[FloatTag] |
+        Type[DoubleTag] |
+        Type[StringTag] |
+        Type[ByteArrayTag] |
+        Type[ListTag] |
+        Type[CompoundTag] |
+        Type[IntArrayTag] |
+        Type[LongArrayTag]
+    ):
+        """The python class for the tag type contained in this list or None if the list tag is in the 0 state."""
         return (
             None,
             ByteTag,
@@ -578,10 +597,12 @@ cdef class ListTag(AbstractBaseMutableTag):
 
     # Sized
     def __len__(self) -> int:
+        """The number of elements in the list."""
         return ListTag_len(self.cpp)
 
     # Sequence
     def __getitem__(self, object item):
+        """Get an item or slice of items from the list."""
         if isinstance(item, int):
             return ListTag_get_item(self.cpp, item)
         elif isinstance(item, slice):
@@ -590,6 +611,7 @@ cdef class ListTag(AbstractBaseMutableTag):
             raise TypeError(f"Unsupported item type {{'{'}}type(item){{'}'}}")
 
     def __iter__(self):
+        """Iterate through items in the list."""
         i = 0
         try:
             while True:
@@ -600,6 +622,7 @@ cdef class ListTag(AbstractBaseMutableTag):
             return
 
     def __contains__(self, value):
+        """Check if the item is in the list."""
         for v in self:
             if v is value or v == value:
                 return True
@@ -701,7 +724,7 @@ cdef class ListTag(AbstractBaseMutableTag):
         self.extend(values)
         return self
 
-    def copy(self):
+    def copy(self) -> ListTag:
         """Return a shallow copy of the class"""
         return ListTag(self, dereference(self.cpp).index())
 

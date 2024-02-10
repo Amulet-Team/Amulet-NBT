@@ -5,7 +5,7 @@
 # cython: c_string_type=str, c_string_encoding=utf8
 
 from copy import copy
-from typing import Any
+from typing import Any, Self
 import gzip
 
 from libcpp cimport bool
@@ -151,7 +151,7 @@ cdef class AbstractBaseTag(AbstractBase):
     def __reduce__(self):
         raise NotImplementedError
 
-    def copy(self):
+    def copy(self) -> Self:
         """Return a shallow copy of the class"""
         return copy(self)
 

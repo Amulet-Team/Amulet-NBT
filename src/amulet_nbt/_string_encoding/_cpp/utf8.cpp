@@ -6,12 +6,13 @@
 #include <vector>
 #include <stdexcept>
 #include <format>
+#include "utf8.hpp"
 
 
 const size_t HexChars[16] = {48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102};
 
 
-inline void push_escape(std::vector<size_t>& dst, const uint8_t& b){
+inline void push_escape(CodePointVector& dst, const uint8_t& b){
     dst.push_back(9243); // ␛
     dst.push_back(120); // x
     dst.push_back(HexChars[b >> 4]);
@@ -20,8 +21,8 @@ inline void push_escape(std::vector<size_t>& dst, const uint8_t& b){
 
 
 template <bool escapeErrors>
-constexpr std::vector<size_t> _read_utf8(const std::string& src) {
-    std::vector<size_t> dst;
+constexpr CodePointVector _read_utf8(const std::string& src) {
+    CodePointVector dst;
 
     for (size_t index = 0; index < src.size(); index++) {
         uint8_t b1 = src[index];
@@ -177,7 +178,7 @@ inline char char_to_hex(const size_t& c){
 
 
 template <bool escapeErrors>
-constexpr void _write_utf8(std::string &dst, const std::vector<size_t>& src) {
+constexpr void _write_utf8(std::string &dst, const CodePointVector& src) {
     for (size_t index = 0; index < src.size(); index++) {
         const size_t& c = src[index];
         if (c <= 127) {
@@ -223,12 +224,12 @@ constexpr void _write_utf8(std::string &dst, const std::vector<size_t>& src) {
 }
 
 
-std::vector<size_t> read_utf8(const std::string& src) {
+CodePointVector read_utf8(const std::string& src) {
     return _read_utf8<false>(src);
 }
 
 
-void write_utf8(std::string &dst, const std::vector<size_t>& src) {
+void write_utf8(std::string &dst, const CodePointVector& src) {
     return _write_utf8<false>(dst, src);
 }
 
@@ -241,12 +242,12 @@ std::string utf8_to_utf8(const std::string& src) {
 }
 
 
-std::vector<size_t> read_utf8_escape(const std::string& src) {
+CodePointVector read_utf8_escape(const std::string& src) {
     return _read_utf8<true>(src);
 }
 
 
-void write_utf8_escape(std::string &dst, const std::vector<size_t>& src) {
+void write_utf8_escape(std::string &dst, const CodePointVector& src) {
     return _write_utf8<true>(dst, src);
 }
 

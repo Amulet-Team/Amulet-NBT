@@ -1,84 +1,84 @@
 {{py:
 from template import include
 }}
-cdef class {{dtype.capitalize()}}ArrayTag(AbstractBaseArrayTag):
+cdef class {{py_cls}}(AbstractBaseArrayTag):
     """This class behaves like an 1D Numpy signed integer array with each value stored in a {{dtype}}."""
     tag_id: int = {{tag_id}}
 
     def __init__(self, object value = ()) -> None:
         """
-        Construct a new {{dtype.capitalize()}}ArrayTag object from an array-like object.
+        Construct a new {{py_cls}} object from an array-like object.
         """
         cdef numpy.ndarray arr = numpy.asarray(value, {{native_data_type}}).ravel()
-        self.cpp = make_shared[C{{dtype.capitalize()}}ArrayTag](arr.size)
+        self.cpp = make_shared[{{cpp_cls}}](arr.size)
         cdef size_t i
         for i in range(arr.size):
             dereference(self.cpp)[i] = arr[i]
 
     @staticmethod
-    cdef {{dtype.capitalize()}}ArrayTag wrap(C{{dtype.capitalize()}}ArrayTagPtr cpp):
-        cdef {{dtype.capitalize()}}ArrayTag tag = {{dtype.capitalize()}}ArrayTag.__new__({{dtype.capitalize()}}ArrayTag)
+    cdef {{py_cls}} wrap({{cpp_cls_ptr}} cpp):
+        cdef {{py_cls}} tag = {{py_cls}}.__new__({{py_cls}})
         tag.cpp = cpp
         return tag
 
     cdef TagNode to_node(self):
         cdef TagNode node
-        node.emplace[C{{dtype.capitalize()}}ArrayTagPtr](self.cpp)
+        node.emplace[{{cpp_cls_ptr}}](self.cpp)
         return node
 
     @property
-    def np_array(self) -> NDArray[numpy.int{{width*8}}]:
+    def np_array(self) -> NDArray[numpy.int{{int_byte_width*8}}]:
         return numpy.asarray(self)
 
     cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
-        return write_named_tag[C{{dtype.capitalize()}}ArrayTagPtr](name, self.cpp, endianness, string_encode)
+        return write_named_tag[{{cpp_cls_ptr}}](name, self.cpp, endianness, string_encode)
 
     def __eq__(self, object other) -> bool:
-        if not isinstance(other, {{dtype.capitalize()}}ArrayTag):
+        if not isinstance(other, {{py_cls}}):
             return False
-        cdef {{dtype.capitalize()}}ArrayTag tag = other
+        cdef {{py_cls}} tag = other
         return dereference(self.cpp) == dereference(tag.cpp)
 
     def __repr__(self) -> str:
-        return f"{{dtype.capitalize()}}ArrayTag({list(self)})"
+        return f"{{py_cls}}({list(self)})"
 
     def __str__(self) -> str:
         return str(list(self))
 
     def __reduce__(self):
-        return {{dtype.capitalize()}}ArrayTag, (list(self),)
+        return {{py_cls}}, (list(self),)
 
-    def __copy__(self) -> {{dtype.capitalize()}}ArrayTag:
-        return {{dtype.capitalize()}}ArrayTag.wrap(
-            make_shared[C{{dtype.capitalize()}}ArrayTag](dereference(self.cpp))
+    def __copy__(self) -> {{py_cls}}:
+        return {{py_cls}}.wrap(
+            make_shared[{{cpp_cls}}](dereference(self.cpp))
         )
 
-    def __deepcopy__(self, memo=None) -> {{dtype.capitalize()}}ArrayTag:
-        return {{dtype.capitalize()}}ArrayTag.wrap(
-            make_shared[C{{dtype.capitalize()}}ArrayTag](dereference(self.cpp))
+    def __deepcopy__(self, memo=None) -> {{py_cls}}:
+        return {{py_cls}}.wrap(
+            make_shared[{{cpp_cls}}](dereference(self.cpp))
         )
 
     # Sized
     def __len__(self) -> int:
         """
         The length of the array.
-        >>> from amulet_nbt import {{dtype.capitalize()}}ArrayTag
-        >>> tag = {{dtype.capitalize()}}ArrayTag([1, 2, 3])
+        >>> from amulet_nbt import {{py_cls}}
+        >>> tag = {{py_cls}}([1, 2, 3])
         >>> len(tag)  # 3
         """
         return dereference(self.cpp).size()
 
     # Sequence
     @overload
-    def __getitem__(self, item: int) -> numpy.int{{width*8}}:
+    def __getitem__(self, item: int) -> numpy.int{{int_byte_width*8}}:
         ...
 
     @overload
-    def __getitem__(self, item: slice) -> NDArray[numpy.int{{width*8}}]:
+    def __getitem__(self, item: slice) -> NDArray[numpy.int{{int_byte_width*8}}]:
         ...
 
     @overload
-    def __getitem__(self, item: ArrayLike) -> NDArray[numpy.int{{width*8}}]:
+    def __getitem__(self, item: ArrayLike) -> NDArray[numpy.int{{int_byte_width*8}}]:
         ...
 
     def __getitem__(self, object item):
@@ -88,33 +88,33 @@ cdef class {{dtype.capitalize()}}ArrayTag(AbstractBaseArrayTag):
         This supports the full numpy protocol.
         If a numpy array is returned, the array data is the same as the data contained in this class.
 
-        >>> from amulet_nbt import {{dtype.capitalize()}}ArrayTag
+        >>> from amulet_nbt import {{py_cls}}
         >>> import numpy
-        >>> tag = {{dtype.capitalize()}}ArrayTag([1, 2, 3])
+        >>> tag = {{py_cls}}([1, 2, 3])
         >>> tag[0]  # 1
         >>> tag[:1]  # numpy.array([1], dtype=numpy.int8)
         >>> tag[numpy.array([1, 2])]  # numpy.array([2, 3], dtype=int8)
         """
         return numpy.asarray(self)[item]
 
-    def __iter__(self) -> Iterator[numpy.int{{width*8}}]:
+    def __iter__(self) -> Iterator[numpy.int{{int_byte_width*8}}]:
         """
         Iterate through the items in the array.
 
-        >>> from amulet_nbt import {{dtype.capitalize()}}ArrayTag
-        >>> tag = {{dtype.capitalize()}}ArrayTag([1, 2, 3])
+        >>> from amulet_nbt import {{py_cls}}
+        >>> tag = {{py_cls}}([1, 2, 3])
         >>> for num in tag:
         >>>     pass
         >>> iter(tag)
         """
         return iter(numpy.asarray(self))
 
-    def __reversed__(self) -> Iterator[numpy.int{{width*8}}]:
+    def __reversed__(self) -> Iterator[numpy.int{{int_byte_width*8}}]:
         """
         Iterate through the items in the array in reverse order.
 
-        >>> from amulet_nbt import {{dtype.capitalize()}}ArrayTag
-        >>> tag = {{dtype.capitalize()}}ArrayTag([1, 2, 3])
+        >>> from amulet_nbt import {{py_cls}}
+        >>> tag = {{py_cls}}([1, 2, 3])
         >>> for num in reversed(tag):
         >>>     pass
         """
@@ -124,8 +124,8 @@ cdef class {{dtype.capitalize()}}ArrayTag(AbstractBaseArrayTag):
         """
         Check if an item is in the array.
 
-        >>> from amulet_nbt import {{dtype.capitalize()}}ArrayTag
-        >>> tag = {{dtype.capitalize()}}ArrayTag([1, 2, 3])
+        >>> from amulet_nbt import {{py_cls}}
+        >>> tag = {{py_cls}}([1, 2, 3])
         >>> 1 in tag  # True
         """
         return value in numpy.asarray(self)
@@ -149,9 +149,9 @@ cdef class {{dtype.capitalize()}}ArrayTag(AbstractBaseArrayTag):
 
         This supports the full numpy protocol.
 
-        >>> from amulet_nbt import {{dtype.capitalize()}}ArrayTag
+        >>> from amulet_nbt import {{py_cls}}
         >>> import numpy
-        >>> tag = {{dtype.capitalize()}}ArrayTag([1, 2, 3])
+        >>> tag = {{py_cls}}([1, 2, 3])
         >>> tag[0] = 10  # [10, 2, 3]
         >>> tag[:2] = [4, 5]  # [4, 5, 3]
         >>> tag[numpy.array([1, 2])] = [6, 7]  # [4, 6, 7]
@@ -159,13 +159,13 @@ cdef class {{dtype.capitalize()}}ArrayTag(AbstractBaseArrayTag):
         numpy.asarray(self)[item] = value
 
     # Array interface
-    def __array__(self, dtype=None) -> NDArray[numpy.int{{width*8}}]:
+    def __array__(self, dtype=None) -> NDArray[numpy.int{{int_byte_width*8}}]:
         """
         Get a numpy array representation of the stored data.
 
-        >>> from amulet_nbt import {{dtype.capitalize()}}ArrayTag
+        >>> from amulet_nbt import {{py_cls}}
         >>> import numpy
-        >>> tag = {{dtype.capitalize()}}ArrayTag([1, 2, 3])
+        >>> tag = {{py_cls}}([1, 2, 3])
         >>> arr = numpy.asarray(tag)
         """
         cdef numpy.npy_intp shape[1]

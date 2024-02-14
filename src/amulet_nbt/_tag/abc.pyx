@@ -53,8 +53,8 @@ cdef class AbstractBaseTag(AbstractBase):
         """
         Get the data in binary NBT format.
 
-        :param preset: A class containing compression, endianness and encoding presets.
-        :param compressed: Should the bytes be compressed with gzip. Ignored if preset is defined.
+        :param preset: A class containing endianness and encoding presets.
+        :param compressed: Should the bytes be compressed with gzip.
         :param little_endian: Should the bytes be saved in little endian format. Ignored if preset is defined.
         :param string_encoding: The StringEncoding to use. Ignored if preset is defined.
         :param name: The root tag name.
@@ -97,8 +97,8 @@ cdef class AbstractBaseTag(AbstractBase):
         If filepath_or_buffer is a file like object the bytes will be written to it using .write method.
 
         :param filepath_or_buffer: A path or writeable object to write the data to.
-        :param preset: A class containing compression, endianness and encoding presets.
-        :param compressed: Should the bytes be compressed with gzip. Ignored if preset is defined.
+        :param preset: A class containing endianness and encoding presets.
+        :param compressed: Should the bytes be compressed with gzip.
         :param little_endian: Should the bytes be saved in little endian format. Ignored if preset is defined.
         :param string_encoding: The StringEncoding to use. Ignored if preset is defined.
         :param name: The root tag name.

@@ -24,13 +24,12 @@
       IntArrayTag,
       LongArrayTag,
       NamedTag,
-      utf8_decoder,
-      utf8_encoder,
-      utf8_escape_decoder,
-      utf8_escape_encoder,
+      mutf8_encoding,
+      utf8_encoding,
+      utf8_escape_encoding,
+      java_encoding,
+      bedrock_encoding,
    )
-
-   from mutf8 import decode_modified_utf8, encode_modified_utf8
 
    # These classes are also available under their old names
    # from amulet_nbt import (
@@ -55,32 +54,47 @@
    # Load binary NBT
    named_tag = amulet_nbt.load(
       "the/path/to/your/binary/nbt/file",
+      preset=java_encoding,
+      compressed=True,  # These inputs must be specified as keyword inputs like this.
+   )  # from a file
+   named_tag = amulet_nbt.load(
+      "the/path/to/your/binary/nbt/file",
       compressed=True,  # These inputs must be specified as keyword inputs like this.
       little_endian=False,  # If you do not define them they will default to these values
-      string_decoder=utf8_decoder
+      string_encoding=mutf8_encoding
    )  # from a file
    named_tag = amulet_nbt.load(b'<nbt file bytes>')  # from a bytes object
 
    # Note that Java Edition usually uses compressed modified UTF-8.
    java_named_tag = amulet_nbt.load(
       "the/path/to/your/binary/java/nbt/file",
-      string_decoder=decode_modified_utf8
+      string_encoding=mutf8_encoding
    )
 
    # Bedrock edition data is stored in little endian format and uses non-compressed UTF-8 but can also have arbitrary bytes.
    bedrock_named_tag = amulet_nbt.load(
       "the/path/to/your/binary/bedrock/nbt/file",
+      preset=bedrock_encoding,
+      compressed=False,
+   )
+   bedrock_named_tag = amulet_nbt.load(
+      "the/path/to/your/binary/bedrock/nbt/file",
       compressed=False,
       little_endian=True,
-      string_decoder=utf8_escape_decoder  # This decoder will escape all invalid bytes to the string ␛xHH
+      string_encoding=utf8_escape_encoding  # This decoder will escape all invalid bytes to the string ␛xHH
    )
 
    # Save the data back to a file
    named_tag.save_to(
       "the/path/to/write/to",
       compressed=True,  # These inputs must be specified as keyword inputs like this.
+      preset=java_encoding
+   )
+   named_tag.save_to(
+      "the/path/to/write/to",
+      compressed=True,  # These inputs must be specified as keyword inputs like this.
       little_endian=False,  # If you do not define them they will default to these values
-      string_encoder=utf8_encoder
+      string_encoding=mutf8_encoding
    )
 
    # save_to can also be given a file object to write to.
@@ -91,15 +105,14 @@
    # Java
    java_named_tag.save_to(
       "the/path/to/write/to",
-      string_encoder=encode_modified_utf8
+      preset=java_encoding
    )
 
    # Bedrock
    bedrock_named_tag.save_to(
       "the/path/to/write/to",
       compressed=False,
-      little_endian=True,
-      string_encoder=utf8_escape_encoder
+      preset=bedrock_encoding
    )
 
 
@@ -115,7 +128,7 @@
    # Tags can be saved like the NamedTag class but they do not have a name.
    tag.save_to(
       'filepath',
-      # see the NBTFile save_to documentation above for other options.
+      # see the NamedTag save_to documentation above for other options.
       name=""  # Tag classes do not store their name so you can define it here.
    )
    tag.to_snbt()  # convert back to SNBT

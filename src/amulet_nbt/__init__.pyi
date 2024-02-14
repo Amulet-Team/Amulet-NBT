@@ -132,8 +132,8 @@ class AbstractBaseTag(AbstractBase):
         """
         Get the data in binary NBT format.
 
-        :param preset: A class containing compression, endianness and encoding presets.
-        :param compressed: Should the bytes be compressed with gzip. Ignored if preset is defined.
+        :param preset: A class containing endianness and encoding presets.
+        :param compressed: Should the bytes be compressed with gzip.
         :param little_endian: Should the bytes be saved in little endian format. Ignored if preset is defined.
         :param string_encoding: The StringEncoding to use. Ignored if preset is defined.
         :param name: The root tag name.
@@ -157,8 +157,8 @@ class AbstractBaseTag(AbstractBase):
         If filepath_or_buffer is a file like object the bytes will be written to it using .write method.
 
         :param filepath_or_buffer: A path or writeable object to write the data to.
-        :param preset: A class containing compression, endianness and encoding presets.
-        :param compressed: Should the bytes be compressed with gzip. Ignored if preset is defined.
+        :param preset: A class containing endianness and encoding presets.
+        :param compressed: Should the bytes be compressed with gzip.
         :param little_endian: Should the bytes be saved in little endian format. Ignored if preset is defined.
         :param string_encoding: The StringEncoding to use. Ignored if preset is defined.
         :param name: The root tag name.
@@ -829,10 +829,10 @@ class NamedTag(AbstractBase):
         """
         Get the data in binary NBT format.
 
-        :param preset: A class containing compression, endianness and encoding presets.
+        :param preset: A class containing endianness and encoding presets.
         :param compressed: Should the bytes be compressed with gzip.
-        :param little_endian: Should the bytes be saved in little endian format.
-        :param string_encoding: A function to encode strings to bytes.
+        :param little_endian: Should the bytes be saved in little endian format. Ignored if preset is defined.
+        :param string_encoding: A function to encode strings to bytes. Ignored if preset is defined.
         :return: The binary NBT representation of the class.
         """
     def save_to(
@@ -852,8 +852,8 @@ class NamedTag(AbstractBase):
         If filepath_or_buffer is a file like object the bytes will be written to it using .write method.
 
         :param filepath_or_buffer: A path or writeable object to write the data to.
-        :param preset: A class containing compression, endianness and encoding presets.
-        :param compressed: Should the bytes be compressed with gzip. Ignored if preset is defined.
+        :param preset: A class containing endianness and encoding presets.
+        :param compressed: Should the bytes be compressed with gzip.
         :param little_endian: Should the bytes be saved in little endian format. Ignored if preset is defined.
         :param string_encoding: The StringEncoding to use. Ignored if preset is defined.
         :return: The binary NBT representation of the class.
@@ -907,7 +907,7 @@ def load(
     """Load one binary NBT object.
 
     :param filepath_or_buffer: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.
-    :param preset: The encoding preset. If this is defined compressed, little_endian and string_encoding have no effect.
+    :param preset: The encoding preset. If this is defined little_endian and string_encoding have no effect.
     :param compressed: Is the binary data gzip compressed.
     :param little_endian: Are the numerical values stored as little endian. True for Bedrock, False for Java.
     :param string_encoding: The bytes decoder function to parse strings. mutf8_encoding for Java, utf8_escape_encoding for Bedrock.
@@ -929,7 +929,7 @@ def load_array(
 
     :param filepath_or_buffer: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.
     :param count: The number of binary NBT objects to read. Use -1 to exhaust the buffer.
-    :param preset: The encoding preset. If this is defined compressed, little_endian and string_encoding have no effect.
+    :param preset: The encoding preset. If this is defined little_endian and string_encoding have no effect.
     :param compressed: Is the binary data gzip compressed. This only supports the whole buffer compressed as one.
     :param little_endian: Are the numerical values stored as little endian. True for Bedrock, False for Java.
     :param string_encoding: The bytes decoder function to parse strings. mutf8.decode_modified_utf8 for Java, amulet_nbt.utf8_escape_decoder for Bedrock.

@@ -7,11 +7,13 @@ class NBTError(Exception):
 
 class NBTLoadError(NBTError):
     """The NBT data failed to load for some reason."""
+
     pass
 
 
 class NBTFormatError(NBTLoadError):
     """Indicates the NBT format is invalid."""
+
     pass
 
 

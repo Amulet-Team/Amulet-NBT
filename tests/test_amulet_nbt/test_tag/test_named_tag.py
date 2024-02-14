@@ -3,6 +3,7 @@ import itertools
 import copy
 import pickle
 import faulthandler
+
 faulthandler.enable()
 
 from amulet_nbt import (
@@ -22,7 +23,7 @@ from amulet_nbt import (
     mutf8_encoding,
     utf8_encoding,
     utf8_escape_encoding,
-    load as load_nbt
+    load as load_nbt,
 )
 
 from .test_abc import AbstractBaseTestCase, TagNameMap
@@ -203,10 +204,23 @@ class NamedTagTestCase(AbstractBaseTestCase, unittest.TestCase):
             named_tag = NamedTag(tag, name)
             for little_endian in (True, False):
                 for compressed in (True, False):
-                    for string_encoding in (mutf8_encoding, utf8_encoding, utf8_escape_encoding):
+                    for string_encoding in (
+                        mutf8_encoding,
+                        utf8_encoding,
+                        utf8_escape_encoding,
+                    ):
                         self.assertEqual(
-                            tag.to_nbt(compressed=compressed, little_endian=little_endian, string_encoding=string_encoding, name=name),
-                            named_tag.to_nbt(compressed=compressed, little_endian=little_endian, string_encoding=string_encoding),
+                            tag.to_nbt(
+                                compressed=compressed,
+                                little_endian=little_endian,
+                                string_encoding=string_encoding,
+                                name=name,
+                            ),
+                            named_tag.to_nbt(
+                                compressed=compressed,
+                                little_endian=little_endian,
+                                string_encoding=string_encoding,
+                            ),
                         )
 
     def test_from_nbt(self) -> None:
@@ -232,7 +246,7 @@ class NamedTagTestCase(AbstractBaseTestCase, unittest.TestCase):
 
         self.assertEqual(
             "hello world",
-            load_nbt(b"\x01\x00\x0Bhello world\x01", compressed=False).name
+            load_nbt(b"\x01\x00\x0Bhello world\x01", compressed=False).name,
         )
 
     def test_to_snbt(self) -> None:

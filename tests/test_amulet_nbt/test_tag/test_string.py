@@ -16,7 +16,7 @@ from amulet_nbt import (
     load as load_nbt,
     NBTFormatError,
     from_snbt,
-    SNBTParseError
+    SNBTParseError,
 )
 
 
@@ -128,19 +128,25 @@ class StringTagTestCase(AbstractBaseImmutableTagTestCase, unittest.TestCase):
         self.assertEqual(
             b"\x08\x00\x00\x04\x00\xf0\x9f\x8f\xb9",
             StringTag("🏹").to_nbt(
-                compressed=False, little_endian=True, string_encoding=utf8_escape_encoding
+                compressed=False,
+                little_endian=True,
+                string_encoding=utf8_escape_encoding,
             ),
         )
         self.assertEqual(
             b"\x08\x00\x00\x04\x00\xff\xfe\xfd\xfc",
             StringTag("␛xff␛xfe␛xfd␛xfc").to_nbt(
-                compressed=False, little_endian=True, string_encoding=utf8_escape_encoding
+                compressed=False,
+                little_endian=True,
+                string_encoding=utf8_escape_encoding,
             ),
         )
         self.assertEqual(
             b"\x08\x00\x00\x04\x00\xff\xfe\xfd\xfc",
             StringTag("␛xFF␛xFE␛xFD␛xFC").to_nbt(
-                compressed=False, little_endian=True, string_encoding=utf8_escape_encoding
+                compressed=False,
+                little_endian=True,
+                string_encoding=utf8_escape_encoding,
             ),
         )
 
@@ -214,20 +220,12 @@ class StringTagTestCase(AbstractBaseImmutableTagTestCase, unittest.TestCase):
         self.assertEqual(StringTag('a"b'), from_snbt("'a\"b'"))
 
         self.assertEqual(StringTag(ascii_lowercase), from_snbt(ascii_lowercase))
-        self.assertEqual(
-            StringTag(ascii_lowercase), from_snbt(f"'{ascii_lowercase}'")
-        )
-        self.assertEqual(
-            StringTag(ascii_lowercase), from_snbt(f'"{ascii_lowercase}"')
-        )
+        self.assertEqual(StringTag(ascii_lowercase), from_snbt(f"'{ascii_lowercase}'"))
+        self.assertEqual(StringTag(ascii_lowercase), from_snbt(f'"{ascii_lowercase}"'))
 
         self.assertEqual(StringTag(ascii_uppercase), from_snbt(ascii_uppercase))
-        self.assertEqual(
-            StringTag(ascii_uppercase), from_snbt(f"'{ascii_uppercase}'")
-        )
-        self.assertEqual(
-            StringTag(ascii_uppercase), from_snbt(f'"{ascii_uppercase}"')
-        )
+        self.assertEqual(StringTag(ascii_uppercase), from_snbt(f"'{ascii_uppercase}'"))
+        self.assertEqual(StringTag(ascii_uppercase), from_snbt(f'"{ascii_uppercase}"'))
 
         self.assertEqual(StringTag(digits), from_snbt(f"'{digits}'"))
         self.assertEqual(StringTag(digits), from_snbt(f'"{digits}"'))

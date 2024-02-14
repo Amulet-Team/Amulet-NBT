@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import faulthandler
+
 faulthandler.enable()
 
 from amulet_nbt import (
@@ -14,7 +15,7 @@ from amulet_nbt import (
     ListTag,
     CompoundTag,
     IntArrayTag,
-    LongArrayTag
+    LongArrayTag,
 )
 
 
@@ -56,12 +57,7 @@ class AbstractBaseTestCase(ABC):
         ListTag,
         CompoundTag,
     )
-    nbt_types = (
-        numerical_types
-        + string_types
-        + array_types
-        + container_types
-    )
+    nbt_types = numerical_types + string_types + array_types + container_types
 
     not_nbt = (None, True, False, 0, 0.0, "str", [], {}, set())
 

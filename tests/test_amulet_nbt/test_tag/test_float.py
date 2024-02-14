@@ -17,7 +17,7 @@ from amulet_nbt import (
     DoubleTag,
     load as load_nbt,
     from_snbt,
-    StringTag
+    StringTag,
 )
 
 
@@ -50,8 +50,16 @@ ToSNBTData: list[tuple[float, str, str]] = [
     (99999999, "1e+08f", "99999999d"),
     (9999999999999999, "1e+16f", "1e+16d"),
     (float("inf"), "Infinityf", "Infinityd"),
-    (struct.unpack(">d", b"\x7f\xf0\x00\x00\x00\x00\x00\x01")[0], "NaNf", "NaNd"),  # signaling NaN
-    (struct.unpack(">d", b"\x7f\xf8\x00\x00\x00\x00\x00\x00")[0], "NaNf", "NaNd"),  # quiet NaN
+    (
+        struct.unpack(">d", b"\x7f\xf0\x00\x00\x00\x00\x00\x01")[0],
+        "NaNf",
+        "NaNd",
+    ),  # signaling NaN
+    (
+        struct.unpack(">d", b"\x7f\xf8\x00\x00\x00\x00\x00\x00")[0],
+        "NaNf",
+        "NaNd",
+    ),  # quiet NaN
 ]
 
 # -1.00000003E16f

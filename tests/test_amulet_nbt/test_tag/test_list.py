@@ -25,7 +25,7 @@ from amulet_nbt import (
     load as load_nbt,
     NBTFormatError,
     from_snbt,
-    SNBTParseError
+    SNBTParseError,
 )
 
 
@@ -605,16 +605,10 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         tag = ListTag([StringTag("val1"), StringTag("val2")])
         tag.reverse()
         self.assertIsInstance(tag, ListTag)
-        self.assertEqual(
-            ListTag([StringTag("val2"), StringTag("val1")]),
-            tag
-        )
+        self.assertEqual(ListTag([StringTag("val2"), StringTag("val1")]), tag)
 
         tag = ListTag([StringTag("val1"), StringTag("val2")])
-        self.assertEqual(
-            [StringTag("val2"), StringTag("val1")],
-            list(reversed(tag))
-        )
+        self.assertEqual([StringTag("val2"), StringTag("val1")], list(reversed(tag)))
 
     def test_reverse(self) -> None:
         tag = ListTag([StringTag("val1"), StringTag("val2"), StringTag("val3")])
@@ -910,5 +904,5 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
             from_snbt("[1 1]")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

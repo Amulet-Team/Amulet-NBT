@@ -19,7 +19,7 @@ from amulet_nbt import (
     load as load_nbt,
     NBTFormatError,
     SNBTParseError,
-    from_snbt
+    from_snbt,
 )
 
 

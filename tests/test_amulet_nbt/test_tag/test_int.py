@@ -19,7 +19,7 @@ from amulet_nbt import (
     LongTag,
     load as load_nbt,
     StringTag,
-    from_snbt
+    from_snbt,
 )
 
 
@@ -36,16 +36,16 @@ class IntTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
                     int_cls(None)
 
                 # overflow
-                self.assertEqual(ByteTag(-2 ** 7), ByteTag(2 ** 7))
-                self.assertEqual(ShortTag(-2 ** 15), ShortTag(2 ** 15))
-                self.assertEqual(IntTag(-2 ** 31), IntTag(2 ** 31))
-                self.assertEqual(LongTag(-2 ** 63), LongTag(2 ** 63))
+                self.assertEqual(ByteTag(-(2**7)), ByteTag(2**7))
+                self.assertEqual(ShortTag(-(2**15)), ShortTag(2**15))
+                self.assertEqual(IntTag(-(2**31)), IntTag(2**31))
+                self.assertEqual(LongTag(-(2**63)), LongTag(2**63))
 
                 # underflow
-                self.assertEqual(ByteTag(2 ** 7 - 1), ByteTag(-2 ** 7 - 1))
-                self.assertEqual(ShortTag(2 ** 15 - 1), ShortTag(-2 ** 15 - 1))
-                self.assertEqual(IntTag(2 ** 31 - 1), IntTag(-2 ** 31 - 1))
-                self.assertEqual(LongTag(2 ** 63 - 1), LongTag(-2 ** 63 - 1))
+                self.assertEqual(ByteTag(2**7 - 1), ByteTag(-(2**7) - 1))
+                self.assertEqual(ShortTag(2**15 - 1), ShortTag(-(2**15) - 1))
+                self.assertEqual(IntTag(2**31 - 1), IntTag(-(2**31) - 1))
+                self.assertEqual(LongTag(2**63 - 1), LongTag(-(2**63) - 1))
 
         for cls in self.nbt_types:
             tag = cls()
@@ -86,10 +86,10 @@ class IntTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
                 self.assertEqual(int_cls(-1), int_cls(numpy.int64(-1)))
 
         # Overflow
-        self.assertEqual(ByteTag(-2**7), ByteTag(numpy.uint64(2**7)))
-        self.assertEqual(ShortTag(-2**15), ShortTag(numpy.uint64(2**15)))
-        self.assertEqual(IntTag(-2**31), IntTag(numpy.uint64(2**31)))
-        self.assertEqual(LongTag(-2**63), LongTag(numpy.uint64(2**63)))
+        self.assertEqual(ByteTag(-(2**7)), ByteTag(numpy.uint64(2**7)))
+        self.assertEqual(ShortTag(-(2**15)), ShortTag(numpy.uint64(2**15)))
+        self.assertEqual(IntTag(-(2**31)), IntTag(numpy.uint64(2**31)))
+        self.assertEqual(LongTag(-(2**63)), LongTag(numpy.uint64(2**63)))
 
     def test_equal(self) -> None:
         for cls1 in self.int_types:

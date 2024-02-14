@@ -280,20 +280,22 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 self.assertEqual(tag, tag2)
 
     def test_copy(self) -> None:
-        tag = CompoundTag({
-            "byte": ByteTag(1),
-            "short": ShortTag(1),
-            "int": IntTag(1),
-            "long": LongTag(1),
-            "float": FloatTag(1),
-            "double": DoubleTag(1),
-            "byte_array": ByteArrayTag([1,2,3]),
-            "string": StringTag("hello world"),
-            "list": ListTag(),
-            "compound": CompoundTag(),
-            "int_array": IntArrayTag([1,2,3]),
-            "long_array": LongArrayTag([1,2,3]),
-        })
+        tag = CompoundTag(
+            {
+                "byte": ByteTag(1),
+                "short": ShortTag(1),
+                "int": IntTag(1),
+                "long": LongTag(1),
+                "float": FloatTag(1),
+                "double": DoubleTag(1),
+                "byte_array": ByteArrayTag([1, 2, 3]),
+                "string": StringTag("hello world"),
+                "list": ListTag(),
+                "compound": CompoundTag(),
+                "int_array": IntArrayTag([1, 2, 3]),
+                "long_array": LongArrayTag([1, 2, 3]),
+            }
+        )
         tag2 = copy.copy(tag)
 
         # check the root data is copied
@@ -332,13 +334,15 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         self.assertEqual(LongArrayTag([1, 2, 3]), tag2["long_array"])
 
         # Make sure the contained data is shared
-        tag = CompoundTag({
-            "byte_array": ByteArrayTag([1, 2, 3]),
-            "list": ListTag(),
-            "compound": CompoundTag(),
-            "int_array": IntArrayTag([1, 2, 3]),
-            "long_array": LongArrayTag([1, 2, 3]),
-        })
+        tag = CompoundTag(
+            {
+                "byte_array": ByteArrayTag([1, 2, 3]),
+                "list": ListTag(),
+                "compound": CompoundTag(),
+                "int_array": IntArrayTag([1, 2, 3]),
+                "long_array": LongArrayTag([1, 2, 3]),
+            }
+        )
         tag2 = copy.copy(tag)
 
         tag["list"].append(ByteTag())
@@ -353,20 +357,22 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         self.assertEqual(LongArrayTag([10, 2, 3]), tag2["long_array"])
 
     def test_deepcopy(self) -> None:
-        tag = CompoundTag({
-            "byte": ByteTag(1),
-            "short": ShortTag(1),
-            "int": IntTag(1),
-            "long": LongTag(1),
-            "float": FloatTag(1),
-            "double": DoubleTag(1),
-            "byte_array": ByteArrayTag([1, 2, 3]),
-            "string": StringTag("hello world"),
-            "list": ListTag(),
-            "compound": CompoundTag(),
-            "int_array": IntArrayTag([1, 2, 3]),
-            "long_array": LongArrayTag([1, 2, 3]),
-        })
+        tag = CompoundTag(
+            {
+                "byte": ByteTag(1),
+                "short": ShortTag(1),
+                "int": IntTag(1),
+                "long": LongTag(1),
+                "float": FloatTag(1),
+                "double": DoubleTag(1),
+                "byte_array": ByteArrayTag([1, 2, 3]),
+                "string": StringTag("hello world"),
+                "list": ListTag(),
+                "compound": CompoundTag(),
+                "int_array": IntArrayTag([1, 2, 3]),
+                "long_array": LongArrayTag([1, 2, 3]),
+            }
+        )
         tag2 = copy.deepcopy(tag)
 
         # check the root data is copied
@@ -405,13 +411,15 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         self.assertEqual(LongArrayTag([1, 2, 3]), tag2["long_array"])
 
         # Make sure the contained data is not shared
-        tag = CompoundTag({
-            "byte_array": ByteArrayTag([1, 2, 3]),
-            "list": ListTag(),
-            "compound": CompoundTag(),
-            "int_array": IntArrayTag([1, 2, 3]),
-            "long_array": LongArrayTag([1, 2, 3]),
-        })
+        tag = CompoundTag(
+            {
+                "byte_array": ByteArrayTag([1, 2, 3]),
+                "list": ListTag(),
+                "compound": CompoundTag(),
+                "int_array": IntArrayTag([1, 2, 3]),
+                "long_array": LongArrayTag([1, 2, 3]),
+            }
+        )
         tag2 = copy.deepcopy(tag)
 
         tag["list"].append(ByteTag())
@@ -575,7 +583,9 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 comp = CompoundTag(key=tag, key1=tag)
                 if cls is cls2:
                     # get the key without overwriting it
-                    self.assertEqual(tag, getattr(comp, f"setdefault_{tag_name}")("key"))
+                    self.assertEqual(
+                        tag, getattr(comp, f"setdefault_{tag_name}")("key")
+                    )
                     self.assertEqual(
                         tag, getattr(comp, f"setdefault_{tag_name}")("key", tag2)
                     )
@@ -866,51 +876,51 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         )
         self.assertEqual(
             "{\r\n"
-            ' byte: 0b,\r\n'
-            ' byte_array: [B;],\r\n'
-            ' compound: {},\r\n'
-            ' double: 0d,\r\n'
-            ' float: 0f,\r\n'
-            ' int: 0,\r\n'
-            ' int_array: [I;],\r\n'
-            ' list: [],\r\n'
-            ' long: 0L,\r\n'
-            ' long_array: [L;],\r\n'
-            ' short: 0s,\r\n'
+            " byte: 0b,\r\n"
+            " byte_array: [B;],\r\n"
+            " compound: {},\r\n"
+            " double: 0d,\r\n"
+            " float: 0f,\r\n"
+            " int: 0,\r\n"
+            " int_array: [I;],\r\n"
+            " list: [],\r\n"
+            " long: 0L,\r\n"
+            " long_array: [L;],\r\n"
+            " short: 0s,\r\n"
             ' string: ""\r\n'
             "}",
             full_compound.to_snbt(" "),
         )
         self.assertEqual(
             "{\r\n"
-            '    byte: 0b,\r\n'
-            '    byte_array: [B;],\r\n'
-            '    compound: {},\r\n'
-            '    double: 0d,\r\n'
-            '    float: 0f,\r\n'
-            '    int: 0,\r\n'
-            '    int_array: [I;],\r\n'
-            '    list: [],\r\n'
-            '    long: 0L,\r\n'
-            '    long_array: [L;],\r\n'
-            '    short: 0s,\r\n'
+            "    byte: 0b,\r\n"
+            "    byte_array: [B;],\r\n"
+            "    compound: {},\r\n"
+            "    double: 0d,\r\n"
+            "    float: 0f,\r\n"
+            "    int: 0,\r\n"
+            "    int_array: [I;],\r\n"
+            "    list: [],\r\n"
+            "    long: 0L,\r\n"
+            "    long_array: [L;],\r\n"
+            "    short: 0s,\r\n"
             '    string: ""\r\n'
             "}",
             full_compound.to_snbt(4),
         )
         self.assertEqual(
             "{\r\n"
-            '\tbyte: 0b,\r\n'
-            '\tbyte_array: [B;],\r\n'
-            '\tcompound: {},\r\n'
-            '\tdouble: 0d,\r\n'
-            '\tfloat: 0f,\r\n'
-            '\tint: 0,\r\n'
-            '\tint_array: [I;],\r\n'
-            '\tlist: [],\r\n'
-            '\tlong: 0L,\r\n'
-            '\tlong_array: [L;],\r\n'
-            '\tshort: 0s,\r\n'
+            "\tbyte: 0b,\r\n"
+            "\tbyte_array: [B;],\r\n"
+            "\tcompound: {},\r\n"
+            "\tdouble: 0d,\r\n"
+            "\tfloat: 0f,\r\n"
+            "\tint: 0,\r\n"
+            "\tint_array: [I;],\r\n"
+            "\tlist: [],\r\n"
+            "\tlong: 0L,\r\n"
+            "\tlong_array: [L;],\r\n"
+            "\tshort: 0s,\r\n"
             '\tstring: ""\r\n'
             "}",
             full_compound.to_snbt("\t"),

@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import faulthandler
+
 faulthandler.enable()
 
 from .test_abc import AbstractBaseImmutableTagTestCase

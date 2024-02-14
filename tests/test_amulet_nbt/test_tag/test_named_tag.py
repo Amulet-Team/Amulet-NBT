@@ -80,6 +80,7 @@ class NamedTagTestCase(AbstractBaseTestCase, unittest.TestCase):
         self.assertEqual('NamedTag(ByteTag(0), "")', repr(NamedTag(ByteTag())))
 
     def test_str(self) -> None:
+        # undefined
         pass
 
     def test_pickle(self) -> None:

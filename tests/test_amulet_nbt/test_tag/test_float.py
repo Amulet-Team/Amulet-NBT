@@ -112,7 +112,8 @@ class FloatTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
                 self.assertEqual(f"{cls.__name__}(-5.5)", repr(cls(-5.5)))
 
     def test_str(self) -> None:
-        pass
+        self.assertEqual("5.5", str(FloatTag(5.5)))
+        self.assertEqual("5.5", str(DoubleTag(5.5)))
 
     def test_pickle(self) -> None:
         for cls in self.float_types:

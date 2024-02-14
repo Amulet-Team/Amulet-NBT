@@ -109,7 +109,10 @@ class IntTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
                     self.assertEqual(f"{cls.__name__}({v})", repr(cls(v)))
 
     def test_str(self) -> None:
-        pass
+        self.assertEqual("5", str(ByteTag(5)))
+        self.assertEqual("5", str(ShortTag(5)))
+        self.assertEqual("5", str(IntTag(5)))
+        self.assertEqual("5", str(LongTag(5)))
 
     def test_pickle(self) -> None:
         for cls in self.int_types:

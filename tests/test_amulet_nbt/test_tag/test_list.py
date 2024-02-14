@@ -281,6 +281,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         )
 
     def test_str(self) -> None:
+        # undefined
         pass
 
     def test_pickle(self) -> None:

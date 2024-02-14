@@ -41,7 +41,7 @@ class StringTagTestCase(AbstractBaseImmutableTagTestCase, unittest.TestCase):
         self.assertEqual('StringTag("quote\'value")', repr(StringTag("quote'value")))
 
     def test_str(self) -> None:
-        pass
+        self.assertEqual("hello world", str(StringTag("hello world")))
 
     def test_pickle(self) -> None:
         tag = StringTag("value")

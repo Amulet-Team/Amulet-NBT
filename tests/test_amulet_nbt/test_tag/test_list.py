@@ -827,6 +827,17 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         with self.assertRaises(NBTFormatError):
             load_nbt(b"\x09\x00\x00\x00\x00\x00\x00")
 
+    def test_to_snbt(self):
+        self.assertEqual("[]", ListTag().to_snbt())
+
+        for cls in self.nbt_types:
+            with self.subTest(cls=cls):
+                tag = cls()
+                self.assertEqual(f"[{tag.to_snbt()}]", ListTag([tag]).to_snbt())
+                self.assertEqual(
+                    f"[{tag.to_snbt()}, {tag.to_snbt()}]", ListTag([tag, tag]).to_snbt()
+                )
+
 
 if __name__ == '__main__':
     unittest.main()

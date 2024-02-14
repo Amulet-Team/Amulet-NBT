@@ -33,6 +33,8 @@ cdef class {{py_cls}}(AbstractBaseArrayTag):
     cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[{{cpp_cls_ptr}}](name, self.cpp, endianness, string_encode)
 
+{{include("amulet_nbt/tpf/to_snbt.pyx.tpf", **locals())}}
+
     def __eq__(self, object other) -> bool:
         if not isinstance(other, {{py_cls}}):
             return False
@@ -174,10 +176,3 @@ cdef class {{py_cls}}(AbstractBaseArrayTag):
         Py_INCREF(self)
         numpy.PyArray_SetBaseObject(ndarray, self)
         return ndarray
-#
-#     # cdef str _to_snbt(self):
-#     #     cdef long long elem
-#     #     cdef list tags = []
-#     #     for elem in self.cpp:
-#     #         tags.append(f"{elem}{{snbt_suffix}}")
-#     #     return f"[{{snbt_prefix}};{CommaSpace.join(tags)}]"

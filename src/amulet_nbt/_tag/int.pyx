@@ -5,6 +5,7 @@
 # distutils: language = c++
 # distutils: extra_compile_args = -std=c++20 /std:c++20
 # distutils: extra_link_args = -std=c++20 /std:c++20
+# cython: c_string_type=str, c_string_encoding=utf8
 
 from typing import Any
 
@@ -12,6 +13,7 @@ from libcpp.string cimport string
 from amulet_nbt._libcpp.endian cimport endian
 from amulet_nbt._string_encoding._cpp cimport CStringEncode
 from amulet_nbt._nbt_encoding._binary cimport write_named_tag
+from amulet_nbt._nbt_encoding._string cimport write_snbt
 from amulet_nbt._tag._cpp cimport TagNode, CByteTag, CShortTag, CIntTag, CLongTag
 from .numeric cimport AbstractBaseNumericTag
 
@@ -64,6 +66,16 @@ cdef class ByteTag(AbstractBaseIntTag):
 
     cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[CByteTag](name, self.cpp, endianness, string_encode)
+
+    def to_snbt(self, object indent = None) -> str:
+        cdef string snbt
+        cdef string indent_str
+        if indent is None:
+            write_snbt[CByteTag](snbt, self.cpp)
+        else:
+            indent_str = indent
+            write_snbt[CByteTag](snbt, self.cpp, indent_str, 0)
+        return snbt
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, ByteTag):
@@ -156,6 +168,16 @@ cdef class ShortTag(AbstractBaseIntTag):
     cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[CShortTag](name, self.cpp, endianness, string_encode)
 
+    def to_snbt(self, object indent = None) -> str:
+        cdef string snbt
+        cdef string indent_str
+        if indent is None:
+            write_snbt[CShortTag](snbt, self.cpp)
+        else:
+            indent_str = indent
+            write_snbt[CShortTag](snbt, self.cpp, indent_str, 0)
+        return snbt
+
     def __eq__(self, other) -> bool:
         if not isinstance(other, ShortTag):
             return NotImplemented
@@ -247,6 +269,16 @@ cdef class IntTag(AbstractBaseIntTag):
     cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[CIntTag](name, self.cpp, endianness, string_encode)
 
+    def to_snbt(self, object indent = None) -> str:
+        cdef string snbt
+        cdef string indent_str
+        if indent is None:
+            write_snbt[CIntTag](snbt, self.cpp)
+        else:
+            indent_str = indent
+            write_snbt[CIntTag](snbt, self.cpp, indent_str, 0)
+        return snbt
+
     def __eq__(self, other) -> bool:
         if not isinstance(other, IntTag):
             return NotImplemented
@@ -337,6 +369,16 @@ cdef class LongTag(AbstractBaseIntTag):
 
     cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[CLongTag](name, self.cpp, endianness, string_encode)
+
+    def to_snbt(self, object indent = None) -> str:
+        cdef string snbt
+        cdef string indent_str
+        if indent is None:
+            write_snbt[CLongTag](snbt, self.cpp)
+        else:
+            indent_str = indent
+            write_snbt[CLongTag](snbt, self.cpp, indent_str, 0)
+        return snbt
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, LongTag):

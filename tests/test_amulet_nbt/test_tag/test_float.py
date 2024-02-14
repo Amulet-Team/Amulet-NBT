@@ -3,11 +3,49 @@ import pickle
 import itertools
 import unittest
 import faulthandler
+import struct
 
 faulthandler.enable()
 
 from .test_numeric import AbstractBaseNumericTagTestCase
 from amulet_nbt import AbstractBaseTag, AbstractBaseImmutableTag, AbstractBaseNumericTag, AbstractBaseFloatTag, FloatTag, DoubleTag, load as load_nbt
+
+
+ToSNBTData: list[tuple[float, str, str]] = [
+    (float("-inf"), "-Infinityf", "-Infinityd"),
+    (-9999999999999999, "-1e+16f", "-1e+16d"),
+    (-99999999, "-1e+08f", "-99999999d"),
+    (-9999, "-9999f", "-9999d"),
+    (-99, "-99f", "-99d"),
+    (-9, "-9f", "-9d"),
+    (1, "1f", "1d"),
+    (0.1, "0.1f", "0.1d"),
+    (0.01, "0.01f", "0.01d"),
+    (0.001, "0.001f", "0.001d"),
+    (0.00001, "1e-05f", "1e-05d"),
+    (0.000000001, "1e-09f", "1e-09d"),
+    (0.00000000000000001, "1e-17f", "1e-17d"),
+    (float("-0"), "-0f", "-0d"),
+    (float("+0"), "0f", "0d"),
+    (-0.00000000000000001, "-1e-17f", "-1e-17d"),
+    (-0.000000001, "-1e-09f", "-1e-09d"),
+    (-0.00001, "-1e-05f", "-1e-05d"),
+    (-0.001, "-0.001f", "-0.001d"),
+    (-0.01, "-0.01f", "-0.01d"),
+    (-0.1, "-0.1f", "-0.1d"),
+    (-1, "-1f", "-1d"),
+    (9, "9f", "9d"),
+    (99, "99f", "99d"),
+    (9999, "9999f", "9999d"),
+    (99999999, "1e+08f", "99999999d"),
+    (9999999999999999, "1e+16f", "1e+16d"),
+    (float("inf"), "Infinityf", "Infinityd"),
+    (struct.unpack(">d", b"\x7f\xf0\x00\x00\x00\x00\x00\x01")[0], "NaNf", "NaNd"),  # signaling NaN
+    (struct.unpack(">d", b"\x7f\xf8\x00\x00\x00\x00\x00\x00")[0], "NaNf", "NaNd"),  # quiet NaN
+]
+
+# -1.00000003E16f
+# -1e+16f
 
 
 class FloatTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
@@ -210,7 +248,7 @@ class FloatTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
                 self.assertEqual(False, bool(cls(0)))
                 self.assertEqual(True, bool(cls(5.5)))
 
-    def test_to_nbt(self):
+    def test_to_nbt(self) -> None:
         self.assertEqual(
             b"\x05\x00\x00\x40\xa0\x00\x00",
             FloatTag(5).to_nbt(compressed=False, little_endian=False),
@@ -228,7 +266,7 @@ class FloatTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
             DoubleTag(5).to_nbt(compressed=False, little_endian=True),
         )
 
-    def test_from_nbt(self):
+    def test_from_nbt(self) -> None:
         self.assertEqual(
             FloatTag(5),
             load_nbt(b"\x05\x00\x00\x40\xa0\x00\x00", little_endian=False).float,
@@ -249,6 +287,13 @@ class FloatTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
                 b"\x06\x00\x00\x00\x00\x00\x00\x00\x00\x14\x40", little_endian=True
             ).double,
         )
+
+    def test_to_snbt(self) -> None:
+        for py_float, float_snbt, double_snbt in ToSNBTData:
+            for py_cls, snbt in ((FloatTag, float_snbt), (DoubleTag, double_snbt)):
+                with self.subTest(snbt):
+                    self.assertEqual(snbt, py_cls(py_float).to_snbt())
+                    self.assertEqual(snbt, py_cls(py_float).to_snbt("\t"))
 
 
 if __name__ == "__main__":

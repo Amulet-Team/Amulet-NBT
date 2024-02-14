@@ -313,6 +313,27 @@ class IntTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
             ).long,
         )
 
+    def test_to_snbt(self):
+        with self.subTest():
+            self.assertEqual("-5b", ByteTag(-5).to_snbt())
+            self.assertEqual("0b", ByteTag(0).to_snbt())
+            self.assertEqual("5b", ByteTag(5).to_snbt())
+
+        with self.subTest():
+            self.assertEqual("-5s", ShortTag(-5).to_snbt())
+            self.assertEqual("0s", ShortTag(0).to_snbt())
+            self.assertEqual("5s", ShortTag(5).to_snbt())
+
+        with self.subTest():
+            self.assertEqual("-5", IntTag(-5).to_snbt())
+            self.assertEqual("0", IntTag(0).to_snbt())
+            self.assertEqual("5", IntTag(5).to_snbt())
+
+        with self.subTest():
+            self.assertEqual("-5L", LongTag(-5).to_snbt())
+            self.assertEqual("0L", LongTag(0).to_snbt())
+            self.assertEqual("5L", LongTag(5).to_snbt())
+
 
 if __name__ == "__main__":
     unittest.main()

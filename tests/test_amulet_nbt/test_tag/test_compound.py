@@ -828,6 +828,57 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         with self.assertRaises(NBTFormatError):
             load_nbt(b"\x0A\x00\x00")
 
+    def test_to_snbt(self):
+        full_compound = CompoundTag(
+            byte=ByteTag(),
+            short=ShortTag(),
+            int=IntTag(),
+            long=LongTag(),
+            float=FloatTag(),
+            double=DoubleTag(),
+            string=StringTag(),
+            list=ListTag(),
+            compound=CompoundTag(),
+            byte_array=ByteArrayTag(),
+            int_array=IntArrayTag(),
+            long_array=LongArrayTag(),
+        )
+
+        self.assertEqual("{}", CompoundTag().to_snbt())
+        self.assertEqual("{key: 0b}", CompoundTag(key=ByteTag()).to_snbt())
+        self.assertEqual("{key: 0s}", CompoundTag(key=ShortTag()).to_snbt())
+        self.assertEqual("{key: 0}", CompoundTag(key=IntTag()).to_snbt())
+        self.assertEqual("{key: 0L}", CompoundTag(key=LongTag()).to_snbt())
+        self.assertEqual("{key: 0f}", CompoundTag(key=FloatTag()).to_snbt())
+        self.assertEqual("{key: 0d}", CompoundTag(key=DoubleTag()).to_snbt())
+        self.assertEqual('{key: ""}', CompoundTag(key=StringTag()).to_snbt())
+        self.assertEqual("{key: []}", CompoundTag(key=ListTag()).to_snbt())
+        self.assertEqual("{key: {}}", CompoundTag(key=CompoundTag()).to_snbt())
+        self.assertEqual("{key: [B;]}", CompoundTag(key=ByteArrayTag()).to_snbt())
+        self.assertEqual("{key: [I;]}", CompoundTag(key=IntArrayTag()).to_snbt())
+        self.assertEqual("{key: [L;]}", CompoundTag(key=LongArrayTag()).to_snbt())
+        self.assertEqual(
+            '{byte: 0b, byte_array: [B;], compound: {}, double: 0d, float: 0f, int: 0, int_array: [I;], list: [], long: 0L, long_array: [L;], short: 0s, string: ""}',
+            full_compound.to_snbt(),
+        )
+        self.assertEqual(
+            "{\r\n"
+            '\tbyte: 0b,\r\n'
+            '\tbyte_array: [B;],\r\n'
+            '\tcompound: {},\r\n'
+            '\tdouble: 0d,\r\n'
+            '\tfloat: 0f,\r\n'
+            '\tint: 0,\r\n'
+            '\tint_array: [I;],\r\n'
+            '\tlist: [],\r\n'
+            '\tlong: 0L,\r\n'
+            '\tlong_array: [L;],\r\n'
+            '\tshort: 0s,\r\n'
+            '\tstring: ""\r\n'
+            "}",
+            full_compound.to_snbt("\t"),
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

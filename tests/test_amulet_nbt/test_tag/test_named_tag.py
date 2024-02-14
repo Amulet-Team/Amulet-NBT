@@ -238,6 +238,10 @@ class NamedTagTestCase(AbstractBaseTestCase, unittest.TestCase):
             load_nbt(b"\x01\x00\x0Bhello world\x01", compressed=False).name
         )
 
+    def test_to_snbt(self) -> None:
+        named_tag = NamedTag(CompoundTag())
+        self.assertEqual("{}", named_tag.to_snbt())
+
 
 if __name__ == "__main__":
     unittest.main()

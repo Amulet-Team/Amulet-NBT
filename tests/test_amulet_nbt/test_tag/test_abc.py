@@ -97,6 +97,10 @@ class AbstractBaseTestCase(ABC):
     def test_from_nbt(self) -> None:
         raise NotImplementedError
 
+    @abstractmethod
+    def test_to_snbt(self) -> None:
+        raise NotImplementedError
+
 
 class AbstractBaseTagTestCase(AbstractBaseTestCase):
     @abstractmethod

@@ -191,6 +191,12 @@ class StringTagTestCase(AbstractBaseImmutableTagTestCase, unittest.TestCase):
         with self.assertRaises(NBTFormatError):
             load_nbt(b"\x08\x00\x00\x00\x05abcd")
 
+    def test_to_snbt(self):
+        self.assertEqual('""', StringTag().to_snbt())
+        self.assertEqual('"value"', StringTag("value").to_snbt())
+        self.assertEqual('"quote\\"value"', StringTag('quote"value').to_snbt())
+        self.assertEqual('"quote\'value"', StringTag("quote'value").to_snbt())
+
 
 if __name__ == "__main__":
     unittest.main()

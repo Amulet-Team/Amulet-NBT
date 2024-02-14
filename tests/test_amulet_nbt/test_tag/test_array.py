@@ -333,6 +333,26 @@ class ArrayTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 b"\x0C\x00\x00\x00\x00\x00\x02\x00",
             )
 
+    def test_to_snbt(self):
+        with self.subTest():
+            self.assertEqual("[B;]", ByteArrayTag().to_snbt())
+            self.assertEqual(
+                "[B;-3B, -2B, -1B, 0B, 1B, 2B, 3B]",
+                ByteArrayTag([-3, -2, -1, 0, 1, 2, 3]).to_snbt(),
+            )
+        with self.subTest():
+            self.assertEqual("[I;]", IntArrayTag().to_snbt())
+            self.assertEqual(
+                "[I;-3, -2, -1, 0, 1, 2, 3]",
+                IntArrayTag([-3, -2, -1, 0, 1, 2, 3]).to_snbt(),
+            )
+        with self.subTest():
+            self.assertEqual("[L;]", LongArrayTag().to_snbt())
+            self.assertEqual(
+                "[L;-3L, -2L, -1L, 0L, 1L, 2L, 3L]",
+                LongArrayTag([-3, -2, -1, 0, 1, 2, 3]).to_snbt(),
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

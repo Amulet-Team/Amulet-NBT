@@ -5,6 +5,7 @@
 # distutils: language = c++
 # distutils: extra_compile_args = -std=c++20 /std:c++20
 # distutils: extra_link_args = -std=c++20 /std:c++20
+# cython: c_string_type=str, c_string_encoding=utf8
 
 import numpy
 cimport numpy
@@ -19,9 +20,9 @@ from libcpp.string cimport string
 from amulet_nbt._libcpp.endian cimport endian
 from amulet_nbt._string_encoding._cpp cimport CStringEncode
 from amulet_nbt._nbt_encoding._binary cimport write_named_tag
+from amulet_nbt._nbt_encoding._string cimport write_snbt
 from amulet_nbt._tag._cpp cimport TagNode, CByteArrayTag, CIntArrayTag, CLongArrayTag
 from .abc cimport AbstractBaseMutableTag
-# from amulet_nbt._const cimport CommaSpace, ID_BYTE_ARRAY, ID_INT_ARRAY, ID_LONG_ARRAY
 
 
 cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
@@ -182,6 +183,16 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
     cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[CByteArrayTagPtr](name, self.cpp, endianness, string_encode)
 
+    def to_snbt(self, object indent = None) -> str:
+        cdef string snbt
+        cdef string indent_str
+        if indent is None:
+            write_snbt[CByteArrayTagPtr](snbt, self.cpp)
+        else:
+            indent_str = indent
+            write_snbt[CByteArrayTagPtr](snbt, self.cpp, indent_str, 0)
+        return snbt
+
     def __eq__(self, object other) -> bool:
         if not isinstance(other, ByteArrayTag):
             return False
@@ -323,13 +334,7 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
         Py_INCREF(self)
         numpy.PyArray_SetBaseObject(ndarray, self)
         return ndarray
-#
-#     # cdef str _to_snbt(self):
-#     #     cdef long long elem
-#     #     cdef list tags = []
-#     #     for elem in self.cpp:
-#     #         tags.append(f"{elem}B")
-#     #     return f"[B;{CommaSpace.join(tags)}]"
+
 
 
 cdef class IntArrayTag(AbstractBaseArrayTag):
@@ -363,6 +368,16 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
 
     cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[CIntArrayTagPtr](name, self.cpp, endianness, string_encode)
+
+    def to_snbt(self, object indent = None) -> str:
+        cdef string snbt
+        cdef string indent_str
+        if indent is None:
+            write_snbt[CIntArrayTagPtr](snbt, self.cpp)
+        else:
+            indent_str = indent
+            write_snbt[CIntArrayTagPtr](snbt, self.cpp, indent_str, 0)
+        return snbt
 
     def __eq__(self, object other) -> bool:
         if not isinstance(other, IntArrayTag):
@@ -505,13 +520,7 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
         Py_INCREF(self)
         numpy.PyArray_SetBaseObject(ndarray, self)
         return ndarray
-#
-#     # cdef str _to_snbt(self):
-#     #     cdef long long elem
-#     #     cdef list tags = []
-#     #     for elem in self.cpp:
-#     #         tags.append(f"{elem}")
-#     #     return f"[I;{CommaSpace.join(tags)}]"
+
 
 
 cdef class LongArrayTag(AbstractBaseArrayTag):
@@ -545,6 +554,16 @@ cdef class LongArrayTag(AbstractBaseArrayTag):
 
     cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[CLongArrayTagPtr](name, self.cpp, endianness, string_encode)
+
+    def to_snbt(self, object indent = None) -> str:
+        cdef string snbt
+        cdef string indent_str
+        if indent is None:
+            write_snbt[CLongArrayTagPtr](snbt, self.cpp)
+        else:
+            indent_str = indent
+            write_snbt[CLongArrayTagPtr](snbt, self.cpp, indent_str, 0)
+        return snbt
 
     def __eq__(self, object other) -> bool:
         if not isinstance(other, LongArrayTag):
@@ -687,10 +706,4 @@ cdef class LongArrayTag(AbstractBaseArrayTag):
         Py_INCREF(self)
         numpy.PyArray_SetBaseObject(ndarray, self)
         return ndarray
-#
-#     # cdef str _to_snbt(self):
-#     #     cdef long long elem
-#     #     cdef list tags = []
-#     #     for elem in self.cpp:
-#     #         tags.append(f"{elem}L")
-#     #     return f"[L;{CommaSpace.join(tags)}]"
+

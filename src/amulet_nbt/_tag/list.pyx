@@ -5,6 +5,7 @@
 # distutils: language = c++
 # distutils: extra_compile_args = -std=c++20 /std:c++20
 # distutils: extra_link_args = -std=c++20 /std:c++20
+# cython: c_string_type=str, c_string_encoding=utf8
 
 from typing import Any, Type
 
@@ -17,6 +18,7 @@ from amulet_nbt._libcpp.variant cimport get, monostate
 from amulet_nbt._libcpp.endian cimport endian
 from amulet_nbt._string_encoding._cpp cimport CStringEncode
 from amulet_nbt._nbt_encoding._binary cimport write_named_tag
+from amulet_nbt._nbt_encoding._string cimport write_snbt
 
 from amulet_nbt._tag._cpp cimport (
     TagNode,
@@ -2550,6 +2552,16 @@ cdef class ListTag(AbstractBaseMutableTag):
 
     cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[CListTagPtr](name, self.cpp, endianness, string_encode)
+
+    def to_snbt(self, object indent = None) -> str:
+        cdef string snbt
+        cdef string indent_str
+        if indent is None:
+            write_snbt[CListTagPtr](snbt, self.cpp)
+        else:
+            indent_str = indent
+            write_snbt[CListTagPtr](snbt, self.cpp, indent_str, 0)
+        return snbt
 
     def __eq__(self, object other) -> bool:
         if not isinstance(other, ListTag):

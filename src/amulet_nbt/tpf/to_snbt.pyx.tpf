@@ -1,0 +1,9 @@
+    def to_snbt(self, object indent = None) -> str:
+        cdef string snbt
+        cdef string indent_str
+        if indent is None:
+            write_snbt[{{cpp_cls_ptr}}](snbt, self.cpp)
+        else:
+            indent_str = indent
+            write_snbt[{{cpp_cls_ptr}}](snbt, self.cpp, indent_str, 0)
+        return snbt

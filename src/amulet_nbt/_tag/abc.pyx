@@ -38,6 +38,9 @@ cdef class AbstractBaseTag(AbstractBase):
         """
         raise NotImplementedError
 
+    cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
+        raise NotImplementedError
+
     def to_nbt(
         self,
         *,
@@ -117,7 +120,7 @@ cdef class AbstractBaseTag(AbstractBase):
                 filepath_or_buffer.write(data)
         return data
 
-    cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
+    def to_snbt(self, object indent = None) -> str:
         raise NotImplementedError
 
     def __eq__(self, other) -> bool:

@@ -19,6 +19,7 @@ from amulet_nbt._string_encoding import mutf8_encoding
 from amulet_nbt._string_encoding._cpp cimport CStringEncode
 from amulet_nbt._nbt_encoding._binary cimport write_named_tag
 from amulet_nbt._nbt_encoding._binary.encoding_preset cimport EncodingPreset
+from amulet_nbt._nbt_encoding._string cimport write_snbt
 
 from .abc cimport AbstractBase, AbstractBaseTag
 from .int cimport ByteTag, ShortTag, IntTag, LongTag
@@ -54,6 +55,9 @@ cdef class NamedTag(AbstractBase):
     @name.setter
     def name(self, name) -> None:
         self.tag_name = name
+
+    cdef string write_nbt(self, endian endianness, CStringEncode string_encode):
+        return write_named_tag[TagNode](self.tag_name, self.tag_node, endianness, string_encode)
 
     def to_nbt(
         self,
@@ -128,8 +132,15 @@ cdef class NamedTag(AbstractBase):
                 filepath_or_buffer.write(data)
         return data
 
-    cdef string write_nbt(self, endian endianness, CStringEncode string_encode):
-        return write_named_tag[TagNode](self.tag_name, self.tag_node, endianness, string_encode)
+    def to_snbt(self, object indent = None) -> str:
+        cdef string snbt
+        cdef string indent_str
+        if indent is None:
+            write_snbt[TagNode](snbt, self.tag_node)
+        else:
+            indent_str = indent
+            write_snbt[TagNode](snbt, self.tag_node, indent_str, 0)
+        return snbt
 
     def __eq__(self, other) -> bool:
         cdef NamedTag other_

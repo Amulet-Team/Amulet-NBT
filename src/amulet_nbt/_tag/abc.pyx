@@ -121,6 +121,14 @@ cdef class AbstractBaseTag(AbstractBase):
         return data
 
     def to_snbt(self, object indent = None) -> str:
+        """
+        Convert the data to the Stringified NBT format.
+        :param indent:
+            If None (the default) the SNBT will be on one line.
+            If an int will be multi-line SNBT with this many spaces per indentation.
+            If a string will be multi-line SNBT with this string as the indentation.
+        :return: The SNBT string.
+        """
         raise NotImplementedError
 
     def __eq__(self, other) -> bool:

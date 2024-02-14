@@ -131,12 +131,25 @@ cdef class NamedTag(AbstractBase):
         return data
 
     def to_snbt(self, object indent = None) -> str:
+        """
+        Convert the data to the Stringified NBT format.
+        :param indent:
+            If None (the default) the SNBT will be on one line.
+            If an int will be multi-line SNBT with this many spaces per indentation.
+            If a string will be multi-line SNBT with this string as the indentation.
+        :return: The SNBT string.
+        """
         cdef string snbt
         cdef string indent_str
         if indent is None:
             write_snbt[TagNode](snbt, self.tag_node)
         else:
-            indent_str = indent
+            if isinstance(indent, int):
+                indent_str = " " * indent
+            elif isinstance(indent, str):
+                indent_str = indent
+            else:
+                raise TypeError("indent must be a str, int or None")
             write_snbt[TagNode](snbt, self.tag_node, indent_str, 0)
         return snbt
 

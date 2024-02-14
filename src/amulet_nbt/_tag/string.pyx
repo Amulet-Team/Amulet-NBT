@@ -69,7 +69,12 @@ cdef class StringTag(AbstractBaseImmutableTag):
         if indent is None:
             write_snbt[CStringTag](snbt, self.cpp)
         else:
-            indent_str = indent
+            if isinstance(indent, int):
+                indent_str = " " * indent
+            elif isinstance(indent, str):
+                indent_str = indent
+            else:
+                raise TypeError("indent must be a str, int or None")
             write_snbt[CStringTag](snbt, self.cpp, indent_str, 0)
         return snbt
 

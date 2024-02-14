@@ -173,6 +173,16 @@ class AbstractBaseTag(AbstractBase):
         :return: The binary NBT representation of the class.
         """
 
+    def to_snbt(self, indent: None | str | int = None) -> str:
+        """
+        Convert the data to the Stringified NBT format.
+        :param indent:
+            If None (the default) the SNBT will be on one line.
+            If an int will be multi-line SNBT with this many spaces per indentation.
+            If a string will be multi-line SNBT with this string as the indentation.
+        :return: The SNBT string.
+        """
+
     def __eq__(self, other: Any) -> bool:
         """
         Check if the instance is equal to another instance.
@@ -950,7 +960,15 @@ class NamedTag(AbstractBase):
         :return: The binary NBT representation of the class.
         """
 
-    def to_snbt(self, indent=None, indent_chr=None) -> str: ...
+    def to_snbt(self, indent: None | str | int = None) -> str:
+        """
+        Convert the data to the Stringified NBT format.
+        :param indent:
+            If None (the default) the SNBT will be on one line.
+            If an int will be multi-line SNBT with this many spaces per indentation.
+            If a string will be multi-line SNBT with this string as the indentation.
+        :return: The SNBT string.
+        """
 
     @property
     def byte(self) -> ByteTag: ...

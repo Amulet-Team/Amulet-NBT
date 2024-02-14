@@ -73,7 +73,12 @@ cdef class ByteTag(AbstractBaseIntTag):
         if indent is None:
             write_snbt[CByteTag](snbt, self.cpp)
         else:
-            indent_str = indent
+            if isinstance(indent, int):
+                indent_str = " " * indent
+            elif isinstance(indent, str):
+                indent_str = indent
+            else:
+                raise TypeError("indent must be a str, int or None")
             write_snbt[CByteTag](snbt, self.cpp, indent_str, 0)
         return snbt
 
@@ -174,7 +179,12 @@ cdef class ShortTag(AbstractBaseIntTag):
         if indent is None:
             write_snbt[CShortTag](snbt, self.cpp)
         else:
-            indent_str = indent
+            if isinstance(indent, int):
+                indent_str = " " * indent
+            elif isinstance(indent, str):
+                indent_str = indent
+            else:
+                raise TypeError("indent must be a str, int or None")
             write_snbt[CShortTag](snbt, self.cpp, indent_str, 0)
         return snbt
 
@@ -275,7 +285,12 @@ cdef class IntTag(AbstractBaseIntTag):
         if indent is None:
             write_snbt[CIntTag](snbt, self.cpp)
         else:
-            indent_str = indent
+            if isinstance(indent, int):
+                indent_str = " " * indent
+            elif isinstance(indent, str):
+                indent_str = indent
+            else:
+                raise TypeError("indent must be a str, int or None")
             write_snbt[CIntTag](snbt, self.cpp, indent_str, 0)
         return snbt
 
@@ -376,7 +391,12 @@ cdef class LongTag(AbstractBaseIntTag):
         if indent is None:
             write_snbt[CLongTag](snbt, self.cpp)
         else:
-            indent_str = indent
+            if isinstance(indent, int):
+                indent_str = " " * indent
+            elif isinstance(indent, str):
+                indent_str = indent
+            else:
+                raise TypeError("indent must be a str, int or None")
             write_snbt[CLongTag](snbt, self.cpp, indent_str, 0)
         return snbt
 

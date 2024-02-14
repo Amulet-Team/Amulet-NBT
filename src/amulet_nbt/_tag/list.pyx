@@ -2559,7 +2559,12 @@ cdef class ListTag(AbstractBaseMutableTag):
         if indent is None:
             write_snbt[CListTagPtr](snbt, self.cpp)
         else:
-            indent_str = indent
+            if isinstance(indent, int):
+                indent_str = " " * indent
+            elif isinstance(indent, str):
+                indent_str = indent
+            else:
+                raise TypeError("indent must be a str, int or None")
             write_snbt[CListTagPtr](snbt, self.cpp, indent_str, 0)
         return snbt
 

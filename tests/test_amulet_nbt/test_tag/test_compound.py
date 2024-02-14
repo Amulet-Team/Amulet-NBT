@@ -861,6 +861,44 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
             full_compound.to_snbt(),
         )
         self.assertEqual(
+            '{byte: 0b, byte_array: [B;], compound: {}, double: 0d, float: 0f, int: 0, int_array: [I;], list: [], long: 0L, long_array: [L;], short: 0s, string: ""}',
+            full_compound.to_snbt(None),
+        )
+        self.assertEqual(
+            "{\r\n"
+            ' byte: 0b,\r\n'
+            ' byte_array: [B;],\r\n'
+            ' compound: {},\r\n'
+            ' double: 0d,\r\n'
+            ' float: 0f,\r\n'
+            ' int: 0,\r\n'
+            ' int_array: [I;],\r\n'
+            ' list: [],\r\n'
+            ' long: 0L,\r\n'
+            ' long_array: [L;],\r\n'
+            ' short: 0s,\r\n'
+            ' string: ""\r\n'
+            "}",
+            full_compound.to_snbt(" "),
+        )
+        self.assertEqual(
+            "{\r\n"
+            '    byte: 0b,\r\n'
+            '    byte_array: [B;],\r\n'
+            '    compound: {},\r\n'
+            '    double: 0d,\r\n'
+            '    float: 0f,\r\n'
+            '    int: 0,\r\n'
+            '    int_array: [I;],\r\n'
+            '    list: [],\r\n'
+            '    long: 0L,\r\n'
+            '    long_array: [L;],\r\n'
+            '    short: 0s,\r\n'
+            '    string: ""\r\n'
+            "}",
+            full_compound.to_snbt(4),
+        )
+        self.assertEqual(
             "{\r\n"
             '\tbyte: 0b,\r\n'
             '\tbyte_array: [B;],\r\n'

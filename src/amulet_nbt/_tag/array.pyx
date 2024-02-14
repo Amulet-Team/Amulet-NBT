@@ -189,7 +189,12 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
         if indent is None:
             write_snbt[CByteArrayTagPtr](snbt, self.cpp)
         else:
-            indent_str = indent
+            if isinstance(indent, int):
+                indent_str = " " * indent
+            elif isinstance(indent, str):
+                indent_str = indent
+            else:
+                raise TypeError("indent must be a str, int or None")
             write_snbt[CByteArrayTagPtr](snbt, self.cpp, indent_str, 0)
         return snbt
 
@@ -375,7 +380,12 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
         if indent is None:
             write_snbt[CIntArrayTagPtr](snbt, self.cpp)
         else:
-            indent_str = indent
+            if isinstance(indent, int):
+                indent_str = " " * indent
+            elif isinstance(indent, str):
+                indent_str = indent
+            else:
+                raise TypeError("indent must be a str, int or None")
             write_snbt[CIntArrayTagPtr](snbt, self.cpp, indent_str, 0)
         return snbt
 
@@ -561,7 +571,12 @@ cdef class LongArrayTag(AbstractBaseArrayTag):
         if indent is None:
             write_snbt[CLongArrayTagPtr](snbt, self.cpp)
         else:
-            indent_str = indent
+            if isinstance(indent, int):
+                indent_str = " " * indent
+            elif isinstance(indent, str):
+                indent_str = indent
+            else:
+                raise TypeError("indent must be a str, int or None")
             write_snbt[CLongArrayTagPtr](snbt, self.cpp, indent_str, 0)
         return snbt
 

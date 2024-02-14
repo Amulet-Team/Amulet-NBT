@@ -65,7 +65,12 @@ cdef class FloatTag(AbstractBaseFloatTag):
         if indent is None:
             write_snbt[CFloatTag](snbt, self.cpp)
         else:
-            indent_str = indent
+            if isinstance(indent, int):
+                indent_str = " " * indent
+            elif isinstance(indent, str):
+                indent_str = indent
+            else:
+                raise TypeError("indent must be a str, int or None")
             write_snbt[CFloatTag](snbt, self.cpp, indent_str, 0)
         return snbt
 
@@ -158,7 +163,12 @@ cdef class DoubleTag(AbstractBaseFloatTag):
         if indent is None:
             write_snbt[CDoubleTag](snbt, self.cpp)
         else:
-            indent_str = indent
+            if isinstance(indent, int):
+                indent_str = " " * indent
+            elif isinstance(indent, str):
+                indent_str = indent
+            else:
+                raise TypeError("indent must be a str, int or None")
             write_snbt[CDoubleTag](snbt, self.cpp, indent_str, 0)
         return snbt
 

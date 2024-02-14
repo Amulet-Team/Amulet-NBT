@@ -28,7 +28,6 @@ _utf8_encoding.decode_cpp = utf8_to_utf8
 _utf8_encoding.encode_cpp = utf8_to_utf8
 utf8_encoding = _utf8_encoding
 
-# TODO: implement this
 cdef StringEncoding _utf8_escape_encoding = StringEncoding()
 _utf8_escape_encoding.decode_cpp = utf8_escape_to_utf8
 _utf8_escape_encoding.encode_cpp = utf8_to_utf8_escape

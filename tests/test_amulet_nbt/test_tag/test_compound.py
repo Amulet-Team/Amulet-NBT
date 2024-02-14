@@ -11,8 +11,6 @@ from .test_abc import AbstractBaseMutableTagTestCase, TagNameMap
 from amulet_nbt import (
     AbstractBaseTag,
     AbstractBaseMutableTag,
-    AbstractBaseNumericTag,
-    AbstractBaseArrayTag,
     ByteTag,
     ShortTag,
     IntTag,
@@ -25,8 +23,8 @@ from amulet_nbt import (
     ByteArrayTag,
     IntArrayTag,
     LongArrayTag,
-    # from_snbt,
-    # SNBTParseError,
+    from_snbt,
+    SNBTParseError,
     NBTFormatError,
     load as load_nbt,
 )
@@ -879,6 +877,33 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
             "}",
             full_compound.to_snbt("\t"),
         )
+
+    def test_from_snbt(self):
+        self.assertEqual(CompoundTag(), from_snbt("{}"))
+
+        with self.subTest("Formatting"):
+            self.assertEqual(CompoundTag({"1": IntTag(5)}), from_snbt("{1: 5}"))
+            self.assertEqual(CompoundTag({"1": IntTag(5)}), from_snbt('{"1": 5}'))
+            self.assertEqual(CompoundTag({"1": IntTag(5)}), from_snbt("{'1': 5}"))
+            self.assertEqual(
+                CompoundTag({"1": IntTag(5)}), from_snbt("{  '1'  :  5  }")
+            )
+            self.assertEqual(
+                CompoundTag({"1": IntTag(5)}), from_snbt("\n{ \n '1' \n : \n 5 \n }\n")
+            )
+
+        with self.assertRaises(SNBTParseError):
+            from_snbt("{")
+        with self.assertRaises(SNBTParseError):
+            from_snbt("}")
+        with self.assertRaises(SNBTParseError):
+            from_snbt("{a:}")
+        with self.assertRaises(SNBTParseError):
+            from_snbt("{a 5}")
+        with self.assertRaises(SNBTParseError):
+            from_snbt("{a:5, b:}")
+        with self.assertRaises(SNBTParseError):
+            from_snbt("{a:5 b:6}")
 
 
 if __name__ == "__main__":

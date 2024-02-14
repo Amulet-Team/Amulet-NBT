@@ -1,9 +1,21 @@
-import unittest
 from abc import ABC, abstractmethod
 import faulthandler
 faulthandler.enable()
 
-from amulet_nbt import ByteTag, ShortTag, IntTag, LongTag, FloatTag, DoubleTag, StringTag, ByteArrayTag, ListTag, CompoundTag, IntArrayTag, LongArrayTag
+from amulet_nbt import (
+    ByteTag,
+    ShortTag,
+    IntTag,
+    LongTag,
+    FloatTag,
+    DoubleTag,
+    StringTag,
+    ByteArrayTag,
+    ListTag,
+    CompoundTag,
+    IntArrayTag,
+    LongArrayTag
+)
 
 
 TagNameMap = {
@@ -101,6 +113,10 @@ class AbstractBaseTestCase(ABC):
     def test_to_snbt(self) -> None:
         raise NotImplementedError
 
+    @abstractmethod
+    def test_from_snbt(self) -> None:
+        raise NotImplementedError
+
 
 class AbstractBaseTagTestCase(AbstractBaseTestCase):
     @abstractmethod
@@ -114,17 +130,3 @@ class AbstractBaseImmutableTagTestCase(AbstractBaseTagTestCase):
 
 class AbstractBaseMutableTagTestCase(AbstractBaseTagTestCase):
     pass
-
-
-class CreateAbstractTestCase(unittest.TestCase):
-    def test_create_abc(self) -> None:
-        pass
-
-    def test_create_abc_tag(self) -> None:
-        pass
-
-    def test_create_abc_immutable_tag(self) -> None:
-        pass
-
-    def test_create_abc_mutable_tag(self) -> None:
-        pass

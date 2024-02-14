@@ -9,7 +9,18 @@ faulthandler.enable()
 
 from .test_abc import AbstractBaseMutableTagTestCase
 
-from amulet_nbt import AbstractBaseTag, AbstractBaseMutableTag, AbstractBaseArrayTag, ByteArrayTag, IntArrayTag, LongArrayTag, load as load_nbt, NBTFormatError
+from amulet_nbt import (
+    AbstractBaseTag,
+    AbstractBaseMutableTag,
+    AbstractBaseArrayTag,
+    ByteArrayTag,
+    IntArrayTag,
+    LongArrayTag,
+    load as load_nbt,
+    NBTFormatError,
+    SNBTParseError,
+    from_snbt
+)
 
 
 class ArrayTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
@@ -353,6 +364,56 @@ class ArrayTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 "[L;-3L, -2L, -1L, 0L, 1L, 2L, 3L]",
                 LongArrayTag([-3, -2, -1, 0, 1, 2, 3]).to_snbt(),
             )
+
+    def test_from_snbt(self):
+        with self.subTest("ByteArrayTag"):
+            self.assertEqual(ByteArrayTag(), from_snbt("[B;]"))
+            self.assertEqual(
+                ByteArrayTag([-3, -2, -1, 0, 1, 2, 3]),
+                from_snbt("[B;-3b, -2b, -1b, 0b, 1b, 2b, 3b]"),
+            )
+            self.assertEqual(
+                ByteArrayTag([-3, -2, -1, 0, 1, 2, 3]),
+                from_snbt("[B;-3B, -2B, -1B, 0B, 1B, 2B, 3B]"),
+            )
+            with self.assertRaises(SNBTParseError):
+                from_snbt(
+                    "[B;-5, 5]",
+                )
+            with self.assertRaises(SNBTParseError):
+                from_snbt(
+                    "[B;-5.0B, 5.0B]",
+                )
+
+        with self.subTest("IntArrayTag"):
+            self.assertEqual(IntArrayTag(), from_snbt("[I;]"))
+            self.assertEqual(
+                IntArrayTag([-3, -2, -1, 0, 1, 2, 3]),
+                from_snbt("[I;-3, -2, -1, 0, 1, 2, 3]"),
+            )
+            with self.assertRaises(SNBTParseError):
+                from_snbt(
+                    "[I;-5.0, 5.0]",
+                )
+
+        with self.subTest("LongArrayTag"):
+            self.assertEqual(LongArrayTag(), from_snbt("[L;]"))
+            self.assertEqual(
+                LongArrayTag([-3, -2, -1, 0, 1, 2, 3]),
+                from_snbt("[L;-3l, -2l, -1l, 0l, 1l, 2l, 3l]"),
+            )
+            self.assertEqual(
+                LongArrayTag([-3, -2, -1, 0, 1, 2, 3]),
+                from_snbt("[L;-3L, -2L, -1L, 0L, 1L, 2L, 3L]"),
+            )
+            with self.assertRaises(SNBTParseError):
+                from_snbt(
+                    "[L;-5, 5]",
+                )
+            with self.assertRaises(SNBTParseError):
+                from_snbt(
+                    "[L;-5.0L, 5.0L]",
+                )
 
 
 if __name__ == "__main__":

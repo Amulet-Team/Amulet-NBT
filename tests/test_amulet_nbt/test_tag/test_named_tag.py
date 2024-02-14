@@ -2,13 +2,10 @@ import unittest
 import itertools
 import copy
 import pickle
-import gzip
 import faulthandler
 faulthandler.enable()
 
 from amulet_nbt import (
-    AbstractBaseNumericTag,
-    AbstractBaseArrayTag,
     NamedTag,
     ByteTag,
     ShortTag,
@@ -26,7 +23,6 @@ from amulet_nbt import (
     utf8_encoding,
     utf8_escape_encoding,
     load as load_nbt
-
 )
 
 from .test_abc import AbstractBaseTestCase, TagNameMap
@@ -242,6 +238,9 @@ class NamedTagTestCase(AbstractBaseTestCase, unittest.TestCase):
     def test_to_snbt(self) -> None:
         named_tag = NamedTag(CompoundTag())
         self.assertEqual("{}", named_tag.to_snbt())
+
+    def test_from_snbt(self) -> None:
+        pass
 
 
 if __name__ == "__main__":

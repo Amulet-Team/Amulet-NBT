@@ -41,7 +41,7 @@ __all__ = [
     "load",
     "load_array",
     "ReadOffset",
-    # "from_snbt",
+    "from_snbt",
     "NBTError",
     "NBTLoadError",
     "NBTFormatError",
@@ -112,7 +112,7 @@ from ._tag.compound import (
 
 # Load functions
 from amulet_nbt._nbt_encoding._binary import load, load_array, ReadOffset
-# from ._load_snbt import from_snbt
+from amulet_nbt._nbt_encoding._string import from_snbt
 
 from ._errors import NBTError, NBTLoadError, NBTFormatError, SNBTParseError
 

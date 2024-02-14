@@ -8,7 +8,19 @@ import numpy
 faulthandler.enable()
 
 from .test_numeric import AbstractBaseNumericTagTestCase
-from amulet_nbt import AbstractBaseTag, AbstractBaseImmutableTag, AbstractBaseNumericTag, AbstractBaseIntTag, ByteTag, ShortTag, IntTag, LongTag, load as load_nbt
+from amulet_nbt import (
+    AbstractBaseTag,
+    AbstractBaseImmutableTag,
+    AbstractBaseNumericTag,
+    AbstractBaseIntTag,
+    ByteTag,
+    ShortTag,
+    IntTag,
+    LongTag,
+    load as load_nbt,
+    StringTag,
+    from_snbt
+)
 
 
 class IntTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
@@ -336,6 +348,61 @@ class IntTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
             self.assertEqual("-5L", LongTag(-5).to_snbt())
             self.assertEqual("0L", LongTag(0).to_snbt())
             self.assertEqual("5L", LongTag(5).to_snbt())
+
+    def test_from_snbt(self):
+        with self.subTest():
+            self.assertEqual(ByteTag(-5), from_snbt("-5b"))
+            self.assertEqual(ByteTag(-5), from_snbt("-5B"))
+            self.assertEqual(ByteTag(0), from_snbt("0b"))
+            self.assertEqual(ByteTag(0), from_snbt("0B"))
+            self.assertEqual(ByteTag(0), from_snbt("+0b"))
+            self.assertEqual(ByteTag(0), from_snbt("+0B"))
+            self.assertEqual(ByteTag(0), from_snbt("false"))
+            self.assertEqual(ByteTag(0), from_snbt("False"))
+            self.assertEqual(ByteTag(1), from_snbt("true"))
+            self.assertEqual(ByteTag(1), from_snbt("True"))
+            self.assertEqual(ByteTag(5), from_snbt("5b"))
+            self.assertEqual(ByteTag(5), from_snbt("5B"))
+            self.assertEqual(ByteTag(5), from_snbt("+5b"))
+            self.assertEqual(ByteTag(5), from_snbt("+5B"))
+
+        with self.subTest():
+            self.assertEqual(ShortTag(-5), from_snbt("-5s"))
+            self.assertEqual(ShortTag(-5), from_snbt("-5S"))
+            self.assertEqual(ShortTag(0), from_snbt("0s"))
+            self.assertEqual(ShortTag(0), from_snbt("0S"))
+            self.assertEqual(ShortTag(0), from_snbt("+0s"))
+            self.assertEqual(ShortTag(0), from_snbt("+0S"))
+            self.assertEqual(ShortTag(5), from_snbt("5s"))
+            self.assertEqual(ShortTag(5), from_snbt("5S"))
+            self.assertEqual(ShortTag(5), from_snbt("+5s"))
+            self.assertEqual(ShortTag(5), from_snbt("+5S"))
+
+        with self.subTest():
+            self.assertEqual(IntTag(-5), from_snbt("-5"))
+            self.assertEqual(IntTag(0), from_snbt("0"))
+            self.assertEqual(IntTag(0), from_snbt("+0"))
+            self.assertEqual(IntTag(5), from_snbt("5"))
+            self.assertEqual(IntTag(5), from_snbt("+5"))
+
+            self.assertEqual(StringTag("-5i"), from_snbt("-5i"))
+            self.assertEqual(StringTag("-5I"), from_snbt("-5I"))
+            self.assertEqual(StringTag("5i"), from_snbt("5i"))
+            self.assertEqual(StringTag("5I"), from_snbt("5I"))
+            self.assertEqual(StringTag("+5i"), from_snbt("+5i"))
+            self.assertEqual(StringTag("+5I"), from_snbt("+5I"))
+
+        with self.subTest():
+            self.assertEqual(LongTag(-5), from_snbt("-5l"))
+            self.assertEqual(LongTag(-5), from_snbt("-5L"))
+            self.assertEqual(LongTag(0), from_snbt("0l"))
+            self.assertEqual(LongTag(0), from_snbt("0L"))
+            self.assertEqual(LongTag(0), from_snbt("+0l"))
+            self.assertEqual(LongTag(0), from_snbt("+0L"))
+            self.assertEqual(LongTag(5), from_snbt("5l"))
+            self.assertEqual(LongTag(5), from_snbt("5L"))
+            self.assertEqual(LongTag(5), from_snbt("+5l"))
+            self.assertEqual(LongTag(5), from_snbt("+5L"))
 
 
 if __name__ == "__main__":

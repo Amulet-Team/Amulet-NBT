@@ -13,7 +13,7 @@ from typing import (
     Mapping,
     Optional,
 )
-from collections.abc import MutableSequence, MutableMapping
+from collections.abc import MutableSequence, MutableMapping, Sequence
 import numpy
 from numpy.typing import NDArray, ArrayLike
 
@@ -462,6 +462,9 @@ class CompoundTag(AbstractBaseMutableTag, MutableMapping[str | bytes, AnyNBT]):
 
 
 class AbstractBaseArrayTag(AbstractBaseMutableTag):
+    def __init__(self, value: Sequence[SupportsInt] = ()) -> None:
+        ...
+
     @property
     def np_array(self) -> numpy.ndarray:
         """

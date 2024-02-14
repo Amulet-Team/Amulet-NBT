@@ -16,21 +16,14 @@ typedef std::function<std::string(const std::string&)> StringDecode;
 class BinaryReader {
 private:
     const std::string& data;
-    size_t position;
+    size_t& position;
     std::endian endianness;
     StringDecode stringDecode;
 
 public:
     BinaryReader(
         const std::string& input,
-        std::endian endianness,
-        StringDecode stringDecode
-    )
-        : data(input), position(0), endianness(endianness), stringDecode(stringDecode) {}
-
-    BinaryReader(
-        const std::string& input,
-        size_t position,
+        size_t& position,
         std::endian endianness,
         StringDecode stringDecode
     )

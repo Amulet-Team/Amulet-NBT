@@ -160,7 +160,7 @@ std::pair<std::string, TagNode> read_named_tag(BinaryReader& reader){
 
 
 std::pair<std::string, TagNode> read_named_tag(const std::string& raw, std::endian endianness, StringDecode stringDecode, size_t& offset){
-    BinaryReader reader(raw, endianness, stringDecode);
+    BinaryReader reader(raw, offset, endianness, stringDecode);
     return read_named_tag(reader);
 }
 

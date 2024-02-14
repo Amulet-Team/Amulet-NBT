@@ -2,7 +2,7 @@
 # distutils: language = c++
 # distutils: extra_compile_args = -std=c++20 /std:c++20
 # distutils: extra_link_args = -std=c++20 /std:c++20
-# distutils: sources = [src/amulet_nbt/_nbt_encoding/_binary/_cpp/read.cpp]
+# distutils: sources = [src/amulet_nbt/_nbt_encoding/_binary/_cpp/read_nbt.cpp]
 
 import gzip
 import zlib

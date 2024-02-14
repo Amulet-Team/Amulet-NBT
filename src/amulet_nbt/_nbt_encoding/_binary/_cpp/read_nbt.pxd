@@ -10,6 +10,6 @@ from amulet_nbt._tag._cpp cimport TagNode
 from amulet_nbt._string_encoding._cpp cimport CStringDecode
 
 
-cdef extern from "read.hpp" nogil:
+cdef extern from "read_nbt.hpp" nogil:
     pair[string, TagNode] read_named_tag(const string&, endian, CStringDecode, size_t&) except +
     pair[string, TagNode] read_named_tag(const string&, endian, CStringDecode) except +

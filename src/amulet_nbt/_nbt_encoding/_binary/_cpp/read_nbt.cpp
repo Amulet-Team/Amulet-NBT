@@ -1,4 +1,4 @@
-#include "read.hpp"
+#include "read_nbt.hpp"
 
 CStringTag read_string_tag(BinaryReader& reader){
     std::uint16_t length = reader.readNumeric<std::uint16_t>();

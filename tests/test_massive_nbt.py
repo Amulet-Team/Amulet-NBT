@@ -67,19 +67,19 @@ class MassiveNBTTests(unittest.TestCase):
             numpy.array([i for i in range(-128, 127)], dtype=int)
         )
         compound["numpyDtypeuTestByteArray"] = ByteArrayTag(
-            numpy.array([i for i in range(-128, 127)], dtype=numpy.uint)
+            numpy.array([i for i in range(0, 255)], dtype=numpy.uint)
         )
         compound["numpyDtypeTestIntArray"] = IntArrayTag(
             numpy.array([i for i in range(-400, 400)], dtype=int)
         )
         compound["numpyDtypeuTestIntArray"] = IntArrayTag(
-            numpy.array([i for i in range(-400, 400)], dtype=numpy.uint)
+            numpy.array([i for i in range(0, 800)], dtype=numpy.uint)
         )
         compound["numpyDtypeTestLongArray"] = LongArrayTag(
             numpy.array([i for i in range(-400, 400)], dtype=int)
         )
         compound["numpyDtypeuTestLongArray"] = LongArrayTag(
-            numpy.array([i for i in range(-400, 400)], dtype=numpy.uint)
+            numpy.array([i for i in range(0, 800)], dtype=numpy.uint)
         )
 
         compound["numpyDtypedTestByteArray"] = ByteArrayTag(

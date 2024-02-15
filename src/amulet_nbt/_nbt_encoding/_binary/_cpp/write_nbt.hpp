@@ -29,6 +29,28 @@ struct overloaded : Ts... { using Ts::operator()...; };
 template <
     typename T,
     std::enable_if_t<
+        std::is_same_v<T, TagNode> ||
+        std::is_same_v<T, CByteTag> ||
+        std::is_same_v<T, CShortTag> ||
+        std::is_same_v<T, CIntTag> ||
+        std::is_same_v<T, CLongTag> ||
+        std::is_same_v<T, CFloatTag> ||
+        std::is_same_v<T, CDoubleTag> ||
+        std::is_same_v<T, CByteArrayTagPtr> ||
+        std::is_same_v<T, CStringTag> ||
+        std::is_same_v<T, CListTagPtr> ||
+        std::is_same_v<T, CCompoundTagPtr> ||
+        std::is_same_v<T, CIntArrayTagPtr> ||
+        std::is_same_v<T, CLongArrayTagPtr>,
+        bool
+    >
+>
+void write_tag_payload(BinaryWriter& writer, const T& value);
+
+
+template <
+    typename T,
+    std::enable_if_t<
         std::is_same_v<T, CByteTag> ||
         std::is_same_v<T, CShortTag> ||
         std::is_same_v<T, CIntTag> ||
@@ -60,6 +82,38 @@ void write_tag_payload(BinaryWriter& writer, const CStringTag& value){
 
 template <
     typename T,
+    std::enable_if_t<
+        std::is_same_v<T, CByteTag> ||
+        std::is_same_v<T, CShortTag> ||
+        std::is_same_v<T, CIntTag> ||
+        std::is_same_v<T, CLongTag> ||
+        std::is_same_v<T, CFloatTag> ||
+        std::is_same_v<T, CDoubleTag> ||
+        std::is_same_v<T, CByteArrayTagPtr> ||
+        std::is_same_v<T, CStringTag> ||
+        std::is_same_v<T, CListTagPtr> ||
+        std::is_same_v<T, CCompoundTagPtr> ||
+        std::is_same_v<T, CIntArrayTagPtr> ||
+        std::is_same_v<T, CLongArrayTagPtr>,
+        bool
+    > = true
+>
+void write_list_tag_payload(BinaryWriter& writer, const CListTagPtr& value){
+    const std::vector<T>& list = std::get<std::vector<T>>(*value);
+    if (list.size() > static_cast<size_t>(std::numeric_limits<std::int32_t>::max())){
+        throw std::overflow_error(std::format("List of length {} is too long.", list.size()));
+    }
+    writer.writeNumeric<std::uint8_t>(variant_index<TagNode, T>());
+    std::int32_t length = static_cast<std::int32_t>(list.size());
+    writer.writeNumeric<std::int32_t>(length);
+    for (const T& element: list){
+        write_tag_payload<T>(writer, element);
+    }
+}
+
+
+template <
+    typename T,
     std::enable_if_t<std::is_same_v<T, CListTagPtr>, bool> = true
 >
 void write_tag_payload(BinaryWriter& writer, const CListTagPtr& value){
@@ -82,6 +136,27 @@ void write_tag_payload(BinaryWriter& writer, const CListTagPtr& value){
         case 12: write_list_tag_payload<CLongArrayTagPtr>(writer, value); break;
     }
 }
+
+
+template <
+    typename T,
+    std::enable_if_t<
+        std::is_same_v<T, CByteTag> ||
+        std::is_same_v<T, CShortTag> ||
+        std::is_same_v<T, CIntTag> ||
+        std::is_same_v<T, CLongTag> ||
+        std::is_same_v<T, CFloatTag> ||
+        std::is_same_v<T, CDoubleTag> ||
+        std::is_same_v<T, CByteArrayTagPtr> ||
+        std::is_same_v<T, CStringTag> ||
+        std::is_same_v<T, CListTagPtr> ||
+        std::is_same_v<T, CCompoundTagPtr> ||
+        std::is_same_v<T, CIntArrayTagPtr> ||
+        std::is_same_v<T, CLongArrayTagPtr>,
+        bool
+    >
+>
+void write_named_tag(BinaryWriter& writer, const std::string& name, const T& tag);
 
 
 template <
@@ -113,38 +188,6 @@ void write_tag_payload(BinaryWriter& writer, const T& value){
     writer.writeNumeric<std::int32_t>(length);
     for (const typename T::element_type::value_type& element: *value){
         writer.writeNumeric<typename T::element_type::value_type>(element);
-    }
-}
-
-
-template <
-    typename T,
-    std::enable_if_t<
-        std::is_same_v<T, CByteTag> ||
-        std::is_same_v<T, CShortTag> ||
-        std::is_same_v<T, CIntTag> ||
-        std::is_same_v<T, CLongTag> ||
-        std::is_same_v<T, CFloatTag> ||
-        std::is_same_v<T, CDoubleTag> ||
-        std::is_same_v<T, CByteArrayTagPtr> ||
-        std::is_same_v<T, CStringTag> ||
-        std::is_same_v<T, CListTagPtr> ||
-        std::is_same_v<T, CCompoundTagPtr> ||
-        std::is_same_v<T, CIntArrayTagPtr> ||
-        std::is_same_v<T, CLongArrayTagPtr>,
-        bool
-    > = true
->
-void write_list_tag_payload(BinaryWriter& writer, const CListTagPtr& value){
-    const std::vector<T>& list = std::get<std::vector<T>>(*value);
-    if (list.size() > static_cast<size_t>(std::numeric_limits<std::int32_t>::max())){
-        throw std::overflow_error(std::format("List of length {} is too long.", list.size()));
-    }
-    writer.writeNumeric<std::uint8_t>(variant_index<TagNode, T>());
-    std::int32_t length = static_cast<std::int32_t>(list.size());
-    writer.writeNumeric<std::int32_t>(length);
-    for (const T& element: list){
-        write_tag_payload<T>(writer, element);
     }
 }
 

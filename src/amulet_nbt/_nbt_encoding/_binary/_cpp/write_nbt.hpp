@@ -26,26 +26,18 @@ template<class... Ts>
 struct overloaded : Ts... { using Ts::operator()...; };
 
 
-template <
-    typename T,
-    std::enable_if_t<
-        std::is_same_v<T, TagNode> ||
-        std::is_same_v<T, CByteTag> ||
-        std::is_same_v<T, CShortTag> ||
-        std::is_same_v<T, CIntTag> ||
-        std::is_same_v<T, CLongTag> ||
-        std::is_same_v<T, CFloatTag> ||
-        std::is_same_v<T, CDoubleTag> ||
-        std::is_same_v<T, CByteArrayTagPtr> ||
-        std::is_same_v<T, CStringTag> ||
-        std::is_same_v<T, CListTagPtr> ||
-        std::is_same_v<T, CCompoundTagPtr> ||
-        std::is_same_v<T, CIntArrayTagPtr> ||
-        std::is_same_v<T, CLongArrayTagPtr>,
-        bool
-    >
->
-void write_tag_payload(BinaryWriter& writer, const T& value);
+void write_tag_payload(BinaryWriter& writer, const CByteTag& value);
+void write_tag_payload(BinaryWriter& writer, const CShortTag& value);
+void write_tag_payload(BinaryWriter& writer, const CIntTag& value);
+void write_tag_payload(BinaryWriter& writer, const CLongTag& value);
+void write_tag_payload(BinaryWriter& writer, const CFloatTag& value);
+void write_tag_payload(BinaryWriter& writer, const CDoubleTag& value);
+void write_tag_payload(BinaryWriter& writer, const CByteArrayTagPtr& value);
+void write_tag_payload(BinaryWriter& writer, const CStringTag& value);
+void write_tag_payload(BinaryWriter& writer, const CListTagPtr& value);
+void write_tag_payload(BinaryWriter& writer, const CCompoundTagPtr& value);
+void write_tag_payload(BinaryWriter& writer, const CIntArrayTagPtr& value);
+void write_tag_payload(BinaryWriter& writer, const CLongArrayTagPtr& value);
 
 
 template <
@@ -138,26 +130,7 @@ void write_tag_payload(BinaryWriter& writer, const CListTagPtr& value){
 }
 
 
-template <
-    typename T,
-    std::enable_if_t<
-        std::is_same_v<T, TagNode> ||
-        std::is_same_v<T, CByteTag> ||
-        std::is_same_v<T, CShortTag> ||
-        std::is_same_v<T, CIntTag> ||
-        std::is_same_v<T, CLongTag> ||
-        std::is_same_v<T, CFloatTag> ||
-        std::is_same_v<T, CDoubleTag> ||
-        std::is_same_v<T, CByteArrayTagPtr> ||
-        std::is_same_v<T, CStringTag> ||
-        std::is_same_v<T, CListTagPtr> ||
-        std::is_same_v<T, CCompoundTagPtr> ||
-        std::is_same_v<T, CIntArrayTagPtr> ||
-        std::is_same_v<T, CLongArrayTagPtr>,
-        bool
-    >
->
-void write_named_tag(BinaryWriter& writer, const std::string& name, const T& tag);
+void write_named_tag(BinaryWriter& writer, const std::string& name, const TagNode& tag);
 
 
 template <

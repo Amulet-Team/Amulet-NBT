@@ -122,6 +122,7 @@ class AbstractBaseTag(AbstractBase):
         You would be better off using the py_{type} or np_array properties if you require a fixed type.
         This is here for convenience to get a python representation under the same property name.
         """
+
     def to_nbt(
         self,
         *,
@@ -140,6 +141,7 @@ class AbstractBaseTag(AbstractBase):
         :param name: The root tag name.
         :return: The binary NBT representation of the class.
         """
+
     def save_to(
         self,
         filepath_or_buffer: bytes | str | BinaryIO | memoryview | None = None,
@@ -164,6 +166,7 @@ class AbstractBaseTag(AbstractBase):
         :param name: The root tag name.
         :return: The binary NBT representation of the class.
         """
+
     def to_snbt(self, indent: None | str | int = None) -> str:
         """Convert the data to the Stringified NBT format.
 
@@ -173,6 +176,7 @@ class AbstractBaseTag(AbstractBase):
             If a string will be multi-line SNBT with this string as the indentation.
         :return: The SNBT string.
         """
+
     def __eq__(self, other: Any) -> bool:
         """Check if the instance is equal to another instance.
 
@@ -187,6 +191,7 @@ class AbstractBaseTag(AbstractBase):
         >>> tag1 == tag3  # False
         """
         ...
+
     def __repr__(self) -> str:
         """A string representation of the object to show how it can be constructed.
 
@@ -194,11 +199,14 @@ class AbstractBaseTag(AbstractBase):
         >>> tag = ByteTag(1)
         >>> repr(tag)  # "ByteTag(1)"
         """
+
     def __str__(self) -> str:
         """A string representation of the object."""
+
     def __reduce__(self): ...
     def copy(self) -> Self:
         """Return a shallow copy of the class"""
+
     def __copy__(self) -> Self:
         """A shallow copy of the class
 
@@ -207,6 +215,7 @@ class AbstractBaseTag(AbstractBase):
         >>> tag = ListTag()
         >>> tag2 = copy.copy(tag)
         """
+
     def __deepcopy__(self, memo=None) -> Self:
         """A deep copy of the class
 
@@ -232,16 +241,22 @@ class AbstractBaseNumericTag(AbstractBaseImmutableTag):
 
     def __int__(self) -> int:
         """Get a python int representation of the class."""
+
     def __float__(self) -> float:
         """Get a python float representation of the class."""
+
     def __bool__(self) -> bool:
         """Get a python bool representation of the class."""
+
     def __ge__(self, other: Any) -> bool:
         """Check if the tag is greater than or equal to another tag."""
+
     def __gt__(self, other: Any) -> bool:
         """Check if the tag is greater than another tag."""
+
     def __le__(self, other: Any) -> bool:
         """Check if the tag is less than or equal to another tag."""
+
     def __lt__(self, other: Any) -> bool:
         """Check if the tag is less than another tag."""
 
@@ -302,15 +317,20 @@ class StringTag(AbstractBaseImmutableTag):
 
         In some rare cases the data cannot be decoded to a string and this will raise a UnicodeDecodeError.
         """
+
     @property
     def py_bytes(self) -> bytes:
         """The bytes stored in the class."""
+
     def __ge__(self, other: Any) -> bool:
         """Check if the tag is greater than or equal to another tag."""
+
     def __gt__(self, other: Any) -> bool:
         """Check if the tag is greater than another tag."""
+
     def __le__(self, other: Any) -> bool:
         """Check if the tag is less than or equal to another tag."""
+
     def __lt__(self, other: Any) -> bool:
         """Check if the tag is less than another tag."""
 
@@ -328,12 +348,14 @@ class ListTag(AbstractBaseMutableTag, MutableSequence[AnyNBTT]):
         The returned list is a shallow copy of the class, meaning changes will not mirror the instance.
         Use the public API to modify the internal data.
         """
+
     @property
     def element_tag_id(self) -> int:
         """The numerical id of the element type in this list.
 
         Will be an int in the range 0-12.
         """
+
     @property
     def element_class(
         self,
@@ -353,6 +375,7 @@ class ListTag(AbstractBaseMutableTag, MutableSequence[AnyNBTT]):
         | Type[LongArrayTag]
     ):
         """The python class for the tag type contained in this list or None if the list tag is in the 0 state."""
+
     def get_byte(self, index: int) -> ByteTag: ...
     def get_short(self, index: int) -> ShortTag: ...
     def get_int(self, index: int) -> IntTag: ...
@@ -375,6 +398,7 @@ class CompoundTag(AbstractBaseMutableTag, MutableMapping[str | bytes, AnyNBT]):
     @property
     def py_dict(self) -> dict[str, AnyNBT]:
         """A shallow copy of the CompoundTag as a python dictionary."""
+
     def get(
         self,
         key: str | bytes,
@@ -390,6 +414,7 @@ class CompoundTag(AbstractBaseMutableTag, MutableMapping[str | bytes, AnyNBT]):
         :raises: KeyError if the key does not exist.
         :raises: TypeError if the stored type is not a subclass of cls.
         """
+
     @staticmethod
     def fromkeys(keys: Iterable[str | bytes], value: AnyNBT = None): ...
     def get_byte(self, key: str | bytes, default: ByteTag = None) -> ByteTag: ...
@@ -449,6 +474,7 @@ class AbstractBaseArrayTag(AbstractBaseMutableTag):
 
         Changes to the array will also modify the internal state.
         """
+
     def __len__(self):
         """The length of the array.
 
@@ -456,6 +482,7 @@ class AbstractBaseArrayTag(AbstractBaseMutableTag):
         >>> tag = ByteArrayTag([1, 2, 3])
         >>> len(tag)  # 3
         """
+
     @overload
     def __getitem__(self, item: int) -> numpy.int8 | numpy.int32 | numpy.int64: ...
     @overload
@@ -479,6 +506,7 @@ class AbstractBaseArrayTag(AbstractBaseMutableTag):
         >>> tag[:1]  # numpy.array([1], dtype=numpy.int8)
         >>> tag[numpy.array([1, 2])]  # numpy.array([2, 3], dtype=int8)
         """
+
     def __iter__(self) -> Iterator[numpy.int8 | numpy.int32 | numpy.int64]:
         """Iterate through the items in the array.
 
@@ -488,6 +516,7 @@ class AbstractBaseArrayTag(AbstractBaseMutableTag):
         >>>     pass
         >>> iter(tag)
         """
+
     def __reversed__(self) -> Iterator[numpy.int8 | numpy.int32 | numpy.int64]:
         """Iterate through the items in the array in reverse order.
 
@@ -496,6 +525,7 @@ class AbstractBaseArrayTag(AbstractBaseMutableTag):
         >>> for num in reversed(tag):
         >>>     pass
         """
+
     def __contains__(self, item: Any) -> bool:
         """Check if an item is in the array.
 
@@ -503,6 +533,7 @@ class AbstractBaseArrayTag(AbstractBaseMutableTag):
         >>> tag = ByteArrayTag([1, 2, 3])
         >>> 1 in tag  # True
         """
+
     @overload
     def __setitem__(
         self, item: int, value: numpy.int8 | numpy.int32 | numpy.int64
@@ -526,6 +557,7 @@ class AbstractBaseArrayTag(AbstractBaseMutableTag):
         >>> tag[:2] = [4, 5]  # [4, 5, 3]
         >>> tag[numpy.array([1, 2])] = [6, 7]  # [4, 6, 7]
         """
+
     def __array__(self, dtype=None) -> NDArray[numpy.int8 | numpy.int32 | numpy.int64]:
         """Get a numpy array representation of the stored data.
 
@@ -545,6 +577,7 @@ class ByteArrayTag(AbstractBaseArrayTag):
         >>> tag = ByteArrayTag([1, 2, 3])
         >>> len(tag)  # 3
         """
+
     @overload
     def __getitem__(self, item: int) -> numpy.int8: ...
     @overload
@@ -563,6 +596,7 @@ class ByteArrayTag(AbstractBaseArrayTag):
         >>> tag[:1]  # numpy.array([1], dtype=numpy.int8)
         >>> tag[numpy.array([1, 2])]  # numpy.array([2, 3], dtype=int8)
         """
+
     def __iter__(self) -> Iterator[numpy.int8]:
         """Iterate through the items in the array.
 
@@ -572,6 +606,7 @@ class ByteArrayTag(AbstractBaseArrayTag):
         >>>     pass
         >>> iter(tag)
         """
+
     def __reversed__(self) -> Iterator[numpy.int8]:
         """Iterate through the items in the array in reverse order.
 
@@ -580,6 +615,7 @@ class ByteArrayTag(AbstractBaseArrayTag):
         >>> for num in reversed(tag):
         >>>     pass
         """
+
     def __contains__(self, value) -> bool:
         """Check if an item is in the array.
 
@@ -587,6 +623,7 @@ class ByteArrayTag(AbstractBaseArrayTag):
         >>> tag = ByteArrayTag([1, 2, 3])
         >>> 1 in tag  # True
         """
+
     @overload
     def __setitem__(self, item: int, value: numpy.integer) -> None: ...
     @overload
@@ -604,6 +641,7 @@ class ByteArrayTag(AbstractBaseArrayTag):
         >>> tag[:2] = [4, 5]  # [4, 5, 3]
         >>> tag[numpy.array([1, 2])] = [6, 7]  # [4, 6, 7]
         """
+
     def __array__(self, dtype=None) -> NDArray[numpy.int8]:
         """Get a numpy array representation of the stored data.
 
@@ -623,6 +661,7 @@ class IntArrayTag(AbstractBaseArrayTag):
         >>> tag = IntArrayTag([1, 2, 3])
         >>> len(tag)  # 3
         """
+
     @overload
     def __getitem__(self, item: int) -> numpy.int32: ...
     @overload
@@ -641,6 +680,7 @@ class IntArrayTag(AbstractBaseArrayTag):
         >>> tag[:1]  # numpy.array([1], dtype=numpy.int32)
         >>> tag[numpy.array([1, 2])]  # numpy.array([2, 3], dtype=int32)
         """
+
     def __iter__(self) -> Iterator[numpy.int32]:
         """Iterate through the items in the array.
 
@@ -650,6 +690,7 @@ class IntArrayTag(AbstractBaseArrayTag):
         >>>     pass
         >>> iter(tag)
         """
+
     def __reversed__(self) -> Iterator[numpy.int32]:
         """Iterate through the items in the array in reverse order.
 
@@ -658,6 +699,7 @@ class IntArrayTag(AbstractBaseArrayTag):
         >>> for num in reversed(tag):
         >>>     pass
         """
+
     def __contains__(self, value) -> bool:
         """Check if an item is in the array.
 
@@ -665,6 +707,7 @@ class IntArrayTag(AbstractBaseArrayTag):
         >>> tag = IntArrayTag([1, 2, 3])
         >>> 1 in tag  # True
         """
+
     @overload
     def __setitem__(self, item: int, value: numpy.integer) -> None: ...
     @overload
@@ -682,6 +725,7 @@ class IntArrayTag(AbstractBaseArrayTag):
         >>> tag[:2] = [4, 5]  # [4, 5, 3]
         >>> tag[numpy.array([1, 2])] = [6, 7]  # [4, 6, 7]
         """
+
     def __array__(self, dtype=None) -> NDArray[numpy.int32]:
         """Get a numpy array representation of the stored data.
 
@@ -701,6 +745,7 @@ class LongArrayTag(AbstractBaseArrayTag):
         >>> tag = LongArrayTag([1, 2, 3])
         >>> len(tag)  # 3
         """
+
     @overload
     def __getitem__(self, item: int) -> numpy.int64: ...
     @overload
@@ -719,6 +764,7 @@ class LongArrayTag(AbstractBaseArrayTag):
         >>> tag[:1]  # numpy.array([1], dtype=numpy.int64)
         >>> tag[numpy.array([1, 2])]  # numpy.array([2, 3], dtype=int64)
         """
+
     def __iter__(self) -> Iterator[numpy.int64]:
         """Iterate through the items in the array.
 
@@ -728,6 +774,7 @@ class LongArrayTag(AbstractBaseArrayTag):
         >>>     pass
         >>> iter(tag)
         """
+
     def __reversed__(self) -> Iterator[numpy.int64]:
         """Iterate through the items in the array in reverse order.
 
@@ -736,6 +783,7 @@ class LongArrayTag(AbstractBaseArrayTag):
         >>> for num in reversed(tag):
         >>>     pass
         """
+
     def __contains__(self, value) -> bool:
         """Check if an item is in the array.
 
@@ -743,6 +791,7 @@ class LongArrayTag(AbstractBaseArrayTag):
         >>> tag = LongArrayTag([1, 2, 3])
         >>> 1 in tag  # True
         """
+
     @overload
     def __setitem__(self, item: int, value: numpy.integer) -> None: ...
     @overload
@@ -760,6 +809,7 @@ class LongArrayTag(AbstractBaseArrayTag):
         >>> tag[:2] = [4, 5]  # [4, 5, 3]
         >>> tag[numpy.array([1, 2])] = [6, 7]  # [4, 6, 7]
         """
+
     def __array__(self, dtype=None) -> NDArray[numpy.int64]:
         """Get a numpy array representation of the stored data.
 
@@ -809,6 +859,7 @@ class NamedTag(AbstractBase):
         :param string_encoding: A function to encode strings to bytes. Ignored if preset is defined.
         :return: The binary NBT representation of the class.
         """
+
     def save_to(
         self,
         filepath_or_buffer: bytes | str | BinaryIO | memoryview | None = None,
@@ -831,6 +882,7 @@ class NamedTag(AbstractBase):
         :param string_encoding: The StringEncoding to use. Ignored if preset is defined.
         :return: The binary NBT representation of the class.
         """
+
     def to_snbt(self, indent: None | str | int = None) -> str:
         """Convert the data to the Stringified NBT format.
 
@@ -840,6 +892,7 @@ class NamedTag(AbstractBase):
             If a string will be multi-line SNBT with this string as the indentation.
         :return: The SNBT string.
         """
+
     @property
     def byte(self) -> ByteTag: ...
     @property

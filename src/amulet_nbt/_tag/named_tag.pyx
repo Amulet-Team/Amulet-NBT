@@ -96,10 +96,10 @@ cdef class NamedTag(AbstractBase):
         self,
         object filepath_or_buffer=None,
         *,
-        EncodingPreset preset = None,
-        bool compressed=True,
-        bool little_endian=False,
-        StringEncoding string_encoding = mutf8_encoding,
+        EncodingPreset preset: amulet_nbt.EncodingPreset = None,
+        bool compressed: bool = True,
+        bool little_endian: bool = False,
+        StringEncoding string_encoding: amulet_nbt.StringEncoding = mutf8_encoding,
     ) -> bytes:
         """Convert the data to the binary NBT format. Optionally write to a file.
 

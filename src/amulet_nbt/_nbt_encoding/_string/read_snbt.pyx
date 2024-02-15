@@ -1,5 +1,6 @@
 import re
 
+import amulet_nbt
 from amulet_nbt._errors import SNBTParseError
 from amulet_nbt._tag.abc cimport AbstractBaseTag
 from amulet_nbt._tag.int cimport ByteTag, ShortTag, IntTag, LongTag
@@ -207,7 +208,13 @@ cdef tuple _parse_snbt_recursive(unicode snbt, int index=0):
 
     return data, index
 
-cpdef AbstractBaseTag from_snbt(unicode snbt):
+def from_snbt(unicode snbt: str) -> amulet_nbt.AbstractBaseTag:
+    """Parse Stringified NBT.
+
+    :param snbt: The SNBT string to parse.
+    :return: The tag
+    :raises: SNBTParseError if the SNBT format is invalid.
+    """
     try:
         return _parse_snbt_recursive(snbt)[0]
     except SNBTParseError as e:

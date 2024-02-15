@@ -11,10 +11,10 @@ from ._cpp.mutf8 cimport (
 
 
 cdef class StringEncoding:
-    def encode(self, bytes data) -> bytes:
+    def encode(self, bytes data: bytes) -> bytes:
         return self.encode_cpp(data)
 
-    def decode(self, bytes data) -> bytes:
+    def decode(self, bytes data: bytes) -> bytes:
         return self.decode_cpp(data)
 
 

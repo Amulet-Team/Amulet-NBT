@@ -5,10 +5,8 @@ cdef class {{py_cls}}(AbstractBaseArrayTag):
     """This class behaves like an 1D Numpy signed integer array with each value stored in a {{dtype}}."""
     tag_id: int = {{tag_id}}
 
-    def __init__(self, object value = ()) -> None:
-        """
-        Construct a new {{py_cls}} object from an array-like object.
-        """
+    def __init__(self, object value: Iterable[SupportsInt] = ()) -> None:
+        """Construct a new {{py_cls}} object from an array-like object."""
         cdef numpy.ndarray arr = numpy.asarray(value, {{native_data_type}}).ravel()
         self.cpp = make_shared[{{cpp_cls}}](arr.size)
         cdef size_t i
@@ -35,7 +33,7 @@ cdef class {{py_cls}}(AbstractBaseArrayTag):
 
 {{include("amulet_nbt/tpf/to_snbt.pyx.tpf", **locals())}}
 
-    def __eq__(self, object other) -> bool:
+    def __eq__(self, object other: Any) -> bool:
         if not isinstance(other, {{py_cls}}):
             return False
         cdef {{py_cls}} tag = other
@@ -62,8 +60,8 @@ cdef class {{py_cls}}(AbstractBaseArrayTag):
 
     # Sized
     def __len__(self) -> int:
-        """
-        The length of the array.
+        """The length of the array.
+
         >>> from amulet_nbt import {{py_cls}}
         >>> tag = {{py_cls}}([1, 2, 3])
         >>> len(tag)  # 3
@@ -84,8 +82,7 @@ cdef class {{py_cls}}(AbstractBaseArrayTag):
         ...
 
     def __getitem__(self, object item):
-        """
-        Get item(s) from the array.
+        """Get item(s) from the array.
 
         This supports the full numpy protocol.
         If a numpy array is returned, the array data is the same as the data contained in this class.
@@ -100,8 +97,7 @@ cdef class {{py_cls}}(AbstractBaseArrayTag):
         return numpy.asarray(self)[item]
 
     def __iter__(self) -> Iterator[numpy.int{{int_byte_width*8}}]:
-        """
-        Iterate through the items in the array.
+        """Iterate through the items in the array.
 
         >>> from amulet_nbt import {{py_cls}}
         >>> tag = {{py_cls}}([1, 2, 3])
@@ -112,19 +108,19 @@ cdef class {{py_cls}}(AbstractBaseArrayTag):
         return iter(numpy.asarray(self))
 
     def __reversed__(self) -> Iterator[numpy.int{{int_byte_width*8}}]:
-        """
-        Iterate through the items in the array in reverse order.
+        """Iterate through the items in the array in reverse order.
 
         >>> from amulet_nbt import {{py_cls}}
         >>> tag = {{py_cls}}([1, 2, 3])
         >>> for num in reversed(tag):
         >>>     pass
+
+        :return: A reversed iterator.
         """
         return reversed(numpy.asarray(self))
 
     def __contains__(self, value) -> bool:
-        """
-        Check if an item is in the array.
+        """Check if an item is in the array.
 
         >>> from amulet_nbt import {{py_cls}}
         >>> tag = {{py_cls}}([1, 2, 3])
@@ -146,8 +142,7 @@ cdef class {{py_cls}}(AbstractBaseArrayTag):
         ...
 
     def __setitem__(self, object item, object value):
-        """
-        Set item(s) in the array.
+        """Set item(s) in the array.
 
         This supports the full numpy protocol.
 
@@ -161,14 +156,16 @@ cdef class {{py_cls}}(AbstractBaseArrayTag):
         numpy.asarray(self)[item] = value
 
     # Array interface
-    def __array__(self, dtype=None) -> NDArray[numpy.int{{int_byte_width*8}}]:
-        """
-        Get a numpy array representation of the stored data.
+    def __array__(self, dtype: Any = None) -> NDArray[numpy.int{{int_byte_width*8}}]:
+        """Get a numpy array representation of the stored data.
 
         >>> from amulet_nbt import {{py_cls}}
         >>> import numpy
         >>> tag = {{py_cls}}([1, 2, 3])
         >>> arr = numpy.asarray(tag)
+
+        :param dtype: This is ignored but is part of the array interace
+        :return: A numpy array that shares the memory with this instance.
         """
         cdef numpy.npy_intp shape[1]
         shape[0] = <numpy.npy_intp> dereference(self.cpp).size()

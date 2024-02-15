@@ -7,7 +7,7 @@
 # distutils: extra_link_args = -std=c++20 /std:c++20
 # cython: c_string_type=str, c_string_encoding=utf8
 
-from typing import Any
+from typing import Any, SupportsInt
 
 from libcpp.string cimport string
 from amulet_nbt._libcpp.endian cimport endian
@@ -23,8 +23,8 @@ cdef class AbstractBaseIntTag(AbstractBaseNumericTag):
 
     @property
     def py_int(self) -> int:
-        """
-        A python int representation of the class.
+        """A python int representation of the class.
+
         The returned data is immutable so changes will not mirror the instance.
         """
         raise NotImplementedError
@@ -35,13 +35,13 @@ cdef class AbstractBaseIntTag(AbstractBaseNumericTag):
 
 
 cdef class ByteTag(AbstractBaseIntTag):
-    """
-    A 1 byte integer class.
+    """A 1 byte integer class.
+
     Can Store numbers between -(2^7) and (2^7 - 1)
     """
     tag_id: int = 1
 
-    def __init__(self, value = 0) -> None:
+    def __init__(self, value: SupportsInt = 0) -> None:
         value = int(value)
         self.cpp = (value & 0x7F) - (value & 0x80)
 
@@ -58,8 +58,8 @@ cdef class ByteTag(AbstractBaseIntTag):
 
     @property
     def py_int(self) -> int:
-        """
-        A python int representation of the class.
+        """A python int representation of the class.
+
         The returned data is immutable so changes will not mirror the instance.
         """
         return self.cpp
@@ -67,7 +67,7 @@ cdef class ByteTag(AbstractBaseIntTag):
     cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[CByteTag](name, self.cpp, endianness, string_encode)
 
-    def to_snbt(self, object indent = None) -> str:
+    def to_snbt(self, object indent: None | str | int = None) -> str:
         cdef string snbt
         cdef string indent_str
         if indent is None:
@@ -82,7 +82,7 @@ cdef class ByteTag(AbstractBaseIntTag):
             write_snbt[CByteTag](snbt, self.cpp, indent_str, 0)
         return snbt
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, object other: Any) -> bool:
         if not isinstance(other, ByteTag):
             return NotImplemented
         cdef ByteTag other_ = other
@@ -141,13 +141,13 @@ cdef class ByteTag(AbstractBaseIntTag):
 
 
 cdef class ShortTag(AbstractBaseIntTag):
-    """
-    A 2 byte integer class.
+    """A 2 byte integer class.
+
     Can Store numbers between -(2^15) and (2^15 - 1)
     """
     tag_id: int = 2
 
-    def __init__(self, value = 0) -> None:
+    def __init__(self, value: SupportsInt = 0) -> None:
         value = int(value)
         self.cpp = (value & 0x7FFF) - (value & 0x8000)
 
@@ -164,8 +164,8 @@ cdef class ShortTag(AbstractBaseIntTag):
 
     @property
     def py_int(self) -> int:
-        """
-        A python int representation of the class.
+        """A python int representation of the class.
+
         The returned data is immutable so changes will not mirror the instance.
         """
         return self.cpp
@@ -173,7 +173,7 @@ cdef class ShortTag(AbstractBaseIntTag):
     cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[CShortTag](name, self.cpp, endianness, string_encode)
 
-    def to_snbt(self, object indent = None) -> str:
+    def to_snbt(self, object indent: None | str | int = None) -> str:
         cdef string snbt
         cdef string indent_str
         if indent is None:
@@ -188,7 +188,7 @@ cdef class ShortTag(AbstractBaseIntTag):
             write_snbt[CShortTag](snbt, self.cpp, indent_str, 0)
         return snbt
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, object other: Any) -> bool:
         if not isinstance(other, ShortTag):
             return NotImplemented
         cdef ShortTag other_ = other
@@ -247,13 +247,13 @@ cdef class ShortTag(AbstractBaseIntTag):
 
 
 cdef class IntTag(AbstractBaseIntTag):
-    """
-    A 4 byte integer class.
+    """A 4 byte integer class.
+
     Can Store numbers between -(2^31) and (2^31 - 1)
     """
     tag_id: int = 3
 
-    def __init__(self, value = 0) -> None:
+    def __init__(self, value: SupportsInt = 0) -> None:
         value = int(value)
         self.cpp = (value & 0x7FFF_FFFF) - (value & 0x8000_0000)
 
@@ -270,8 +270,8 @@ cdef class IntTag(AbstractBaseIntTag):
 
     @property
     def py_int(self) -> int:
-        """
-        A python int representation of the class.
+        """A python int representation of the class.
+
         The returned data is immutable so changes will not mirror the instance.
         """
         return self.cpp
@@ -279,7 +279,7 @@ cdef class IntTag(AbstractBaseIntTag):
     cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[CIntTag](name, self.cpp, endianness, string_encode)
 
-    def to_snbt(self, object indent = None) -> str:
+    def to_snbt(self, object indent: None | str | int = None) -> str:
         cdef string snbt
         cdef string indent_str
         if indent is None:
@@ -294,7 +294,7 @@ cdef class IntTag(AbstractBaseIntTag):
             write_snbt[CIntTag](snbt, self.cpp, indent_str, 0)
         return snbt
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, object other: Any) -> bool:
         if not isinstance(other, IntTag):
             return NotImplemented
         cdef IntTag other_ = other
@@ -353,13 +353,13 @@ cdef class IntTag(AbstractBaseIntTag):
 
 
 cdef class LongTag(AbstractBaseIntTag):
-    """
-    An 8 byte integer class.
+    """An 8 byte integer class.
+
     Can Store numbers between -(2^63) and (2^63 - 1)
     """
     tag_id: int = 4
 
-    def __init__(self, value = 0) -> None:
+    def __init__(self, value: SupportsInt = 0) -> None:
         value = int(value)
         self.cpp = (value & 0x7FFF_FFFF_FFFF_FFFF) - (value & 0x8000_0000_0000_0000)
 
@@ -376,8 +376,8 @@ cdef class LongTag(AbstractBaseIntTag):
 
     @property
     def py_int(self) -> int:
-        """
-        A python int representation of the class.
+        """A python int representation of the class.
+
         The returned data is immutable so changes will not mirror the instance.
         """
         return self.cpp
@@ -385,7 +385,7 @@ cdef class LongTag(AbstractBaseIntTag):
     cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[CLongTag](name, self.cpp, endianness, string_encode)
 
-    def to_snbt(self, object indent = None) -> str:
+    def to_snbt(self, object indent: None | str | int = None) -> str:
         cdef string snbt
         cdef string indent_str
         if indent is None:
@@ -400,7 +400,7 @@ cdef class LongTag(AbstractBaseIntTag):
             write_snbt[CLongTag](snbt, self.cpp, indent_str, 0)
         return snbt
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, object other: Any) -> bool:
         if not isinstance(other, LongTag):
             return NotImplemented
         cdef LongTag other_ = other

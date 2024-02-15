@@ -9,13 +9,16 @@ from template import include
 # distutils: extra_link_args = -std=c++20 /std:c++20
 # cython: c_string_type=str, c_string_encoding=utf8
 
-from collections.abc import Mapping, Iterator, KeysView, ItemsView, ValuesView
-from typing import Iterable, Any
+from __future__ import annotations
+
+from collections.abc import Mapping, Iterator, Iterable, KeysView, ItemsView, ValuesView
+from typing import Any, overload, Type
 
 from libcpp.string cimport string
 from libcpp cimport bool
 from libcpp.memory cimport make_shared
 from cython.operator cimport dereference, postincrement
+import amulet_nbt
 from amulet_nbt._libcpp.endian cimport endian
 from amulet_nbt._string_encoding._cpp cimport CStringEncode
 from amulet_nbt._nbt_encoding._binary cimport write_named_tag
@@ -49,6 +52,8 @@ from .list cimport is_list_eq, ListTag
 from .array cimport ByteArrayTag, IntArrayTag, LongArrayTag
 from .deepcopy cimport CCompoundTagPtr_deepcopy
 
+import amulet_nbt
+
 {{py:
 ClassData = (
     #id,  C cls,           C node cls          C list cls        py cls,         tag var,          list var
@@ -66,7 +71,6 @@ ClassData = (
     (12, "CLongArrayTag", "CLongArrayTagPtr", "CLongArrayList", "LongArrayTag", "long_array_tag", "long_array_list", ),
 )
 }}
-
 
 {{
 "\n\n\n".join(
@@ -126,15 +130,19 @@ f"""    {"el"*(index!=1)}if index == {index}:
 
 
 cdef class CompoundTag(AbstractBaseMutableTag):
-    """
-    A Python wrapper around a C++ unordered map.
+    """A Python wrapper around a C++ unordered map.
+
     Note that this class is not thread safe and inherits all the limitations of a C++ unordered_map.
     """
     tag_id: int = 10
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(
+        self,
+        value: Mapping[str | bytes, amulet_nbt.AnyNBT] | Iterable[tuple[str | bytes, amulet_nbt.AnyNBT]] = (),
+        **kwargs: amulet_nbt.AnyNBT,
+    ) -> None:
         self.cpp = make_shared[CCompoundTag]()
-        self.update(*args, **kwargs)
+        self.update(value, **kwargs)
 
     @staticmethod
     cdef CompoundTag wrap(CCompoundTagPtr cpp):
@@ -148,7 +156,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return node
 
     @property
-    def py_dict(self) -> dict[str, ByteTag | ShortTag | IntTag | LongTag | FloatTag | DoubleTag | StringTag | ByteArrayTag | ListTag | CompoundTag | IntArrayTag | LongArrayTag]:
+    def py_dict(self) -> dict[str, amulet_nbt.AnyNBT]:
         """A shallow copy of the CompoundTag as a python dictionary."""
         return dict(self)
 
@@ -161,7 +169,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
 
 {{include("amulet_nbt/tpf/to_snbt.pyx.tpf", cpp_cls_ptr="CCompoundTagPtr")}}
 
-    def __eq__(self, object other) -> bool:
+    def __eq__(self, object other: Any) -> bool:
         if not isinstance(other, CompoundTag):
             return False
         cdef CompoundTag tag = other
@@ -201,7 +209,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
             postincrement(it)
 
     # Mapping
-    def __getitem__(self, string key) -> AbstractBaseTag:
+    def __getitem__(self, string key: str | bytes) -> amulet_nbt.AbstractBaseTag:
         cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
 
         if it == dereference(self.cpp).end():
@@ -209,9 +217,13 @@ cdef class CompoundTag(AbstractBaseMutableTag):
 
         return wrap_node(&dereference(it).second)
 
-    def get(self, string key, object default = None, object cls = AbstractBaseTag) -> ByteTag | ShortTag | IntTag | LongTag | FloatTag | DoubleTag | StringTag | ByteArrayTag | ListTag | CompoundTag | IntArrayTag | LongArrayTag:
-        """
-        Get an item from the CompoundTag.
+    def get(
+        self,
+        string key: str | bytes,
+        object default: amulet_nbt.AnyNBT | None = None,
+        object cls: Type[amulet_nbt.AbstractBaseTag] = AbstractBaseTag
+    ) -> amulet_nbt.AnyNBT:
+        """Get an item from the CompoundTag.
 
         :param key: The key to get
         :param default: The value to return if the key does not exist or the type is wrong. If not defined and the type is not correct a TypeError is raised.
@@ -233,28 +245,28 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         else:
             return default
 
-    def __contains__(self, string key) -> bool:
+    def __contains__(self, string key: str | bytes) -> bool:
         return dereference(self.cpp).contains(key)
 
-    def keys(self) -> KeysView[str]:
+    def keys(self) -> KeysView[str | bytes]:
         return KeysView(self)
 
-    def items(self) -> ItemsView[str, ByteTag | ShortTag | IntTag | LongTag | FloatTag | DoubleTag | StringTag | ByteArrayTag | ListTag | CompoundTag | IntArrayTag | LongArrayTag]:
+    def items(self) -> ItemsView[str | bytes, amulet_nbt.AnyNBT]:
         return ItemsView(self)
 
-    def values(self) -> ValuesView[ByteTag | ShortTag | IntTag | LongTag | FloatTag | DoubleTag | StringTag | ByteArrayTag | ListTag | CompoundTag | IntArrayTag | LongArrayTag]:
+    def values(self) -> ValuesView[amulet_nbt.AnyNBT]:
         return ValuesView(self)
 
     # MutableMapping
-    def __setitem__(self, string key, AbstractBaseTag tag not None) -> None:
+    def __setitem__(self, string key: str | bytes, AbstractBaseTag tag not None: amulet_nbt.AnyNBT) -> None:
         dereference(self.cpp)[<string> key] = tag.to_node()
 
-    def __delitem__(self, string key) -> None:
+    def __delitem__(self, string key: str | bytes) -> None:
         dereference(self.cpp).erase(key)
 
     __marker = object()
 
-    def pop(self, string key, default=__marker) -> ByteTag | ShortTag | IntTag | LongTag | FloatTag | DoubleTag | StringTag | ByteArrayTag | ListTag | CompoundTag | IntArrayTag | LongArrayTag:
+    def pop(self, string key, default=__marker) -> amulet_nbt.AnyNBT:
         '''D.pop(k[,d]) -> v, remove specified key and return the corresponding value.
           If key is not found, d is returned if given, otherwise KeyError is raised.
         '''
@@ -269,7 +281,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         dereference(self.cpp).erase(it)
         return tag
 
-    def popitem(self) -> ByteTag | ShortTag | IntTag | LongTag | FloatTag | DoubleTag | StringTag | ByteArrayTag | ListTag | CompoundTag | IntArrayTag | LongArrayTag:
+    def popitem(self) -> amulet_nbt.AnyNBT:
         '''D.popitem() -> (k, v), remove and return some (key, value) pair
            as a 2-tuple; but raise KeyError if D is empty.
         '''
@@ -303,7 +315,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         for key, value in kwds.items():
             self[key] = value
 
-    def setdefault(self, string key, AbstractBaseTag tag = None, object cls = AbstractBaseTag) -> ByteTag | ShortTag | IntTag | LongTag | FloatTag | DoubleTag | StringTag | ByteArrayTag | ListTag | CompoundTag | IntArrayTag | LongArrayTag:
+    def setdefault(self, string key, AbstractBaseTag tag = None, object cls = AbstractBaseTag) -> amulet_nbt.AnyNBT:
         cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
 
         if it == dereference(self.cpp).end():

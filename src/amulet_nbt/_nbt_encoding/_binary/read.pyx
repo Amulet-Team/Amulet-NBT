@@ -14,6 +14,7 @@ from libcpp.pair cimport pair
 from libcpp.string cimport string
 from amulet_nbt._libcpp.endian cimport endian
 
+import amulet_nbt
 from amulet_nbt._tag._cpp cimport TagNode
 from amulet_nbt._nbt_encoding._binary._cpp cimport read_named_tag
 from amulet_nbt._tag.compound cimport wrap_node
@@ -62,12 +63,12 @@ cdef string get_buffer(
 def load(
     object filepath_or_buffer: Union[str, bytes, BinaryIO, memoryview, None],
     *,
-    EncodingPreset preset = None,
-    bool compressed = True,
-    bool little_endian = False,
-    StringEncoding string_encoding not None = mutf8_encoding,
-    ReadOffset read_offset = None,
-) -> NamedTag:
+    EncodingPreset preset: amulet_nbt.EncodingPreset = None,
+    bool compressed: bool = True,
+    bool little_endian: bool = False,
+    StringEncoding string_encoding not None: amulet_nbt.StringEncoding = mutf8_encoding,
+    ReadOffset read_offset: amulet_nbt.ReadOffset = None,
+) -> amulet_nbt.NamedTag:
     cdef endian endianness
 
     if preset is not None:
@@ -96,12 +97,12 @@ def load_array(
     object filepath_or_buffer: Union[str, bytes, BinaryIO, memoryview, None],
     *,
     int count = 1,
-    EncodingPreset preset = None,
-    bool compressed =True,
-    bool little_endian = False,
-    StringEncoding string_encoding = mutf8_encoding,
-    ReadOffset read_offset = None,
-) -> list[NamedTag]:
+    EncodingPreset preset: amulet_nbt.EncodingPreset = None,
+    bool compressed: bool = True,
+    bool little_endian: bool = False,
+    StringEncoding string_encoding: amulet_nbt.StringEncoding = mutf8_encoding,
+    ReadOffset read_offset: amulet_nbt.ReadOffset = None,
+) -> list[amulet_nbt.NamedTag]:
     if count < -1:
         raise ValueError("Count must be -1 or higher")
 

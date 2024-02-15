@@ -9,7 +9,7 @@ from template import include
 # distutils: extra_link_args = -std=c++20 /std:c++20
 # cython: c_string_type=str, c_string_encoding=utf8
 
-from typing import Any
+from typing import Any, SupportsInt
 
 from libcpp.string cimport string
 from amulet_nbt._libcpp.endian cimport endian
@@ -25,8 +25,8 @@ cdef class AbstractBaseIntTag(AbstractBaseNumericTag):
 
     @property
     def py_int(self) -> int:
-        """
-        A python int representation of the class.
+        """A python int representation of the class.
+
         The returned data is immutable so changes will not mirror the instance.
         """
         raise NotImplementedError
@@ -37,13 +37,13 @@ cdef class AbstractBaseIntTag(AbstractBaseNumericTag):
 
 
 cdef class ByteTag(AbstractBaseIntTag):
-    """
-    A 1 byte integer class.
+    """A 1 byte integer class.
+
     Can Store numbers between -(2^7) and (2^7 - 1)
     """
     tag_id: int = 1
 
-    def __init__(self, value = 0) -> None:
+    def __init__(self, value: SupportsInt = 0) -> None:
         value = int(value)
         self.cpp = (value & 0x7F) - (value & 0x80)
 
@@ -51,13 +51,13 @@ cdef class ByteTag(AbstractBaseIntTag):
 
 
 cdef class ShortTag(AbstractBaseIntTag):
-    """
-    A 2 byte integer class.
+    """A 2 byte integer class.
+
     Can Store numbers between -(2^15) and (2^15 - 1)
     """
     tag_id: int = 2
 
-    def __init__(self, value = 0) -> None:
+    def __init__(self, value: SupportsInt = 0) -> None:
         value = int(value)
         self.cpp = (value & 0x7FFF) - (value & 0x8000)
 
@@ -65,13 +65,13 @@ cdef class ShortTag(AbstractBaseIntTag):
 
 
 cdef class IntTag(AbstractBaseIntTag):
-    """
-    A 4 byte integer class.
+    """A 4 byte integer class.
+
     Can Store numbers between -(2^31) and (2^31 - 1)
     """
     tag_id: int = 3
 
-    def __init__(self, value = 0) -> None:
+    def __init__(self, value: SupportsInt = 0) -> None:
         value = int(value)
         self.cpp = (value & 0x7FFF_FFFF) - (value & 0x8000_0000)
 
@@ -79,13 +79,13 @@ cdef class IntTag(AbstractBaseIntTag):
 
 
 cdef class LongTag(AbstractBaseIntTag):
-    """
-    An 8 byte integer class.
+    """An 8 byte integer class.
+
     Can Store numbers between -(2^63) and (2^63 - 1)
     """
     tag_id: int = 4
 
-    def __init__(self, value = 0) -> None:
+    def __init__(self, value: SupportsInt = 0) -> None:
         value = int(value)
         self.cpp = (value & 0x7FFF_FFFF_FFFF_FFFF) - (value & 0x8000_0000_0000_0000)
 

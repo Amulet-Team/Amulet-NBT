@@ -8,12 +8,14 @@
 # cython: c_string_type=str, c_string_encoding=utf8
 
 from typing import Any, Type
+from collections.abc import Iterable
 
 from libc.math cimport ceil
 from libcpp cimport bool
 from libcpp.memory cimport make_shared
 from libcpp.string cimport string
 from cython.operator cimport dereference
+import amulet_nbt
 from amulet_nbt._libcpp.variant cimport get, monostate
 from amulet_nbt._libcpp.endian cimport endian
 from amulet_nbt._string_encoding._cpp cimport CStringEncode
@@ -2485,13 +2487,13 @@ cdef inline void ListTag_append(CListTagPtr cpp, AbstractBaseTag value):
 
 
 cdef class ListTag(AbstractBaseMutableTag):
-    """
-    This class behaves like a python list.
+    """A Python wrapper around a C++ vector.
+
     All contained data must be of the same NBT data type.
     """
     tag_id: int = 9
 
-    def __init__(self, object value = (), char element_tag_id = 1) -> None:
+    def __init__(self, object value: Iterable[amulet_nbt.AnyNBT] = (), char element_tag_id = 1) -> None:
         self.cpp = make_shared[CListTag]()
         if element_tag_id == 0:
             dereference(self.cpp).emplace[monostate]()
@@ -2539,8 +2541,8 @@ cdef class ListTag(AbstractBaseMutableTag):
     @property
     def py_list(self) -> list[ByteTag] | list[ShortTag] | list[IntTag] | list[LongTag] | list[FloatTag] | list[
         DoubleTag] | list[StringTag] | list[CompoundTag] | list[ByteArrayTag] | list[IntArrayTag] | list[LongArrayTag]:
-        """
-        A python list representation of the class.
+        """A python list representation of the class.
+
         The returned list is a shallow copy of the class, meaning changes will not mirror the instance.
         Use the public API to modify the internal data.
         """
@@ -2553,7 +2555,7 @@ cdef class ListTag(AbstractBaseMutableTag):
     cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[CListTagPtr](name, self.cpp, endianness, string_encode)
 
-    def to_snbt(self, object indent = None) -> str:
+    def to_snbt(self, object indent: None | str | int = None) -> str:
         cdef string snbt
         cdef string indent_str
         if indent is None:
@@ -2568,7 +2570,7 @@ cdef class ListTag(AbstractBaseMutableTag):
             write_snbt[CListTagPtr](snbt, self.cpp, indent_str, 0)
         return snbt
 
-    def __eq__(self, object other) -> bool:
+    def __eq__(self, object other: Any) -> bool:
         if not isinstance(other, ListTag):
             return False
         cdef ListTag tag = other
@@ -2593,8 +2595,8 @@ cdef class ListTag(AbstractBaseMutableTag):
 
     @property
     def element_tag_id(self) -> int:
-        """
-        The numerical id of the element type in this list.
+        """The numerical id of the element type in this list.
+
         Will be an int in the range 0-12.
         """
         return dereference(self.cpp).index()
@@ -2666,6 +2668,7 @@ cdef class ListTag(AbstractBaseMutableTag):
         return False
 
     def __reversed__(self):
+        """A reversed iterator for the list."""
         for i in reversed(range(len(self))):
             yield self[i]
 
@@ -2782,7 +2785,7 @@ cdef class ListTag(AbstractBaseMutableTag):
         """Return a shallow copy of the class"""
         return ListTag(self, dereference(self.cpp).index())
 
-    cpdef ByteTag get_byte(self, ptrdiff_t index):
+    def get_byte(self, ptrdiff_t index) -> amulet_nbt.ByteTag:
         """Get the tag at index if it is a ByteTag.
     
         :param index: The index to get
@@ -2793,7 +2796,7 @@ cdef class ListTag(AbstractBaseMutableTag):
         cdef ByteTag tag = ListTag_get_item(self.cpp, index)
         return tag
 
-    cpdef ShortTag get_short(self, ptrdiff_t index):
+    def get_short(self, ptrdiff_t index) -> amulet_nbt.ShortTag:
         """Get the tag at index if it is a ShortTag.
     
         :param index: The index to get
@@ -2804,7 +2807,7 @@ cdef class ListTag(AbstractBaseMutableTag):
         cdef ShortTag tag = ListTag_get_item(self.cpp, index)
         return tag
 
-    cpdef IntTag get_int(self, ptrdiff_t index):
+    def get_int(self, ptrdiff_t index) -> amulet_nbt.IntTag:
         """Get the tag at index if it is a IntTag.
     
         :param index: The index to get
@@ -2815,7 +2818,7 @@ cdef class ListTag(AbstractBaseMutableTag):
         cdef IntTag tag = ListTag_get_item(self.cpp, index)
         return tag
 
-    cpdef LongTag get_long(self, ptrdiff_t index):
+    def get_long(self, ptrdiff_t index) -> amulet_nbt.LongTag:
         """Get the tag at index if it is a LongTag.
     
         :param index: The index to get
@@ -2826,7 +2829,7 @@ cdef class ListTag(AbstractBaseMutableTag):
         cdef LongTag tag = ListTag_get_item(self.cpp, index)
         return tag
 
-    cpdef FloatTag get_float(self, ptrdiff_t index):
+    def get_float(self, ptrdiff_t index) -> amulet_nbt.FloatTag:
         """Get the tag at index if it is a FloatTag.
     
         :param index: The index to get
@@ -2837,7 +2840,7 @@ cdef class ListTag(AbstractBaseMutableTag):
         cdef FloatTag tag = ListTag_get_item(self.cpp, index)
         return tag
 
-    cpdef DoubleTag get_double(self, ptrdiff_t index):
+    def get_double(self, ptrdiff_t index) -> amulet_nbt.DoubleTag:
         """Get the tag at index if it is a DoubleTag.
     
         :param index: The index to get
@@ -2848,7 +2851,7 @@ cdef class ListTag(AbstractBaseMutableTag):
         cdef DoubleTag tag = ListTag_get_item(self.cpp, index)
         return tag
 
-    cpdef StringTag get_string(self, ptrdiff_t index):
+    def get_string(self, ptrdiff_t index) -> amulet_nbt.StringTag:
         """Get the tag at index if it is a StringTag.
     
         :param index: The index to get
@@ -2859,7 +2862,7 @@ cdef class ListTag(AbstractBaseMutableTag):
         cdef StringTag tag = ListTag_get_item(self.cpp, index)
         return tag
 
-    cpdef ListTag get_list(self, ptrdiff_t index):
+    def get_list(self, ptrdiff_t index) -> amulet_nbt.ListTag:
         """Get the tag at index if it is a ListTag.
     
         :param index: The index to get
@@ -2870,7 +2873,7 @@ cdef class ListTag(AbstractBaseMutableTag):
         cdef ListTag tag = ListTag_get_item(self.cpp, index)
         return tag
 
-    cpdef CompoundTag get_compound(self, ptrdiff_t index):
+    def get_compound(self, ptrdiff_t index) -> amulet_nbt.CompoundTag:
         """Get the tag at index if it is a CompoundTag.
     
         :param index: The index to get
@@ -2881,7 +2884,7 @@ cdef class ListTag(AbstractBaseMutableTag):
         cdef CompoundTag tag = ListTag_get_item(self.cpp, index)
         return tag
 
-    cpdef ByteArrayTag get_byte_array(self, ptrdiff_t index):
+    def get_byte_array(self, ptrdiff_t index) -> amulet_nbt.ByteArrayTag:
         """Get the tag at index if it is a ByteArrayTag.
     
         :param index: The index to get
@@ -2892,7 +2895,7 @@ cdef class ListTag(AbstractBaseMutableTag):
         cdef ByteArrayTag tag = ListTag_get_item(self.cpp, index)
         return tag
 
-    cpdef IntArrayTag get_int_array(self, ptrdiff_t index):
+    def get_int_array(self, ptrdiff_t index) -> amulet_nbt.IntArrayTag:
         """Get the tag at index if it is a IntArrayTag.
     
         :param index: The index to get
@@ -2903,7 +2906,7 @@ cdef class ListTag(AbstractBaseMutableTag):
         cdef IntArrayTag tag = ListTag_get_item(self.cpp, index)
         return tag
 
-    cpdef LongArrayTag get_long_array(self, ptrdiff_t index):
+    def get_long_array(self, ptrdiff_t index) -> amulet_nbt.LongArrayTag:
         """Get the tag at index if it is a LongArrayTag.
     
         :param index: The index to get

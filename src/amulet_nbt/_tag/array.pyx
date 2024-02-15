@@ -11,7 +11,8 @@ import numpy
 cimport numpy
 numpy.import_array()
 from numpy.typing import NDArray, ArrayLike
-from typing import Any, Iterator, overload
+from typing import Any, overload, SupportsInt
+from collections.abc import Iterable, Iterator
 
 from cython.operator cimport dereference
 from cpython cimport Py_INCREF
@@ -28,8 +29,8 @@ from .abc cimport AbstractBaseMutableTag
 cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
     @property
     def np_array(self) -> NDArray[numpy.int8 | numpy.int32 | numpy.int64]:
-        """
-        A numpy array holding the same internal data.
+        """A numpy array holding the same internal data.
+
         Changes to the array will also modify the internal state.
         """
         raise NotImplementedError
@@ -40,8 +41,8 @@ cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
 
     # Sized
     def __len__(self) -> int:
-        """
-        The length of the array.
+        """The length of the array.
+
         >>> from amulet_nbt import ByteArrayTag
         >>> tag = ByteArrayTag([1, 2, 3])
         >>> len(tag)  # 3
@@ -62,8 +63,7 @@ cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
         ...
 
     def __getitem__(self, item):
-        """
-        Get item(s) from the array.
+        """Get item(s) from the array.
 
         This supports the full numpy protocol.
         If a numpy array is returned, the array data is the same as the data contained in this class.
@@ -78,8 +78,7 @@ cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
         raise NotImplementedError
 
     def __iter__(self) -> Iterator[numpy.int8 | numpy.int32 | numpy.int64]:
-        """
-        Iterate through the items in the array.
+        """Iterate through the items in the array.
 
         >>> from amulet_nbt import ByteArrayTag
         >>> tag = ByteArrayTag([1, 2, 3])
@@ -90,19 +89,19 @@ cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
         raise NotImplementedError
 
     def __reversed__(self) -> Iterator[numpy.int8 | numpy.int32 | numpy.int64]:
-        """
-        Iterate through the items in the array in reverse order.
+        """Iterate through the items in the array in reverse order.
 
         >>> from amulet_nbt import ByteArrayTag
         >>> tag = ByteArrayTag([1, 2, 3])
         >>> for num in reversed(tag):
         >>>     pass
+
+        :return: A reversed iterator.
         """
         raise NotImplementedError
 
     def __contains__(self, item: Any) -> bool:
-        """
-        Check if an item is in the array.
+        """Check if an item is in the array.
 
         >>> from amulet_nbt import ByteArrayTag
         >>> tag = ByteArrayTag([1, 2, 3])
@@ -124,8 +123,7 @@ cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
         ...
 
     def __setitem__(self, key, value):
-        """
-        Set item(s) in the array.
+        """Set item(s) in the array.
 
         This supports the full numpy protocol.
 
@@ -139,14 +137,16 @@ cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
         raise NotImplementedError
 
     # Array interface
-    def __array__(self, dtype=None) -> NDArray[numpy.int8 | numpy.int32 | numpy.int64]:
-        """
-        Get a numpy array representation of the stored data.
+    def __array__(self, dtype: Any = None) -> NDArray[numpy.int8 | numpy.int32 | numpy.int64]:
+        """Get a numpy array representation of the stored data.
 
         >>> from amulet_nbt import ByteArrayTag
         >>> import numpy
         >>> tag = ByteArrayTag([1, 2, 3])
         >>> arr = numpy.asarray(tag)
+
+        :param dtype: This is ignored but is part of the array interace
+        :return: A numpy array that shares the memory with this instance.
         """
         raise NotImplementedError
 
@@ -155,10 +155,8 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
     """This class behaves like an 1D Numpy signed integer array with each value stored in a byte."""
     tag_id: int = 7
 
-    def __init__(self, object value = ()) -> None:
-        """
-        Construct a new ByteArrayTag object from an array-like object.
-        """
+    def __init__(self, object value: Iterable[SupportsInt] = ()) -> None:
+        """Construct a new ByteArrayTag object from an array-like object."""
         cdef numpy.ndarray arr = numpy.asarray(value, numpy.dtype("int8")).ravel()
         self.cpp = make_shared[CByteArrayTag](arr.size)
         cdef size_t i
@@ -183,7 +181,7 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
     cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[CByteArrayTagPtr](name, self.cpp, endianness, string_encode)
 
-    def to_snbt(self, object indent = None) -> str:
+    def to_snbt(self, object indent: None | str | int = None) -> str:
         cdef string snbt
         cdef string indent_str
         if indent is None:
@@ -198,7 +196,7 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
             write_snbt[CByteArrayTagPtr](snbt, self.cpp, indent_str, 0)
         return snbt
 
-    def __eq__(self, object other) -> bool:
+    def __eq__(self, object other: Any) -> bool:
         if not isinstance(other, ByteArrayTag):
             return False
         cdef ByteArrayTag tag = other
@@ -225,8 +223,8 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
 
     # Sized
     def __len__(self) -> int:
-        """
-        The length of the array.
+        """The length of the array.
+
         >>> from amulet_nbt import ByteArrayTag
         >>> tag = ByteArrayTag([1, 2, 3])
         >>> len(tag)  # 3
@@ -247,8 +245,7 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
         ...
 
     def __getitem__(self, object item):
-        """
-        Get item(s) from the array.
+        """Get item(s) from the array.
 
         This supports the full numpy protocol.
         If a numpy array is returned, the array data is the same as the data contained in this class.
@@ -263,8 +260,7 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
         return numpy.asarray(self)[item]
 
     def __iter__(self) -> Iterator[numpy.int8]:
-        """
-        Iterate through the items in the array.
+        """Iterate through the items in the array.
 
         >>> from amulet_nbt import ByteArrayTag
         >>> tag = ByteArrayTag([1, 2, 3])
@@ -275,19 +271,19 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
         return iter(numpy.asarray(self))
 
     def __reversed__(self) -> Iterator[numpy.int8]:
-        """
-        Iterate through the items in the array in reverse order.
+        """Iterate through the items in the array in reverse order.
 
         >>> from amulet_nbt import ByteArrayTag
         >>> tag = ByteArrayTag([1, 2, 3])
         >>> for num in reversed(tag):
         >>>     pass
+
+        :return: A reversed iterator.
         """
         return reversed(numpy.asarray(self))
 
     def __contains__(self, value) -> bool:
-        """
-        Check if an item is in the array.
+        """Check if an item is in the array.
 
         >>> from amulet_nbt import ByteArrayTag
         >>> tag = ByteArrayTag([1, 2, 3])
@@ -309,8 +305,7 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
         ...
 
     def __setitem__(self, object item, object value):
-        """
-        Set item(s) in the array.
+        """Set item(s) in the array.
 
         This supports the full numpy protocol.
 
@@ -324,14 +319,16 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
         numpy.asarray(self)[item] = value
 
     # Array interface
-    def __array__(self, dtype=None) -> NDArray[numpy.int8]:
-        """
-        Get a numpy array representation of the stored data.
+    def __array__(self, dtype: Any = None) -> NDArray[numpy.int8]:
+        """Get a numpy array representation of the stored data.
 
         >>> from amulet_nbt import ByteArrayTag
         >>> import numpy
         >>> tag = ByteArrayTag([1, 2, 3])
         >>> arr = numpy.asarray(tag)
+
+        :param dtype: This is ignored but is part of the array interace
+        :return: A numpy array that shares the memory with this instance.
         """
         cdef numpy.npy_intp shape[1]
         shape[0] = <numpy.npy_intp> dereference(self.cpp).size()
@@ -346,10 +343,8 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
     """This class behaves like an 1D Numpy signed integer array with each value stored in a int."""
     tag_id: int = 11
 
-    def __init__(self, object value = ()) -> None:
-        """
-        Construct a new IntArrayTag object from an array-like object.
-        """
+    def __init__(self, object value: Iterable[SupportsInt] = ()) -> None:
+        """Construct a new IntArrayTag object from an array-like object."""
         cdef numpy.ndarray arr = numpy.asarray(value, numpy.int32).ravel()
         self.cpp = make_shared[CIntArrayTag](arr.size)
         cdef size_t i
@@ -374,7 +369,7 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
     cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[CIntArrayTagPtr](name, self.cpp, endianness, string_encode)
 
-    def to_snbt(self, object indent = None) -> str:
+    def to_snbt(self, object indent: None | str | int = None) -> str:
         cdef string snbt
         cdef string indent_str
         if indent is None:
@@ -389,7 +384,7 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
             write_snbt[CIntArrayTagPtr](snbt, self.cpp, indent_str, 0)
         return snbt
 
-    def __eq__(self, object other) -> bool:
+    def __eq__(self, object other: Any) -> bool:
         if not isinstance(other, IntArrayTag):
             return False
         cdef IntArrayTag tag = other
@@ -416,8 +411,8 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
 
     # Sized
     def __len__(self) -> int:
-        """
-        The length of the array.
+        """The length of the array.
+
         >>> from amulet_nbt import IntArrayTag
         >>> tag = IntArrayTag([1, 2, 3])
         >>> len(tag)  # 3
@@ -438,8 +433,7 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
         ...
 
     def __getitem__(self, object item):
-        """
-        Get item(s) from the array.
+        """Get item(s) from the array.
 
         This supports the full numpy protocol.
         If a numpy array is returned, the array data is the same as the data contained in this class.
@@ -454,8 +448,7 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
         return numpy.asarray(self)[item]
 
     def __iter__(self) -> Iterator[numpy.int32]:
-        """
-        Iterate through the items in the array.
+        """Iterate through the items in the array.
 
         >>> from amulet_nbt import IntArrayTag
         >>> tag = IntArrayTag([1, 2, 3])
@@ -466,19 +459,19 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
         return iter(numpy.asarray(self))
 
     def __reversed__(self) -> Iterator[numpy.int32]:
-        """
-        Iterate through the items in the array in reverse order.
+        """Iterate through the items in the array in reverse order.
 
         >>> from amulet_nbt import IntArrayTag
         >>> tag = IntArrayTag([1, 2, 3])
         >>> for num in reversed(tag):
         >>>     pass
+
+        :return: A reversed iterator.
         """
         return reversed(numpy.asarray(self))
 
     def __contains__(self, value) -> bool:
-        """
-        Check if an item is in the array.
+        """Check if an item is in the array.
 
         >>> from amulet_nbt import IntArrayTag
         >>> tag = IntArrayTag([1, 2, 3])
@@ -500,8 +493,7 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
         ...
 
     def __setitem__(self, object item, object value):
-        """
-        Set item(s) in the array.
+        """Set item(s) in the array.
 
         This supports the full numpy protocol.
 
@@ -515,14 +507,16 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
         numpy.asarray(self)[item] = value
 
     # Array interface
-    def __array__(self, dtype=None) -> NDArray[numpy.int32]:
-        """
-        Get a numpy array representation of the stored data.
+    def __array__(self, dtype: Any = None) -> NDArray[numpy.int32]:
+        """Get a numpy array representation of the stored data.
 
         >>> from amulet_nbt import IntArrayTag
         >>> import numpy
         >>> tag = IntArrayTag([1, 2, 3])
         >>> arr = numpy.asarray(tag)
+
+        :param dtype: This is ignored but is part of the array interace
+        :return: A numpy array that shares the memory with this instance.
         """
         cdef numpy.npy_intp shape[1]
         shape[0] = <numpy.npy_intp> dereference(self.cpp).size()
@@ -537,10 +531,8 @@ cdef class LongArrayTag(AbstractBaseArrayTag):
     """This class behaves like an 1D Numpy signed integer array with each value stored in a long."""
     tag_id: int = 12
 
-    def __init__(self, object value = ()) -> None:
-        """
-        Construct a new LongArrayTag object from an array-like object.
-        """
+    def __init__(self, object value: Iterable[SupportsInt] = ()) -> None:
+        """Construct a new LongArrayTag object from an array-like object."""
         cdef numpy.ndarray arr = numpy.asarray(value, numpy.int64).ravel()
         self.cpp = make_shared[CLongArrayTag](arr.size)
         cdef size_t i
@@ -565,7 +557,7 @@ cdef class LongArrayTag(AbstractBaseArrayTag):
     cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[CLongArrayTagPtr](name, self.cpp, endianness, string_encode)
 
-    def to_snbt(self, object indent = None) -> str:
+    def to_snbt(self, object indent: None | str | int = None) -> str:
         cdef string snbt
         cdef string indent_str
         if indent is None:
@@ -580,7 +572,7 @@ cdef class LongArrayTag(AbstractBaseArrayTag):
             write_snbt[CLongArrayTagPtr](snbt, self.cpp, indent_str, 0)
         return snbt
 
-    def __eq__(self, object other) -> bool:
+    def __eq__(self, object other: Any) -> bool:
         if not isinstance(other, LongArrayTag):
             return False
         cdef LongArrayTag tag = other
@@ -607,8 +599,8 @@ cdef class LongArrayTag(AbstractBaseArrayTag):
 
     # Sized
     def __len__(self) -> int:
-        """
-        The length of the array.
+        """The length of the array.
+
         >>> from amulet_nbt import LongArrayTag
         >>> tag = LongArrayTag([1, 2, 3])
         >>> len(tag)  # 3
@@ -629,8 +621,7 @@ cdef class LongArrayTag(AbstractBaseArrayTag):
         ...
 
     def __getitem__(self, object item):
-        """
-        Get item(s) from the array.
+        """Get item(s) from the array.
 
         This supports the full numpy protocol.
         If a numpy array is returned, the array data is the same as the data contained in this class.
@@ -645,8 +636,7 @@ cdef class LongArrayTag(AbstractBaseArrayTag):
         return numpy.asarray(self)[item]
 
     def __iter__(self) -> Iterator[numpy.int64]:
-        """
-        Iterate through the items in the array.
+        """Iterate through the items in the array.
 
         >>> from amulet_nbt import LongArrayTag
         >>> tag = LongArrayTag([1, 2, 3])
@@ -657,19 +647,19 @@ cdef class LongArrayTag(AbstractBaseArrayTag):
         return iter(numpy.asarray(self))
 
     def __reversed__(self) -> Iterator[numpy.int64]:
-        """
-        Iterate through the items in the array in reverse order.
+        """Iterate through the items in the array in reverse order.
 
         >>> from amulet_nbt import LongArrayTag
         >>> tag = LongArrayTag([1, 2, 3])
         >>> for num in reversed(tag):
         >>>     pass
+
+        :return: A reversed iterator.
         """
         return reversed(numpy.asarray(self))
 
     def __contains__(self, value) -> bool:
-        """
-        Check if an item is in the array.
+        """Check if an item is in the array.
 
         >>> from amulet_nbt import LongArrayTag
         >>> tag = LongArrayTag([1, 2, 3])
@@ -691,8 +681,7 @@ cdef class LongArrayTag(AbstractBaseArrayTag):
         ...
 
     def __setitem__(self, object item, object value):
-        """
-        Set item(s) in the array.
+        """Set item(s) in the array.
 
         This supports the full numpy protocol.
 
@@ -706,14 +695,16 @@ cdef class LongArrayTag(AbstractBaseArrayTag):
         numpy.asarray(self)[item] = value
 
     # Array interface
-    def __array__(self, dtype=None) -> NDArray[numpy.int64]:
-        """
-        Get a numpy array representation of the stored data.
+    def __array__(self, dtype: Any = None) -> NDArray[numpy.int64]:
+        """Get a numpy array representation of the stored data.
 
         >>> from amulet_nbt import LongArrayTag
         >>> import numpy
         >>> tag = LongArrayTag([1, 2, 3])
         >>> arr = numpy.asarray(tag)
+
+        :param dtype: This is ignored but is part of the array interace
+        :return: A numpy array that shares the memory with this instance.
         """
         cdef numpy.npy_intp shape[1]
         shape[0] = <numpy.npy_intp> dereference(self.cpp).size()

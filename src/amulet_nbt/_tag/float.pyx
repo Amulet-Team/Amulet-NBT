@@ -7,7 +7,7 @@
 # distutils: extra_link_args = -std=c++20 /std:c++20
 # cython: c_string_type=str, c_string_encoding=utf8
 
-from typing import Any
+from typing import Any, SupportsFloat
 
 from libcpp.string cimport string
 from amulet_nbt._libcpp.endian cimport endian
@@ -23,8 +23,8 @@ cdef class AbstractBaseFloatTag(AbstractBaseNumericTag):
 
     @property
     def py_float(self) -> float:
-        """
-        A python float representation of the class.
+        """A python float representation of the class.
+
         The returned data is immutable so changes will not mirror the instance.
         """
         raise NotImplementedError
@@ -38,7 +38,7 @@ cdef class FloatTag(AbstractBaseFloatTag):
     """A single precision float class."""
     tag_id: int = 5
 
-    def __init__(self, value = 0) -> None:
+    def __init__(self, value: SupportsFloat = 0) -> None:
         self.cpp = float(value)
 
     @staticmethod
@@ -59,7 +59,7 @@ cdef class FloatTag(AbstractBaseFloatTag):
     cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[CFloatTag](name, self.cpp, endianness, string_encode)
 
-    def to_snbt(self, object indent = None) -> str:
+    def to_snbt(self, object indent: None | str | int = None) -> str:
         cdef string snbt
         cdef string indent_str
         if indent is None:
@@ -74,7 +74,7 @@ cdef class FloatTag(AbstractBaseFloatTag):
             write_snbt[CFloatTag](snbt, self.cpp, indent_str, 0)
         return snbt
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, object other: Any) -> bool:
         if not isinstance(other, FloatTag):
             return NotImplemented
         cdef FloatTag other_ = other
@@ -136,7 +136,7 @@ cdef class DoubleTag(AbstractBaseFloatTag):
     """A double precision float class."""
     tag_id: int = 6
 
-    def __init__(self, value = 0) -> None:
+    def __init__(self, value: SupportsFloat = 0) -> None:
         self.cpp = float(value)
 
     @staticmethod
@@ -157,7 +157,7 @@ cdef class DoubleTag(AbstractBaseFloatTag):
     cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[CDoubleTag](name, self.cpp, endianness, string_encode)
 
-    def to_snbt(self, object indent = None) -> str:
+    def to_snbt(self, object indent: None | str | int = None) -> str:
         cdef string snbt
         cdef string indent_str
         if indent is None:
@@ -172,7 +172,7 @@ cdef class DoubleTag(AbstractBaseFloatTag):
             write_snbt[CDoubleTag](snbt, self.cpp, indent_str, 0)
         return snbt
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, object other: Any) -> bool:
         if not isinstance(other, DoubleTag):
             return NotImplemented
         cdef DoubleTag other_ = other

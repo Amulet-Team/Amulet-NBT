@@ -28,7 +28,7 @@ cdef class StringTag(AbstractBaseImmutableTag):
     """A class that behaves like a string."""
     tag_id: int = 8
 
-    def __init__(self, object value = b"") -> None:
+    def __init__(self, object value: str | bytes = b"") -> None:
         if isinstance(value, (str, bytes)):
             self.cpp = value
         else:
@@ -47,8 +47,8 @@ cdef class StringTag(AbstractBaseImmutableTag):
 
     @property
     def py_str(self) -> str:
-        """
-        The data stored in the class as a python string.
+        """The data stored in the class as a python string.
+
         In some rare cases the data cannot be decoded to a string and this will raise a UnicodeDecodeError.
         """
         return <str> self.cpp

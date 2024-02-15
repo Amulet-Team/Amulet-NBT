@@ -1,4 +1,4 @@
-    cpdef {{py_cls}} get_{{tag_name}}(self, ptrdiff_t index):
+    def get_{{tag_name}}(self, ptrdiff_t index) -> amulet_nbt.{{py_cls}}:
         """Get the tag at index if it is a {{py_cls}}.
     
         :param index: The index to get

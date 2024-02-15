@@ -1,1 +1,1 @@
-from .encoding import mutf8_encoding, utf8_encoding, utf8_escape_encoding
+from .encoding import mutf8_encoding, utf8_encoding, utf8_escape_encoding, StringEncoding

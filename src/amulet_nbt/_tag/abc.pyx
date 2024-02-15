@@ -5,13 +5,15 @@
 # cython: c_string_type=str, c_string_encoding=utf8
 
 from copy import copy
-from typing import Any, Self
+from typing import Any, Self, BinaryIO
 import gzip
 
 from libcpp cimport bool
 from libcpp.string cimport string
 
 from amulet_nbt._libcpp.endian cimport endian
+
+import amulet_nbt
 from amulet_nbt._string_encoding cimport StringEncoding
 from amulet_nbt._string_encoding._cpp cimport CStringEncode
 from amulet_nbt._string_encoding import mutf8_encoding
@@ -31,8 +33,8 @@ cdef class AbstractBaseTag(AbstractBase):
 
     @property
     def py_data(self) -> Any:
-        """
-        A python representation of the class. Note that the return type is undefined and may change in the future.
+        """A python representation of the class. Note that the return type is undefined and may change in the future.
+
         You would be better off using the py_{type} or np_array properties if you require a fixed type.
         This is here for convenience to get a python representation under the same property name.
         """
@@ -44,14 +46,13 @@ cdef class AbstractBaseTag(AbstractBase):
     def to_nbt(
         self,
         *,
-        EncodingPreset preset = None,
-        bool compressed=True,
-        bool little_endian=False,
-        StringEncoding string_encoding = mutf8_encoding,
-        string name = b"",
+        EncodingPreset preset: amulet_nbt.EncodingPreset = None,
+        bool compressed: bool = True,
+        bool little_endian: bool = False,
+        StringEncoding string_encoding: amulet_nbt.StringTag = mutf8_encoding,
+        string name: str | bytes = b"",
     ) -> bytes:
-        """
-        Get the data in binary NBT format.
+        """Get the data in binary NBT format.
 
         :param preset: A class containing endianness and encoding presets.
         :param compressed: Should the bytes be compressed with gzip.
@@ -81,16 +82,15 @@ cdef class AbstractBaseTag(AbstractBase):
 
     def save_to(
         self,
-        object filepath_or_buffer=None,
+        object filepath_or_buffer: bytes | str | BinaryIO | memoryview | None = None,
         *,
-        EncodingPreset preset = None,
-        bool compressed=True,
-        bool little_endian=False,
-        StringEncoding string_encoding = mutf8_encoding,
-        string name = b"",
+        EncodingPreset preset: amulet_nbt.EncodingPreset = None,
+        bool compressed: bool = True,
+        bool little_endian: bool = False,
+        StringEncoding string_encoding: amulet_nbt.StringEncoding = mutf8_encoding,
+        string name: str | bytes = b"",
     ) -> bytes:
-        """
-        Convert the data to the binary NBT format. Optionally write to a file.
+        """Convert the data to the binary NBT format. Optionally write to a file.
 
         If filepath_or_buffer is a valid file path in string form the data will be written to that file.
 
@@ -120,9 +120,9 @@ cdef class AbstractBaseTag(AbstractBase):
                 filepath_or_buffer.write(data)
         return data
 
-    def to_snbt(self, object indent = None) -> str:
-        """
-        Convert the data to the Stringified NBT format.
+    def to_snbt(self, object indent: None | str | int = None) -> str:
+        """Convert the data to the Stringified NBT format.
+
         :param indent:
             If None (the default) the SNBT will be on one line.
             If an int will be multi-line SNBT with this many spaces per indentation.
@@ -131,9 +131,9 @@ cdef class AbstractBaseTag(AbstractBase):
         """
         raise NotImplementedError
 
-    def __eq__(self, other) -> bool:
-        """
-        Check if the instance is equal to another instance.
+    def __eq__(self, object other: Any) -> bool:
+        """Check if the instance is equal to another instance.
+
         This will only return True if the tag type is the same and the data contained is the same.
 
         >>> from amulet_nbt import ByteTag, ShortTag
@@ -147,8 +147,8 @@ cdef class AbstractBaseTag(AbstractBase):
         raise NotImplementedError
 
     def __repr__(self) -> str:
-        """
-        A string representation of the object to show how it can be constructed.
+        """A string representation of the object to show how it can be constructed.
+
         >>> from amulet_nbt import ByteTag
         >>> tag = ByteTag(1)
         >>> repr(tag)  # "ByteTag(1)"
@@ -167,22 +167,26 @@ cdef class AbstractBaseTag(AbstractBase):
         return copy(self)
 
     def __copy__(self):
-        """
-        A shallow copy of the class
+        """A shallow copy of the class
+
         >>> import copy
         >>> from amulet_nbt import ListTag
         >>> tag = ListTag()
         >>> tag2 = copy.copy(tag)
+
+        :return: A shallow copy of the class
         """
         raise NotImplementedError
 
     def __deepcopy__(self, memo=None):
-        """
-        A deep copy of the class
+        """A deep copy of the class
+
         >>> import copy
         >>> from amulet_nbt import ListTag
         >>> tag = ListTag()
         >>> tag2 = copy.deepcopy(tag)
+
+        :return: A deep copy of the class
         """
         raise NotImplementedError
 

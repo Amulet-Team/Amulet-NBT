@@ -26,181 +26,93 @@
    :parts: 1
 
 
-#######################
- Abstract Base Classes
-#######################
-
-.. autoclass:: amulet_nbt.AbstractBaseTag
-   :members:
-   :inherited-members:
-   :undoc-members:
-
-.. autoclass:: amulet_nbt.AbstractBaseImmutableTag
-   :members:
-   :inherited-members:
-   :undoc-members:
-   :show-inheritance:
-
-.. autoclass:: amulet_nbt.AbstractBaseMutableTag
-   :members:
-   :inherited-members:
-   :undoc-members:
-   :show-inheritance:
-
-.. autoclass:: amulet_nbt.AbstractBaseNumericTag
-   :members:
-   :inherited-members:
-   :undoc-members:
-   :show-inheritance:
-
-.. autoclass:: amulet_nbt.AbstractBaseIntTag
-   :members:
-   :inherited-members:
-   :undoc-members:
-   :show-inheritance:
-
-.. autoclass:: amulet_nbt.AbstractBaseFloatTag
-   :members:
-   :inherited-members:
-   :undoc-members:
-   :show-inheritance:
-
-.. autoclass:: amulet_nbt.AbstractBaseArrayTag
-   :members:
-   :inherited-members:
-   :undoc-members:
-   :show-inheritance:
-
-
-####################################
- :class:`amulet_nbt.ByteTag` class
-####################################
+#############
+ Tag Classes
+#############
 
 .. autoclass:: amulet_nbt.ByteTag
    :members:
    :inherited-members:
    :undoc-members:
+   :special-members:
    :show-inheritance:
-
-
-#####################################
- :class:`amulet_nbt.ShortTag` class
-#####################################
+   :member-order: bysource
 
 .. autoclass:: amulet_nbt.ShortTag
    :members:
    :inherited-members:
    :undoc-members:
+   :special-members:
    :show-inheritance:
-
-
-###################################
- :class:`amulet_nbt.IntTag` class
-###################################
 
 .. autoclass:: amulet_nbt.IntTag
    :members:
    :inherited-members:
    :undoc-members:
+   :special-members:
    :show-inheritance:
-
-
-####################################
- :class:`amulet_nbt.LongTag` class
-####################################
 
 .. autoclass:: amulet_nbt.LongTag
    :members:
    :inherited-members:
    :undoc-members:
+   :special-members:
    :show-inheritance:
-
-
-#####################################
- :class:`amulet_nbt.FloatTag` class
-#####################################
 
 .. autoclass:: amulet_nbt.FloatTag
    :members:
    :inherited-members:
    :undoc-members:
+   :special-members:
    :show-inheritance:
-
-
-######################################
- :class:`amulet_nbt.DoubleTag` class
-######################################
 
 .. autoclass:: amulet_nbt.DoubleTag
    :members:
    :inherited-members:
    :undoc-members:
+   :special-members:
    :show-inheritance:
-
-
-######################################
- :class:`amulet_nbt.StringTag` class
-######################################
 
 .. autoclass:: amulet_nbt.StringTag
    :members:
    :inherited-members:
    :undoc-members:
+   :special-members:
    :show-inheritance:
-
-
-####################################
- :class:`amulet_nbt.ListTag` class
-####################################
 
 .. autoclass:: amulet_nbt.ListTag
    :members:
    :inherited-members:
    :undoc-members:
+   :special-members:
    :show-inheritance:
-
-
-########################################
- :class:`amulet_nbt.CompoundTag` class
-########################################
 
 .. autoclass:: amulet_nbt.CompoundTag
    :members:
    :inherited-members:
    :undoc-members:
+   :special-members:
    :show-inheritance:
-
-
-##########################################
- :class:`amulet_nbt.ByteArrayTag` class
-##########################################
 
 .. autoclass:: amulet_nbt.ByteArrayTag
    :members:
    :inherited-members:
    :undoc-members:
+   :special-members:
    :show-inheritance:
-
-
-#########################################
- :class:`amulet_nbt.IntArrayTag` class
-#########################################
 
 .. autoclass:: amulet_nbt.IntArrayTag
    :members:
    :inherited-members:
    :undoc-members:
+   :special-members:
    :show-inheritance:
-
-
-##########################################
- :class:`amulet_nbt.LongArrayTag` class
-##########################################
 
 .. autoclass:: amulet_nbt.LongArrayTag
    :members:
    :inherited-members:
    :undoc-members:
+   :special-members:
    :show-inheritance:
 
 
@@ -212,6 +124,60 @@
    :members:
    :inherited-members:
    :undoc-members:
+   :special-members:
+
+
+#######################
+ Abstract Base Classes
+#######################
+
+.. autoclass:: amulet_nbt.AbstractBaseTag
+   :members:
+   :inherited-members:
+   :undoc-members:
+   :special-members:
+
+.. autoclass:: amulet_nbt.AbstractBaseImmutableTag
+   :members:
+   :inherited-members:
+   :undoc-members:
+   :special-members:
+   :show-inheritance:
+
+.. autoclass:: amulet_nbt.AbstractBaseMutableTag
+   :members:
+   :inherited-members:
+   :undoc-members:
+   :special-members:
+   :show-inheritance:
+
+.. autoclass:: amulet_nbt.AbstractBaseNumericTag
+   :members:
+   :inherited-members:
+   :undoc-members:
+   :special-members:
+   :show-inheritance:
+
+.. autoclass:: amulet_nbt.AbstractBaseIntTag
+   :members:
+   :inherited-members:
+   :undoc-members:
+   :special-members:
+   :show-inheritance:
+
+.. autoclass:: amulet_nbt.AbstractBaseFloatTag
+   :members:
+   :inherited-members:
+   :undoc-members:
+   :special-members:
+   :show-inheritance:
+
+.. autoclass:: amulet_nbt.AbstractBaseArrayTag
+   :members:
+   :inherited-members:
+   :undoc-members:
+   :special-members:
+   :show-inheritance:
 
 
 ##########
@@ -246,6 +212,11 @@ These are functions to load the binary and stringified NBT formats.
 
 These are instances of a class storing C++ functions to encode and decode strings.
 
+.. autoclass:: amulet_nbt.StringEncoding
+   :members:
+   :inherited-members:
+   :undoc-members:
+
 They can be passed to the string_encoding argument in to_nbt, save_to, load and load_array to control the string encoding behaviour.
 
 The usual string encoding scheme is called UTF-8.
@@ -277,5 +248,3 @@ The string encoding and endianness can be defined separatly but for simplicity t
 ####################
 
 -  :ref:`genindex`
--  :ref:`modindex`
--  :ref:`search`

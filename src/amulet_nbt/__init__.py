@@ -52,9 +52,11 @@ __all__ = [
     "NumberType",
     "ArrayType",
     "AnyNBT",
+    "StringEncoding",
     "mutf8_encoding",
     "utf8_encoding",
     "utf8_escape_encoding",
+    "EncodingPreset",
     "java_encoding",
     "bedrock_encoding",
 ]
@@ -116,8 +118,8 @@ from amulet_nbt._nbt_encoding._string import from_snbt
 
 from ._errors import NBTError, NBTLoadError, NBTFormatError, SNBTParseError
 
-from ._string_encoding import mutf8_encoding, utf8_encoding, utf8_escape_encoding
-from ._nbt_encoding._binary.encoding_preset import java_encoding, bedrock_encoding
+from ._string_encoding import mutf8_encoding, utf8_encoding, utf8_escape_encoding, StringEncoding
+from ._nbt_encoding._binary.encoding_preset import java_encoding, bedrock_encoding, EncodingPreset
 
 SNBTType = str
 

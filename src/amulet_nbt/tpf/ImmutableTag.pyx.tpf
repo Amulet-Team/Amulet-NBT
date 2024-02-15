@@ -1,4 +1,4 @@
-    def __eq__(self, other) -> bool:
+    def __eq__(self, object other: Any) -> bool:
         if not isinstance(other, {{py_cls}}):
             return NotImplemented
         cdef {{py_cls}} other_ = other

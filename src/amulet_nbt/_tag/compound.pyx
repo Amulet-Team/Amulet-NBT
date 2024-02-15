@@ -7,13 +7,16 @@
 # distutils: extra_link_args = -std=c++20 /std:c++20
 # cython: c_string_type=str, c_string_encoding=utf8
 
-from collections.abc import Mapping, Iterator, KeysView, ItemsView, ValuesView
-from typing import Iterable, Any
+from __future__ import annotations
+
+from collections.abc import Mapping, Iterator, Iterable, KeysView, ItemsView, ValuesView
+from typing import Any, overload, Type
 
 from libcpp.string cimport string
 from libcpp cimport bool
 from libcpp.memory cimport make_shared
 from cython.operator cimport dereference, postincrement
+import amulet_nbt
 from amulet_nbt._libcpp.endian cimport endian
 from amulet_nbt._string_encoding._cpp cimport CStringEncode
 from amulet_nbt._nbt_encoding._binary cimport write_named_tag
@@ -47,6 +50,7 @@ from .list cimport is_list_eq, ListTag
 from .array cimport ByteArrayTag, IntArrayTag, LongArrayTag
 from .deepcopy cimport CCompoundTagPtr_deepcopy
 
+import amulet_nbt
 
 cdef inline bool _is_byte_tag_node_eq(TagNode* a, TagNode* b) noexcept nogil:
     if dereference(b).index() == 1:
@@ -196,15 +200,19 @@ cdef AbstractBaseTag wrap_node(TagNode* node):
 
 
 cdef class CompoundTag(AbstractBaseMutableTag):
-    """
-    A Python wrapper around a C++ unordered map.
+    """A Python wrapper around a C++ unordered map.
+
     Note that this class is not thread safe and inherits all the limitations of a C++ unordered_map.
     """
     tag_id: int = 10
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(
+        self,
+        value: Mapping[str | bytes, amulet_nbt.AnyNBT] | Iterable[tuple[str | bytes, amulet_nbt.AnyNBT]] = (),
+        **kwargs: amulet_nbt.AnyNBT,
+    ) -> None:
         self.cpp = make_shared[CCompoundTag]()
-        self.update(*args, **kwargs)
+        self.update(value, **kwargs)
 
     @staticmethod
     cdef CompoundTag wrap(CCompoundTagPtr cpp):
@@ -218,7 +226,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return node
 
     @property
-    def py_dict(self) -> dict[str, ByteTag | ShortTag | IntTag | LongTag | FloatTag | DoubleTag | StringTag | ByteArrayTag | ListTag | CompoundTag | IntArrayTag | LongArrayTag]:
+    def py_dict(self) -> dict[str, amulet_nbt.AnyNBT]:
         """A shallow copy of the CompoundTag as a python dictionary."""
         return dict(self)
 
@@ -229,7 +237,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
     cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[CCompoundTagPtr](name, self.cpp, endianness, string_encode)
 
-    def to_snbt(self, object indent = None) -> str:
+    def to_snbt(self, object indent: None | str | int = None) -> str:
         cdef string snbt
         cdef string indent_str
         if indent is None:
@@ -244,7 +252,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
             write_snbt[CCompoundTagPtr](snbt, self.cpp, indent_str, 0)
         return snbt
 
-    def __eq__(self, object other) -> bool:
+    def __eq__(self, object other: Any) -> bool:
         if not isinstance(other, CompoundTag):
             return False
         cdef CompoundTag tag = other
@@ -284,7 +292,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
             postincrement(it)
 
     # Mapping
-    def __getitem__(self, string key) -> AbstractBaseTag:
+    def __getitem__(self, string key: str | bytes) -> amulet_nbt.AbstractBaseTag:
         cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
 
         if it == dereference(self.cpp).end():
@@ -292,9 +300,13 @@ cdef class CompoundTag(AbstractBaseMutableTag):
 
         return wrap_node(&dereference(it).second)
 
-    def get(self, string key, object default = None, object cls = AbstractBaseTag) -> ByteTag | ShortTag | IntTag | LongTag | FloatTag | DoubleTag | StringTag | ByteArrayTag | ListTag | CompoundTag | IntArrayTag | LongArrayTag:
-        """
-        Get an item from the CompoundTag.
+    def get(
+        self,
+        string key: str | bytes,
+        object default: amulet_nbt.AnyNBT | None = None,
+        object cls: Type[amulet_nbt.AbstractBaseTag] = AbstractBaseTag
+    ) -> amulet_nbt.AnyNBT:
+        """Get an item from the CompoundTag.
 
         :param key: The key to get
         :param default: The value to return if the key does not exist or the type is wrong. If not defined and the type is not correct a TypeError is raised.
@@ -316,28 +328,28 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         else:
             return default
 
-    def __contains__(self, string key) -> bool:
+    def __contains__(self, string key: str | bytes) -> bool:
         return dereference(self.cpp).contains(key)
 
-    def keys(self) -> KeysView[str]:
+    def keys(self) -> KeysView[str | bytes]:
         return KeysView(self)
 
-    def items(self) -> ItemsView[str, ByteTag | ShortTag | IntTag | LongTag | FloatTag | DoubleTag | StringTag | ByteArrayTag | ListTag | CompoundTag | IntArrayTag | LongArrayTag]:
+    def items(self) -> ItemsView[str | bytes, amulet_nbt.AnyNBT]:
         return ItemsView(self)
 
-    def values(self) -> ValuesView[ByteTag | ShortTag | IntTag | LongTag | FloatTag | DoubleTag | StringTag | ByteArrayTag | ListTag | CompoundTag | IntArrayTag | LongArrayTag]:
+    def values(self) -> ValuesView[amulet_nbt.AnyNBT]:
         return ValuesView(self)
 
     # MutableMapping
-    def __setitem__(self, string key, AbstractBaseTag tag not None) -> None:
+    def __setitem__(self, string key: str | bytes, AbstractBaseTag tag not None: amulet_nbt.AnyNBT) -> None:
         dereference(self.cpp)[<string> key] = tag.to_node()
 
-    def __delitem__(self, string key) -> None:
+    def __delitem__(self, string key: str | bytes) -> None:
         dereference(self.cpp).erase(key)
 
     __marker = object()
 
-    def pop(self, string key, default=__marker) -> ByteTag | ShortTag | IntTag | LongTag | FloatTag | DoubleTag | StringTag | ByteArrayTag | ListTag | CompoundTag | IntArrayTag | LongArrayTag:
+    def pop(self, string key, default=__marker) -> amulet_nbt.AnyNBT:
         '''D.pop(k[,d]) -> v, remove specified key and return the corresponding value.
           If key is not found, d is returned if given, otherwise KeyError is raised.
         '''
@@ -352,7 +364,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         dereference(self.cpp).erase(it)
         return tag
 
-    def popitem(self) -> ByteTag | ShortTag | IntTag | LongTag | FloatTag | DoubleTag | StringTag | ByteArrayTag | ListTag | CompoundTag | IntArrayTag | LongArrayTag:
+    def popitem(self) -> amulet_nbt.AnyNBT:
         '''D.popitem() -> (k, v), remove and return some (key, value) pair
            as a 2-tuple; but raise KeyError if D is empty.
         '''
@@ -386,7 +398,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         for key, value in kwds.items():
             self[key] = value
 
-    def setdefault(self, string key, AbstractBaseTag tag = None, object cls = AbstractBaseTag) -> ByteTag | ShortTag | IntTag | LongTag | FloatTag | DoubleTag | StringTag | ByteArrayTag | ListTag | CompoundTag | IntArrayTag | LongArrayTag:
+    def setdefault(self, string key, AbstractBaseTag tag = None, object cls = AbstractBaseTag) -> amulet_nbt.AnyNBT:
         cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
 
         if it == dereference(self.cpp).end():
@@ -411,7 +423,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
     def fromkeys(cls, keys: Iterable[str], AbstractBaseTag value) -> CompoundTag:
         return cls(dict.fromkeys(keys, value))
 
-    cpdef ByteTag get_byte(self, string key, ByteTag default=None):
+    def get_byte(self, string key: str | bytes, ByteTag default: amulet_nbt.ByteTag | None = None) -> amulet_nbt.ByteTag:
         """Get the tag stored in key if it is a ByteTag.
     
         :param key: The key to get
@@ -436,10 +448,11 @@ cdef class CompoundTag(AbstractBaseMutableTag):
             else:
                 return default
 
-    cpdef ByteTag setdefault_byte(self, string key, ByteTag default=None):
+    def setdefault_byte(self, string key: str | bytes, ByteTag default: amulet_nbt.ByteTag | None = None) -> amulet_nbt.ByteTag:
         """Populate key if not defined or value is not ByteTag. Return the value stored.
     
         If default is a ByteTag then it will be stored under key else a default instance will be created.
+
         :param key: The key to populate and get
         :param default: The default value to use
         :return: The ByteTag stored in key
@@ -461,7 +474,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
                     tag = self[key] = default
         return tag
 
-    cpdef ShortTag get_short(self, string key, ShortTag default=None):
+    def get_short(self, string key: str | bytes, ShortTag default: amulet_nbt.ShortTag | None = None) -> amulet_nbt.ShortTag:
         """Get the tag stored in key if it is a ShortTag.
     
         :param key: The key to get
@@ -486,10 +499,11 @@ cdef class CompoundTag(AbstractBaseMutableTag):
             else:
                 return default
 
-    cpdef ShortTag setdefault_short(self, string key, ShortTag default=None):
+    def setdefault_short(self, string key: str | bytes, ShortTag default: amulet_nbt.ShortTag | None = None) -> amulet_nbt.ShortTag:
         """Populate key if not defined or value is not ShortTag. Return the value stored.
     
         If default is a ShortTag then it will be stored under key else a default instance will be created.
+
         :param key: The key to populate and get
         :param default: The default value to use
         :return: The ShortTag stored in key
@@ -511,7 +525,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
                     tag = self[key] = default
         return tag
 
-    cpdef IntTag get_int(self, string key, IntTag default=None):
+    def get_int(self, string key: str | bytes, IntTag default: amulet_nbt.IntTag | None = None) -> amulet_nbt.IntTag:
         """Get the tag stored in key if it is a IntTag.
     
         :param key: The key to get
@@ -536,10 +550,11 @@ cdef class CompoundTag(AbstractBaseMutableTag):
             else:
                 return default
 
-    cpdef IntTag setdefault_int(self, string key, IntTag default=None):
+    def setdefault_int(self, string key: str | bytes, IntTag default: amulet_nbt.IntTag | None = None) -> amulet_nbt.IntTag:
         """Populate key if not defined or value is not IntTag. Return the value stored.
     
         If default is a IntTag then it will be stored under key else a default instance will be created.
+
         :param key: The key to populate and get
         :param default: The default value to use
         :return: The IntTag stored in key
@@ -561,7 +576,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
                     tag = self[key] = default
         return tag
 
-    cpdef LongTag get_long(self, string key, LongTag default=None):
+    def get_long(self, string key: str | bytes, LongTag default: amulet_nbt.LongTag | None = None) -> amulet_nbt.LongTag:
         """Get the tag stored in key if it is a LongTag.
     
         :param key: The key to get
@@ -586,10 +601,11 @@ cdef class CompoundTag(AbstractBaseMutableTag):
             else:
                 return default
 
-    cpdef LongTag setdefault_long(self, string key, LongTag default=None):
+    def setdefault_long(self, string key: str | bytes, LongTag default: amulet_nbt.LongTag | None = None) -> amulet_nbt.LongTag:
         """Populate key if not defined or value is not LongTag. Return the value stored.
     
         If default is a LongTag then it will be stored under key else a default instance will be created.
+
         :param key: The key to populate and get
         :param default: The default value to use
         :return: The LongTag stored in key
@@ -611,7 +627,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
                     tag = self[key] = default
         return tag
 
-    cpdef FloatTag get_float(self, string key, FloatTag default=None):
+    def get_float(self, string key: str | bytes, FloatTag default: amulet_nbt.FloatTag | None = None) -> amulet_nbt.FloatTag:
         """Get the tag stored in key if it is a FloatTag.
     
         :param key: The key to get
@@ -636,10 +652,11 @@ cdef class CompoundTag(AbstractBaseMutableTag):
             else:
                 return default
 
-    cpdef FloatTag setdefault_float(self, string key, FloatTag default=None):
+    def setdefault_float(self, string key: str | bytes, FloatTag default: amulet_nbt.FloatTag | None = None) -> amulet_nbt.FloatTag:
         """Populate key if not defined or value is not FloatTag. Return the value stored.
     
         If default is a FloatTag then it will be stored under key else a default instance will be created.
+
         :param key: The key to populate and get
         :param default: The default value to use
         :return: The FloatTag stored in key
@@ -661,7 +678,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
                     tag = self[key] = default
         return tag
 
-    cpdef DoubleTag get_double(self, string key, DoubleTag default=None):
+    def get_double(self, string key: str | bytes, DoubleTag default: amulet_nbt.DoubleTag | None = None) -> amulet_nbt.DoubleTag:
         """Get the tag stored in key if it is a DoubleTag.
     
         :param key: The key to get
@@ -686,10 +703,11 @@ cdef class CompoundTag(AbstractBaseMutableTag):
             else:
                 return default
 
-    cpdef DoubleTag setdefault_double(self, string key, DoubleTag default=None):
+    def setdefault_double(self, string key: str | bytes, DoubleTag default: amulet_nbt.DoubleTag | None = None) -> amulet_nbt.DoubleTag:
         """Populate key if not defined or value is not DoubleTag. Return the value stored.
     
         If default is a DoubleTag then it will be stored under key else a default instance will be created.
+
         :param key: The key to populate and get
         :param default: The default value to use
         :return: The DoubleTag stored in key
@@ -711,7 +729,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
                     tag = self[key] = default
         return tag
 
-    cpdef StringTag get_string(self, string key, StringTag default=None):
+    def get_string(self, string key: str | bytes, StringTag default: amulet_nbt.StringTag | None = None) -> amulet_nbt.StringTag:
         """Get the tag stored in key if it is a StringTag.
     
         :param key: The key to get
@@ -736,10 +754,11 @@ cdef class CompoundTag(AbstractBaseMutableTag):
             else:
                 return default
 
-    cpdef StringTag setdefault_string(self, string key, StringTag default=None):
+    def setdefault_string(self, string key: str | bytes, StringTag default: amulet_nbt.StringTag | None = None) -> amulet_nbt.StringTag:
         """Populate key if not defined or value is not StringTag. Return the value stored.
     
         If default is a StringTag then it will be stored under key else a default instance will be created.
+
         :param key: The key to populate and get
         :param default: The default value to use
         :return: The StringTag stored in key
@@ -761,7 +780,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
                     tag = self[key] = default
         return tag
 
-    cpdef ListTag get_list(self, string key, ListTag default=None):
+    def get_list(self, string key: str | bytes, ListTag default: amulet_nbt.ListTag | None = None) -> amulet_nbt.ListTag:
         """Get the tag stored in key if it is a ListTag.
     
         :param key: The key to get
@@ -786,10 +805,11 @@ cdef class CompoundTag(AbstractBaseMutableTag):
             else:
                 return default
 
-    cpdef ListTag setdefault_list(self, string key, ListTag default=None):
+    def setdefault_list(self, string key: str | bytes, ListTag default: amulet_nbt.ListTag | None = None) -> amulet_nbt.ListTag:
         """Populate key if not defined or value is not ListTag. Return the value stored.
     
         If default is a ListTag then it will be stored under key else a default instance will be created.
+
         :param key: The key to populate and get
         :param default: The default value to use
         :return: The ListTag stored in key
@@ -811,7 +831,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
                     tag = self[key] = default
         return tag
 
-    cpdef CompoundTag get_compound(self, string key, CompoundTag default=None):
+    def get_compound(self, string key: str | bytes, CompoundTag default: amulet_nbt.CompoundTag | None = None) -> amulet_nbt.CompoundTag:
         """Get the tag stored in key if it is a CompoundTag.
     
         :param key: The key to get
@@ -836,10 +856,11 @@ cdef class CompoundTag(AbstractBaseMutableTag):
             else:
                 return default
 
-    cpdef CompoundTag setdefault_compound(self, string key, CompoundTag default=None):
+    def setdefault_compound(self, string key: str | bytes, CompoundTag default: amulet_nbt.CompoundTag | None = None) -> amulet_nbt.CompoundTag:
         """Populate key if not defined or value is not CompoundTag. Return the value stored.
     
         If default is a CompoundTag then it will be stored under key else a default instance will be created.
+
         :param key: The key to populate and get
         :param default: The default value to use
         :return: The CompoundTag stored in key
@@ -861,7 +882,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
                     tag = self[key] = default
         return tag
 
-    cpdef ByteArrayTag get_byte_array(self, string key, ByteArrayTag default=None):
+    def get_byte_array(self, string key: str | bytes, ByteArrayTag default: amulet_nbt.ByteArrayTag | None = None) -> amulet_nbt.ByteArrayTag:
         """Get the tag stored in key if it is a ByteArrayTag.
     
         :param key: The key to get
@@ -886,10 +907,11 @@ cdef class CompoundTag(AbstractBaseMutableTag):
             else:
                 return default
 
-    cpdef ByteArrayTag setdefault_byte_array(self, string key, ByteArrayTag default=None):
+    def setdefault_byte_array(self, string key: str | bytes, ByteArrayTag default: amulet_nbt.ByteArrayTag | None = None) -> amulet_nbt.ByteArrayTag:
         """Populate key if not defined or value is not ByteArrayTag. Return the value stored.
     
         If default is a ByteArrayTag then it will be stored under key else a default instance will be created.
+
         :param key: The key to populate and get
         :param default: The default value to use
         :return: The ByteArrayTag stored in key
@@ -911,7 +933,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
                     tag = self[key] = default
         return tag
 
-    cpdef IntArrayTag get_int_array(self, string key, IntArrayTag default=None):
+    def get_int_array(self, string key: str | bytes, IntArrayTag default: amulet_nbt.IntArrayTag | None = None) -> amulet_nbt.IntArrayTag:
         """Get the tag stored in key if it is a IntArrayTag.
     
         :param key: The key to get
@@ -936,10 +958,11 @@ cdef class CompoundTag(AbstractBaseMutableTag):
             else:
                 return default
 
-    cpdef IntArrayTag setdefault_int_array(self, string key, IntArrayTag default=None):
+    def setdefault_int_array(self, string key: str | bytes, IntArrayTag default: amulet_nbt.IntArrayTag | None = None) -> amulet_nbt.IntArrayTag:
         """Populate key if not defined or value is not IntArrayTag. Return the value stored.
     
         If default is a IntArrayTag then it will be stored under key else a default instance will be created.
+
         :param key: The key to populate and get
         :param default: The default value to use
         :return: The IntArrayTag stored in key
@@ -961,7 +984,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
                     tag = self[key] = default
         return tag
 
-    cpdef LongArrayTag get_long_array(self, string key, LongArrayTag default=None):
+    def get_long_array(self, string key: str | bytes, LongArrayTag default: amulet_nbt.LongArrayTag | None = None) -> amulet_nbt.LongArrayTag:
         """Get the tag stored in key if it is a LongArrayTag.
     
         :param key: The key to get
@@ -986,10 +1009,11 @@ cdef class CompoundTag(AbstractBaseMutableTag):
             else:
                 return default
 
-    cpdef LongArrayTag setdefault_long_array(self, string key, LongArrayTag default=None):
+    def setdefault_long_array(self, string key: str | bytes, LongArrayTag default: amulet_nbt.LongArrayTag | None = None) -> amulet_nbt.LongArrayTag:
         """Populate key if not defined or value is not LongArrayTag. Return the value stored.
     
         If default is a LongArrayTag then it will be stored under key else a default instance will be created.
+
         :param key: The key to populate and get
         :param default: The default value to use
         :return: The LongArrayTag stored in key

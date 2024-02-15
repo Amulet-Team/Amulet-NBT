@@ -12,8 +12,8 @@
 
     @property
     def py_int(self) -> int:
-        """
-        A python int representation of the class.
+        """A python int representation of the class.
+
         The returned data is immutable so changes will not mirror the instance.
         """
         return self.cpp

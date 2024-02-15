@@ -13,6 +13,7 @@ import copy
 import gzip
 from libcpp.string cimport string
 from libcpp cimport bool
+import amulet_nbt
 from amulet_nbt._libcpp.endian cimport endian
 from amulet_nbt._string_encoding cimport StringEncoding
 from amulet_nbt._string_encoding import mutf8_encoding
@@ -31,7 +32,7 @@ from .array cimport ByteArrayTag, IntArrayTag, LongArrayTag
 
 
 cdef class NamedTag(AbstractBase):
-    def __init__(self, AbstractBaseTag tag = None, string name = b"") -> None:
+    def __init__(self, AbstractBaseTag tag: amulet_nbt.AbstractBaseTag = None, string name: str | bytes = b"") -> None:
         if tag is None:
             tag = CompoundTag()
         self.tag_node = tag.to_node()
@@ -62,13 +63,12 @@ cdef class NamedTag(AbstractBase):
     def to_nbt(
         self,
         *,
-        EncodingPreset preset = None,
-        bool compressed=True,
-        bool little_endian=False,
-        string_encoding: StringEncoding = mutf8_encoding,
+        EncodingPreset preset: amulet_nbt.EncodingPreset = None,
+        bool compressed: bool = True,
+        bool little_endian: bool = False,
+        StringEncoding string_encoding: amulet_nbt.StringEncoding = mutf8_encoding,
     ) -> bytes:
-        """
-        Get the data in binary NBT format.
+        """Get the data in binary NBT format.
 
         :param preset: A class containing endianness and encoding presets.
         :param compressed: Should the bytes be compressed with gzip.
@@ -98,13 +98,12 @@ cdef class NamedTag(AbstractBase):
         self,
         object filepath_or_buffer=None,
         *,
-        EncodingPreset preset = None,
-        bool compressed=True,
-        bool little_endian=False,
-        StringEncoding string_encoding = mutf8_encoding,
+        EncodingPreset preset: amulet_nbt.EncodingPreset = None,
+        bool compressed: bool = True,
+        bool little_endian: bool = False,
+        StringEncoding string_encoding: amulet_nbt.StringEncoding = mutf8_encoding,
     ) -> bytes:
-        """
-        Convert the data to the binary NBT format. Optionally write to a file.
+        """Convert the data to the binary NBT format. Optionally write to a file.
 
         If filepath_or_buffer is a valid file path in string form the data will be written to that file.
 
@@ -133,8 +132,8 @@ cdef class NamedTag(AbstractBase):
         return data
 
     def to_snbt(self, object indent = None) -> str:
-        """
-        Convert the data to the Stringified NBT format.
+        """Convert the data to the Stringified NBT format.
+
         :param indent:
             If None (the default) the SNBT will be on one line.
             If an int will be multi-line SNBT with this many spaces per indentation.
@@ -155,7 +154,7 @@ cdef class NamedTag(AbstractBase):
             write_snbt[TagNode](snbt, self.tag_node, indent_str, 0)
         return snbt
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, object other: Any) -> bool:
         cdef NamedTag other_
         if isinstance(other, NamedTag):
             other_ = other

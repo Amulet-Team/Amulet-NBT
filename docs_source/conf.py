@@ -188,6 +188,15 @@ graphviz_output_format = "svg"
 def skip(app, what, name, obj, would_skip, options):
     if name == "__init__":
         return False
+    if name in {
+        "__pyx_vtable__",
+        "__reduce_cython__",
+        "__setstate_cython__",
+        "__new__",
+        "__reduce__",
+        "__setstate__",
+    }:
+        return True
     return would_skip
 
 

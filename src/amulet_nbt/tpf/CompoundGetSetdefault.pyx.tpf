@@ -1,4 +1,4 @@
-    cpdef {{py_cls}} get_{{tag_name}}(self, string key, {{py_cls}} default=None):
+    def get_{{tag_name}}(self, string key: str | bytes, {{py_cls}} default: amulet_nbt.{{py_cls}} | None = None) -> amulet_nbt.{{py_cls}}:
         """Get the tag stored in key if it is a {{py_cls}}.
     
         :param key: The key to get
@@ -23,10 +23,11 @@
             else:
                 return default
 
-    cpdef {{py_cls}} setdefault_{{tag_name}}(self, string key, {{py_cls}} default=None):
+    def setdefault_{{tag_name}}(self, string key: str | bytes, {{py_cls}} default: amulet_nbt.{{py_cls}} | None = None) -> amulet_nbt.{{py_cls}}:
         """Populate key if not defined or value is not {{py_cls}}. Return the value stored.
     
         If default is a {{py_cls}} then it will be stored under key else a default instance will be created.
+
         :param key: The key to populate and get
         :param default: The default value to use
         :return: The {{py_cls}} stored in key

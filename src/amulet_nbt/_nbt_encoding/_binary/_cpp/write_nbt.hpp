@@ -141,6 +141,7 @@ void write_tag_payload(BinaryWriter& writer, const CListTagPtr& value){
 template <
     typename T,
     std::enable_if_t<
+        std::is_same_v<T, TagNode> ||
         std::is_same_v<T, CByteTag> ||
         std::is_same_v<T, CShortTag> ||
         std::is_same_v<T, CIntTag> ||

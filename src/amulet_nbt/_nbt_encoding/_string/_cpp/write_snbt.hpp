@@ -23,6 +23,29 @@ template <
     typename T,
     typename... Args,
     std::enable_if_t<
+        std::is_same_v<T, TagNode> ||
+        std::is_same_v<T, CByteTag> ||
+        std::is_same_v<T, CShortTag> ||
+        std::is_same_v<T, CIntTag> ||
+        std::is_same_v<T, CLongTag> ||
+        std::is_same_v<T, CFloatTag> ||
+        std::is_same_v<T, CDoubleTag> ||
+        std::is_same_v<T, CByteArrayTagPtr> ||
+        std::is_same_v<T, CStringTag> ||
+        std::is_same_v<T, CListTagPtr> ||
+        std::is_same_v<T, CCompoundTagPtr> ||
+        std::is_same_v<T, CIntArrayTagPtr> ||
+        std::is_same_v<T, CLongArrayTagPtr>,
+        bool
+    >
+>
+void write_snbt(std::string& snbt, const T& tag, Args... args);
+
+
+template <
+    typename T,
+    typename... Args,
+    std::enable_if_t<
         std::is_same_v<T, CByteTag> ||
         std::is_same_v<T, CShortTag> ||
         std::is_same_v<T, CIntTag> ||

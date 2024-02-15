@@ -2,7 +2,7 @@
 This bakes the template files into real cython files."""
 import glob
 import os
-from typing import List, Optional
+from typing import Optional
 
 from Cython import Tempita as tempita
 
@@ -24,7 +24,7 @@ def include(rel_path, **kwargs):
 
 class TempitaManager:
     def __init__(self) -> None:
-        self.files: List[TempitaFile] = []
+        self.files: list[TempitaFile] = []
         for path in glob.glob(os.path.join(SRC_PATH, "**", "*.tp"), recursive=True):
             rel_path = os.path.relpath(path, SRC_PATH)
             save_path = path[:-3]

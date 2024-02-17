@@ -2,7 +2,7 @@
     cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[C{{py_cls}}](name, self.cpp, endianness, string_encode)
 
-{{include("amulet_nbt/tpf/to_snbt.pyx.tpf", cpp_cls_ptr="C" + py_cls)}}
+{{include("amulet_nbt/tpf/to_snbt.pyx.tpf", cpp_cls_ptr="C" + py_cls, tag=tag)}}
 
 {{include("amulet_nbt/tpf/ImmutableTag.pyx.tpf", **locals())}}
 

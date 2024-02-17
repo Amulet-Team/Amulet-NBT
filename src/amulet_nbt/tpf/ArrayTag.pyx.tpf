@@ -31,7 +31,7 @@ cdef class {{py_cls}}(AbstractBaseArrayTag):
     cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[{{cpp_cls_ptr}}](name, self.cpp, endianness, string_encode)
 
-{{include("amulet_nbt/tpf/to_snbt.pyx.tpf", **locals())}}
+{{include("amulet_nbt/tpf/to_snbt.pyx.tpf", tag=dtype + "_array", **locals())}}
 
     def __eq__(self, object other: Any) -> bool:
         if not isinstance(other, {{py_cls}}):

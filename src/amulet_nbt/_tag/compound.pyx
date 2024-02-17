@@ -20,7 +20,7 @@ import amulet_nbt
 from amulet_nbt._libcpp.endian cimport endian
 from amulet_nbt._string_encoding._cpp cimport CStringEncode
 from amulet_nbt._nbt_encoding._binary cimport write_named_tag
-from amulet_nbt._nbt_encoding._string cimport write_snbt
+from amulet_nbt._nbt_encoding._string cimport write_compound_snbt
 
 from amulet_nbt._tag._cpp cimport CCompoundTag, CCompoundTagPtr, CIntTag, TagNode
 from amulet_nbt._libcpp.variant cimport get
@@ -241,7 +241,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         cdef string snbt
         cdef string indent_str
         if indent is None:
-            write_snbt[CCompoundTagPtr](snbt, self.cpp)
+            write_compound_snbt(snbt, self.cpp)
         else:
             if isinstance(indent, int):
                 indent_str = " " * indent
@@ -249,7 +249,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
                 indent_str = indent
             else:
                 raise TypeError("indent must be a str, int or None")
-            write_snbt[CCompoundTagPtr](snbt, self.cpp, indent_str, 0)
+            write_compound_snbt(snbt, self.cpp, indent_str, 0)
         return snbt
 
     def __eq__(self, object other: Any) -> bool:

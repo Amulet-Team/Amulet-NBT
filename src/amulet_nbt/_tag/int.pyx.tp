@@ -15,7 +15,7 @@ from libcpp.string cimport string
 from amulet_nbt._libcpp.endian cimport endian
 from amulet_nbt._string_encoding._cpp cimport CStringEncode
 from amulet_nbt._nbt_encoding._binary cimport write_named_tag
-from amulet_nbt._nbt_encoding._string cimport write_snbt
+from amulet_nbt._nbt_encoding._string cimport write_byte_snbt, write_short_snbt, write_int_snbt, write_long_snbt
 from amulet_nbt._tag._cpp cimport TagNode, CByteTag, CShortTag, CIntTag, CLongTag
 from .numeric cimport AbstractBaseNumericTag
 
@@ -47,7 +47,7 @@ cdef class ByteTag(AbstractBaseIntTag):
         value = int(value)
         self.cpp = (value & 0x7F) - (value & 0x80)
 
-{{include("amulet_nbt/tpf/IntTag.pyx.tpf", py_cls="ByteTag", tag_id=1)}}
+{{include("amulet_nbt/tpf/IntTag.pyx.tpf", py_cls="ByteTag", tag_id=1, tag="byte")}}
 
 
 cdef class ShortTag(AbstractBaseIntTag):
@@ -61,7 +61,7 @@ cdef class ShortTag(AbstractBaseIntTag):
         value = int(value)
         self.cpp = (value & 0x7FFF) - (value & 0x8000)
 
-{{include("amulet_nbt/tpf/IntTag.pyx.tpf", py_cls="ShortTag", tag_id=2)}}
+{{include("amulet_nbt/tpf/IntTag.pyx.tpf", py_cls="ShortTag", tag_id=2, tag="short")}}
 
 
 cdef class IntTag(AbstractBaseIntTag):
@@ -75,7 +75,7 @@ cdef class IntTag(AbstractBaseIntTag):
         value = int(value)
         self.cpp = (value & 0x7FFF_FFFF) - (value & 0x8000_0000)
 
-{{include("amulet_nbt/tpf/IntTag.pyx.tpf", py_cls="IntTag", tag_id=3)}}
+{{include("amulet_nbt/tpf/IntTag.pyx.tpf", py_cls="IntTag", tag_id=3, tag="int")}}
 
 
 cdef class LongTag(AbstractBaseIntTag):
@@ -89,4 +89,4 @@ cdef class LongTag(AbstractBaseIntTag):
         value = int(value)
         self.cpp = (value & 0x7FFF_FFFF_FFFF_FFFF) - (value & 0x8000_0000_0000_0000)
 
-{{include("amulet_nbt/tpf/IntTag.pyx.tpf", py_cls="LongTag", tag_id=4)}}
+{{include("amulet_nbt/tpf/IntTag.pyx.tpf", py_cls="LongTag", tag_id=4, tag="long")}}

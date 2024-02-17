@@ -21,7 +21,7 @@ from libcpp.string cimport string
 from amulet_nbt._libcpp.endian cimport endian
 from amulet_nbt._string_encoding._cpp cimport CStringEncode
 from amulet_nbt._nbt_encoding._binary cimport write_named_tag
-from amulet_nbt._nbt_encoding._string cimport write_snbt
+from amulet_nbt._nbt_encoding._string cimport write_byte_array_snbt, write_int_array_snbt, write_long_array_snbt
 from amulet_nbt._tag._cpp cimport TagNode, CByteArrayTag, CIntArrayTag, CLongArrayTag
 from .abc cimport AbstractBaseMutableTag
 
@@ -183,17 +183,7 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
 
     def to_snbt(self, object indent: None | str | int = None) -> str:
         cdef string snbt
-        cdef string indent_str
-        if indent is None:
-            write_snbt[CByteArrayTagPtr](snbt, self.cpp)
-        else:
-            if isinstance(indent, int):
-                indent_str = " " * indent
-            elif isinstance(indent, str):
-                indent_str = indent
-            else:
-                raise TypeError("indent must be a str, int or None")
-            write_snbt[CByteArrayTagPtr](snbt, self.cpp, indent_str, 0)
+        write_byte_array_snbt(snbt, self.cpp)
         return snbt
 
     def __eq__(self, object other: Any) -> bool:
@@ -371,17 +361,7 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
 
     def to_snbt(self, object indent: None | str | int = None) -> str:
         cdef string snbt
-        cdef string indent_str
-        if indent is None:
-            write_snbt[CIntArrayTagPtr](snbt, self.cpp)
-        else:
-            if isinstance(indent, int):
-                indent_str = " " * indent
-            elif isinstance(indent, str):
-                indent_str = indent
-            else:
-                raise TypeError("indent must be a str, int or None")
-            write_snbt[CIntArrayTagPtr](snbt, self.cpp, indent_str, 0)
+        write_int_array_snbt(snbt, self.cpp)
         return snbt
 
     def __eq__(self, object other: Any) -> bool:
@@ -559,17 +539,7 @@ cdef class LongArrayTag(AbstractBaseArrayTag):
 
     def to_snbt(self, object indent: None | str | int = None) -> str:
         cdef string snbt
-        cdef string indent_str
-        if indent is None:
-            write_snbt[CLongArrayTagPtr](snbt, self.cpp)
-        else:
-            if isinstance(indent, int):
-                indent_str = " " * indent
-            elif isinstance(indent, str):
-                indent_str = indent
-            else:
-                raise TypeError("indent must be a str, int or None")
-            write_snbt[CLongArrayTagPtr](snbt, self.cpp, indent_str, 0)
+        write_long_array_snbt(snbt, self.cpp)
         return snbt
 
     def __eq__(self, object other: Any) -> bool:

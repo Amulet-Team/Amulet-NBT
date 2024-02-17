@@ -13,7 +13,7 @@ from libcpp.string cimport string
 from amulet_nbt._libcpp.endian cimport endian
 from amulet_nbt._string_encoding._cpp cimport CStringEncode
 from amulet_nbt._nbt_encoding._binary cimport write_named_tag
-from amulet_nbt._nbt_encoding._string cimport write_snbt
+from amulet_nbt._nbt_encoding._string cimport write_byte_snbt, write_short_snbt, write_int_snbt, write_long_snbt
 from amulet_nbt._tag._cpp cimport TagNode, CByteTag, CShortTag, CIntTag, CLongTag
 from .numeric cimport AbstractBaseNumericTag
 
@@ -69,17 +69,7 @@ cdef class ByteTag(AbstractBaseIntTag):
 
     def to_snbt(self, object indent: None | str | int = None) -> str:
         cdef string snbt
-        cdef string indent_str
-        if indent is None:
-            write_snbt[CByteTag](snbt, self.cpp)
-        else:
-            if isinstance(indent, int):
-                indent_str = " " * indent
-            elif isinstance(indent, str):
-                indent_str = indent
-            else:
-                raise TypeError("indent must be a str, int or None")
-            write_snbt[CByteTag](snbt, self.cpp, indent_str, 0)
+        write_byte_snbt(snbt, self.cpp)
         return snbt
 
     def __eq__(self, object other: Any) -> bool:
@@ -175,17 +165,7 @@ cdef class ShortTag(AbstractBaseIntTag):
 
     def to_snbt(self, object indent: None | str | int = None) -> str:
         cdef string snbt
-        cdef string indent_str
-        if indent is None:
-            write_snbt[CShortTag](snbt, self.cpp)
-        else:
-            if isinstance(indent, int):
-                indent_str = " " * indent
-            elif isinstance(indent, str):
-                indent_str = indent
-            else:
-                raise TypeError("indent must be a str, int or None")
-            write_snbt[CShortTag](snbt, self.cpp, indent_str, 0)
+        write_short_snbt(snbt, self.cpp)
         return snbt
 
     def __eq__(self, object other: Any) -> bool:
@@ -281,17 +261,7 @@ cdef class IntTag(AbstractBaseIntTag):
 
     def to_snbt(self, object indent: None | str | int = None) -> str:
         cdef string snbt
-        cdef string indent_str
-        if indent is None:
-            write_snbt[CIntTag](snbt, self.cpp)
-        else:
-            if isinstance(indent, int):
-                indent_str = " " * indent
-            elif isinstance(indent, str):
-                indent_str = indent
-            else:
-                raise TypeError("indent must be a str, int or None")
-            write_snbt[CIntTag](snbt, self.cpp, indent_str, 0)
+        write_int_snbt(snbt, self.cpp)
         return snbt
 
     def __eq__(self, object other: Any) -> bool:
@@ -387,17 +357,7 @@ cdef class LongTag(AbstractBaseIntTag):
 
     def to_snbt(self, object indent: None | str | int = None) -> str:
         cdef string snbt
-        cdef string indent_str
-        if indent is None:
-            write_snbt[CLongTag](snbt, self.cpp)
-        else:
-            if isinstance(indent, int):
-                indent_str = " " * indent
-            elif isinstance(indent, str):
-                indent_str = indent
-            else:
-                raise TypeError("indent must be a str, int or None")
-            write_snbt[CLongTag](snbt, self.cpp, indent_str, 0)
+        write_long_snbt(snbt, self.cpp)
         return snbt
 
     def __eq__(self, object other: Any) -> bool:

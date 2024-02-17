@@ -20,7 +20,7 @@ from amulet_nbt._string_encoding import mutf8_encoding
 from amulet_nbt._string_encoding._cpp cimport CStringEncode
 from amulet_nbt._nbt_encoding._binary cimport write_named_tag
 from amulet_nbt._nbt_encoding._binary.encoding_preset cimport EncodingPreset
-from amulet_nbt._nbt_encoding._string cimport write_snbt
+from amulet_nbt._nbt_encoding._string cimport write_node_snbt
 
 from .abc cimport AbstractBase, AbstractBaseTag
 from .int cimport ByteTag, ShortTag, IntTag, LongTag
@@ -143,7 +143,7 @@ cdef class NamedTag(AbstractBase):
         cdef string snbt
         cdef string indent_str
         if indent is None:
-            write_snbt[TagNode](snbt, self.tag_node)
+            write_node_snbt(snbt, self.tag_node)
         else:
             if isinstance(indent, int):
                 indent_str = " " * indent
@@ -151,7 +151,7 @@ cdef class NamedTag(AbstractBase):
                 indent_str = indent
             else:
                 raise TypeError("indent must be a str, int or None")
-            write_snbt[TagNode](snbt, self.tag_node, indent_str, 0)
+            write_node_snbt(snbt, self.tag_node, indent_str, 0)
         return snbt
 
     def __eq__(self, object other: Any) -> bool:

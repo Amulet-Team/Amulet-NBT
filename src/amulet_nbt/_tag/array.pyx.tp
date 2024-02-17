@@ -24,7 +24,7 @@ from libcpp.string cimport string
 from amulet_nbt._libcpp.endian cimport endian
 from amulet_nbt._string_encoding._cpp cimport CStringEncode
 from amulet_nbt._nbt_encoding._binary cimport write_named_tag
-from amulet_nbt._nbt_encoding._string cimport write_snbt
+from amulet_nbt._nbt_encoding._string cimport write_byte_array_snbt, write_int_array_snbt, write_long_array_snbt
 from amulet_nbt._tag._cpp cimport TagNode, CByteArrayTag, CIntArrayTag, CLongArrayTag
 from .abc cimport AbstractBaseMutableTag
 

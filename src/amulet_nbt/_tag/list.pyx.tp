@@ -22,7 +22,7 @@ from amulet_nbt._libcpp.variant cimport get, monostate
 from amulet_nbt._libcpp.endian cimport endian
 from amulet_nbt._string_encoding._cpp cimport CStringEncode
 from amulet_nbt._nbt_encoding._binary cimport write_named_tag
-from amulet_nbt._nbt_encoding._string cimport write_snbt
+from amulet_nbt._nbt_encoding._string cimport write_list_snbt
 
 from amulet_nbt._tag._cpp cimport (
     TagNode,
@@ -537,7 +537,7 @@ cdef class ListTag(AbstractBaseMutableTag):
     cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
         return write_named_tag[CListTagPtr](name, self.cpp, endianness, string_encode)
 
-{{include("amulet_nbt/tpf/to_snbt.pyx.tpf", cpp_cls_ptr="CListTagPtr")}}
+{{include("amulet_nbt/tpf/to_snbt_multiline.pyx.tpf", tag="list")}}
 
     def __eq__(self, object other: Any) -> bool:
         if not isinstance(other, ListTag):

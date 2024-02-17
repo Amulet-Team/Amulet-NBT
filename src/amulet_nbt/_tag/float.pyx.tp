@@ -15,7 +15,7 @@ from libcpp.string cimport string
 from amulet_nbt._libcpp.endian cimport endian
 from amulet_nbt._string_encoding._cpp cimport CStringEncode
 from amulet_nbt._nbt_encoding._binary cimport write_named_tag
-from amulet_nbt._nbt_encoding._string cimport write_snbt
+from amulet_nbt._nbt_encoding._string cimport write_float_snbt, write_double_snbt
 from amulet_nbt._tag._cpp cimport TagNode, CFloatTag, CDoubleTag
 from .numeric cimport AbstractBaseNumericTag
 
@@ -43,7 +43,7 @@ cdef class FloatTag(AbstractBaseFloatTag):
     def __init__(self, value: SupportsFloat = 0) -> None:
         self.cpp = float(value)
 
-{{include("amulet_nbt/tpf/FloatTag.pyx.tpf", py_cls="FloatTag", tag_id=5)}}
+{{include("amulet_nbt/tpf/FloatTag.pyx.tpf", py_cls="FloatTag", tag_id=5, tag="float")}}
 
 
 cdef class DoubleTag(AbstractBaseFloatTag):
@@ -53,4 +53,4 @@ cdef class DoubleTag(AbstractBaseFloatTag):
     def __init__(self, value: SupportsFloat = 0) -> None:
         self.cpp = float(value)
 
-{{include("amulet_nbt/tpf/FloatTag.pyx.tpf", py_cls="DoubleTag", tag_id=6)}}
+{{include("amulet_nbt/tpf/FloatTag.pyx.tpf", py_cls="DoubleTag", tag_id=6, tag="double")}}

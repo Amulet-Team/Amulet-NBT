@@ -11,6 +11,9 @@
 #include "../../../_tag/_cpp/nbt.hpp"
 #include "../../../_tag/_cpp/array.hpp"
 
+// I wanted to use templates to reduce code duplication but I can't get this to work
+// The template version compiled and passed all tests on my computer but it just wasn't working on the remote servers
+
 
 inline void write_indent(std::string& snbt, const std::string& indent, size_t indent_count){
     for (size_t i = 0; i < indent_count; i++){
@@ -19,101 +22,104 @@ inline void write_indent(std::string& snbt, const std::string& indent, size_t in
 }
 
 // Forward declarations
-template <
-    typename T,
-    std::enable_if_t<
-        std::is_same_v<T, TagNode> ||
-        std::is_same_v<T, CByteTag> ||
-        std::is_same_v<T, CShortTag> ||
-        std::is_same_v<T, CIntTag> ||
-        std::is_same_v<T, CLongTag> ||
-        std::is_same_v<T, CFloatTag> ||
-        std::is_same_v<T, CDoubleTag> ||
-        std::is_same_v<T, CByteArrayTagPtr> ||
-        std::is_same_v<T, CStringTag> ||
-        std::is_same_v<T, CListTagPtr> ||
-        std::is_same_v<T, CCompoundTagPtr> ||
-        std::is_same_v<T, CIntArrayTagPtr> ||
-        std::is_same_v<T, CLongArrayTagPtr>,
-        bool
-    >
->
-void write_snbt(std::string& snbt, const T& tag);
+void write_byte_snbt(std::string& snbt, const CByteTag& tag);
+void write_short_snbt(std::string& snbt, const CShortTag& tag);
+void write_int_snbt(std::string& snbt, const CIntTag& tag);
+void write_long_snbt(std::string& snbt, const CLongTag& tag);
+void write_float_snbt(std::string& snbt, const CFloatTag& tag);
+void write_double_snbt(std::string& snbt, const CDoubleTag& tag);
+void write_byte_array_snbt(std::string& snbt, const CByteArrayTagPtr& tag);
+void write_string_snbt(std::string& snbt, const CStringTag& tag);
+void write_list_snbt(std::string& snbt, const CListTagPtr& tag);
+void write_compound_snbt(std::string& snbt, const CCompoundTagPtr& tag);
+void write_int_array_snbt(std::string& snbt, const CIntArrayTagPtr& tag);
+void write_long_array_snbt(std::string& snbt, const CLongArrayTagPtr& tag);
 
-template <
-    typename T,
-    std::enable_if_t<
-        std::is_same_v<T, TagNode> ||
-        std::is_same_v<T, CByteTag> ||
-        std::is_same_v<T, CShortTag> ||
-        std::is_same_v<T, CIntTag> ||
-        std::is_same_v<T, CLongTag> ||
-        std::is_same_v<T, CFloatTag> ||
-        std::is_same_v<T, CDoubleTag> ||
-        std::is_same_v<T, CByteArrayTagPtr> ||
-        std::is_same_v<T, CStringTag> ||
-        std::is_same_v<T, CListTagPtr> ||
-        std::is_same_v<T, CCompoundTagPtr> ||
-        std::is_same_v<T, CIntArrayTagPtr> ||
-        std::is_same_v<T, CLongArrayTagPtr>,
-        bool
-    >
->
-void write_snbt(std::string& snbt, const T& tag, const std::string& indent, size_t indent_count);
+// Multi-line variants
+void write_list_snbt(std::string& snbt, const CListTagPtr& tag, const std::string& indent, size_t indent_count);
+void write_compound_snbt(std::string& snbt, const CCompoundTagPtr& tag, const std::string& indent, size_t indent_count);
 
 
-template <
-    typename T,
-    typename... Args,
-    std::enable_if_t<
-        std::is_same_v<T, CByteTag> ||
-        std::is_same_v<T, CShortTag> ||
-        std::is_same_v<T, CIntTag> ||
-        std::is_same_v<T, CLongTag> ||
-        std::is_same_v<T, CFloatTag> ||
-        std::is_same_v<T, CDoubleTag>,
-        bool
-    > = true
->
-void write_snbt(std::string& snbt, const T& tag, Args... args){
-    if constexpr (std::is_same_v<T, CByteTag>){
-        snbt.append(std::format("{}b", tag));
-    } else if constexpr (std::is_same_v<T, CShortTag>){
-        snbt.append(std::format("{}s", tag));
-    } else if constexpr (std::is_same_v<T, CIntTag>){
-        snbt.append(std::format("{}", tag));
-    } else if constexpr (std::is_same_v<T, CLongTag>){
-        snbt.append(std::format("{}L", tag));
-    } else if constexpr (std::is_same_v<T, CFloatTag>){
-        if (std::isfinite(tag)){
-            snbt.append(std::format("{}f", tag));
-        } else if (tag == std::numeric_limits<CFloatTag>::infinity()){
-            snbt.append("Infinityf");
-        } else if (tag == -std::numeric_limits<CFloatTag>::infinity()){
-            snbt.append("-Infinityf");
-        } else {
-            snbt.append("NaNf");
-        }
-    } else if constexpr (std::is_same_v<T, CDoubleTag>){
-        if (std::isfinite(tag)){
-            snbt.append(std::format("{}d", tag));
-        } else if (tag == std::numeric_limits<CDoubleTag>::infinity()){
-            snbt.append("Infinityd");
-        } else if (tag == -std::numeric_limits<CDoubleTag>::infinity()){
-            snbt.append("-Infinityd");
-        } else {
-            snbt.append("NaNd");
-        }
+void write_node_snbt(std::string& snbt, const TagNode& tag){
+    switch (tag.index()){
+        case 1: write_byte_snbt(snbt, std::get<CByteTag>(tag)); break;
+        case 2: write_short_snbt(snbt, std::get<CShortTag>(tag)); break;
+        case 3: write_int_snbt(snbt, std::get<CIntTag>(tag)); break;
+        case 4: write_long_snbt(snbt, std::get<CLongTag>(tag)); break;
+        case 5: write_float_snbt(snbt, std::get<CFloatTag>(tag)); break;
+        case 6: write_double_snbt(snbt, std::get<CDoubleTag>(tag)); break;
+        case 7: write_byte_array_snbt(snbt, std::get<CByteArrayTagPtr>(tag)); break;
+        case 8: write_string_snbt(snbt, std::get<CStringTag>(tag)); break;
+        case 9: write_list_snbt(snbt, std::get<CListTagPtr>(tag)); break;
+        case 10: write_compound_snbt(snbt, std::get<CCompoundTagPtr>(tag)); break;
+        case 11: write_int_array_snbt(snbt, std::get<CIntArrayTagPtr>(tag)); break;
+        case 12: write_long_array_snbt(snbt, std::get<CLongArrayTagPtr>(tag)); break;
+        default: throw std::runtime_error("TagNode cannot be in null state when writing.");
     }
 }
 
 
-template <
-    typename T,
-    typename... Args,
-    std::enable_if_t<std::is_same_v<T, CStringTag>, bool> = true
->
-void write_snbt(std::string& snbt, const CStringTag& tag, Args... args){
+void write_node_snbt(std::string& snbt, const TagNode& tag, const std::string& indent, size_t indent_count){
+    switch (tag.index()){
+        case 1: write_byte_snbt(snbt, std::get<CByteTag>(tag)); break;
+        case 2: write_short_snbt(snbt, std::get<CShortTag>(tag)); break;
+        case 3: write_int_snbt(snbt, std::get<CIntTag>(tag)); break;
+        case 4: write_long_snbt(snbt, std::get<CLongTag>(tag)); break;
+        case 5: write_float_snbt(snbt, std::get<CFloatTag>(tag)); break;
+        case 6: write_double_snbt(snbt, std::get<CDoubleTag>(tag)); break;
+        case 7: write_byte_array_snbt(snbt, std::get<CByteArrayTagPtr>(tag)); break;
+        case 8: write_string_snbt(snbt, std::get<CStringTag>(tag)); break;
+        case 9: write_list_snbt(snbt, std::get<CListTagPtr>(tag), indent, indent_count); break;
+        case 10: write_compound_snbt(snbt, std::get<CCompoundTagPtr>(tag), indent, indent_count); break;
+        case 11: write_int_array_snbt(snbt, std::get<CIntArrayTagPtr>(tag)); break;
+        case 12: write_long_array_snbt(snbt, std::get<CLongArrayTagPtr>(tag)); break;
+        default: throw std::runtime_error("TagNode cannot be in null state when writing.");
+    }
+}
+
+
+void write_byte_snbt(std::string& snbt, const CByteTag& tag){
+    snbt.append(std::format("{}b", tag));
+}
+
+void write_short_snbt(std::string& snbt, const CShortTag& tag){
+    snbt.append(std::format("{}s", tag));
+}
+
+void write_int_snbt(std::string& snbt, const CIntTag& tag){
+    snbt.append(std::format("{}", tag));
+}
+
+void write_long_snbt(std::string& snbt, const CLongTag& tag){
+    snbt.append(std::format("{}L", tag));
+}
+
+void write_float_snbt(std::string& snbt, const CFloatTag& tag){
+    if (std::isfinite(tag)){
+        snbt.append(std::format("{}f", tag));
+    } else if (tag == std::numeric_limits<CFloatTag>::infinity()){
+        snbt.append("Infinityf");
+    } else if (tag == -std::numeric_limits<CFloatTag>::infinity()){
+        snbt.append("-Infinityf");
+    } else {
+        snbt.append("NaNf");
+    }
+}
+
+void write_double_snbt(std::string& snbt, const CDoubleTag& tag){
+    if (std::isfinite(tag)){
+        snbt.append(std::format("{}d", tag));
+    } else if (tag == std::numeric_limits<CDoubleTag>::infinity()){
+        snbt.append("Infinityd");
+    } else if (tag == -std::numeric_limits<CDoubleTag>::infinity()){
+        snbt.append("-Infinityd");
+    } else {
+        snbt.append("NaNd");
+    }
+}
+
+
+void write_string_snbt(std::string& snbt, const CStringTag& tag){
     std::string result = tag;
 
     size_t pos = 0;
@@ -156,7 +162,18 @@ void write_snbt_list(std::string& snbt, const CListTagPtr& tag){
     const std::vector<T>& list = std::get<std::vector<T>>(*tag);
     snbt.append("[");
     for (size_t i = 0; i < list.size(); i++){
-        write_snbt<T>(snbt, list[i]);
+        if constexpr (std::is_same_v<T, CByteTag>){write_byte_snbt(snbt, list[i]);} else
+        if constexpr (std::is_same_v<T, CShortTag>){write_short_snbt(snbt, list[i]);} else
+        if constexpr (std::is_same_v<T, CIntTag>){write_int_snbt(snbt, list[i]);} else
+        if constexpr (std::is_same_v<T, CLongTag>){write_long_snbt(snbt, list[i]);} else
+        if constexpr (std::is_same_v<T, CFloatTag>){write_float_snbt(snbt, list[i]);} else
+        if constexpr (std::is_same_v<T, CDoubleTag>){write_double_snbt(snbt, list[i]);} else
+        if constexpr (std::is_same_v<T, CByteArrayTagPtr>){write_byte_array_snbt(snbt, list[i]);} else
+        if constexpr (std::is_same_v<T, CStringTag>){write_string_snbt(snbt, list[i]);} else
+        if constexpr (std::is_same_v<T, CListTagPtr>){write_list_snbt(snbt, list[i]);} else
+        if constexpr (std::is_same_v<T, CCompoundTagPtr>){write_compound_snbt(snbt, list[i]);} else
+        if constexpr (std::is_same_v<T, CIntArrayTagPtr>){write_int_array_snbt(snbt, list[i]);} else
+        if constexpr (std::is_same_v<T, CLongArrayTagPtr>){write_long_array_snbt(snbt, list[i]);}
         if (i + 1 != list.size()){
             snbt.append(", ");
         }
@@ -189,7 +206,18 @@ void write_snbt_list(std::string& snbt, const CListTagPtr& tag, const std::strin
     for (size_t i = 0; i < list.size(); i++){
         snbt.append("\r\n");
         write_indent(snbt, indent, indent_count + 1);
-        write_snbt<T>(snbt, list[i], indent, indent_count + 1);
+        if constexpr (std::is_same_v<T, CByteTag>){write_byte_snbt(snbt, list[i]);} else
+        if constexpr (std::is_same_v<T, CShortTag>){write_short_snbt(snbt, list[i]);} else
+        if constexpr (std::is_same_v<T, CIntTag>){write_int_snbt(snbt, list[i]);} else
+        if constexpr (std::is_same_v<T, CLongTag>){write_long_snbt(snbt, list[i]);} else
+        if constexpr (std::is_same_v<T, CFloatTag>){write_float_snbt(snbt, list[i]);} else
+        if constexpr (std::is_same_v<T, CDoubleTag>){write_double_snbt(snbt, list[i]);} else
+        if constexpr (std::is_same_v<T, CByteArrayTagPtr>){write_byte_array_snbt(snbt, list[i]);} else
+        if constexpr (std::is_same_v<T, CStringTag>){write_string_snbt(snbt, list[i]);} else
+        if constexpr (std::is_same_v<T, CListTagPtr>){write_list_snbt(snbt, list[i], indent, indent_count + 1);} else
+        if constexpr (std::is_same_v<T, CCompoundTagPtr>){write_compound_snbt(snbt, list[i], indent, indent_count + 1);} else
+        if constexpr (std::is_same_v<T, CIntArrayTagPtr>){write_int_array_snbt(snbt, list[i]);} else
+        if constexpr (std::is_same_v<T, CLongArrayTagPtr>){write_long_array_snbt(snbt, list[i]);}
         if (i + 1 == list.size()){
             snbt.append("\r\n");
             write_indent(snbt, indent, indent_count);
@@ -201,26 +229,40 @@ void write_snbt_list(std::string& snbt, const CListTagPtr& tag, const std::strin
 }
 
 
-template <
-    typename T,
-    typename... Args,
-    std::enable_if_t<std::is_same_v<T, CListTagPtr>, bool> = true
->
-void write_snbt(std::string& snbt, const CListTagPtr& tag, Args... args){
+void write_list_snbt(std::string& snbt, const CListTagPtr& tag){
     switch (tag->index()){
         case 0: snbt.append("[]"); break;
-        case 1: write_snbt_list<CByteTag>(snbt, tag, args...); break;
-        case 2: write_snbt_list<CShortTag>(snbt, tag, args...); break;
-        case 3: write_snbt_list<CIntTag>(snbt, tag, args...); break;
-        case 4: write_snbt_list<CLongTag>(snbt, tag, args...); break;
-        case 5: write_snbt_list<CFloatTag>(snbt, tag, args...); break;
-        case 6: write_snbt_list<CDoubleTag>(snbt, tag, args...); break;
-        case 7: write_snbt_list<CByteArrayTagPtr>(snbt, tag, args...); break;
-        case 8: write_snbt_list<CStringTag>(snbt, tag, args...); break;
-        case 9: write_snbt_list<CListTagPtr>(snbt, tag, args...); break;
-        case 10: write_snbt_list<CCompoundTagPtr>(snbt, tag, args...); break;
-        case 11: write_snbt_list<CIntArrayTagPtr>(snbt, tag, args...); break;
-        case 12: write_snbt_list<CLongArrayTagPtr>(snbt, tag, args...); break;
+        case 1: write_snbt_list<CByteTag>(snbt, tag); break;
+        case 2: write_snbt_list<CShortTag>(snbt, tag); break;
+        case 3: write_snbt_list<CIntTag>(snbt, tag); break;
+        case 4: write_snbt_list<CLongTag>(snbt, tag); break;
+        case 5: write_snbt_list<CFloatTag>(snbt, tag); break;
+        case 6: write_snbt_list<CDoubleTag>(snbt, tag); break;
+        case 7: write_snbt_list<CByteArrayTagPtr>(snbt, tag); break;
+        case 8: write_snbt_list<CStringTag>(snbt, tag); break;
+        case 9: write_snbt_list<CListTagPtr>(snbt, tag); break;
+        case 10: write_snbt_list<CCompoundTagPtr>(snbt, tag); break;
+        case 11: write_snbt_list<CIntArrayTagPtr>(snbt, tag); break;
+        case 12: write_snbt_list<CLongArrayTagPtr>(snbt, tag); break;
+    }
+}
+
+
+void write_list_snbt(std::string& snbt, const CListTagPtr& tag, const std::string& indent, size_t indent_count){
+    switch (tag->index()){
+        case 0: snbt.append("[]"); break;
+        case 1: write_snbt_list<CByteTag>(snbt, tag, indent, indent_count); break;
+        case 2: write_snbt_list<CShortTag>(snbt, tag, indent, indent_count); break;
+        case 3: write_snbt_list<CIntTag>(snbt, tag, indent, indent_count); break;
+        case 4: write_snbt_list<CLongTag>(snbt, tag, indent, indent_count); break;
+        case 5: write_snbt_list<CFloatTag>(snbt, tag, indent, indent_count); break;
+        case 6: write_snbt_list<CDoubleTag>(snbt, tag, indent, indent_count); break;
+        case 7: write_snbt_list<CByteArrayTagPtr>(snbt, tag, indent, indent_count); break;
+        case 8: write_snbt_list<CStringTag>(snbt, tag, indent, indent_count); break;
+        case 9: write_snbt_list<CListTagPtr>(snbt, tag, indent, indent_count); break;
+        case 10: write_snbt_list<CCompoundTagPtr>(snbt, tag, indent, indent_count); break;
+        case 11: write_snbt_list<CIntArrayTagPtr>(snbt, tag, indent, indent_count); break;
+        case 12: write_snbt_list<CLongArrayTagPtr>(snbt, tag, indent, indent_count); break;
     }
 }
 
@@ -231,7 +273,7 @@ void write_key(std::string& snbt, const CStringTag& key){
     })){
         snbt.append(key);
     } else {
-        write_snbt<CStringTag>(snbt, key);
+        write_string_snbt(snbt, key);
     }
 }
 
@@ -254,17 +296,13 @@ std::vector<std::pair<std::string, TagNode>> sort_compound(const CCompoundTagPtr
 }
 
 
-template <
-    typename T,
-    std::enable_if_t<std::is_same_v<T, CCompoundTagPtr>, bool> = true
->
-void write_snbt(std::string& snbt, const CCompoundTagPtr& tag){
+void write_compound_snbt(std::string& snbt, const CCompoundTagPtr& tag){
     auto sorted = sort_compound(tag);
     snbt.append("{");
     for (auto it = sorted.begin(); it != sorted.end(); it++){
         write_key(snbt, it->first);
         snbt.append(": ");
-        write_snbt<TagNode>(snbt, it->second);
+        write_node_snbt(snbt, it->second);
         if (std::next(it) != sorted.end()){
             snbt.append(", ");
         }
@@ -273,12 +311,7 @@ void write_snbt(std::string& snbt, const CCompoundTagPtr& tag){
 }
 
 
-template <
-    typename T,
-    typename... Args,
-    std::enable_if_t<std::is_same_v<T, CCompoundTagPtr>, bool> = true
->
-void write_snbt(std::string& snbt, const CCompoundTagPtr& tag, const std::string& indent, size_t indent_count){
+void write_compound_snbt(std::string& snbt, const CCompoundTagPtr& tag, const std::string& indent, size_t indent_count){
     auto sorted = sort_compound(tag);
     snbt.append("{");
     for (auto it = sorted.begin(); it != sorted.end(); it++){
@@ -286,7 +319,7 @@ void write_snbt(std::string& snbt, const CCompoundTagPtr& tag, const std::string
         write_indent(snbt, indent, indent_count + 1);
         write_key(snbt, it->first);
         snbt.append(": ");
-        write_snbt<TagNode, const std::string&, size_t>(snbt, it->second, indent, indent_count + 1);
+        write_node_snbt(snbt, it->second, indent, indent_count + 1);
         if (std::next(it) == sorted.end()){
             snbt.append("\r\n");
             write_indent(snbt, indent, indent_count);
@@ -298,33 +331,11 @@ void write_snbt(std::string& snbt, const CCompoundTagPtr& tag, const std::string
 }
 
 
-template <
-    typename T,
-    typename... Args,
-    std::enable_if_t<
-        std::is_same_v<T, CByteArrayTagPtr> ||
-        std::is_same_v<T, CIntArrayTagPtr> ||
-        std::is_same_v<T, CLongArrayTagPtr>,
-        bool
-    > = true
->
-void write_snbt(std::string& snbt, const T& tag, Args... args){
+void write_byte_array_snbt(std::string& snbt, const CByteArrayTagPtr& tag){
     auto array = *tag;
-    if constexpr (std::is_same_v<T, CByteArrayTagPtr>){
-        snbt.append("[B;");
-    } else if constexpr (std::is_same_v<T, CIntArrayTagPtr>){
-        snbt.append("[I;");
-    } else if constexpr (std::is_same_v<T, CLongArrayTagPtr>){
-        snbt.append("[L;");
-    }
+    snbt.append("[B;");
     for (size_t i = 0; i < array.size(); i++){
-        if constexpr (std::is_same_v<T, CByteArrayTagPtr>){
-            snbt.append(std::format("{}B", array[i]));
-        } else if constexpr (std::is_same_v<T, CIntArrayTagPtr>){
-            snbt.append(std::format("{}", array[i]));
-        } else if constexpr (std::is_same_v<T, CLongArrayTagPtr>){
-            snbt.append(std::format("{}L", array[i]));
-        }
+        snbt.append(std::format("{}B", array[i]));
         if (i + 1 != array.size()){
             snbt.append(", ");
         }
@@ -333,25 +344,27 @@ void write_snbt(std::string& snbt, const T& tag, Args... args){
 }
 
 
-template <
-    typename T,
-    typename... Args,
-    std::enable_if_t<std::is_same_v<T, TagNode>, bool> = true
->
-void write_snbt(std::string& snbt, const TagNode& tag, Args... args){
-    switch (tag.index()){
-        case 1: write_snbt<CByteTag, Args...>(snbt, std::get<CByteTag>(tag), args...); break;
-        case 2: write_snbt<CShortTag, Args...>(snbt, std::get<CShortTag>(tag), args...); break;
-        case 3: write_snbt<CIntTag, Args...>(snbt, std::get<CIntTag>(tag), args...); break;
-        case 4: write_snbt<CLongTag, Args...>(snbt, std::get<CLongTag>(tag), args...); break;
-        case 5: write_snbt<CFloatTag, Args...>(snbt, std::get<CFloatTag>(tag), args...); break;
-        case 6: write_snbt<CDoubleTag, Args...>(snbt, std::get<CDoubleTag>(tag), args...); break;
-        case 7: write_snbt<CByteArrayTagPtr, Args...>(snbt, std::get<CByteArrayTagPtr>(tag), args...); break;
-        case 8: write_snbt<CStringTag, Args...>(snbt, std::get<CStringTag>(tag), args...); break;
-        case 9: write_snbt<CListTagPtr, Args...>(snbt, std::get<CListTagPtr>(tag), args...); break;
-        case 10: write_snbt<CCompoundTagPtr, Args...>(snbt, std::get<CCompoundTagPtr>(tag), args...); break;
-        case 11: write_snbt<CIntArrayTagPtr, Args...>(snbt, std::get<CIntArrayTagPtr>(tag), args...); break;
-        case 12: write_snbt<CLongArrayTagPtr, Args...>(snbt, std::get<CLongArrayTagPtr>(tag), args...); break;
-        default: throw std::runtime_error("TagNode cannot be in null state when writing.");
+void write_int_array_snbt(std::string& snbt, const CIntArrayTagPtr& tag){
+    auto array = *tag;
+    snbt.append("[I;");
+    for (size_t i = 0; i < array.size(); i++){
+        snbt.append(std::format("{}", array[i]));
+        if (i + 1 != array.size()){
+            snbt.append(", ");
+        }
     }
+    snbt.append("]");
+}
+
+
+void write_long_array_snbt(std::string& snbt, const CLongArrayTagPtr& tag){
+    auto array = *tag;
+    snbt.append("[L;");
+    for (size_t i = 0; i < array.size(); i++){
+        snbt.append(std::format("{}L", array[i]));
+        if (i + 1 != array.size()){
+            snbt.append(", ");
+        }
+    }
+    snbt.append("]");
 }

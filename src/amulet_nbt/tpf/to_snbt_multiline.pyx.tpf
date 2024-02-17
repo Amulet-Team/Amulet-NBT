@@ -1,0 +1,14 @@
+    def to_snbt(self, object indent: None | str | int = None) -> str:
+        cdef string snbt
+        cdef string indent_str
+        if indent is None:
+            write_{{tag}}_snbt(snbt, self.cpp)
+        else:
+            if isinstance(indent, int):
+                indent_str = " " * indent
+            elif isinstance(indent, str):
+                indent_str = indent
+            else:
+                raise TypeError("indent must be a str, int or None")
+            write_{{tag}}_snbt(snbt, self.cpp, indent_str, 0)
+        return snbt

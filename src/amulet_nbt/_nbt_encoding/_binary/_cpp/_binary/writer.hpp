@@ -6,7 +6,6 @@
 #include <cstring>
 #include <algorithm>
 #include <bit>
-#include <format>
 #include <functional>
 
 

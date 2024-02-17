@@ -2,10 +2,10 @@
 
 #include <variant>
 #include <type_traits>
-#include <format>
 #include <cmath>
 #include <limits>
 #include <algorithm>
+#include <string>
 
 #include "../../../_string_encoding/_cpp/utf8.hpp"
 #include "../../../_tag/_cpp/nbt.hpp"
@@ -79,24 +79,28 @@ void write_node_snbt(std::string& snbt, const TagNode& tag, const std::string& i
 
 
 void write_byte_snbt(std::string& snbt, const CByteTag& tag){
-    snbt.append(std::format("{}b", tag));
+    snbt.append(std::to_string(tag));
+    snbt.push_back("b");
 }
 
 void write_short_snbt(std::string& snbt, const CShortTag& tag){
-    snbt.append(std::format("{}s", tag));
+    snbt.append(std::to_string(tag));
+    snbt.push_back("s");
 }
 
 void write_int_snbt(std::string& snbt, const CIntTag& tag){
-    snbt.append(std::format("{}", tag));
+    snbt.append(std::to_string(tag));
 }
 
 void write_long_snbt(std::string& snbt, const CLongTag& tag){
-    snbt.append(std::format("{}L", tag));
+    snbt.append(std::to_string(tag));
+    snbt.push_back("L");
 }
 
 void write_float_snbt(std::string& snbt, const CFloatTag& tag){
     if (std::isfinite(tag)){
-        snbt.append(std::format("{}f", tag));
+        snbt.append(std::to_string(tag));
+        snbt.push_back("f");
     } else if (tag == std::numeric_limits<CFloatTag>::infinity()){
         snbt.append("Infinityf");
     } else if (tag == -std::numeric_limits<CFloatTag>::infinity()){
@@ -108,7 +112,8 @@ void write_float_snbt(std::string& snbt, const CFloatTag& tag){
 
 void write_double_snbt(std::string& snbt, const CDoubleTag& tag){
     if (std::isfinite(tag)){
-        snbt.append(std::format("{}d", tag));
+        snbt.append(std::to_string(tag));
+        snbt.push_back("d");
     } else if (tag == std::numeric_limits<CDoubleTag>::infinity()){
         snbt.append("Infinityd");
     } else if (tag == -std::numeric_limits<CDoubleTag>::infinity()){
@@ -335,7 +340,8 @@ void write_byte_array_snbt(std::string& snbt, const CByteArrayTagPtr& tag){
     auto array = *tag;
     snbt.append("[B;");
     for (size_t i = 0; i < array.size(); i++){
-        snbt.append(std::format("{}B", array[i]));
+        snbt.append(std::to_string(array[i]));
+        snbt.push_back("B");
         if (i + 1 != array.size()){
             snbt.append(", ");
         }
@@ -348,7 +354,7 @@ void write_int_array_snbt(std::string& snbt, const CIntArrayTagPtr& tag){
     auto array = *tag;
     snbt.append("[I;");
     for (size_t i = 0; i < array.size(); i++){
-        snbt.append(std::format("{}", array[i]));
+        snbt.append(std::to_string(array[i]));
         if (i + 1 != array.size()){
             snbt.append(", ");
         }
@@ -361,7 +367,8 @@ void write_long_array_snbt(std::string& snbt, const CLongArrayTagPtr& tag){
     auto array = *tag;
     snbt.append("[L;");
     for (size_t i = 0; i < array.size(); i++){
-        snbt.append(std::format("{}L", array[i]));
+        snbt.append(std::to_string(array[i]));
+        snbt.push_back("L");
         if (i + 1 != array.size()){
             snbt.append(", ");
         }

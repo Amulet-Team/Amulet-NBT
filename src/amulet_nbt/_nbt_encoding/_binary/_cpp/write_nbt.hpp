@@ -151,7 +151,7 @@ void write_double_payload(BinaryWriter& writer, const CDoubleTag& value){
 void write_string_payload(BinaryWriter& writer, const CStringTag& value){
     std::string encoded_string = writer.encodeString(value);
     if (encoded_string.size() > static_cast<size_t>(std::numeric_limits<std::uint16_t>::max())){
-        throw std::overflow_error(std::format("String of length {} is too long.", encoded_string.size()));
+        throw std::overflow_error("String of length " + std::to_string(encoded_string.size()) + " is too long.");
     }
     std::uint16_t length = static_cast<std::uint16_t>(encoded_string.size());
     writer.writeNumeric<std::uint16_t>(length);
@@ -180,7 +180,7 @@ template <
 void write_list_tag_payload(BinaryWriter& writer, const CListTagPtr& value){
     const std::vector<T>& list = std::get<std::vector<T>>(*value);
     if (list.size() > static_cast<size_t>(std::numeric_limits<std::int32_t>::max())){
-        throw std::overflow_error(std::format("List of length {} is too long.", list.size()));
+        throw std::overflow_error("List of length " + std::to_string(list.size()) + " is too long.");
     }
     writer.writeNumeric<std::uint8_t>(variant_index<TagNode, T>());
     std::int32_t length = static_cast<std::int32_t>(list.size());
@@ -234,7 +234,7 @@ void write_compound_payload(BinaryWriter& writer, const CCompoundTagPtr& value){
 
 void write_byte_array_payload(BinaryWriter& writer, const CByteArrayTagPtr& value){
     if (value->size() > static_cast<size_t>(std::numeric_limits<std::int32_t>::max())){
-        throw std::overflow_error(std::format("Array of length {} is too long.", value->size()));
+        throw std::overflow_error("Array of length " + std::to_string(value->size()) + " is too long.");
     }
     std::int32_t length = static_cast<std::int32_t>(value->size());
     writer.writeNumeric<std::int32_t>(length);
@@ -245,7 +245,7 @@ void write_byte_array_payload(BinaryWriter& writer, const CByteArrayTagPtr& valu
 
 void write_int_array_payload(BinaryWriter& writer, const CIntArrayTagPtr& value){
     if (value->size() > static_cast<size_t>(std::numeric_limits<std::int32_t>::max())){
-        throw std::overflow_error(std::format("Array of length {} is too long.", value->size()));
+        throw std::overflow_error("Array of length " + std::to_string(value->size()) + " is too long.");
     }
     std::int32_t length = static_cast<std::int32_t>(value->size());
     writer.writeNumeric<std::int32_t>(length);
@@ -256,7 +256,7 @@ void write_int_array_payload(BinaryWriter& writer, const CIntArrayTagPtr& value)
 
 void write_long_array_payload(BinaryWriter& writer, const CLongArrayTagPtr& value){
     if (value->size() > static_cast<size_t>(std::numeric_limits<std::int32_t>::max())){
-        throw std::overflow_error(std::format("Array of length {} is too long.", value->size()));
+        throw std::overflow_error("Array of length " + std::to_string(value->size()) + " is too long.");
     }
     std::int32_t length = static_cast<std::int32_t>(value->size());
     writer.writeNumeric<std::int32_t>(length);

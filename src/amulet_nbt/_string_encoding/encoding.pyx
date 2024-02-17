@@ -1,6 +1,6 @@
 # distutils: language = c++
-# distutils: extra_compile_args = -std=c++20 /std:c++20
-# distutils: extra_link_args = -std=c++20 /std:c++20
+# distutils: extra_compile_args = CPPCARGS
+# distutils: extra_link_args = CPPLARGS
 # distutils: sources = [src/amulet_nbt/_string_encoding/_cpp/mutf8.cpp, src/amulet_nbt/_string_encoding/_cpp/utf8.cpp]
 
 from ._cpp.utf8 cimport utf8_to_utf8, utf8_escape_to_utf8, utf8_to_utf8_escape

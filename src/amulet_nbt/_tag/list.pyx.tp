@@ -5,8 +5,8 @@ from template import include
 {{base64.b64decode("IyMgVGhpcyBmaWxlIGlzIGdlbmVyYXRlZCBmcm9tIGEgdGVtcGxhdGUuCiMjIERvIG5vdCBtb2RpZnkgdGhpcyBmaWxlIGRpcmVjdGx5IG9yIHlvdXIgY2hhbmdlcyB3aWxsIGdldCBvdmVyd3JpdHRlbi4KIyMgRWRpdCB0aGUgYWNjb21wYW55aW5nIC5weXgudHAgZmlsZSBpbnN0ZWFkLg==").decode()}}
 # cython: language_level=3, boundscheck=False, wraparound=False
 # distutils: language = c++
-# distutils: extra_compile_args = -std=c++20 /std:c++20
-# distutils: extra_link_args = -std=c++20 /std:c++20
+# distutils: extra_compile_args = CPPCARGS
+# distutils: extra_link_args = CPPLARGS
 # cython: c_string_type=str, c_string_encoding=utf8
 
 from typing import Any, Type

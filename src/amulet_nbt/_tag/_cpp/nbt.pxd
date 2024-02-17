@@ -1,7 +1,7 @@
 # cython: language_level=3, boundscheck=False, wraparound=False
 # distutils: language = c++
-# distutils: extra_compile_args = -std=c++20 /std:c++20
-# distutils: extra_link_args = -std=c++20 /std:c++20
+# distutils: extra_compile_args = CPPCARGS
+# distutils: extra_link_args = CPPLARGS
 
 from libc.stdint cimport (
     int8_t,

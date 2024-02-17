@@ -35,8 +35,7 @@ public:
     template <typename T> inline void readNumericInto(T& value) {
         // Ensure the buffer is long enough
         if (position + sizeof(T) > data.size()) {
-            throw std::out_of_range("Cannot read");
-//            throw std::out_of_range(std::format("Cannot read {} at position {}", typeid(T).name(), position));
+            throw std::out_of_range(std::format("Cannot read {} at position {}", typeid(T).name(), position));
         }
 
         // Create
@@ -72,8 +71,7 @@ public:
     std::string readString(size_t length) {
         // Ensure the buffer is long enough
         if (position + length > data.size()) {
-            throw std::out_of_range("Cannot read string at position");
-//            throw std::out_of_range(std::format("Cannot read string at position {}", position));
+            throw std::out_of_range(std::format("Cannot read string at position {}", position));
         }
 
         std::string value = data.substr(position, length);

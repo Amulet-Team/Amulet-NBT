@@ -77,16 +77,16 @@ template <
 >
 void write_snbt(std::string& snbt, const T& tag, Args... args){
     if constexpr (std::is_same_v<T, CByteTag>){
-//        snbt.append(std::format("{}b", tag));
+        snbt.append(std::format("{}b", tag));
     } else if constexpr (std::is_same_v<T, CShortTag>){
-//        snbt.append(std::format("{}s", tag));
+        snbt.append(std::format("{}s", tag));
     } else if constexpr (std::is_same_v<T, CIntTag>){
-//        snbt.append(std::format("{}", tag));
+        snbt.append(std::format("{}", tag));
     } else if constexpr (std::is_same_v<T, CLongTag>){
-//        snbt.append(std::format("{}L", tag));
+        snbt.append(std::format("{}L", tag));
     } else if constexpr (std::is_same_v<T, CFloatTag>){
         if (std::isfinite(tag)){
-//            snbt.append(std::format("{}f", tag));
+            snbt.append(std::format("{}f", tag));
         } else if (tag == std::numeric_limits<CFloatTag>::infinity()){
             snbt.append("Infinityf");
         } else if (tag == -std::numeric_limits<CFloatTag>::infinity()){
@@ -96,7 +96,7 @@ void write_snbt(std::string& snbt, const T& tag, Args... args){
         }
     } else if constexpr (std::is_same_v<T, CDoubleTag>){
         if (std::isfinite(tag)){
-//            snbt.append(std::format("{}d", tag));
+            snbt.append(std::format("{}d", tag));
         } else if (tag == std::numeric_limits<CDoubleTag>::infinity()){
             snbt.append("Infinityd");
         } else if (tag == -std::numeric_limits<CDoubleTag>::infinity()){
@@ -319,11 +319,11 @@ void write_snbt(std::string& snbt, const T& tag, Args... args){
     }
     for (size_t i = 0; i < array.size(); i++){
         if constexpr (std::is_same_v<T, CByteArrayTagPtr>){
-//            snbt.append(std::format("{}B", array[i]));
+            snbt.append(std::format("{}B", array[i]));
         } else if constexpr (std::is_same_v<T, CIntArrayTagPtr>){
-//            snbt.append(std::format("{}", array[i]));
+            snbt.append(std::format("{}", array[i]));
         } else if constexpr (std::is_same_v<T, CLongArrayTagPtr>){
-//            snbt.append(std::format("{}L", array[i]));
+            snbt.append(std::format("{}L", array[i]));
         }
         if (i + 1 != array.size()){
             snbt.append(", ");

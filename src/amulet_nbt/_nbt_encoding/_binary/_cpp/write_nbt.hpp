@@ -195,29 +195,6 @@ void write_tag_payload(BinaryWriter& writer, const T& value){
 
 template <
     typename T,
-    std::enable_if_t<std::is_same_v<T, TagNode>, bool> = true
->
-void write_named_tag(BinaryWriter& writer, const std::string& name, const TagNode& node){
-    switch (node.index()){
-        case 1: write_named_tag<CByteTag>(writer, name, std::get<CByteTag>(node)); break;
-        case 2: write_named_tag<CShortTag>(writer, name, std::get<CShortTag>(node)); break;
-        case 3: write_named_tag<CIntTag>(writer, name, std::get<CIntTag>(node)); break;
-        case 4: write_named_tag<CLongTag>(writer, name, std::get<CLongTag>(node)); break;
-        case 5: write_named_tag<CFloatTag>(writer, name, std::get<CFloatTag>(node)); break;
-        case 6: write_named_tag<CDoubleTag>(writer, name, std::get<CDoubleTag>(node)); break;
-        case 7: write_named_tag<CByteArrayTagPtr>(writer, name, std::get<CByteArrayTagPtr>(node)); break;
-        case 8: write_named_tag<CStringTag>(writer, name, std::get<CStringTag>(node)); break;
-        case 9: write_named_tag<CListTagPtr>(writer, name, std::get<CListTagPtr>(node)); break;
-        case 10: write_named_tag<CCompoundTagPtr>(writer, name, std::get<CCompoundTagPtr>(node)); break;
-        case 11: write_named_tag<CIntArrayTagPtr>(writer, name, std::get<CIntArrayTagPtr>(node)); break;
-        case 12: write_named_tag<CLongArrayTagPtr>(writer, name, std::get<CLongArrayTagPtr>(node)); break;
-        default: throw std::runtime_error("TagNode cannot be in null state when writing.");
-    }
-}
-
-
-template <
-    typename T,
     std::enable_if_t<
         std::is_same_v<T, CByteTag> ||
         std::is_same_v<T, CShortTag> ||
@@ -238,6 +215,29 @@ void write_named_tag(BinaryWriter& writer, const std::string& name, const T& tag
     writer.writeNumeric<std::uint8_t>(variant_index<TagNode, T>());
     write_tag_payload<CStringTag>(writer, name);
     write_tag_payload<T>(writer, tag);
+}
+
+
+template <
+    typename T,
+    std::enable_if_t<std::is_same_v<T, TagNode>, bool> = true
+>
+void write_named_tag(BinaryWriter& writer, const std::string& name, const TagNode& node){
+    switch (node.index()){
+        case 1: write_named_tag<CByteTag>(writer, name, std::get<CByteTag>(node)); break;
+        case 2: write_named_tag<CShortTag>(writer, name, std::get<CShortTag>(node)); break;
+        case 3: write_named_tag<CIntTag>(writer, name, std::get<CIntTag>(node)); break;
+        case 4: write_named_tag<CLongTag>(writer, name, std::get<CLongTag>(node)); break;
+        case 5: write_named_tag<CFloatTag>(writer, name, std::get<CFloatTag>(node)); break;
+        case 6: write_named_tag<CDoubleTag>(writer, name, std::get<CDoubleTag>(node)); break;
+        case 7: write_named_tag<CByteArrayTagPtr>(writer, name, std::get<CByteArrayTagPtr>(node)); break;
+        case 8: write_named_tag<CStringTag>(writer, name, std::get<CStringTag>(node)); break;
+        case 9: write_named_tag<CListTagPtr>(writer, name, std::get<CListTagPtr>(node)); break;
+        case 10: write_named_tag<CCompoundTagPtr>(writer, name, std::get<CCompoundTagPtr>(node)); break;
+        case 11: write_named_tag<CIntArrayTagPtr>(writer, name, std::get<CIntArrayTagPtr>(node)); break;
+        case 12: write_named_tag<CLongArrayTagPtr>(writer, name, std::get<CLongArrayTagPtr>(node)); break;
+        default: throw std::runtime_error("TagNode cannot be in null state when writing.");
+    }
 }
 
 

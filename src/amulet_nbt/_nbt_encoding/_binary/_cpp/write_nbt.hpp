@@ -11,6 +11,50 @@
 #include "../../../_tag/_cpp/array.hpp"
 
 
+// Forward declarations
+template <
+    typename T,
+    std::enable_if_t<
+        std::is_same_v<T, CByteTag> ||
+        std::is_same_v<T, CShortTag> ||
+        std::is_same_v<T, CIntTag> ||
+        std::is_same_v<T, CLongTag> ||
+        std::is_same_v<T, CFloatTag> ||
+        std::is_same_v<T, CDoubleTag> ||
+        std::is_same_v<T, CByteArrayTagPtr> ||
+        std::is_same_v<T, CStringTag> ||
+        std::is_same_v<T, CListTagPtr> ||
+        std::is_same_v<T, CCompoundTagPtr> ||
+        std::is_same_v<T, CIntArrayTagPtr> ||
+        std::is_same_v<T, CLongArrayTagPtr>,
+        bool
+    >
+>
+void write_tag_payload(BinaryWriter& writer, const T& value);
+
+
+template <
+    typename T,
+    std::enable_if_t<
+        std::is_same_v<T, TagNode> ||
+        std::is_same_v<T, CByteTag> ||
+        std::is_same_v<T, CShortTag> ||
+        std::is_same_v<T, CIntTag> ||
+        std::is_same_v<T, CLongTag> ||
+        std::is_same_v<T, CFloatTag> ||
+        std::is_same_v<T, CDoubleTag> ||
+        std::is_same_v<T, CByteArrayTagPtr> ||
+        std::is_same_v<T, CStringTag> ||
+        std::is_same_v<T, CListTagPtr> ||
+        std::is_same_v<T, CCompoundTagPtr> ||
+        std::is_same_v<T, CIntArrayTagPtr> ||
+        std::is_same_v<T, CLongArrayTagPtr>,
+        bool
+    >
+>
+void write_named_tag(BinaryWriter& writer, const std::string& name, const T& tag);
+
+
 template<typename V, typename T, size_t I = 0>
 constexpr size_t variant_index() {
     static_assert(I < std::variant_size_v<V>, "Type T is not a member of variant V");
@@ -24,20 +68,6 @@ constexpr size_t variant_index() {
 
 template<class... Ts>
 struct overloaded : Ts... { using Ts::operator()...; };
-
-
-void write_tag_payload(BinaryWriter& writer, const CByteTag& value);
-void write_tag_payload(BinaryWriter& writer, const CShortTag& value);
-void write_tag_payload(BinaryWriter& writer, const CIntTag& value);
-void write_tag_payload(BinaryWriter& writer, const CLongTag& value);
-void write_tag_payload(BinaryWriter& writer, const CFloatTag& value);
-void write_tag_payload(BinaryWriter& writer, const CDoubleTag& value);
-void write_tag_payload(BinaryWriter& writer, const CByteArrayTagPtr& value);
-void write_tag_payload(BinaryWriter& writer, const CStringTag& value);
-void write_tag_payload(BinaryWriter& writer, const CListTagPtr& value);
-void write_tag_payload(BinaryWriter& writer, const CCompoundTagPtr& value);
-void write_tag_payload(BinaryWriter& writer, const CIntArrayTagPtr& value);
-void write_tag_payload(BinaryWriter& writer, const CLongArrayTagPtr& value);
 
 
 template <
@@ -128,9 +158,6 @@ void write_tag_payload(BinaryWriter& writer, const CListTagPtr& value){
         case 12: write_list_tag_payload<CLongArrayTagPtr>(writer, value); break;
     }
 }
-
-
-void write_named_tag(BinaryWriter& writer, const std::string& name, const TagNode& tag);
 
 
 template <

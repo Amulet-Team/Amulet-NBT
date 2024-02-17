@@ -18,34 +18,48 @@ inline void write_indent(std::string& snbt, const std::string& indent, size_t in
     }
 }
 
+// Forward declarations
+template <
+    typename T,
+    std::enable_if_t<
+        std::is_same_v<T, TagNode> ||
+        std::is_same_v<T, CByteTag> ||
+        std::is_same_v<T, CShortTag> ||
+        std::is_same_v<T, CIntTag> ||
+        std::is_same_v<T, CLongTag> ||
+        std::is_same_v<T, CFloatTag> ||
+        std::is_same_v<T, CDoubleTag> ||
+        std::is_same_v<T, CByteArrayTagPtr> ||
+        std::is_same_v<T, CStringTag> ||
+        std::is_same_v<T, CListTagPtr> ||
+        std::is_same_v<T, CCompoundTagPtr> ||
+        std::is_same_v<T, CIntArrayTagPtr> ||
+        std::is_same_v<T, CLongArrayTagPtr>,
+        bool
+    >
+>
+void write_snbt(std::string& snbt, const T& tag);
 
-void write_snbt(std::string& snbt, const TagNode& tag);
-void write_snbt(std::string& snbt, const CByteTag& tag);
-void write_snbt(std::string& snbt, const CShortTag& tag);
-void write_snbt(std::string& snbt, const CIntTag& tag);
-void write_snbt(std::string& snbt, const CLongTag& tag);
-void write_snbt(std::string& snbt, const CFloatTag& tag);
-void write_snbt(std::string& snbt, const CDoubleTag& tag);
-void write_snbt(std::string& snbt, const CByteArrayTagPtr& tag);
-void write_snbt(std::string& snbt, const CStringTag& tag);
-void write_snbt(std::string& snbt, const CListTagPtr& tag);
-void write_snbt(std::string& snbt, const CCompoundTagPtr& tag);
-void write_snbt(std::string& snbt, const CIntArrayTagPtr& tag);
-void write_snbt(std::string& snbt, const CLongArrayTagPtr& tag);
-
-void write_snbt(std::string& snbt, const TagNode& tag, const std::string& indent, size_t indent_count);
-void write_snbt(std::string& snbt, const CByteTag& tag, const std::string& indent, size_t indent_count);
-void write_snbt(std::string& snbt, const CShortTag& tag, const std::string& indent, size_t indent_count);
-void write_snbt(std::string& snbt, const CIntTag& tag, const std::string& indent, size_t indent_count);
-void write_snbt(std::string& snbt, const CLongTag& tag, const std::string& indent, size_t indent_count);
-void write_snbt(std::string& snbt, const CFloatTag& tag, const std::string& indent, size_t indent_count);
-void write_snbt(std::string& snbt, const CDoubleTag& tag, const std::string& indent, size_t indent_count);
-void write_snbt(std::string& snbt, const CByteArrayTagPtr& tag, const std::string& indent, size_t indent_count);
-void write_snbt(std::string& snbt, const CStringTag& tag, const std::string& indent, size_t indent_count);
-void write_snbt(std::string& snbt, const CListTagPtr& tag, const std::string& indent, size_t indent_count);
-void write_snbt(std::string& snbt, const CCompoundTagPtr& tag, const std::string& indent, size_t indent_count);
-void write_snbt(std::string& snbt, const CIntArrayTagPtr& tag, const std::string& indent, size_t indent_count);
-void write_snbt(std::string& snbt, const CLongArrayTagPtr& tag, const std::string& indent, size_t indent_count);
+template <
+    typename T,
+    std::enable_if_t<
+        std::is_same_v<T, TagNode> ||
+        std::is_same_v<T, CByteTag> ||
+        std::is_same_v<T, CShortTag> ||
+        std::is_same_v<T, CIntTag> ||
+        std::is_same_v<T, CLongTag> ||
+        std::is_same_v<T, CFloatTag> ||
+        std::is_same_v<T, CDoubleTag> ||
+        std::is_same_v<T, CByteArrayTagPtr> ||
+        std::is_same_v<T, CStringTag> ||
+        std::is_same_v<T, CListTagPtr> ||
+        std::is_same_v<T, CCompoundTagPtr> ||
+        std::is_same_v<T, CIntArrayTagPtr> ||
+        std::is_same_v<T, CLongArrayTagPtr>,
+        bool
+    >
+>
+void write_snbt(std::string& snbt, const T& tag, const std::string& indent, size_t indent_count);
 
 
 template <

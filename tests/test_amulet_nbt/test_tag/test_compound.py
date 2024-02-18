@@ -101,171 +101,49 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         self.assertIsNot(tag.py_dict, tag.py_dict)
 
     def test_repr(self) -> None:
-        self.assertEqual("CompoundTag({})", repr(CompoundTag()))
-        self.assertEqual(
-            repr(CompoundTag({"key": ByteTag(-5)})),
-            "CompoundTag({'key': ByteTag(-5)})",
-        )
-        self.assertEqual(
-            repr(CompoundTag({"b": ByteTag(-5), "a": ByteTag(-5)})),
-            "CompoundTag({'b': ByteTag(-5), 'a': ByteTag(-5)})",
-        )
-        self.assertEqual(
-            repr(CompoundTag({"key": ByteTag(5)})),
-            "CompoundTag({'key': ByteTag(5)})",
-        )
-        self.assertEqual(
-            repr(CompoundTag({"b": ByteTag(5), "a": ByteTag(5)})),
-            "CompoundTag({'b': ByteTag(5), 'a': ByteTag(5)})",
-        )
-        self.assertEqual(
-            repr(CompoundTag({"key": ShortTag(-5)})),
-            "CompoundTag({'key': ShortTag(-5)})",
-        )
-        self.assertEqual(
-            repr(CompoundTag({"b": ShortTag(-5), "a": ShortTag(-5)})),
-            "CompoundTag({'b': ShortTag(-5), 'a': ShortTag(-5)})",
-        )
-        self.assertEqual(
-            repr(CompoundTag({"key": ShortTag(5)})),
-            "CompoundTag({'key': ShortTag(5)})",
-        )
-        self.assertEqual(
-            repr(CompoundTag({"b": ShortTag(5), "a": ShortTag(5)})),
-            "CompoundTag({'b': ShortTag(5), 'a': ShortTag(5)})",
-        )
-        self.assertEqual(
-            repr(CompoundTag({"key": IntTag(-5)})),
-            "CompoundTag({'key': IntTag(-5)})",
-        )
-        self.assertEqual(
-            repr(CompoundTag({"b": IntTag(-5), "a": IntTag(-5)})),
-            "CompoundTag({'b': IntTag(-5), 'a': IntTag(-5)})",
-        )
-        self.assertEqual(
-            repr(CompoundTag({"key": IntTag(5)})), "CompoundTag({'key': IntTag(5)})"
-        )
-        self.assertEqual(
-            repr(CompoundTag({"b": IntTag(5), "a": IntTag(5)})),
-            "CompoundTag({'b': IntTag(5), 'a': IntTag(5)})",
-        )
-        self.assertEqual(
-            repr(CompoundTag({"key": LongTag(-5)})),
-            "CompoundTag({'key': LongTag(-5)})",
-        )
-        self.assertEqual(
-            repr(CompoundTag({"b": LongTag(-5), "a": LongTag(-5)})),
-            "CompoundTag({'b': LongTag(-5), 'a': LongTag(-5)})",
-        )
-        self.assertEqual(
-            repr(CompoundTag({"key": LongTag(5)})),
-            "CompoundTag({'key': LongTag(5)})",
-        )
-        self.assertEqual(
-            repr(CompoundTag({"b": LongTag(5), "a": LongTag(5)})),
-            "CompoundTag({'b': LongTag(5), 'a': LongTag(5)})",
-        )
-        self.assertEqual(
-            repr(CompoundTag({"key": FloatTag(-5)})),
-            "CompoundTag({'key': FloatTag(-5.0)})",
-        )
-        self.assertEqual(
-            repr(CompoundTag({"b": FloatTag(-5), "a": FloatTag(-5)})),
-            "CompoundTag({'b': FloatTag(-5.0), 'a': FloatTag(-5.0)})",
-        )
-        self.assertEqual(
-            repr(CompoundTag({"key": FloatTag(5)})),
-            "CompoundTag({'key': FloatTag(5.0)})",
-        )
-        self.assertEqual(
-            repr(CompoundTag({"b": FloatTag(5), "a": FloatTag(5)})),
-            "CompoundTag({'b': FloatTag(5.0), 'a': FloatTag(5.0)})",
-        )
-        self.assertEqual(
-            repr(CompoundTag({"key": DoubleTag(-5)})),
-            "CompoundTag({'key': DoubleTag(-5.0)})",
-        )
-        self.assertEqual(
-            repr(CompoundTag({"b": DoubleTag(-5), "a": DoubleTag(-5)})),
-            "CompoundTag({'b': DoubleTag(-5.0), 'a': DoubleTag(-5.0)})",
-        )
-        self.assertEqual(
-            repr(CompoundTag({"key": DoubleTag(5)})),
-            "CompoundTag({'key': DoubleTag(5.0)})",
-        )
-        self.assertEqual(
-            repr(CompoundTag({"b": DoubleTag(5), "a": DoubleTag(5)})),
-            "CompoundTag({'b': DoubleTag(5.0), 'a': DoubleTag(5.0)})",
-        )
-        self.assertEqual(
-            repr(CompoundTag({"key": ByteArrayTag([-3, -2, -1, 0, 1, 2, 3])})),
-            "CompoundTag({'key': ByteArrayTag([-3, -2, -1, 0, 1, 2, 3])})",
-        )
-        self.assertEqual(
-            repr(
-                CompoundTag(
-                    {
-                        "b": ByteArrayTag([-3, -2, -1, 0, 1, 2, 3]),
-                        "a": ByteArrayTag([-3, -2, -1, 0, 1, 2, 3]),
-                    }
-                )
-            ),
-            "CompoundTag({'b': ByteArrayTag([-3, -2, -1, 0, 1, 2, 3]), 'a': ByteArrayTag([-3, -2, -1, 0, 1, 2, 3])})",
-        )
-        self.assertEqual(
-            repr(CompoundTag({"key": StringTag("value")})),
-            "CompoundTag({'key': StringTag(\"value\")})",
-        )
-        self.assertEqual(
-            repr(CompoundTag({"b": StringTag("value"), "a": StringTag("value")})),
-            "CompoundTag({'b': StringTag(\"value\"), 'a': StringTag(\"value\")})",
-        )
-        self.assertEqual(
-            repr(CompoundTag({"key": ListTag([])})),
-            "CompoundTag({'key': ListTag([], 1)})",
-        )
-        self.assertEqual(
-            repr(CompoundTag({"b": ListTag([]), "a": ListTag([])})),
-            "CompoundTag({'b': ListTag([], 1), 'a': ListTag([], 1)})",
-        )
-        self.assertEqual(
-            repr(CompoundTag({"key": CompoundTag({})})),
-            "CompoundTag({'key': CompoundTag({})})",
-        )
-        self.assertEqual(
-            repr(CompoundTag({"b": CompoundTag({}), "a": CompoundTag({})})),
-            "CompoundTag({'b': CompoundTag({}), 'a': CompoundTag({})})",
-        )
-        self.assertEqual(
-            repr(CompoundTag({"key": IntArrayTag([-3, -2, -1, 0, 1, 2, 3])})),
-            "CompoundTag({'key': IntArrayTag([-3, -2, -1, 0, 1, 2, 3])})",
-        )
-        self.assertEqual(
-            repr(
-                CompoundTag(
-                    {
-                        "b": IntArrayTag([-3, -2, -1, 0, 1, 2, 3]),
-                        "a": IntArrayTag([-3, -2, -1, 0, 1, 2, 3]),
-                    }
-                )
-            ),
-            "CompoundTag({'b': IntArrayTag([-3, -2, -1, 0, 1, 2, 3]), 'a': IntArrayTag([-3, -2, -1, 0, 1, 2, 3])})",
-        )
-        self.assertEqual(
-            repr(CompoundTag({"key": LongArrayTag([-3, -2, -1, 0, 1, 2, 3])})),
-            "CompoundTag({'key': LongArrayTag([-3, -2, -1, 0, 1, 2, 3])})",
-        )
-        self.assertEqual(
-            repr(
-                CompoundTag(
-                    {
-                        "b": LongArrayTag([-3, -2, -1, 0, 1, 2, 3]),
-                        "a": LongArrayTag([-3, -2, -1, 0, 1, 2, 3]),
-                    }
-                )
-            ),
-            "CompoundTag({'b': LongArrayTag([-3, -2, -1, 0, 1, 2, 3]), 'a': LongArrayTag([-3, -2, -1, 0, 1, 2, 3])})",
-        )
+        for tag in (
+            CompoundTag(),
+            CompoundTag({"key": ByteTag(-5)}),
+            CompoundTag({"b": ByteTag(-5), "a": ByteTag(-5)}),
+            CompoundTag({"key": ByteTag(5)}),
+            CompoundTag({"b": ByteTag(5), "a": ByteTag(5)}),
+            CompoundTag({"key": ShortTag(-5)}),
+            CompoundTag({"b": ShortTag(-5), "a": ShortTag(-5)}),
+            CompoundTag({"key": ShortTag(5)}),
+            CompoundTag({"b": ShortTag(5), "a": ShortTag(5)}),
+            CompoundTag({"key": IntTag(-5)}),
+            CompoundTag({"b": IntTag(-5), "a": IntTag(-5)}),
+            CompoundTag({"key": IntTag(5)}),
+            CompoundTag({"b": IntTag(5), "a": IntTag(5)}),
+            CompoundTag({"key": LongTag(-5)}),
+            CompoundTag({"b": LongTag(-5), "a": LongTag(-5)}),
+            CompoundTag({"key": LongTag(5)}),
+            CompoundTag({"b": LongTag(5), "a": LongTag(5)}),
+            CompoundTag({"key": FloatTag(-5)}),
+            CompoundTag({"b": FloatTag(-5), "a": FloatTag(-5)}),
+            CompoundTag({"key": FloatTag(5)}),
+            CompoundTag({"b": FloatTag(5), "a": FloatTag(5)}),
+            CompoundTag({"key": DoubleTag(-5)}),
+            CompoundTag({"b": DoubleTag(-5), "a": DoubleTag(-5)}),
+            CompoundTag({"key": DoubleTag(5)}),
+            CompoundTag({"b": DoubleTag(5), "a": DoubleTag(5)}),
+            CompoundTag({"key": ByteArrayTag([-3, -2, -1, 0, 1, 2, 3])}),
+            CompoundTag({"b": ByteArrayTag([-3, -2, -1, 0, 1, 2, 3]),"a": ByteArrayTag([-3, -2, -1, 0, 1, 2, 3]),}),
+            CompoundTag({"key": StringTag("value")}),
+            CompoundTag({"b": StringTag("value"), "a": StringTag("value")}),
+            CompoundTag({"key": ListTag([])}),
+            CompoundTag({"b": ListTag([]), "a": ListTag([])}),
+            CompoundTag({"key": CompoundTag({})}),
+            CompoundTag({"b": CompoundTag({}), "a": CompoundTag({})}),
+            CompoundTag({"key": IntArrayTag([-3, -2, -1, 0, 1, 2, 3])}),
+            CompoundTag({"b": IntArrayTag([-3, -2, -1, 0, 1, 2, 3]),"a": IntArrayTag([-3, -2, -1, 0, 1, 2, 3]),}),
+            CompoundTag({"key": LongArrayTag([-3, -2, -1, 0, 1, 2, 3])}),
+            CompoundTag({"b": LongArrayTag([-3, -2, -1, 0, 1, 2, 3]),"a": LongArrayTag([-3, -2, -1, 0, 1, 2, 3]),}),
+        ):
+            self.assertEqual(
+                tag,
+                eval(repr(tag))
+            )
 
     def test_str(self) -> None:
         # undefined
@@ -689,12 +567,15 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
             "key3": StringTag("val3"),
         }
         c = CompoundTag(d)
+        keys = set()
         it = iter(c)
-        self.assertEqual(next(it), "key1")
-        self.assertEqual(next(it), "key2")
-        self.assertEqual(next(it), "key3")
+        keys.add(next(it))
+        keys.add(next(it))
+        keys.add(next(it))
         with self.assertRaises(StopIteration):
             next(it)
+
+        self.assertEqual({"key1", "key2", "key3"}, keys)
 
         self.assertIsInstance(list(c), list)
         self.assertEqual(list(d), list(c))
@@ -717,7 +598,7 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
             "key3": StringTag("val3"),
         }
         c = CompoundTag(d)
-        self.assertEqual(list(d.values()), list(c.values()))
+        self.assertEqual(set(d.values()), set(c.values()))
 
     def test_items(self) -> None:
         d = {

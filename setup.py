@@ -21,7 +21,7 @@ setup(
         f"src/**/*.pyx",
         language_level=3,
         aliases={
-            "CPPCARGS": CompileArgs,
+            "CPPCARGS": CompileArgs
         }
     ),
 )

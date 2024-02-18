@@ -6,6 +6,7 @@
 #include <limits>
 #include <algorithm>
 #include <string>
+#include <locale>
 
 #include "../../../_string_encoding/_cpp/utf8.hpp"
 #include "../../../_tag/_cpp/nbt.hpp"

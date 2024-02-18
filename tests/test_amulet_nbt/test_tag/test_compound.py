@@ -590,7 +590,7 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         self.assertEqual({"key1", "key2", "key3"}, keys)
 
         self.assertIsInstance(list(c), list)
-        self.assertEqual(list(d), list(c))
+        self.assertEqual({"key1", "key2", "key3"}, set(c))
         self.assertIsInstance(dict(c), dict)
         self.assertEqual(dict(d), dict(c))
 

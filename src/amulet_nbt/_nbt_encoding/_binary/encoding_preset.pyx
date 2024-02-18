@@ -1,7 +1,6 @@
 # cython: language_level=3, boundscheck=False, wraparound=False
 # distutils: language = c++
 # distutils: extra_compile_args = CPPCARGS
-# distutils: extra_link_args = CPPLARGS
 
 from amulet_nbt._libcpp.endian cimport endian
 from amulet_nbt._string_encoding.encoding import mutf8_encoding, utf8_escape_encoding

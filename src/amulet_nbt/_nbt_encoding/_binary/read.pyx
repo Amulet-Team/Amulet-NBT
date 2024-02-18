@@ -1,7 +1,6 @@
 # cython: language_level=3, boundscheck=False, wraparound=False
 # distutils: language = c++
 # distutils: extra_compile_args = CPPCARGS
-# distutils: extra_link_args = CPPLARGS
 # distutils: sources = [src/amulet_nbt/_nbt_encoding/_binary/_cpp/read_nbt.cpp]
 
 import gzip

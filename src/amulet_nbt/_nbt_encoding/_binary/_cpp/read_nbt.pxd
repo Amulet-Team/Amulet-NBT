@@ -1,7 +1,6 @@
 # cython: language_level=3, boundscheck=False, wraparound=False
 # distutils: language = c++
 # distutils: extra_compile_args = CPPCARGS
-# distutils: extra_link_args = CPPLARGS
 
 from libcpp.string cimport string
 from libcpp.pair cimport pair

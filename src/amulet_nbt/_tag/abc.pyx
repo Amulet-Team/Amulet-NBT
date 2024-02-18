@@ -1,7 +1,6 @@
 # cython: language_level=3, boundscheck=False, wraparound=False
 # distutils: language = c++
 # distutils: extra_compile_args = CPPCARGS
-# distutils: extra_link_args = CPPLARGS
 # cython: c_string_type=str, c_string_encoding=utf8
 
 from copy import copy

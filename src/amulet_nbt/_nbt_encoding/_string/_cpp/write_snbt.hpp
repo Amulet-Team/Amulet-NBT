@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <string>
 #include <locale>
+#include <sstream>
+#include <iomanip>
 
 #include "../../../_string_encoding/_cpp/utf8.hpp"
 #include "../../../_tag/_cpp/nbt.hpp"
@@ -98,9 +100,16 @@ void write_long_snbt(std::string& snbt, const CLongTag& tag){
     snbt.push_back('L');
 }
 
+template<typename T>
+inline std::string encode_float(const T& num){
+    std::ostringstream oss;
+    oss << std::setprecision(std::numeric_limits<T>::digits10 + 1) << std::noshowpoint << num;
+    return oss.str();
+}
+
 void write_float_snbt(std::string& snbt, const CFloatTag& tag){
     if (std::isfinite(tag)){
-        snbt.append(std::to_string(tag));
+        snbt.append(encode_float(tag));
         snbt.push_back('f');
     } else if (tag == std::numeric_limits<CFloatTag>::infinity()){
         snbt.append("Infinityf");
@@ -113,7 +122,7 @@ void write_float_snbt(std::string& snbt, const CFloatTag& tag){
 
 void write_double_snbt(std::string& snbt, const CDoubleTag& tag){
     if (std::isfinite(tag)){
-        snbt.append(std::to_string(tag));
+        snbt.append(encode_float(tag));
         snbt.push_back('d');
     } else if (tag == std::numeric_limits<CDoubleTag>::infinity()){
         snbt.append("Infinityd");

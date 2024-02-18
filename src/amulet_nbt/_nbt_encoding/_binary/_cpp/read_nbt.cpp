@@ -29,7 +29,7 @@ std::shared_ptr<Array<T>> read_array_tag(BinaryReader& reader){
     std::int32_t length = reader.readNumeric<std::int32_t>();
     if (length < 0){length = 0;}
     std::shared_ptr<Array<T>> tag = std::make_shared<Array<T>>(length);
-    for (size_t i = 0; i < length; i++){
+    for (std::int32_t i = 0; i < length; i++){
         reader.readNumericInto((*tag)[i]);
     }
     return tag;

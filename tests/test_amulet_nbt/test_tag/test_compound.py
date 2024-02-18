@@ -128,7 +128,12 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
             CompoundTag({"key": DoubleTag(5)}),
             CompoundTag({"b": DoubleTag(5), "a": DoubleTag(5)}),
             CompoundTag({"key": ByteArrayTag([-3, -2, -1, 0, 1, 2, 3])}),
-            CompoundTag({"b": ByteArrayTag([-3, -2, -1, 0, 1, 2, 3]),"a": ByteArrayTag([-3, -2, -1, 0, 1, 2, 3]),}),
+            CompoundTag(
+                {
+                    "b": ByteArrayTag([-3, -2, -1, 0, 1, 2, 3]),
+                    "a": ByteArrayTag([-3, -2, -1, 0, 1, 2, 3]),
+                }
+            ),
             CompoundTag({"key": StringTag("value")}),
             CompoundTag({"b": StringTag("value"), "a": StringTag("value")}),
             CompoundTag({"key": ListTag([])}),
@@ -136,14 +141,21 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
             CompoundTag({"key": CompoundTag({})}),
             CompoundTag({"b": CompoundTag({}), "a": CompoundTag({})}),
             CompoundTag({"key": IntArrayTag([-3, -2, -1, 0, 1, 2, 3])}),
-            CompoundTag({"b": IntArrayTag([-3, -2, -1, 0, 1, 2, 3]),"a": IntArrayTag([-3, -2, -1, 0, 1, 2, 3]),}),
+            CompoundTag(
+                {
+                    "b": IntArrayTag([-3, -2, -1, 0, 1, 2, 3]),
+                    "a": IntArrayTag([-3, -2, -1, 0, 1, 2, 3]),
+                }
+            ),
             CompoundTag({"key": LongArrayTag([-3, -2, -1, 0, 1, 2, 3])}),
-            CompoundTag({"b": LongArrayTag([-3, -2, -1, 0, 1, 2, 3]),"a": LongArrayTag([-3, -2, -1, 0, 1, 2, 3]),}),
+            CompoundTag(
+                {
+                    "b": LongArrayTag([-3, -2, -1, 0, 1, 2, 3]),
+                    "a": LongArrayTag([-3, -2, -1, 0, 1, 2, 3]),
+                }
+            ),
         ):
-            self.assertEqual(
-                tag,
-                eval(repr(tag))
-            )
+            self.assertEqual(tag, eval(repr(tag)))
 
     def test_str(self) -> None:
         # undefined

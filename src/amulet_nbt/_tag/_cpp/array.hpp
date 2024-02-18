@@ -11,13 +11,13 @@ class Array : private std::vector<T>
         // only methods that do not change the buffer size should be exposed here
         using std::vector<T>::vector;
 
-        using std::vector<T>::value_type;
-        using std::vector<T>::size_type;
-        using std::vector<T>::difference_type;
-        using std::vector<T>::iterator;
-        using std::vector<T>::const_iterator;
-        using std::vector<T>::reverse_iterator;
-        using std::vector<T>::const_reverse_iterator;
+        using typename std::vector<T>::value_type;
+        using typename std::vector<T>::size_type;
+        using typename std::vector<T>::difference_type;
+        using typename std::vector<T>::iterator;
+        using typename std::vector<T>::const_iterator;
+        using typename std::vector<T>::reverse_iterator;
+        using typename std::vector<T>::const_reverse_iterator;
 
         using std::vector<T>::operator[];
         using std::vector<T>::at;

@@ -20,7 +20,7 @@ inline void push_escape(CodePointVector& dst, const uint8_t& b){
 
 
 template <bool escapeErrors>
-constexpr CodePointVector _read_utf8(const std::string& src) {
+CodePointVector _read_utf8(const std::string& src) {
     CodePointVector dst;
 
     for (size_t index = 0; index < src.size(); index++) {

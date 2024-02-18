@@ -9,12 +9,12 @@ import sys
 if (sysconfig.get_config_var("CXX") or ccompiler.get_default_compiler()).split()[
     0
 ] == "msvc":
-    CompileArgs = "/std:c++20"
+    CompileArgs = ["/std:c++20"]
 else:
-    CompileArgs = "-std=c++20"
+    CompileArgs = ["-std=c++20"]
 
 if sys.platform == "darwin":
-    CompileArgs += " -mmacosx-version-min=10.13"
+    CompileArgs.append("-mmacosx-version-min=10.13")
 
 
 setup(

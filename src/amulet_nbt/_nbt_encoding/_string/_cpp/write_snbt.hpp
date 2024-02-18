@@ -80,12 +80,12 @@ void write_node_snbt(std::string& snbt, const TagNode& tag, const std::string& i
 
 void write_byte_snbt(std::string& snbt, const CByteTag& tag){
     snbt.append(std::to_string(tag));
-    snbt.push_back("b");
+    snbt.push_back('b');
 }
 
 void write_short_snbt(std::string& snbt, const CShortTag& tag){
     snbt.append(std::to_string(tag));
-    snbt.push_back("s");
+    snbt.push_back('s');
 }
 
 void write_int_snbt(std::string& snbt, const CIntTag& tag){
@@ -94,13 +94,13 @@ void write_int_snbt(std::string& snbt, const CIntTag& tag){
 
 void write_long_snbt(std::string& snbt, const CLongTag& tag){
     snbt.append(std::to_string(tag));
-    snbt.push_back("L");
+    snbt.push_back('L');
 }
 
 void write_float_snbt(std::string& snbt, const CFloatTag& tag){
     if (std::isfinite(tag)){
         snbt.append(std::to_string(tag));
-        snbt.push_back("f");
+        snbt.push_back('f');
     } else if (tag == std::numeric_limits<CFloatTag>::infinity()){
         snbt.append("Infinityf");
     } else if (tag == -std::numeric_limits<CFloatTag>::infinity()){
@@ -113,7 +113,7 @@ void write_float_snbt(std::string& snbt, const CFloatTag& tag){
 void write_double_snbt(std::string& snbt, const CDoubleTag& tag){
     if (std::isfinite(tag)){
         snbt.append(std::to_string(tag));
-        snbt.push_back("d");
+        snbt.push_back('d');
     } else if (tag == std::numeric_limits<CDoubleTag>::infinity()){
         snbt.append("Infinityd");
     } else if (tag == -std::numeric_limits<CDoubleTag>::infinity()){
@@ -341,7 +341,7 @@ void write_byte_array_snbt(std::string& snbt, const CByteArrayTagPtr& tag){
     snbt.append("[B;");
     for (size_t i = 0; i < array.size(); i++){
         snbt.append(std::to_string(array[i]));
-        snbt.push_back("B");
+        snbt.push_back('B');
         if (i + 1 != array.size()){
             snbt.append(", ");
         }
@@ -368,7 +368,7 @@ void write_long_array_snbt(std::string& snbt, const CLongArrayTagPtr& tag){
     snbt.append("[L;");
     for (size_t i = 0; i < array.size(); i++){
         snbt.append(std::to_string(array[i]));
-        snbt.push_back("L");
+        snbt.push_back('L');
         if (i + 1 != array.size()){
             snbt.append(", ");
         }

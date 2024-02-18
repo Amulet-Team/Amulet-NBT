@@ -4,6 +4,7 @@ import versioneer
 import numpy
 import sysconfig
 from distutils import ccompiler
+import sys
 
 if (sysconfig.get_config_var("CXX") or ccompiler.get_default_compiler()).split()[
     0
@@ -11,6 +12,9 @@ if (sysconfig.get_config_var("CXX") or ccompiler.get_default_compiler()).split()
     CompileArgs = "/std:c++20"
 else:
     CompileArgs = "-std=c++20"
+
+if sys.platform == "darwin":
+    CompileArgs += " -mmacosx-version-min=10.13"
 
 
 setup(

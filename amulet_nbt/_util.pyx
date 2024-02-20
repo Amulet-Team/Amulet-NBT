@@ -87,16 +87,21 @@ cdef inline void write_string(str s, object buffer, bint little_endian, string_e
 
 cdef inline void write_bytes(bytes b, object buffer, bint little_endian):
     cdef char *c = b
-    cdef short length = <short> len(b)
-    write_short(length, buffer, little_endian)
+    cdef size_t length = len(b)
+    if length > 2**16-1:
+        raise RuntimeError("String cannot be longer than 2**16 - 1")
+    write_short(<short> length, buffer, little_endian)
     cwrite(buffer, c, length)
 
 cdef inline void write_array(object value, object buffer, char size, bint little_endian):
     value = value.tobytes()
     cdef char*s = value
-    cdef int length = <int> len(value) // size
-    to_little_endian(&length, 4, little_endian)
-    cwrite(buffer, <char*> &length, 4)
+    cdef size_t length = len(value) // size
+    if length > 2**31-1:
+        raise RuntimeError("Array cannot be longer than 2**31 - 1")
+    cdef int length_int = <int> length
+    to_little_endian(&length_int, 4, little_endian)
+    cwrite(buffer, <char*> &length_int, 4)
     cwrite(buffer, s, len(value))
 
 cdef inline void write_byte(char value, object buffer):

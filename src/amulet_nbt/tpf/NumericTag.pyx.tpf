@@ -1,0 +1,36 @@
+{{py:from template import include}}
+    cdef string write_nbt(self, string name, endian endianness, CStringEncode string_encode):
+        return write_named_tag[C{{py_cls}}](name, self.cpp, endianness, string_encode)
+
+{{include("amulet_nbt/tpf/to_snbt.pyx.tpf", cpp_cls_ptr="C" + py_cls, tag=tag)}}
+
+{{include("amulet_nbt/tpf/ImmutableTag.pyx.tpf", **locals())}}
+
+    def __repr__(self) -> str:
+        return f"{{py_cls}}({self.cpp})"
+
+    def __str__(self) -> str:
+        return str(self.cpp)
+
+    def __reduce__(self):
+        return {{py_cls}}, (self.cpp,)
+
+    def __copy__(self) -> {{py_cls}}:
+        return {{py_cls}}.wrap(self.cpp)
+
+    def __deepcopy__(self, memo=None) -> {{py_cls}}:
+        return {{py_cls}}.wrap(self.cpp)
+
+    def __hash__(self) -> int:
+        return hash(({{tag_id}}, self.cpp))
+
+    def __int__(self) -> int:
+        return int(self.cpp)
+
+    def __float__(self) -> float:
+        return float(self.cpp)
+
+    def __bool__(self) -> bool:
+        return bool(self.cpp)
+
+{{include("amulet_nbt/tpf/Comparison.pyx.tpf", **locals())}}

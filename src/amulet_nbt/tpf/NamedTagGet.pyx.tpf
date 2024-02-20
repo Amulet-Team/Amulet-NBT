@@ -1,0 +1,9 @@
+    @property
+    def {{tag_name}}(self) -> {{py_cls}}:
+        """Get the tag if it is a {{py_cls}}.
+
+        :return: The {{py_cls}}.
+        :raises: TypeError if the stored type is not a {{py_cls}}
+        """
+        cdef {{py_cls}} tag = self.tag
+        return tag

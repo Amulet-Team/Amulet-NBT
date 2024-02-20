@@ -3,6 +3,7 @@ Creates an example of the binary format for each nbt class.
 The printed result is used in test_nbt_read_write.py
 This is here in case that data needs to be recreated in the future.
 """
+
 from typing import Tuple, Type, Any, Iterable
 from amulet_nbt import (
     AbstractBaseTag,

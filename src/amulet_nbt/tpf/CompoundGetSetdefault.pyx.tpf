@@ -1,0 +1,50 @@
+    def get_{{tag_name}}(self, string key: str | bytes, {{py_cls}} default: amulet_nbt.{{py_cls}} | None = None) -> amulet_nbt.{{py_cls}}:
+        """Get the tag stored in key if it is a {{py_cls}}.
+    
+        :param key: The key to get
+        :param default: The value to return if the key does not exist or the type is wrong. If not defined errors are raised.
+        :return: The {{py_cls}}.
+        :raises: KeyError if the key does not exist
+        :raises: TypeError if the stored type is not a {{py_cls}}
+        """
+        cdef AbstractBaseTag tag
+        try:
+            tag = self[key]
+        except KeyError as e:
+            if default is None:
+                raise e
+            else:
+                return default
+        else:
+            if isinstance(tag, {{py_cls}}):
+                return tag
+            elif default is None:
+                raise TypeError(f"Expected tag to be of type {{py_cls}} but got {type(tag)}")
+            else:
+                return default
+
+    def setdefault_{{tag_name}}(self, string key: str | bytes, {{py_cls}} default: amulet_nbt.{{py_cls}} | None = None) -> amulet_nbt.{{py_cls}}:
+        """Populate key if not defined or value is not {{py_cls}}. Return the value stored.
+    
+        If default is a {{py_cls}} then it will be stored under key else a default instance will be created.
+
+        :param key: The key to populate and get
+        :param default: The default value to use
+        :return: The {{py_cls}} stored in key
+        :raises: TypeError if the input types are incorrect
+        """
+        cdef AbstractBaseTag tag
+        try:
+            tag = self[key]
+        except KeyError as e:
+            if default is None:
+                tag = self[key] = {{py_cls}}()
+            else:
+                tag = self[key] = default
+        else:
+            if not isinstance(tag, {{py_cls}}):
+                if default is None:
+                    tag = self[key] = {{py_cls}}()
+                else:
+                    tag = self[key] = default
+        return tag

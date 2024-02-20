@@ -1,6 +1,5 @@
-# Base Types
-import warnings
 import re
+from typing import Union
 
 from . import _version
 
@@ -13,10 +12,6 @@ __all__ = [
     "AbstractBaseNumericTag",
     "AbstractBaseIntTag",
     "ByteTag",
-    "ShortTag",
-    "IntTag",
-    "LongTag",
-    "ByteTag",
     "TAG_Byte",
     "ShortTag",
     "TAG_Short",
@@ -26,15 +21,10 @@ __all__ = [
     "TAG_Long",
     "AbstractBaseFloatTag",
     "FloatTag",
-    "DoubleTag",
-    "FloatTag",
     "TAG_Float",
     "DoubleTag",
     "TAG_Double",
     "AbstractBaseArrayTag",
-    "ByteArrayTag",
-    "IntArrayTag",
-    "LongArrayTag",
     "ByteArrayTag",
     "TAG_Byte_Array",
     "IntArrayTag",
@@ -42,18 +32,15 @@ __all__ = [
     "LongArrayTag",
     "TAG_Long_Array",
     "StringTag",
-    "StringTag",
     "TAG_String",
-    "NamedTag",
-    "ListTag",
     "ListTag",
     "TAG_List",
     "CompoundTag",
-    "CompoundTag",
     "TAG_Compound",
+    "NamedTag",
     "load",
     "load_array",
-    "ReadContext",
+    "ReadOffset",
     "from_snbt",
     "NBTError",
     "NBTLoadError",
@@ -65,21 +52,24 @@ __all__ = [
     "NumberType",
     "ArrayType",
     "AnyNBT",
-    "utf8_decoder",
-    "utf8_encoder",
-    "utf8_escape_decoder",
-    "utf8_escape_encoder",
+    "StringEncoding",
+    "mutf8_encoding",
+    "utf8_encoding",
+    "utf8_escape_encoding",
+    "EncodingPreset",
+    "java_encoding",
+    "bedrock_encoding",
 ]
 
-from ._value import (
+from ._tag.abc import (
     AbstractBaseTag,
     AbstractBaseImmutableTag,
     AbstractBaseMutableTag,
 )
-from ._numeric import AbstractBaseNumericTag
+from ._tag.numeric import AbstractBaseNumericTag
 
 # Types
-from ._int import (
+from ._tag.int import (
     AbstractBaseIntTag,
     ByteTag,
     ShortTag,
@@ -90,14 +80,14 @@ from ._int import (
     IntTag as TAG_Int,
     LongTag as TAG_Long,
 )
-from ._float import (
+from ._tag.float import (
     AbstractBaseFloatTag,
     FloatTag,
     DoubleTag,
     FloatTag as TAG_Float,
     DoubleTag as TAG_Double,
 )
-from ._array import (
+from ._tag.array import (
     AbstractBaseArrayTag,
     ByteArrayTag,
     IntArrayTag,
@@ -106,53 +96,61 @@ from ._array import (
     IntArrayTag as TAG_Int_Array,
     LongArrayTag as TAG_Long_Array,
 )
-from ._string import (
+from ._tag.string import (
     StringTag,
     StringTag as TAG_String,
 )
 
-from ._named_tag import NamedTag
+from ._tag.named_tag import NamedTag
 
-from ._list import (
+from ._tag.list import (
     ListTag,
     ListTag as TAG_List,
 )
-from ._compound import (
+from ._tag.compound import (
     CompoundTag,
     CompoundTag as TAG_Compound,
 )
 
 # Load functions
-from ._load_nbt import load, load_many, load_array, ReadContext
-from ._load_snbt import from_snbt
+from amulet_nbt._nbt_encoding._binary import load, load_array, ReadOffset
+from amulet_nbt._nbt_encoding._string import from_snbt
 
 from ._errors import NBTError, NBTLoadError, NBTFormatError, SNBTParseError
 
-from ._dtype import SNBTType, IntType, FloatType, NumberType, ArrayType, AnyNBT
+from ._string_encoding import (
+    mutf8_encoding,
+    utf8_encoding,
+    utf8_escape_encoding,
+    StringEncoding,
+)
+from ._nbt_encoding._binary.encoding_preset import (
+    java_encoding,
+    bedrock_encoding,
+    EncodingPreset,
+)
 
-from ._util import utf8_decoder, utf8_encoder, utf8_escape_decoder, utf8_escape_encoder
+SNBTType = str
 
+IntType = Union[ByteTag, ShortTag, IntTag, LongTag]
 
-def __getattr__(name):
-    if name == "NBTFile":
-        warnings.warn(
-            "NBTFile is depreciated. Use NamedTag instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return NamedTag
-    elif name == "BaseArrayType":
-        warnings.warn(
-            "BaseArrayType is depreciated. Use AbstractBaseArrayTag instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return AbstractBaseArrayTag
-    elif name == "BaseValueType":
-        warnings.warn(
-            "BaseValueType is depreciated. Use AbstractBaseTag instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return AbstractBaseTag
-    raise AttributeError(f"module {__name__} has no attribute {name}")
+FloatType = Union[FloatTag, DoubleTag]
+
+NumberType = Union[ByteTag, ShortTag, IntTag, LongTag, FloatTag, DoubleTag]
+
+ArrayType = Union[ByteArrayTag, IntArrayTag, LongArrayTag]
+
+AnyNBT = Union[
+    ByteTag,
+    ShortTag,
+    IntTag,
+    LongTag,
+    FloatTag,
+    DoubleTag,
+    ByteArrayTag,
+    StringTag,
+    ListTag,
+    CompoundTag,
+    IntArrayTag,
+    LongArrayTag,
+]

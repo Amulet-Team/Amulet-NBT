@@ -8,7 +8,6 @@ from amulet_nbt import (
     load_array as load_nbt_array,
     NBTLoadError,
     NamedTag,
-    load_many,
 )
 
 DirPath = os.path.dirname(__file__)
@@ -19,9 +18,9 @@ ArrayPath = os.path.join(DirPath, "array.nbt")
 
 class LoadTests(unittest.TestCase):
     def test_load(self):
-        load_many(OnePath)
+        load_nbt_array(OnePath)
 
-        with self.assertRaises(EOFError):
+        with self.assertRaises(NBTLoadError):
             load_nbt(EmptyPath)
         with self.assertRaises(NBTLoadError):
             load_nbt_array(EmptyPath, count=1)

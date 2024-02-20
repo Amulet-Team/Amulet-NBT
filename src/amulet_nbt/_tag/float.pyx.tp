@@ -1,0 +1,55 @@
+{{py:
+import base64
+from template import include
+}}
+{{base64.b64decode("IyMgVGhpcyBmaWxlIGlzIGdlbmVyYXRlZCBmcm9tIGEgdGVtcGxhdGUuCiMjIERvIG5vdCBtb2RpZnkgdGhpcyBmaWxlIGRpcmVjdGx5IG9yIHlvdXIgY2hhbmdlcyB3aWxsIGdldCBvdmVyd3JpdHRlbi4KIyMgRWRpdCB0aGUgYWNjb21wYW55aW5nIC5weXgudHAgZmlsZSBpbnN0ZWFkLg==").decode()}}
+# cython: language_level=3, boundscheck=False, wraparound=False
+# distutils: language = c++
+# distutils: extra_compile_args = CPPCARGS
+# cython: c_string_type=str, c_string_encoding=utf8
+
+from typing import Any, SupportsFloat
+
+from libcpp.string cimport string
+from amulet_nbt._libcpp.endian cimport endian
+from amulet_nbt._string_encoding._cpp cimport CStringEncode
+from amulet_nbt._nbt_encoding._binary cimport write_named_tag
+from amulet_nbt._nbt_encoding._string cimport write_float_snbt, write_double_snbt
+from amulet_nbt._tag._cpp cimport TagNode, CFloatTag, CDoubleTag
+from .numeric cimport AbstractBaseNumericTag
+
+
+cdef class AbstractBaseFloatTag(AbstractBaseNumericTag):
+    """Abstract Base Class for all float Tag classes"""
+
+    @property
+    def py_float(self) -> float:
+        """A python float representation of the class.
+
+        The returned data is immutable so changes will not mirror the instance.
+        """
+        raise NotImplementedError
+
+    @property
+    def py_data(self) -> Any:
+        return self.py_float
+
+
+cdef class FloatTag(AbstractBaseFloatTag):
+    """A single precision float class."""
+    tag_id: int = 5
+
+    def __init__(self, value: SupportsFloat = 0) -> None:
+        self.cpp = float(value)
+
+{{include("amulet_nbt/tpf/FloatTag.pyx.tpf", py_cls="FloatTag", tag_id=5, tag="float")}}
+
+
+cdef class DoubleTag(AbstractBaseFloatTag):
+    """A double precision float class."""
+    tag_id: int = 6
+
+    def __init__(self, value: SupportsFloat = 0) -> None:
+        self.cpp = float(value)
+
+{{include("amulet_nbt/tpf/FloatTag.pyx.tpf", py_cls="DoubleTag", tag_id=6, tag="double")}}

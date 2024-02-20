@@ -1,0 +1,91 @@
+{{py:
+import base64
+from template import include
+}}
+{{base64.b64decode("IyMgVGhpcyBmaWxlIGlzIGdlbmVyYXRlZCBmcm9tIGEgdGVtcGxhdGUuCiMjIERvIG5vdCBtb2RpZnkgdGhpcyBmaWxlIGRpcmVjdGx5IG9yIHlvdXIgY2hhbmdlcyB3aWxsIGdldCBvdmVyd3JpdHRlbi4KIyMgRWRpdCB0aGUgYWNjb21wYW55aW5nIC5weXgudHAgZmlsZSBpbnN0ZWFkLg==").decode()}}
+# cython: language_level=3, boundscheck=False, wraparound=False
+# distutils: language = c++
+# distutils: extra_compile_args = CPPCARGS
+# cython: c_string_type=str, c_string_encoding=utf8
+
+from typing import Any, SupportsInt
+
+from libcpp.string cimport string
+from amulet_nbt._libcpp.endian cimport endian
+from amulet_nbt._string_encoding._cpp cimport CStringEncode
+from amulet_nbt._nbt_encoding._binary cimport write_named_tag
+from amulet_nbt._nbt_encoding._string cimport write_byte_snbt, write_short_snbt, write_int_snbt, write_long_snbt
+from amulet_nbt._tag._cpp cimport TagNode, CByteTag, CShortTag, CIntTag, CLongTag
+from .numeric cimport AbstractBaseNumericTag
+
+
+cdef class AbstractBaseIntTag(AbstractBaseNumericTag):
+    """Abstract Base Class for all int Tag classes"""
+
+    @property
+    def py_int(self) -> int:
+        """A python int representation of the class.
+
+        The returned data is immutable so changes will not mirror the instance.
+        """
+        raise NotImplementedError
+
+    @property
+    def py_data(self) -> Any:
+        return self.py_int
+
+
+cdef class ByteTag(AbstractBaseIntTag):
+    """A 1 byte integer class.
+
+    Can Store numbers between -(2^7) and (2^7 - 1)
+    """
+    tag_id: int = 1
+
+    def __init__(self, value: SupportsInt = 0) -> None:
+        value = int(value)
+        self.cpp = (value & 0x7F) - (value & 0x80)
+
+{{include("amulet_nbt/tpf/IntTag.pyx.tpf", py_cls="ByteTag", tag_id=1, tag="byte")}}
+
+
+cdef class ShortTag(AbstractBaseIntTag):
+    """A 2 byte integer class.
+
+    Can Store numbers between -(2^15) and (2^15 - 1)
+    """
+    tag_id: int = 2
+
+    def __init__(self, value: SupportsInt = 0) -> None:
+        value = int(value)
+        self.cpp = (value & 0x7FFF) - (value & 0x8000)
+
+{{include("amulet_nbt/tpf/IntTag.pyx.tpf", py_cls="ShortTag", tag_id=2, tag="short")}}
+
+
+cdef class IntTag(AbstractBaseIntTag):
+    """A 4 byte integer class.
+
+    Can Store numbers between -(2^31) and (2^31 - 1)
+    """
+    tag_id: int = 3
+
+    def __init__(self, value: SupportsInt = 0) -> None:
+        value = int(value)
+        self.cpp = (value & 0x7FFF_FFFF) - (value & 0x8000_0000)
+
+{{include("amulet_nbt/tpf/IntTag.pyx.tpf", py_cls="IntTag", tag_id=3, tag="int")}}
+
+
+cdef class LongTag(AbstractBaseIntTag):
+    """An 8 byte integer class.
+
+    Can Store numbers between -(2^63) and (2^63 - 1)
+    """
+    tag_id: int = 4
+
+    def __init__(self, value: SupportsInt = 0) -> None:
+        value = int(value)
+        self.cpp = (value & 0x7FFF_FFFF_FFFF_FFFF) - (value & 0x8000_0000_0000_0000)
+
+{{include("amulet_nbt/tpf/IntTag.pyx.tpf", py_cls="LongTag", tag_id=4, tag="long")}}

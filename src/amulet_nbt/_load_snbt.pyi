@@ -1,3 +1,0 @@
-from ._dtype import AnyNBT
-
-def from_snbt(snbt: str) -> AnyNBT: ...

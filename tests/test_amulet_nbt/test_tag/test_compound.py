@@ -90,6 +90,15 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
             CompoundTag({TagNameMap[tag_cls]: tag_cls() for tag_cls in self.nbt_types}),
         )
 
+        self.assertNotEqual(
+            CompoundTag({"1": ByteTag(1), "2": ByteTag(2)}),
+            CompoundTag({"1": ByteTag(1), "2": ByteTag(3)}),
+        )
+        self.assertNotEqual(
+            CompoundTag({"1": ByteTag(1), "2": ByteTag(2)}),
+            CompoundTag({"1": ByteTag(3), "2": ByteTag(2)}),
+        )
+
     def test_py_data(self) -> None:
         tag = CompoundTag()
         self.assertIsInstance(tag.py_dict, dict)

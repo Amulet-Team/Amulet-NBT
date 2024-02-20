@@ -85,7 +85,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                     self.assertNotEqual(ListTag([i1, i1]), ListTag([i2, i2]))
 
         # empty lists should always be equal regardless of the data type specified
-        for i1, i2 in itertools.product(range(1, 13), repeat=2):
+        for i1, i2 in itertools.product(range(0, 13), repeat=2):
             with self.subTest(i1=i1, i2=i2):
                 self.assertEqual(
                     ListTag([], element_tag_id=i1), ListTag([], element_tag_id=i2)

@@ -254,7 +254,9 @@ cdef inline bool _is_long_array_tag_list_eq(CListTagPtr a, CListTagPtr b) noexce
 
 cdef bool is_list_eq(CListTagPtr a, CListTagPtr b) noexcept nogil:
     cdef size_t index = dereference(a).index()
-    if index == 1:
+    if index == 0:
+        return ListTag_len(b) == 0
+    elif index == 1:
         return _is_byte_tag_list_eq(a, b)
     elif index == 2:
         return _is_short_tag_list_eq(a, b)

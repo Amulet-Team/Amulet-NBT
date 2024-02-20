@@ -107,7 +107,8 @@ cdef bool is_compound_eq(CCompoundTagPtr a, CCompoundTagPtr b) noexcept nogil:
 {{
 "\n".join(
 f"""        {"el"*(index!=1)}if node_index == {index}:
-            return _is_{tag_var}_node_eq(node, &dereference(it2).second)"""
+            if not _is_{tag_var}_node_eq(node, &dereference(it2).second):
+                return False"""
     for index, c_cls, c_node_cls, c_list_cls, py_cls, tag_var, list_var in ClassData
 )
 }}

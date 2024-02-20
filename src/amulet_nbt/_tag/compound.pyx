@@ -141,29 +141,41 @@ cdef bool is_compound_eq(CCompoundTagPtr a, CCompoundTagPtr b) noexcept nogil:
         node = &dereference(it1).second
         node_index = dereference(node).index()
         if node_index == 1:
-            return _is_byte_tag_node_eq(node, &dereference(it2).second)
+            if not _is_byte_tag_node_eq(node, &dereference(it2).second):
+                return False
         elif node_index == 2:
-            return _is_short_tag_node_eq(node, &dereference(it2).second)
+            if not _is_short_tag_node_eq(node, &dereference(it2).second):
+                return False
         elif node_index == 3:
-            return _is_int_tag_node_eq(node, &dereference(it2).second)
+            if not _is_int_tag_node_eq(node, &dereference(it2).second):
+                return False
         elif node_index == 4:
-            return _is_long_tag_node_eq(node, &dereference(it2).second)
+            if not _is_long_tag_node_eq(node, &dereference(it2).second):
+                return False
         elif node_index == 5:
-            return _is_float_tag_node_eq(node, &dereference(it2).second)
+            if not _is_float_tag_node_eq(node, &dereference(it2).second):
+                return False
         elif node_index == 6:
-            return _is_double_tag_node_eq(node, &dereference(it2).second)
+            if not _is_double_tag_node_eq(node, &dereference(it2).second):
+                return False
         elif node_index == 7:
-            return _is_byte_array_tag_node_eq(node, &dereference(it2).second)
+            if not _is_byte_array_tag_node_eq(node, &dereference(it2).second):
+                return False
         elif node_index == 8:
-            return _is_string_tag_node_eq(node, &dereference(it2).second)
+            if not _is_string_tag_node_eq(node, &dereference(it2).second):
+                return False
         elif node_index == 9:
-            return _is_list_tag_node_eq(node, &dereference(it2).second)
+            if not _is_list_tag_node_eq(node, &dereference(it2).second):
+                return False
         elif node_index == 10:
-            return _is_compound_tag_node_eq(node, &dereference(it2).second)
+            if not _is_compound_tag_node_eq(node, &dereference(it2).second):
+                return False
         elif node_index == 11:
-            return _is_int_array_tag_node_eq(node, &dereference(it2).second)
+            if not _is_int_array_tag_node_eq(node, &dereference(it2).second):
+                return False
         elif node_index == 12:
-            return _is_long_array_tag_node_eq(node, &dereference(it2).second)
+            if not _is_long_array_tag_node_eq(node, &dereference(it2).second):
+                return False
         postincrement(it1)
     return True
 

@@ -9,6 +9,7 @@
 #include <locale>
 #include <sstream>
 #include <iomanip>
+#include <stdexcept>
 
 #include "../../../_string_encoding/_cpp/utf8.hpp"
 #include "../../../_tag/_cpp/nbt.hpp"
@@ -103,13 +104,13 @@ void write_long_snbt(std::string& snbt, const CLongTag& tag){
 template<typename T>
 inline std::string encode_float(const T& num){
     std::ostringstream oss;
-    oss << std::setprecision(std::numeric_limits<T>::digits10 + 1) << std::noshowpoint << num;
+    oss << std::setprecision(std::numeric_limits<T>::max_digits10) << std::noshowpoint << num;
     return oss.str();
 }
 
 void write_float_snbt(std::string& snbt, const CFloatTag& tag){
     if (std::isfinite(tag)){
-        snbt.append(encode_float(tag));
+        snbt.append(encode_float<CFloatTag>(tag));
         snbt.push_back('f');
     } else if (tag == std::numeric_limits<CFloatTag>::infinity()){
         snbt.append("Infinityf");
@@ -122,7 +123,7 @@ void write_float_snbt(std::string& snbt, const CFloatTag& tag){
 
 void write_double_snbt(std::string& snbt, const CDoubleTag& tag){
     if (std::isfinite(tag)){
-        snbt.append(encode_float(tag));
+        snbt.append(encode_float<CDoubleTag>(tag));
         snbt.push_back('d');
     } else if (tag == std::numeric_limits<CDoubleTag>::infinity()){
         snbt.append("Infinityd");
@@ -298,7 +299,7 @@ std::vector<std::pair<std::string, TagNode>> sort_compound(const CCompoundTagPtr
     std::locale locale;
     try {
         locale = std::locale("en_US.UTF-8");
-    } catch (const std::runtime_error& error) {
+    } catch (const std::runtime_error&) {
         locale = std::locale("");
     }
     std::sort(keys.begin(), keys.end(), [&locale](

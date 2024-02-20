@@ -1,5 +1,6 @@
 """Cython has a template language called tempita.
 This bakes the template files into real cython files."""
+
 import glob
 import os
 import pkgutil

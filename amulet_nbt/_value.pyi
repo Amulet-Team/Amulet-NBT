@@ -43,15 +43,20 @@ class AbstractBaseTag(AbstractBase):
     ) -> bytes: ...
     def __repr__(self) -> str:
         raise NotImplementedError
+
     def __str__(self) -> str:
         raise NotImplementedError
+
     def __eq__(self, other) -> bool:
         raise NotImplementedError
+
     def __reduce__(self):
         raise NotImplementedError
+
     def copy(self) -> AnyNBT: ...
     def __deepcopy__(self, memo=None):
         raise NotImplementedError
+
     def __copy__(self):
         raise NotImplementedError
 

@@ -152,8 +152,8 @@ class StringTagTestCase(AbstractBaseImmutableTagTestCase, unittest.TestCase):
 
         # Test writing long strings
         self.assertEqual(
-            b"\x08\x00\x00\xff\xff" + b"a"*65535,
-            StringTag("a"*65535).to_nbt(compressed=False)
+            b"\x08\x00\x00\xff\xff" + b"a" * 65535,
+            StringTag("a" * 65535).to_nbt(compressed=False),
         )
 
         with self.assertRaises(OverflowError):

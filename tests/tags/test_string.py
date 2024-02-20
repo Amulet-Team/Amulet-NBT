@@ -188,6 +188,15 @@ class TestString(TestWrapper.AbstractBaseTagTest):
             ),
         )
 
+        # Test writing long strings
+        self.assertEqual(
+            b"\x08\x00\x00\xff\xff" + b"a"*65535,
+            StringTag("a"*65535).to_nbt(compressed=False)
+        )
+
+        with self.assertRaises(RuntimeError):
+            StringTag("a" * 65536).to_nbt(compressed=False)
+
     def test_from_nbt(self):
         self.assertStrictEqual(
             StringTag(),

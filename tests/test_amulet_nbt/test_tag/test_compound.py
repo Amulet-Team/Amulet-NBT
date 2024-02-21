@@ -777,53 +777,53 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
             full_compound.to_snbt(None),
         )
         self.assertEqual(
-            "{\r\n"
-            " byte: 0b,\r\n"
-            " byte_array: [B;],\r\n"
-            " compound: {},\r\n"
-            " double: 0d,\r\n"
-            " float: 0f,\r\n"
-            " int: 0,\r\n"
-            " int_array: [I;],\r\n"
-            " list: [],\r\n"
-            " long: 0L,\r\n"
-            " long_array: [L;],\r\n"
-            " short: 0s,\r\n"
-            ' string: ""\r\n'
+            "{\n"
+            " byte: 0b,\n"
+            " byte_array: [B;],\n"
+            " compound: {},\n"
+            " double: 0d,\n"
+            " float: 0f,\n"
+            " int: 0,\n"
+            " int_array: [I;],\n"
+            " list: [],\n"
+            " long: 0L,\n"
+            " long_array: [L;],\n"
+            " short: 0s,\n"
+            ' string: ""\n'
             "}",
             full_compound.to_snbt(" "),
         )
         self.assertEqual(
-            "{\r\n"
-            "    byte: 0b,\r\n"
-            "    byte_array: [B;],\r\n"
-            "    compound: {},\r\n"
-            "    double: 0d,\r\n"
-            "    float: 0f,\r\n"
-            "    int: 0,\r\n"
-            "    int_array: [I;],\r\n"
-            "    list: [],\r\n"
-            "    long: 0L,\r\n"
-            "    long_array: [L;],\r\n"
-            "    short: 0s,\r\n"
-            '    string: ""\r\n'
+            "{\n"
+            "    byte: 0b,\n"
+            "    byte_array: [B;],\n"
+            "    compound: {},\n"
+            "    double: 0d,\n"
+            "    float: 0f,\n"
+            "    int: 0,\n"
+            "    int_array: [I;],\n"
+            "    list: [],\n"
+            "    long: 0L,\n"
+            "    long_array: [L;],\n"
+            "    short: 0s,\n"
+            '    string: ""\n'
             "}",
             full_compound.to_snbt(4),
         )
         self.assertEqual(
-            "{\r\n"
-            "\tbyte: 0b,\r\n"
-            "\tbyte_array: [B;],\r\n"
-            "\tcompound: {},\r\n"
-            "\tdouble: 0d,\r\n"
-            "\tfloat: 0f,\r\n"
-            "\tint: 0,\r\n"
-            "\tint_array: [I;],\r\n"
-            "\tlist: [],\r\n"
-            "\tlong: 0L,\r\n"
-            "\tlong_array: [L;],\r\n"
-            "\tshort: 0s,\r\n"
-            '\tstring: ""\r\n'
+            "{\n"
+            "\tbyte: 0b,\n"
+            "\tbyte_array: [B;],\n"
+            "\tcompound: {},\n"
+            "\tdouble: 0d,\n"
+            "\tfloat: 0f,\n"
+            "\tint: 0,\n"
+            "\tint_array: [I;],\n"
+            "\tlist: [],\n"
+            "\tlong: 0L,\n"
+            "\tlong_array: [L;],\n"
+            "\tshort: 0s,\n"
+            '\tstring: ""\n'
             "}",
             full_compound.to_snbt("\t"),
         )

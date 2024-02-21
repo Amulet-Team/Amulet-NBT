@@ -220,7 +220,7 @@ void write_snbt_list(std::string& snbt, const CListTagPtr& tag, const std::strin
     const std::vector<T>& list = std::get<std::vector<T>>(*tag);
     snbt.append("[");
     for (size_t i = 0; i < list.size(); i++){
-        snbt.append("\r\n");
+        snbt.append("\n");
         write_indent(snbt, indent, indent_count + 1);
         if constexpr (std::is_same_v<T, CByteTag>){write_byte_snbt(snbt, list[i]);} else
         if constexpr (std::is_same_v<T, CShortTag>){write_short_snbt(snbt, list[i]);} else
@@ -235,7 +235,7 @@ void write_snbt_list(std::string& snbt, const CListTagPtr& tag, const std::strin
         if constexpr (std::is_same_v<T, CIntArrayTagPtr>){write_int_array_snbt(snbt, list[i]);} else
         if constexpr (std::is_same_v<T, CLongArrayTagPtr>){write_long_array_snbt(snbt, list[i]);}
         if (i + 1 == list.size()){
-            snbt.append("\r\n");
+            snbt.append("\n");
             write_indent(snbt, indent, indent_count);
         } else {
             snbt.append(",");
@@ -331,13 +331,13 @@ void write_compound_snbt(std::string& snbt, const CCompoundTagPtr& tag, const st
     auto sorted = sort_compound(tag);
     snbt.append("{");
     for (auto it = sorted.begin(); it != sorted.end(); it++){
-        snbt.append("\r\n");
+        snbt.append("\n");
         write_indent(snbt, indent, indent_count + 1);
         write_key(snbt, it->first);
         snbt.append(": ");
         write_node_snbt(snbt, it->second, indent, indent_count + 1);
         if (std::next(it) == sorted.end()){
-            snbt.append("\r\n");
+            snbt.append("\n");
             write_indent(snbt, indent, indent_count);
         } else {
             snbt.append(",");

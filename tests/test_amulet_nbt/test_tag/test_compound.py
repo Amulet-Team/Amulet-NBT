@@ -413,8 +413,7 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 tag_name2 = TagNameMap[cls2]
                 if cls is cls2:
                     continue
-                with self.subTest(cls=cls, cls2=cls2), self.assertRaises(TypeError):
-                    getattr(comp, f"get_{tag_name2}")("key")
+                self.assertIs(None, getattr(comp, f"get_{tag_name2}")("key"))
 
     def test_pop(self) -> None:
         tag = CompoundTag(

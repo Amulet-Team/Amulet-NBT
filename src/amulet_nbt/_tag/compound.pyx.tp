@@ -221,22 +221,13 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return wrap_node(&dereference(it).second)
 
     @overload
-    def get(
-        self,
-        key: str | bytes,
-        default: TagT = None,
-        cls: Type[TagT] = AbstractBaseTag,
-    ) -> TagT:
-        ...
-
+    def get(self, key: str | bytes, default: None = None) -> AnyNBT | None:...
     @overload
-    def get(
-        self,
-        key: str | bytes,
-        default: None = None,
-        cls: Type[TagT] = AbstractBaseTag,
-    ) -> TagT | None:
-        ...
+    def get(self, key: str | bytes, default: _TagT = None) -> AnyNBT: ...
+    @overload
+    def get(self, key: str | bytes, default: None = None, cls: Type[_TagT] = AbstractBaseTag) -> _TagT | None: ...
+    @overload
+    def get(self, key: str | bytes, default: _TagT = None, cls: Type[_TagT] = AbstractBaseTag) -> _TagT: ...
 
     def get(
         self,

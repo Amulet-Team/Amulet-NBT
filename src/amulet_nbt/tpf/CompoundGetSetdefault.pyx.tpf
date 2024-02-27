@@ -2,16 +2,16 @@
     def get_{{tag_name}}(
         self,
         key: str | bytes,
-        default: amulet_nbt.{{py_cls}} = None,
-    ) -> amulet_nbt.{{py_cls}}:
+        default: None = None,
+    ) -> amulet_nbt.{{py_cls}} | None:
         ...
 
     @overload
     def get_{{tag_name}}(
         self,
         key: str | bytes,
-        default: None = None,
-    ) -> amulet_nbt.{{py_cls}} | None:
+        default: amulet_nbt.{{py_cls}},
+    ) -> amulet_nbt.{{py_cls}}:
         ...
 
     def get_{{tag_name}}(self, string key: str | bytes, {{py_cls}} default: amulet_nbt.{{py_cls}} | None = None) -> amulet_nbt.{{py_cls}} | None:

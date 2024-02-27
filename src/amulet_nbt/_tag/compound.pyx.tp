@@ -235,7 +235,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         key: str | bytes,
         default: None = None,
         cls: Type[TagT] = AbstractBaseTag,
-    ) -> None:
+    ) -> TagT | None:
         ...
 
     def get(

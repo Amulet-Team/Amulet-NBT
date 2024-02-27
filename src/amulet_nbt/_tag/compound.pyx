@@ -329,7 +329,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         key: str | bytes,
         default: None = None,
         cls: Type[TagT] = AbstractBaseTag,
-    ) -> None:
+    ) -> TagT | None:
         ...
 
     def get(
@@ -466,7 +466,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         self,
         key: str | bytes,
         default: None = None,
-    ) -> None:
+    ) -> amulet_nbt.ByteTag | None:
         ...
 
     def get_byte(self, string key: str | bytes, ByteTag default: amulet_nbt.ByteTag | None = None) -> amulet_nbt.ByteTag | None:
@@ -531,7 +531,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         self,
         key: str | bytes,
         default: None = None,
-    ) -> None:
+    ) -> amulet_nbt.ShortTag | None:
         ...
 
     def get_short(self, string key: str | bytes, ShortTag default: amulet_nbt.ShortTag | None = None) -> amulet_nbt.ShortTag | None:
@@ -596,7 +596,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         self,
         key: str | bytes,
         default: None = None,
-    ) -> None:
+    ) -> amulet_nbt.IntTag | None:
         ...
 
     def get_int(self, string key: str | bytes, IntTag default: amulet_nbt.IntTag | None = None) -> amulet_nbt.IntTag | None:
@@ -661,7 +661,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         self,
         key: str | bytes,
         default: None = None,
-    ) -> None:
+    ) -> amulet_nbt.LongTag | None:
         ...
 
     def get_long(self, string key: str | bytes, LongTag default: amulet_nbt.LongTag | None = None) -> amulet_nbt.LongTag | None:
@@ -726,7 +726,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         self,
         key: str | bytes,
         default: None = None,
-    ) -> None:
+    ) -> amulet_nbt.FloatTag | None:
         ...
 
     def get_float(self, string key: str | bytes, FloatTag default: amulet_nbt.FloatTag | None = None) -> amulet_nbt.FloatTag | None:
@@ -791,7 +791,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         self,
         key: str | bytes,
         default: None = None,
-    ) -> None:
+    ) -> amulet_nbt.DoubleTag | None:
         ...
 
     def get_double(self, string key: str | bytes, DoubleTag default: amulet_nbt.DoubleTag | None = None) -> amulet_nbt.DoubleTag | None:
@@ -856,7 +856,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         self,
         key: str | bytes,
         default: None = None,
-    ) -> None:
+    ) -> amulet_nbt.StringTag | None:
         ...
 
     def get_string(self, string key: str | bytes, StringTag default: amulet_nbt.StringTag | None = None) -> amulet_nbt.StringTag | None:
@@ -921,7 +921,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         self,
         key: str | bytes,
         default: None = None,
-    ) -> None:
+    ) -> amulet_nbt.ListTag | None:
         ...
 
     def get_list(self, string key: str | bytes, ListTag default: amulet_nbt.ListTag | None = None) -> amulet_nbt.ListTag | None:
@@ -986,7 +986,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         self,
         key: str | bytes,
         default: None = None,
-    ) -> None:
+    ) -> amulet_nbt.CompoundTag | None:
         ...
 
     def get_compound(self, string key: str | bytes, CompoundTag default: amulet_nbt.CompoundTag | None = None) -> amulet_nbt.CompoundTag | None:
@@ -1051,7 +1051,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         self,
         key: str | bytes,
         default: None = None,
-    ) -> None:
+    ) -> amulet_nbt.ByteArrayTag | None:
         ...
 
     def get_byte_array(self, string key: str | bytes, ByteArrayTag default: amulet_nbt.ByteArrayTag | None = None) -> amulet_nbt.ByteArrayTag | None:
@@ -1116,7 +1116,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         self,
         key: str | bytes,
         default: None = None,
-    ) -> None:
+    ) -> amulet_nbt.IntArrayTag | None:
         ...
 
     def get_int_array(self, string key: str | bytes, IntArrayTag default: amulet_nbt.IntArrayTag | None = None) -> amulet_nbt.IntArrayTag | None:
@@ -1181,7 +1181,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         self,
         key: str | bytes,
         default: None = None,
-    ) -> None:
+    ) -> amulet_nbt.LongArrayTag | None:
         ...
 
     def get_long_array(self, string key: str | bytes, LongArrayTag default: amulet_nbt.LongArrayTag | None = None) -> amulet_nbt.LongArrayTag | None:

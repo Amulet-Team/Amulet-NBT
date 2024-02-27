@@ -13,7 +13,7 @@ from typing import (
     Mapping,
     Optional,
 )
-from collections.abc import MutableSequence, MutableMapping, Sequence
+from collections.abc import MutableSequence, MutableMapping
 import numpy
 from numpy.typing import NDArray, ArrayLike
 
@@ -389,6 +389,30 @@ class ListTag(AbstractBaseMutableTag, MutableSequence[AnyNBTT]):
     def get_int_array(self, index: int) -> IntArrayTag: ...
     def get_long_array(self, index: int) -> LongArrayTag: ...
 
+    def insert(self, index: int, value: AnyNBT) -> None:
+        pass
+
+    @overload
+    def __getitem__(self, index: int) -> AnyNBT: ...
+
+    @overload
+    def __getitem__(self, index: slice) -> list[AnyNBT]: ...
+
+    @overload
+    def __setitem__(self, index: int, value: AnyNBT) -> None: ...
+
+    @overload
+    def __setitem__(self, index: slice, value: Iterable[AnyNBT]) -> None: ...
+
+    @overload
+    def __delitem__(self, index: int) -> None: ...
+
+    @overload
+    def __delitem__(self, index: slice) -> None: ...
+
+    def __len__(self) -> int:
+        pass
+
 _TagT = TypeVar("_TagT", bound=AbstractBaseTag)
 
 class CompoundTag(AbstractBaseMutableTag, MutableMapping[str | bytes, AnyNBT]):
@@ -535,6 +559,16 @@ class CompoundTag(AbstractBaseMutableTag, MutableMapping[str | bytes, AnyNBT]):
     def setdefault_long_array(
         self, key: str | bytes, default: LongArrayTag | None = None
     ) -> LongArrayTag: ...
+
+    def __setitem__(self, key: str | bytes, value: AnyNBT) -> None:...
+
+    def __delitem__(self, key: str | bytes) -> None:...
+
+    def __getitem__(self, key: str | bytes) -> AnyNBT:...
+
+    def __len__(self) -> int:...
+
+    def __iter__(self) -> Iterator[str | bytes]:...
 
 class AbstractBaseArrayTag(AbstractBaseMutableTag):
     def __init__(self, value: Iterable[SupportsInt] = ()) -> None: ...

@@ -11,7 +11,7 @@ from template import include
 from __future__ import annotations
 
 from collections.abc import Mapping, Iterator, Iterable, KeysView, ItemsView, ValuesView
-from typing import Any, overload, Type
+from typing import Any, overload, Type, TypeVar
 
 from libcpp.string cimport string
 from libcpp cimport bool
@@ -129,6 +129,9 @@ f"""    {"el"*(index!=1)}if index == {index}:
         raise RuntimeError
 
 
+TagT = TypeVar("TagT", bound=AbstractBaseTag)
+
+
 cdef class CompoundTag(AbstractBaseMutableTag):
     """A Python wrapper around a C++ unordered map.
 
@@ -217,18 +220,36 @@ cdef class CompoundTag(AbstractBaseMutableTag):
 
         return wrap_node(&dereference(it).second)
 
+    @overload
+    def get(
+        self,
+        key: str | bytes,
+        default: TagT = None,
+        cls: Type[TagT] = AbstractBaseTag,
+    ) -> TagT:
+        ...
+
+    @overload
+    def get(
+        self,
+        key: str | bytes,
+        default: None = None,
+        cls: Type[TagT] = AbstractBaseTag,
+    ) -> None:
+        ...
+
     def get(
         self,
         string key: str | bytes,
-        object default: amulet_nbt.AnyNBT | None = None,
-        object cls: Type[amulet_nbt.AbstractBaseTag] = AbstractBaseTag
-    ) -> amulet_nbt.AnyNBT:
+        object default: TagT | None = None,
+        object cls: Type[TagT] = AbstractBaseTag
+    ) -> TagT | None:
         """Get an item from the CompoundTag.
 
         :param key: The key to get
-        :param default: The value to return if the key does not exist or the type is wrong. If not defined and the type is not correct a TypeError is raised.
-        :param cls: The class that the stored tag must inherit from. If the type is incorrect default is returned if defined else a TypeError is raised.
-        :return: The tag stored in the CompoundTag if the type is correct else default if defined.
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param cls: The class that the stored tag must inherit from. If the type is incorrect default is returned.
+        :return: The tag stored in the CompoundTag if the type is correct else default.
         :raises: KeyError if the key does not exist.
         :raises: TypeError if the stored type is not a subclass of cls.
         """
@@ -240,8 +261,6 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         cdef AbstractBaseTag tag = wrap_node(&dereference(it).second)
         if isinstance(tag, cls):
             return tag
-        elif default is None:
-            raise TypeError(f"Expected tag to be of type {cls.__name__} but got {type(tag).__name__}")
         else:
             return default
 

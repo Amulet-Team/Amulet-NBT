@@ -1,8 +1,24 @@
-    def get_{{tag_name}}(self, string key: str | bytes, {{py_cls}} default: amulet_nbt.{{py_cls}} | None = None) -> amulet_nbt.{{py_cls}}:
+    @overload
+    def get_{{tag_name}}(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.{{py_cls}} = None,
+    ) -> amulet_nbt.{{py_cls}}:
+        ...
+
+    @overload
+    def get_{{tag_name}}(
+        self,
+        key: str | bytes,
+        default: None = None,
+    ) -> None:
+        ...
+
+    def get_{{tag_name}}(self, string key: str | bytes, {{py_cls}} default: amulet_nbt.{{py_cls}} | None = None) -> amulet_nbt.{{py_cls}} | None:
         """Get the tag stored in key if it is a {{py_cls}}.
     
         :param key: The key to get
-        :param default: The value to return if the key does not exist or the type is wrong. If not defined errors are raised.
+        :param default: The value to return if the key does not exist or the type is wrong.
         :return: The {{py_cls}}.
         :raises: KeyError if the key does not exist
         :raises: TypeError if the stored type is not a {{py_cls}}
@@ -18,8 +34,6 @@
         else:
             if isinstance(tag, {{py_cls}}):
                 return tag
-            elif default is None:
-                raise TypeError(f"Expected tag to be of type {{py_cls}} but got {type(tag)}")
             else:
                 return default
 

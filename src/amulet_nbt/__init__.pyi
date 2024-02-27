@@ -389,6 +389,10 @@ class ListTag(AbstractBaseMutableTag, MutableSequence[AnyNBTT]):
     def get_int_array(self, index: int) -> IntArrayTag: ...
     def get_long_array(self, index: int) -> LongArrayTag: ...
 
+
+_TagT = TypeVar("_TagT", bound=AbstractBaseTag)
+
+
 class CompoundTag(AbstractBaseMutableTag, MutableMapping[str | bytes, AnyNBT]):
     def __init__(
         self,
@@ -399,71 +403,146 @@ class CompoundTag(AbstractBaseMutableTag, MutableMapping[str | bytes, AnyNBT]):
     def py_dict(self) -> dict[str, AnyNBT]:
         """A shallow copy of the CompoundTag as a python dictionary."""
 
+    @overload
     def get(
         self,
         key: str | bytes,
-        default: Any = None,
-        cls: Type[AbstractBaseTag] = AbstractBaseTag,
-    ):
+        default: _TagT = None,
+        cls: Type[_TagT] = AbstractBaseTag,
+    ) -> _TagT:
+        ...
+
+    @overload
+    def get(
+        self,
+        key: str | bytes,
+        default: None = None,
+        cls: Type[_TagT] = AbstractBaseTag,
+    ) -> None:
+        ...
+
+    def get(
+        self,
+        key: str | bytes,
+        default: _TagT | None = None,
+        cls: Type[_TagT] = AbstractBaseTag,
+    ) -> _TagT | None:
         """Get an item from the CompoundTag.
 
         :param key: The key to get
-        :param default: The value to return if the key does not exist or the type is wrong. If not defined and the type is not correct a TypeError is raised.
-        :param cls: The class that the stored tag must inherit from. If the type is incorrect default is returned if defined else a TypeError is raised.
-        :return: The tag stored in the CompoundTag if the type is correct else default if defined.
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param cls: The class that the stored tag must inherit from. If the type is incorrect default is returned.
+        :return: The tag stored in the CompoundTag if the type is correct else default.
         :raises: KeyError if the key does not exist.
         :raises: TypeError if the stored type is not a subclass of cls.
         """
 
     @staticmethod
     def fromkeys(keys: Iterable[str | bytes], value: AnyNBT = None): ...
+
+    @overload
     def get_byte(self, key: str | bytes, default: ByteTag = None) -> ByteTag: ...
+    @overload
+    def get_byte(self, key: str | bytes, default: None = None) -> None: ...
+
+    @overload
     def get_short(self, key: str | bytes, default: ShortTag = None) -> ShortTag: ...
+    @overload
+    def get_short(self, key: str | bytes, default: None = None) -> None: ...
+
+    @overload
     def get_int(self, key: str | bytes, default: IntTag = None) -> IntTag: ...
+    @overload
+    def get_int(self, key: str | bytes, default: None = None) -> None: ...
+
+    @overload
     def get_long(self, key: str | bytes, default: LongTag = None) -> LongTag: ...
+    @overload
+    def get_long(self, key: str | bytes, default: None = None) -> None: ...
+
+    @overload
     def get_float(self, key: str | bytes, default: FloatTag = None) -> FloatTag: ...
+    @overload
+    def get_float(self, key: str | bytes, default: None = None) -> None: ...
+
+    @overload
     def get_double(self, key: str | bytes, default: DoubleTag = None) -> DoubleTag: ...
+    @overload
+    def get_double(self, key: str | bytes, default: None = None) -> None: ...
+
+    @overload
     def get_string(self, key: str | bytes, default: StringTag = None) -> StringTag: ...
+    @overload
+    def get_string(self, key: str | bytes, default: None = None) -> None: ...
+
+    @overload
     def get_list(self, key: str | bytes, default: ListTag = None) -> ListTag: ...
+    @overload
+    def get_list(self, key: str | bytes, default: None = None) -> None: ...
+
+    @overload
     def get_compound(
         self, key: str | bytes, default: CompoundTag = None
     ) -> CompoundTag: ...
+    @overload
+    def get_compound(
+            self, key: str | bytes, default: None = None
+    ) -> None: ...
+
+    @overload
     def get_byte_array(
         self, key: str | bytes, default: ByteArrayTag = None
     ) -> ByteArrayTag: ...
+    @overload
+    def get_byte_array(
+            self, key: str | bytes, default: None = None
+    ) -> None: ...
+
+    @overload
     def get_int_array(
         self, key: str | bytes, default: IntArrayTag = None
     ) -> IntArrayTag: ...
+    @overload
+    def get_int_array(
+            self, key: str | bytes, default: None = None
+    ) -> None: ...
+
+    @overload
     def get_long_array(
         self, key: str | bytes, default: LongArrayTag = None
     ) -> LongArrayTag: ...
-    def setdefault_byte(self, key: str | bytes, default: ByteTag = None) -> ByteTag: ...
+    @overload
+    def get_long_array(
+            self, key: str | bytes, default: None = None
+    ) -> None: ...
+
+    def setdefault_byte(self, key: str | bytes, default: ByteTag | None = None) -> ByteTag: ...
     def setdefault_short(
-        self, key: str | bytes, default: ShortTag = None
+        self, key: str | bytes, default: ShortTag | None = None
     ) -> ShortTag: ...
-    def setdefault_int(self, key: str | bytes, default: IntTag = None) -> IntTag: ...
-    def setdefault_long(self, key: str | bytes, default: LongTag = None) -> LongTag: ...
+    def setdefault_int(self, key: str | bytes, default: IntTag | None = None) -> IntTag: ...
+    def setdefault_long(self, key: str | bytes, default: LongTag | None = None) -> LongTag: ...
     def setdefault_float(
-        self, key: str | bytes, default: FloatTag = None
+        self, key: str | bytes, default: FloatTag | None = None
     ) -> FloatTag: ...
     def setdefault_double(
-        self, key: str | bytes, default: DoubleTag = None
+        self, key: str | bytes, default: DoubleTag | None = None
     ) -> DoubleTag: ...
     def setdefault_string(
-        self, key: str | bytes, default: StringTag = None
+        self, key: str | bytes, default: StringTag | None = None
     ) -> StringTag: ...
-    def setdefault_list(self, key: str | bytes, default: ListTag = None) -> ListTag: ...
+    def setdefault_list(self, key: str | bytes, default: ListTag | None = None) -> ListTag: ...
     def setdefault_compound(
-        self, key: str | bytes, default: CompoundTag = None
+        self, key: str | bytes, default: CompoundTag | None = None
     ) -> CompoundTag: ...
     def setdefault_byte_array(
-        self, key: str | bytes, default: ByteArrayTag = None
+        self, key: str | bytes, default: ByteArrayTag | None = None
     ) -> ByteArrayTag: ...
     def setdefault_int_array(
-        self, key: str | bytes, default: IntArrayTag = None
+        self, key: str | bytes, default: IntArrayTag | None = None
     ) -> IntArrayTag: ...
     def setdefault_long_array(
-        self, key: str | bytes, default: LongArrayTag = None
+        self, key: str | bytes, default: LongArrayTag | None = None
     ) -> LongArrayTag: ...
 
 class AbstractBaseArrayTag(AbstractBaseMutableTag):

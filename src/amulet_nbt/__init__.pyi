@@ -144,7 +144,7 @@ class AbstractBaseTag(AbstractBase):
 
     def save_to(
         self,
-        filepath_or_buffer: bytes | str | BinaryIO | memoryview | None = None,
+        filepath_or_buffer: str | BinaryIO | None = None,
         *,
         preset: EncodingPreset | None = None,
         compressed: bool = True,
@@ -954,7 +954,7 @@ class NamedTag(AbstractBase):
 
     def save_to(
         self,
-        filepath_or_buffer: bytes | str | BinaryIO | memoryview | None = None,
+        filepath_or_buffer: str | BinaryIO | None = None,
         *,
         preset: EncodingPreset | None = None,
         compressed: bool = True,

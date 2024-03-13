@@ -126,7 +126,7 @@ class AbstractBaseTag(AbstractBase):
     def to_nbt(
         self,
         *,
-        preset: EncodingPreset = None,
+        preset: EncodingPreset | None = None,
         compressed: bool = True,
         little_endian: bool = False,
         string_encoding: StringEncoding = mutf8_encoding,
@@ -146,7 +146,7 @@ class AbstractBaseTag(AbstractBase):
         self,
         filepath_or_buffer: bytes | str | BinaryIO | memoryview | None = None,
         *,
-        preset: EncodingPreset = None,
+        preset: EncodingPreset | None = None,
         compressed: bool = True,
         little_endian: bool = False,
         string_encoding: StringEncoding = mutf8_encoding,
@@ -926,7 +926,7 @@ TAG_Int_Array = IntArrayTag
 TAG_Long_Array = LongArrayTag
 
 class NamedTag(AbstractBase):
-    def __init__(self, tag: AnyNBT = None, name: str | bytes = "") -> None: ...
+    def __init__(self, tag: AnyNBT | None = None, name: str | bytes = "") -> None: ...
     @property
     def tag(self) -> AnyNBT: ...
     @tag.setter
@@ -938,7 +938,7 @@ class NamedTag(AbstractBase):
     def to_nbt(
         self,
         *,
-        preset: EncodingPreset = None,
+        preset: EncodingPreset | None = None,
         compressed: bool = True,
         little_endian: bool = False,
         string_encoding: StringEncoding = mutf8_encoding,
@@ -956,7 +956,7 @@ class NamedTag(AbstractBase):
         self,
         filepath_or_buffer: bytes | str | BinaryIO | memoryview | None = None,
         *,
-        preset: EncodingPreset = None,
+        preset: EncodingPreset | None = None,
         compressed: bool = True,
         little_endian: bool = False,
         string_encoding: StringEncoding = mutf8_encoding,
@@ -1016,11 +1016,11 @@ class ReadOffset:
 def load(
     filepath_or_buffer: str | bytes | BinaryIO | memoryview | None,
     *,
-    preset: EncodingPreset = None,
+    preset: EncodingPreset | None = None,
     compressed: bool = True,
     little_endian: bool = False,
     string_encoding: StringEncoding = mutf8_encoding,
-    read_offset: ReadOffset = None,
+    read_offset: ReadOffset | None = None,
 ) -> NamedTag:
     """Load one binary NBT object.
 
@@ -1037,11 +1037,11 @@ def load_array(
     filepath_or_buffer: str | bytes | BinaryIO | memoryview | None,
     *,
     count: int = 1,
-    preset: EncodingPreset = None,
+    preset: EncodingPreset | None = None,
     compressed: bool = True,
     little_endian: bool = False,
     string_encoding: StringEncoding = mutf8_encoding,
-    read_offset: ReadOffset = None,
+    read_offset: ReadOffset | None = None,
 ) -> list[NamedTag]:
     """Load an array of binary NBT objects from a contiguous buffer.
 

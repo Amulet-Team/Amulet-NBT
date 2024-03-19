@@ -210,7 +210,7 @@ cdef AbstractBaseTag wrap_node(TagNode* node):
         raise RuntimeError
 
 
-TagT = TypeVar("TagT", bound=AbstractBaseTag)
+_TagT = TypeVar("_TagT", bound=AbstractBaseTag)
 
 
 cdef class CompoundTag(AbstractBaseMutableTag):
@@ -222,8 +222,8 @@ cdef class CompoundTag(AbstractBaseMutableTag):
 
     def __init__(
         self,
-        value: Mapping[str | bytes, amulet_nbt.AnyNBT] | Iterable[tuple[str | bytes, amulet_nbt.AnyNBT]] = (),
-        **kwargs: amulet_nbt.AnyNBT,
+        value: Mapping[str | bytes, AbstractBaseTag] | Iterable[tuple[str | bytes, AbstractBaseTag]] = (),
+        **kwargs: AbstractBaseTag,
     ) -> None:
         self.cpp = make_shared[CCompoundTag]()
         self.update(value, **kwargs)
@@ -315,9 +315,9 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return wrap_node(&dereference(it).second)
 
     @overload
-    def get(self, key: str | bytes, default: None = None) -> AnyNBT | None:...
+    def get(self, key: str | bytes, default: None = None) -> amulet_nbt.AnyNBT | None:...
     @overload
-    def get(self, key: str | bytes, default: _TagT = None) -> AnyNBT: ...
+    def get(self, key: str | bytes, default: _TagT = None) -> amulet_nbt.AnyNBT: ...
     @overload
     def get(self, key: str | bytes, default: None = None, cls: Type[_TagT] = AbstractBaseTag) -> _TagT | None: ...
     @overload
@@ -326,9 +326,9 @@ cdef class CompoundTag(AbstractBaseMutableTag):
     def get(
         self,
         string key: str | bytes,
-        object default: TagT | None = None,
-        object cls: Type[TagT] = AbstractBaseTag
-    ) -> TagT | None:
+        object default: _TagT | None = None,
+        object cls: Type[_TagT] = AbstractBaseTag
+    ) -> _TagT | None:
         """Get an item from the CompoundTag.
 
         :param key: The key to get

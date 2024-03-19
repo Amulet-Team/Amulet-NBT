@@ -493,7 +493,7 @@ cdef class ListTag(AbstractBaseMutableTag):
     """
     tag_id: int = 9
 
-    def __init__(self, object value: Iterable[amulet_nbt.AnyNBT] = (), char element_tag_id = 1) -> None:
+    def __init__(self, object value: Iterable[AbstractBaseTag] = (), char element_tag_id = 1) -> None:
         self.cpp = make_shared[CListTag]()
         if element_tag_id == 0:
             dereference(self.cpp).emplace[monostate]()

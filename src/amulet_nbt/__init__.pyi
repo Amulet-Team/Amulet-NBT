@@ -334,7 +334,7 @@ class StringTag(AbstractBaseImmutableTag):
     def __lt__(self, other: Any) -> bool:
         """Check if the tag is less than another tag."""
 
-AnyNBTT = TypeVar("AnyNBTT", bound=AnyNBT)
+AnyNBTT = TypeVar("AnyNBTT", bound=AbstractBaseTag)
 
 class ListTag(AbstractBaseMutableTag, MutableSequence[AnyNBTT]):
     @overload
@@ -398,7 +398,7 @@ class ListTag(AbstractBaseMutableTag, MutableSequence[AnyNBTT]):
     @overload
     def __setitem__(self, index: int, value: AnyNBT) -> None: ...
     @overload
-    def __setitem__(self, index: slice, value: Iterable[AnyNBT]) -> None: ...
+    def __setitem__(self, index: slice, value: Iterable[AbstractBaseTag]) -> None: ...
     @overload
     def __delitem__(self, index: int) -> None: ...
     @overload
@@ -408,11 +408,14 @@ class ListTag(AbstractBaseMutableTag, MutableSequence[AnyNBTT]):
 
 _TagT = TypeVar("_TagT", bound=AbstractBaseTag)
 
-class CompoundTag(AbstractBaseMutableTag, MutableMapping[str | bytes, AnyNBT]):
+class CompoundTag(AbstractBaseMutableTag, MutableMapping[str | bytes, AbstractBaseTag]):
     def __init__(
         self,
-        value: Mapping[str | bytes, AnyNBT] | Iterable[tuple[str | bytes, AnyNBT]] = (),
-        **kwvals: AnyNBT,
+        value: (
+            Mapping[str | bytes, AbstractBaseTag]
+            | Iterable[tuple[str | bytes, AbstractBaseTag]]
+        ) = (),
+        **kwvals: AbstractBaseTag,
     ): ...
     @property
     def py_dict(self) -> dict[str, AnyNBT]:

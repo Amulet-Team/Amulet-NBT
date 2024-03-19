@@ -411,7 +411,10 @@ _TagT = TypeVar("_TagT", bound=AbstractBaseTag)
 class CompoundTag(AbstractBaseMutableTag, MutableMapping[str | bytes, AbstractBaseTag]):
     def __init__(
         self,
-        value: Mapping[str | bytes, AbstractBaseTag] | Iterable[tuple[str | bytes, AbstractBaseTag]] = (),
+        value: (
+            Mapping[str | bytes, AbstractBaseTag]
+            | Iterable[tuple[str | bytes, AbstractBaseTag]]
+        ) = (),
         **kwvals: AbstractBaseTag,
     ): ...
     @property

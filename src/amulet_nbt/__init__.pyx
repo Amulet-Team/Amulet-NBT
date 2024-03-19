@@ -118,7 +118,7 @@ from amulet_nbt._nbt_encoding._string import from_snbt
 
 from ._errors import NBTError, NBTLoadError, NBTFormatError, SNBTParseError
 
-from ._string_encoding import (
+from ._string_encoding.encoding import (
     mutf8_encoding,
     utf8_encoding,
     utf8_escape_encoding,

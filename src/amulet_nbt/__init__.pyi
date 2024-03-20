@@ -414,6 +414,8 @@ class CompoundTag(AbstractBaseMutableTag, MutableMapping[str | bytes, AbstractBa
         value: (
             Mapping[str | bytes, AbstractBaseTag]
             | Iterable[tuple[str | bytes, AbstractBaseTag]]
+            | Mapping[str, AbstractBaseTag]
+            | Mapping[bytes, AbstractBaseTag]
         ) = (),
         **kwvals: AbstractBaseTag,
     ): ...

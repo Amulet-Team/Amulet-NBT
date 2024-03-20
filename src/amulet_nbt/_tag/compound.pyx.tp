@@ -141,7 +141,12 @@ cdef class CompoundTag(AbstractBaseMutableTag):
 
     def __init__(
         self,
-        value: Mapping[str | bytes, AbstractBaseTag] | Iterable[tuple[str | bytes, AbstractBaseTag]] = (),
+        value: (
+            Mapping[str | bytes, AbstractBaseTag]
+            | Iterable[tuple[str | bytes, AbstractBaseTag]]
+            | Mapping[str, AbstractBaseTag]
+            | Mapping[bytes, AbstractBaseTag]
+        ) = (),
         **kwargs: AbstractBaseTag,
     ) -> None:
         self.cpp = make_shared[CCompoundTag]()

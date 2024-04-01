@@ -166,6 +166,6 @@ std::pair<std::string, TagNode> read_named_tag(const std::string& raw, std::endi
 
 
 std::pair<std::string, TagNode> read_named_tag(const std::string& raw, std::endian endianness, StringDecode stringDecode){
-    size_t offset;
+    size_t offset = 0;
     return read_named_tag(raw, endianness, stringDecode, offset);
 }

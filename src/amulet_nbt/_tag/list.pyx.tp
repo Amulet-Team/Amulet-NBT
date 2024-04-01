@@ -7,12 +7,14 @@ from template import include
 # distutils: language = c++
 # distutils: extra_compile_args = CPPCARGS
 # cython: c_string_type=str, c_string_encoding=utf8
+# distutils: sources = [src/amulet_nbt/_string_encoding/_cpp/utf8.cpp, src/amulet_nbt/_nbt_encoding/_binary/_cpp/read_nbt.cpp]
 
 from typing import Any, Type
 from collections.abc import Iterable
 
 from libc.math cimport ceil
 from libcpp cimport bool
+from libcpp.pair cimport pair
 from libcpp.memory cimport make_shared
 from libcpp.string cimport string
 from cython.operator cimport dereference
@@ -20,6 +22,8 @@ import amulet_nbt
 from amulet_nbt._libcpp.variant cimport get, monostate
 from amulet_nbt._libcpp.endian cimport endian
 from amulet_nbt._string_encoding._cpp cimport CStringEncode
+from amulet_nbt._string_encoding._cpp.utf8 cimport utf8_escape_to_utf8, utf8_to_utf8_escape
+from amulet_nbt._nbt_encoding._binary._cpp cimport read_named_tag
 from amulet_nbt._nbt_encoding._binary cimport write_named_tag
 from amulet_nbt._nbt_encoding._string cimport write_list_snbt
 
@@ -486,6 +490,11 @@ cdef inline void ListTag_append(CListTagPtr cpp, AbstractBaseTag value):
         raise TypeError(f"Unsupported type {{'{'}}type(value){{'}'}}")
 
 
+def _unpickle(string data) -> ListTag:
+    cdef pair[string, TagNode] named_tag = read_named_tag(data, endian.big, utf8_to_utf8_escape)
+    return ListTag.wrap(get[CListTagPtr](named_tag.second))
+
+
 cdef class ListTag(AbstractBaseMutableTag):
     """A Python wrapper around a C++ vector.
 
@@ -553,7 +562,8 @@ cdef class ListTag(AbstractBaseMutableTag):
         return str(list(self))
 
     def __reduce__(self):
-        return ListTag, (list(self), self.element_tag_id)
+        cdef bytes nbt = self.write_nbt(b"", endian.big, utf8_escape_to_utf8)
+        return _unpickle, (nbt,)
 
     def __copy__(self) -> ListTag:
         return ListTag.wrap(

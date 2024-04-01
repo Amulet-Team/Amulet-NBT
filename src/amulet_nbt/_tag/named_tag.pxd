@@ -9,3 +9,5 @@ cdef class NamedTag(AbstractBase):
     cdef string tag_name
     cdef TagNode tag_node
     cdef string write_nbt(self, endian endianness, CStringEncode string_encode)
+    @staticmethod
+    cdef NamedTag wrap(string name, TagNode node)

@@ -7,16 +7,21 @@ from template import include
 # distutils: language = c++
 # distutils: extra_compile_args = CPPCARGS
 # cython: c_string_type=str, c_string_encoding=utf8
+# distutils: sources = [src/amulet_nbt/_string_encoding/_cpp/utf8.cpp, src/amulet_nbt/_nbt_encoding/_binary/_cpp/read_nbt.cpp]
 
+from typing import Any
 import copy
 import gzip
 from libcpp.string cimport string
 from libcpp cimport bool
+from libcpp.pair cimport pair
 import amulet_nbt
 from amulet_nbt._libcpp.endian cimport endian
 from amulet_nbt._string_encoding cimport StringEncoding
 from amulet_nbt._string_encoding import mutf8_encoding
 from amulet_nbt._string_encoding._cpp cimport CStringEncode
+from amulet_nbt._string_encoding._cpp.utf8 cimport utf8_escape_to_utf8, utf8_to_utf8_escape
+from amulet_nbt._nbt_encoding._binary._cpp cimport read_named_tag
 from amulet_nbt._nbt_encoding._binary cimport write_named_tag
 from amulet_nbt._nbt_encoding._binary.encoding_preset cimport EncodingPreset
 from amulet_nbt._nbt_encoding._string cimport write_node_snbt
@@ -30,12 +35,24 @@ from .compound cimport wrap_node, CompoundTag
 from .array cimport ByteArrayTag, IntArrayTag, LongArrayTag
 
 
+def _unpickle(string data):
+    cdef pair[string, TagNode] named_tag = read_named_tag(data, endian.big, utf8_to_utf8_escape)
+    return NamedTag.wrap(named_tag.first, named_tag.second)
+
+
 cdef class NamedTag(AbstractBase):
     def __init__(self, AbstractBaseTag tag: amulet_nbt.AbstractBaseTag = None, string name: str | bytes = b"") -> None:
         if tag is None:
             tag = CompoundTag()
         self.tag_node = tag.to_node()
         self.tag_name = name
+
+    @staticmethod
+    cdef NamedTag wrap(string name, TagNode node):
+        cdef NamedTag self = NamedTag.__new__(NamedTag)
+        self.tag_name = name
+        self.tag_node = node
+        return self
 
     @property
     def tag(self) -> AbstractBaseTag:
@@ -164,7 +181,8 @@ cdef class NamedTag(AbstractBase):
         return f'NamedTag({self.tag!r}, "{self.name}")'
 
     def __reduce__(self):
-        return NamedTag, (self.tag, self.name)
+        cdef bytes nbt = self.write_nbt(endian.big, utf8_escape_to_utf8)
+        return _unpickle, (nbt,)
 
     def __copy__(self) -> NamedTag:
         return NamedTag(self.tag, self.name)

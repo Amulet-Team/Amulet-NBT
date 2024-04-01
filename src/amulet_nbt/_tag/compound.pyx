@@ -5,6 +5,7 @@
 # distutils: language = c++
 # distutils: extra_compile_args = CPPCARGS
 # cython: c_string_type=str, c_string_encoding=utf8
+# distutils: sources = [src/amulet_nbt/_string_encoding/_cpp/utf8.cpp, src/amulet_nbt/_nbt_encoding/_binary/_cpp/read_nbt.cpp]
 
 from __future__ import annotations
 
@@ -13,11 +14,14 @@ from typing import Any, overload, Type, TypeVar
 
 from libcpp.string cimport string
 from libcpp cimport bool
+from libcpp.pair cimport pair
 from libcpp.memory cimport make_shared
 from cython.operator cimport dereference, postincrement
 import amulet_nbt
 from amulet_nbt._libcpp.endian cimport endian
 from amulet_nbt._string_encoding._cpp cimport CStringEncode
+from amulet_nbt._string_encoding._cpp.utf8 cimport utf8_escape_to_utf8, utf8_to_utf8_escape
+from amulet_nbt._nbt_encoding._binary._cpp cimport read_named_tag
 from amulet_nbt._nbt_encoding._binary cimport write_named_tag
 from amulet_nbt._nbt_encoding._string cimport write_compound_snbt
 
@@ -213,6 +217,11 @@ cdef AbstractBaseTag wrap_node(TagNode* node):
 _TagT = TypeVar("_TagT", bound=AbstractBaseTag)
 
 
+def _unpickle(string data) -> CompoundTag:
+    cdef pair[string, TagNode] named_tag = read_named_tag(data, endian.big, utf8_to_utf8_escape)
+    return CompoundTag.wrap(get[CCompoundTagPtr](named_tag.second))
+
+
 cdef class CompoundTag(AbstractBaseMutableTag):
     """A Python wrapper around a C++ unordered map.
 
@@ -284,7 +293,8 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return str(dict(self))
 
     def __reduce__(self):
-        return CompoundTag, (dict(self),)
+        cdef bytes nbt = self.write_nbt(b"", endian.big, utf8_escape_to_utf8)
+        return _unpickle, (nbt,)
 
     def __copy__(self) -> CompoundTag:
         return CompoundTag.wrap(

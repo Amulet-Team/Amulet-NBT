@@ -455,106 +455,257 @@ class CompoundTag(AbstractBaseMutableTag, MutableMapping[str | bytes, AbstractBa
     @staticmethod
     def fromkeys(keys: Iterable[str | bytes], value: AnyNBT = None): ...
     @overload
-    def get_byte(self, key: str | bytes, default: None = None, raise_errors: Literal[False] = False) -> ByteTag | None: ...
+    def get_byte(
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
+    ) -> ByteTag | None: ...
     @overload
-    def get_byte(self, key: str | bytes, default: ByteTag = None, raise_errors: Literal[False] = False) -> ByteTag: ...
+    def get_byte(
+        self,
+        key: str | bytes,
+        default: ByteTag = None,
+        raise_errors: Literal[False] = False,
+    ) -> ByteTag: ...
     @overload
-    def get_byte(self, key: str | bytes, default: ByteTag | None = None, raise_errors: Literal[True] = False) -> ByteTag: ...
+    def get_byte(
+        self,
+        key: str | bytes,
+        default: ByteTag | None = None,
+        raise_errors: Literal[True] = False,
+    ) -> ByteTag: ...
     @overload
-    def get_short(self, key: str | bytes, default: None = None, raise_errors: Literal[False] = False) -> ShortTag | None: ...
+    def get_short(
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
+    ) -> ShortTag | None: ...
     @overload
-    def get_short(self, key: str | bytes, default: ShortTag = None, raise_errors: Literal[False] = False) -> ShortTag: ...
+    def get_short(
+        self,
+        key: str | bytes,
+        default: ShortTag = None,
+        raise_errors: Literal[False] = False,
+    ) -> ShortTag: ...
     @overload
-    def get_short(self, key: str | bytes, default: ShortTag | None = None, raise_errors: Literal[True] = False) -> ShortTag: ...
+    def get_short(
+        self,
+        key: str | bytes,
+        default: ShortTag | None = None,
+        raise_errors: Literal[True] = False,
+    ) -> ShortTag: ...
     @overload
-    def get_int(self, key: str | bytes, default: None = None, raise_errors: Literal[False] = False) -> IntTag | None: ...
+    def get_int(
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
+    ) -> IntTag | None: ...
     @overload
-    def get_int(self, key: str | bytes, default: IntTag = None, raise_errors: Literal[False] = False) -> IntTag: ...
+    def get_int(
+        self,
+        key: str | bytes,
+        default: IntTag = None,
+        raise_errors: Literal[False] = False,
+    ) -> IntTag: ...
     @overload
-    def get_int(self, key: str | bytes, default: IntTag | None = None, raise_errors: Literal[True] = False) -> IntTag: ...
+    def get_int(
+        self,
+        key: str | bytes,
+        default: IntTag | None = None,
+        raise_errors: Literal[True] = False,
+    ) -> IntTag: ...
     @overload
-    def get_long(self, key: str | bytes, default: None = None, raise_errors: Literal[False] = False) -> LongTag | None: ...
+    def get_long(
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
+    ) -> LongTag | None: ...
     @overload
-    def get_long(self, key: str | bytes, default: LongTag = None, raise_errors: Literal[False] = False) -> LongTag: ...
+    def get_long(
+        self,
+        key: str | bytes,
+        default: LongTag = None,
+        raise_errors: Literal[False] = False,
+    ) -> LongTag: ...
     @overload
-    def get_long(self, key: str | bytes, default: LongTag | None = None, raise_errors: Literal[True] = False) -> LongTag: ...
+    def get_long(
+        self,
+        key: str | bytes,
+        default: LongTag | None = None,
+        raise_errors: Literal[True] = False,
+    ) -> LongTag: ...
     @overload
-    def get_float(self, key: str | bytes, default: None = None, raise_errors: Literal[False] = False) -> FloatTag | None: ...
+    def get_float(
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
+    ) -> FloatTag | None: ...
     @overload
-    def get_float(self, key: str | bytes, default: FloatTag = None, raise_errors: Literal[False] = False) -> FloatTag: ...
+    def get_float(
+        self,
+        key: str | bytes,
+        default: FloatTag = None,
+        raise_errors: Literal[False] = False,
+    ) -> FloatTag: ...
     @overload
-    def get_float(self, key: str | bytes, default: FloatTag | None = None, raise_errors: Literal[True] = False) -> FloatTag: ...
+    def get_float(
+        self,
+        key: str | bytes,
+        default: FloatTag | None = None,
+        raise_errors: Literal[True] = False,
+    ) -> FloatTag: ...
     @overload
     def get_double(
-        self, key: str | bytes, default: None = None, raise_errors: Literal[False] = False
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
     ) -> DoubleTag | None: ...
     @overload
-    def get_double(self, key: str | bytes, default: DoubleTag = None, raise_errors: Literal[False] = False) -> DoubleTag: ...
+    def get_double(
+        self,
+        key: str | bytes,
+        default: DoubleTag = None,
+        raise_errors: Literal[False] = False,
+    ) -> DoubleTag: ...
     @overload
-    def get_double(self, key: str | bytes, default: DoubleTag | None = None, raise_errors: Literal[True] = False) -> DoubleTag: ...
+    def get_double(
+        self,
+        key: str | bytes,
+        default: DoubleTag | None = None,
+        raise_errors: Literal[True] = False,
+    ) -> DoubleTag: ...
     @overload
     def get_string(
-        self, key: str | bytes, default: None = None, raise_errors: Literal[False] = False
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
     ) -> StringTag | None: ...
     @overload
-    def get_string(self, key: str | bytes, default: StringTag = None, raise_errors: Literal[False] = False) -> StringTag: ...
+    def get_string(
+        self,
+        key: str | bytes,
+        default: StringTag = None,
+        raise_errors: Literal[False] = False,
+    ) -> StringTag: ...
     @overload
-    def get_string(self, key: str | bytes, default: StringTag | None = None, raise_errors: Literal[True] = False) -> StringTag: ...
+    def get_string(
+        self,
+        key: str | bytes,
+        default: StringTag | None = None,
+        raise_errors: Literal[True] = False,
+    ) -> StringTag: ...
     @overload
-    def get_list(self, key: str | bytes, default: None = None, raise_errors: Literal[False] = False) -> ListTag | None: ...
+    def get_list(
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
+    ) -> ListTag | None: ...
     @overload
-    def get_list(self, key: str | bytes, default: ListTag = None, raise_errors: Literal[False] = False) -> ListTag: ...
+    def get_list(
+        self,
+        key: str | bytes,
+        default: ListTag = None,
+        raise_errors: Literal[False] = False,
+    ) -> ListTag: ...
     @overload
-    def get_list(self, key: str | bytes, default: ListTag | None = None, raise_errors: Literal[True] = False) -> ListTag: ...
+    def get_list(
+        self,
+        key: str | bytes,
+        default: ListTag | None = None,
+        raise_errors: Literal[True] = False,
+    ) -> ListTag: ...
     @overload
     def get_compound(
-        self, key: str | bytes, default: None = None, raise_errors: Literal[False] = False
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
     ) -> CompoundTag | None: ...
     @overload
     def get_compound(
-        self, key: str | bytes, default: CompoundTag = None, raise_errors: Literal[False] = False
+        self,
+        key: str | bytes,
+        default: CompoundTag = None,
+        raise_errors: Literal[False] = False,
     ) -> CompoundTag: ...
     @overload
     def get_compound(
-            self, key: str | bytes, default: CompoundTag | None = None, raise_errors: Literal[True] = False
+        self,
+        key: str | bytes,
+        default: CompoundTag | None = None,
+        raise_errors: Literal[True] = False,
     ) -> CompoundTag: ...
     @overload
     def get_byte_array(
-        self, key: str | bytes, default: None = None, raise_errors: Literal[False] = False
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
     ) -> ByteArrayTag | None: ...
     @overload
     def get_byte_array(
-        self, key: str | bytes, default: ByteArrayTag = None, raise_errors: Literal[False] = False
+        self,
+        key: str | bytes,
+        default: ByteArrayTag = None,
+        raise_errors: Literal[False] = False,
     ) -> ByteArrayTag: ...
     @overload
     def get_byte_array(
-            self, key: str | bytes, default: ByteArrayTag | None = None, raise_errors: Literal[True] = False
+        self,
+        key: str | bytes,
+        default: ByteArrayTag | None = None,
+        raise_errors: Literal[True] = False,
     ) -> ByteArrayTag: ...
     @overload
     def get_int_array(
-        self, key: str | bytes, default: None = None, raise_errors: Literal[False] = False
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
     ) -> IntArrayTag | None: ...
     @overload
     def get_int_array(
-        self, key: str | bytes, default: IntArrayTag = None, raise_errors: Literal[False] = False
+        self,
+        key: str | bytes,
+        default: IntArrayTag = None,
+        raise_errors: Literal[False] = False,
     ) -> IntArrayTag: ...
     @overload
     def get_int_array(
-            self, key: str | bytes, default: IntArrayTag | None = None, raise_errors: Literal[True] = False
+        self,
+        key: str | bytes,
+        default: IntArrayTag | None = None,
+        raise_errors: Literal[True] = False,
     ) -> IntArrayTag: ...
     @overload
     def get_long_array(
-        self, key: str | bytes, default: None = None, raise_errors: Literal[False] = False
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
     ) -> LongArrayTag | None: ...
     @overload
     def get_long_array(
-        self, key: str | bytes, default: LongArrayTag = None, raise_errors: Literal[False] = False
+        self,
+        key: str | bytes,
+        default: LongArrayTag = None,
+        raise_errors: Literal[False] = False,
     ) -> LongArrayTag: ...
     @overload
     def get_long_array(
-            self, key: str | bytes, default: LongArrayTag | None = None, raise_errors: Literal[True] = False
+        self,
+        key: str | bytes,
+        default: LongArrayTag | None = None,
+        raise_errors: Literal[True] = False,
     ) -> LongArrayTag: ...
-
     def setdefault_byte(
         self, key: str | bytes, default: ByteTag | None = None
     ) -> ByteTag: ...
@@ -591,108 +742,258 @@ class CompoundTag(AbstractBaseMutableTag, MutableMapping[str | bytes, AbstractBa
     def setdefault_long_array(
         self, key: str | bytes, default: LongArrayTag | None = None
     ) -> LongArrayTag: ...
-
     @overload
-    def pop_byte(self, key: str | bytes, default: None = None, raise_errors: Literal[False] = False) -> ByteTag | None: ...
+    def pop_byte(
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
+    ) -> ByteTag | None: ...
     @overload
-    def pop_byte(self, key: str | bytes, default: ByteTag = None, raise_errors: Literal[False] = False) -> ByteTag: ...
+    def pop_byte(
+        self,
+        key: str | bytes,
+        default: ByteTag = None,
+        raise_errors: Literal[False] = False,
+    ) -> ByteTag: ...
     @overload
-    def pop_byte(self, key: str | bytes, default: ByteTag | None = None, raise_errors: Literal[True] = False) -> ByteTag: ...
+    def pop_byte(
+        self,
+        key: str | bytes,
+        default: ByteTag | None = None,
+        raise_errors: Literal[True] = False,
+    ) -> ByteTag: ...
     @overload
-    def pop_short(self, key: str | bytes, default: None = None, raise_errors: Literal[False] = False) -> ShortTag | None: ...
+    def pop_short(
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
+    ) -> ShortTag | None: ...
     @overload
-    def pop_short(self, key: str | bytes, default: ShortTag = None, raise_errors: Literal[False] = False) -> ShortTag: ...
+    def pop_short(
+        self,
+        key: str | bytes,
+        default: ShortTag = None,
+        raise_errors: Literal[False] = False,
+    ) -> ShortTag: ...
     @overload
-    def pop_short(self, key: str | bytes, default: ShortTag | None = None, raise_errors: Literal[True] = False) -> ShortTag: ...
+    def pop_short(
+        self,
+        key: str | bytes,
+        default: ShortTag | None = None,
+        raise_errors: Literal[True] = False,
+    ) -> ShortTag: ...
     @overload
-    def pop_int(self, key: str | bytes, default: None = None, raise_errors: Literal[False] = False) -> IntTag | None: ...
+    def pop_int(
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
+    ) -> IntTag | None: ...
     @overload
-    def pop_int(self, key: str | bytes, default: IntTag = None, raise_errors: Literal[False] = False) -> IntTag: ...
+    def pop_int(
+        self,
+        key: str | bytes,
+        default: IntTag = None,
+        raise_errors: Literal[False] = False,
+    ) -> IntTag: ...
     @overload
-    def pop_int(self, key: str | bytes, default: IntTag | None = None, raise_errors: Literal[True] = False) -> IntTag: ...
+    def pop_int(
+        self,
+        key: str | bytes,
+        default: IntTag | None = None,
+        raise_errors: Literal[True] = False,
+    ) -> IntTag: ...
     @overload
-    def pop_long(self, key: str | bytes, default: None = None, raise_errors: Literal[False] = False) -> LongTag | None: ...
+    def pop_long(
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
+    ) -> LongTag | None: ...
     @overload
-    def pop_long(self, key: str | bytes, default: LongTag = None, raise_errors: Literal[False] = False) -> LongTag: ...
+    def pop_long(
+        self,
+        key: str | bytes,
+        default: LongTag = None,
+        raise_errors: Literal[False] = False,
+    ) -> LongTag: ...
     @overload
-    def pop_long(self, key: str | bytes, default: LongTag | None = None, raise_errors: Literal[True] = False) -> LongTag: ...
+    def pop_long(
+        self,
+        key: str | bytes,
+        default: LongTag | None = None,
+        raise_errors: Literal[True] = False,
+    ) -> LongTag: ...
     @overload
-    def pop_float(self, key: str | bytes, default: None = None, raise_errors: Literal[False] = False) -> FloatTag | None: ...
+    def pop_float(
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
+    ) -> FloatTag | None: ...
     @overload
-    def pop_float(self, key: str | bytes, default: FloatTag = None, raise_errors: Literal[False] = False) -> FloatTag: ...
+    def pop_float(
+        self,
+        key: str | bytes,
+        default: FloatTag = None,
+        raise_errors: Literal[False] = False,
+    ) -> FloatTag: ...
     @overload
-    def pop_float(self, key: str | bytes, default: FloatTag | None = None, raise_errors: Literal[True] = False) -> FloatTag: ...
+    def pop_float(
+        self,
+        key: str | bytes,
+        default: FloatTag | None = None,
+        raise_errors: Literal[True] = False,
+    ) -> FloatTag: ...
     @overload
     def pop_double(
-        self, key: str | bytes, default: None = None, raise_errors: Literal[False] = False
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
     ) -> DoubleTag | None: ...
     @overload
-    def pop_double(self, key: str | bytes, default: DoubleTag = None, raise_errors: Literal[False] = False) -> DoubleTag: ...
+    def pop_double(
+        self,
+        key: str | bytes,
+        default: DoubleTag = None,
+        raise_errors: Literal[False] = False,
+    ) -> DoubleTag: ...
     @overload
-    def pop_double(self, key: str | bytes, default: DoubleTag | None = None, raise_errors: Literal[True] = False) -> DoubleTag: ...
+    def pop_double(
+        self,
+        key: str | bytes,
+        default: DoubleTag | None = None,
+        raise_errors: Literal[True] = False,
+    ) -> DoubleTag: ...
     @overload
     def pop_string(
-        self, key: str | bytes, default: None = None, raise_errors: Literal[False] = False
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
     ) -> StringTag | None: ...
     @overload
-    def pop_string(self, key: str | bytes, default: StringTag = None, raise_errors: Literal[False] = False) -> StringTag: ...
+    def pop_string(
+        self,
+        key: str | bytes,
+        default: StringTag = None,
+        raise_errors: Literal[False] = False,
+    ) -> StringTag: ...
     @overload
-    def pop_string(self, key: str | bytes, default: StringTag | None = None, raise_errors: Literal[True] = False) -> StringTag: ...
+    def pop_string(
+        self,
+        key: str | bytes,
+        default: StringTag | None = None,
+        raise_errors: Literal[True] = False,
+    ) -> StringTag: ...
     @overload
-    def pop_list(self, key: str | bytes, default: None = None, raise_errors: Literal[False] = False) -> ListTag | None: ...
+    def pop_list(
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
+    ) -> ListTag | None: ...
     @overload
-    def pop_list(self, key: str | bytes, default: ListTag = None, raise_errors: Literal[False] = False) -> ListTag: ...
+    def pop_list(
+        self,
+        key: str | bytes,
+        default: ListTag = None,
+        raise_errors: Literal[False] = False,
+    ) -> ListTag: ...
     @overload
-    def pop_list(self, key: str | bytes, default: ListTag | None = None, raise_errors: Literal[True] = False) -> ListTag: ...
+    def pop_list(
+        self,
+        key: str | bytes,
+        default: ListTag | None = None,
+        raise_errors: Literal[True] = False,
+    ) -> ListTag: ...
     @overload
     def pop_compound(
-        self, key: str | bytes, default: None = None, raise_errors: Literal[False] = False
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
     ) -> CompoundTag | None: ...
     @overload
     def pop_compound(
-        self, key: str | bytes, default: CompoundTag = None, raise_errors: Literal[False] = False
+        self,
+        key: str | bytes,
+        default: CompoundTag = None,
+        raise_errors: Literal[False] = False,
     ) -> CompoundTag: ...
     @overload
     def pop_compound(
-            self, key: str | bytes, default: CompoundTag | None = None, raise_errors: Literal[True] = False
+        self,
+        key: str | bytes,
+        default: CompoundTag | None = None,
+        raise_errors: Literal[True] = False,
     ) -> CompoundTag: ...
     @overload
     def pop_byte_array(
-        self, key: str | bytes, default: None = None, raise_errors: Literal[False] = False
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
     ) -> ByteArrayTag | None: ...
     @overload
     def pop_byte_array(
-        self, key: str | bytes, default: ByteArrayTag = None, raise_errors: Literal[False] = False
+        self,
+        key: str | bytes,
+        default: ByteArrayTag = None,
+        raise_errors: Literal[False] = False,
     ) -> ByteArrayTag: ...
     @overload
     def pop_byte_array(
-            self, key: str | bytes, default: ByteArrayTag | None = None, raise_errors: Literal[True] = False
+        self,
+        key: str | bytes,
+        default: ByteArrayTag | None = None,
+        raise_errors: Literal[True] = False,
     ) -> ByteArrayTag: ...
     @overload
     def pop_int_array(
-        self, key: str | bytes, default: None = None, raise_errors: Literal[False] = False
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
     ) -> IntArrayTag | None: ...
     @overload
     def pop_int_array(
-        self, key: str | bytes, default: IntArrayTag = None, raise_errors: Literal[False] = False
+        self,
+        key: str | bytes,
+        default: IntArrayTag = None,
+        raise_errors: Literal[False] = False,
     ) -> IntArrayTag: ...
     @overload
     def pop_int_array(
-            self, key: str | bytes, default: IntArrayTag | None = None, raise_errors: Literal[True] = False
+        self,
+        key: str | bytes,
+        default: IntArrayTag | None = None,
+        raise_errors: Literal[True] = False,
     ) -> IntArrayTag: ...
     @overload
     def pop_long_array(
-        self, key: str | bytes, default: None = None, raise_errors: Literal[False] = False
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
     ) -> LongArrayTag | None: ...
     @overload
     def pop_long_array(
-        self, key: str | bytes, default: LongArrayTag = None, raise_errors: Literal[False] = False
+        self,
+        key: str | bytes,
+        default: LongArrayTag = None,
+        raise_errors: Literal[False] = False,
     ) -> LongArrayTag: ...
     @overload
     def pop_long_array(
-            self, key: str | bytes, default: LongArrayTag | None = None, raise_errors: Literal[True] = False
+        self,
+        key: str | bytes,
+        default: LongArrayTag | None = None,
+        raise_errors: Literal[True] = False,
     ) -> LongArrayTag: ...
-
     def __setitem__(self, key: str | bytes, value: AnyNBT) -> None: ...
     def __delitem__(self, key: str | bytes) -> None: ...
     def __getitem__(self, key: str | bytes) -> AnyNBT: ...

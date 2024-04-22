@@ -409,10 +409,14 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 self.assertEqual(None, getattr(comp, f"get_{tag_name}")("key2"))
                 self.assertEqual(tag, getattr(comp, f"get_{tag_name}")("key", tag))
                 self.assertEqual(tag, getattr(comp, f"get_{tag_name}")("key2", tag))
-                self.assertEqual(tag, getattr(comp, f"get_{tag_name}")("key", raise_errors=True))
+                self.assertEqual(
+                    tag, getattr(comp, f"get_{tag_name}")("key", raise_errors=True)
+                )
                 with self.assertRaises(KeyError):
                     getattr(comp, f"get_{tag_name}")("key2", raise_errors=True)
-                self.assertEqual(tag, getattr(comp, f"get_{tag_name}")("key", tag, raise_errors=True))
+                self.assertEqual(
+                    tag, getattr(comp, f"get_{tag_name}")("key", tag, raise_errors=True)
+                )
                 with self.assertRaises(KeyError):
                     getattr(comp, f"get_{tag_name}")("key2", tag, raise_errors=True)
             for cls2 in self.nbt_types:
@@ -478,11 +482,16 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 with compound_manager(False) as comp:
                     self.assertEqual(tag, getattr(comp, f"pop_{tag_name}")("key2", tag))
                 with compound_manager(True) as comp:
-                    self.assertEqual(tag, getattr(comp, f"pop_{tag_name}")("key", raise_errors=True))
+                    self.assertEqual(
+                        tag, getattr(comp, f"pop_{tag_name}")("key", raise_errors=True)
+                    )
                 with compound_manager(False) as comp, self.assertRaises(KeyError):
                     getattr(comp, f"pop_{tag_name}")("key2", raise_errors=True)
                 with compound_manager(True) as comp:
-                    self.assertEqual(tag, getattr(comp, f"pop_{tag_name}")("key", tag, raise_errors=True))
+                    self.assertEqual(
+                        tag,
+                        getattr(comp, f"pop_{tag_name}")("key", tag, raise_errors=True),
+                    )
                 with compound_manager(False) as comp, self.assertRaises(KeyError):
                     getattr(comp, f"pop_{tag_name}")("key2", tag, raise_errors=True)
             for cls2 in self.nbt_types:
@@ -498,9 +507,13 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 with compound_manager(False) as comp:
                     self.assertEqual(None, getattr(comp, f"pop_{tag_name2}")("key2"))
                 with compound_manager(False) as comp:
-                    self.assertEqual(tag2, getattr(comp, f"pop_{tag_name2}")("key", tag2))
+                    self.assertEqual(
+                        tag2, getattr(comp, f"pop_{tag_name2}")("key", tag2)
+                    )
                 with compound_manager(False) as comp:
-                    self.assertEqual(tag2, getattr(comp, f"pop_{tag_name2}")("key2", tag2))
+                    self.assertEqual(
+                        tag2, getattr(comp, f"pop_{tag_name2}")("key2", tag2)
+                    )
                 with compound_manager(False) as comp, self.assertRaises(TypeError):
                     getattr(comp, f"pop_{tag_name2}")("key", raise_errors=True)
                 with compound_manager(False) as comp, self.assertRaises(KeyError):

@@ -10,7 +10,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Iterator, Iterable, KeysView, ItemsView, ValuesView
-from typing import Any, overload, Type, TypeVar
+from typing import Any, overload, Type, TypeVar, Literal
 
 from libcpp.string cimport string
 from libcpp cimport bool
@@ -464,6 +464,7 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         self,
         key: str | bytes,
         default: None = None,
+        raise_errors: Literal[False] = False,
     ) -> amulet_nbt.ByteTag | None:
         ...
 
@@ -472,31 +473,44 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         self,
         key: str | bytes,
         default: amulet_nbt.ByteTag,
+        raise_errors: Literal[False] = False,
     ) -> amulet_nbt.ByteTag:
         ...
 
-    def get_byte(self, string key: str | bytes, ByteTag default: amulet_nbt.ByteTag | None = None) -> amulet_nbt.ByteTag | None:
+    @overload
+    def get_byte(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.ByteTag | None,
+        raise_errors: Literal[True] = False,
+    ) -> amulet_nbt.ByteTag:
+        ...
+
+    def get_byte(self, string key: str | bytes, ByteTag default: amulet_nbt.ByteTag | None = None, bool raise_errors: bool = False) -> amulet_nbt.ByteTag | None:
         """Get the tag stored in key if it is a ByteTag.
     
         :param key: The key to get
         :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
         :return: The ByteTag.
-        :raises: KeyError if the key does not exist
-        :raises: TypeError if the stored type is not a ByteTag
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a ByteTag and raise_errors is True.
         """
-        cdef AbstractBaseTag tag
-        try:
-            tag = self[key]
-        except KeyError as e:
-            if default is None:
-                raise e
+        cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
+
+        if it == dereference(self.cpp).end():
+            if raise_errors:
+                raise KeyError(key)
             else:
                 return default
+
+        cdef AbstractBaseTag tag = wrap_node(&dereference(it).second)
+        if isinstance(tag, ByteTag):
+            return tag
+        elif raise_errors:
+            raise TypeError
         else:
-            if isinstance(tag, ByteTag):
-                return tag
-            else:
-                return default
+            return default
 
     def setdefault_byte(self, string key: str | bytes, ByteTag default: amulet_nbt.ByteTag | None = None) -> amulet_nbt.ByteTag:
         """Populate key if not defined or value is not ByteTag. Return the value stored.
@@ -504,9 +518,8 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         If default is a ByteTag then it will be stored under key else a default instance will be created.
 
         :param key: The key to populate and get
-        :param default: The default value to use
+        :param default: The default value to use. If None, the default ByteTag is used.
         :return: The ByteTag stored in key
-        :raises: TypeError if the input types are incorrect
         """
         cdef AbstractBaseTag tag
         try:
@@ -525,10 +538,68 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return tag
 
     @overload
+    def pop_byte(
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
+    ) -> amulet_nbt.ByteTag | None:
+        ...
+
+    @overload
+    def pop_byte(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.ByteTag,
+        raise_errors: Literal[False] = False,
+    ) -> amulet_nbt.ByteTag:
+        ...
+
+    @overload
+    def pop_byte(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.ByteTag | None,
+        raise_errors: Literal[True] = False,
+    ) -> amulet_nbt.ByteTag:
+        ...
+
+    def pop_byte(self, string key: str | bytes, ByteTag default: amulet_nbt.ByteTag = None, bool raise_errors: bool = False) -> amulet_nbt.ByteTag | None:
+        """Remove the specified key and return the corresponding value if it is a ByteTag.
+
+        If the key exists but the type is incorrect, the value will not be removed.
+
+        :param key: The key to get and remove
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The ByteTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a ByteTag and raise_errors is True.
+        """
+        cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
+
+        if it == dereference(self.cpp).end():
+            if raise_errors:
+                raise KeyError(key)
+            else:
+                return default
+
+        cdef AbstractBaseTag tag = wrap_node(&dereference(it).second)
+        if isinstance(tag, ByteTag):
+            dereference(self.cpp).erase(it)
+            return tag
+        elif raise_errors:
+            raise TypeError
+        else:
+            return default
+
+
+    @overload
     def get_short(
         self,
         key: str | bytes,
         default: None = None,
+        raise_errors: Literal[False] = False,
     ) -> amulet_nbt.ShortTag | None:
         ...
 
@@ -537,31 +608,44 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         self,
         key: str | bytes,
         default: amulet_nbt.ShortTag,
+        raise_errors: Literal[False] = False,
     ) -> amulet_nbt.ShortTag:
         ...
 
-    def get_short(self, string key: str | bytes, ShortTag default: amulet_nbt.ShortTag | None = None) -> amulet_nbt.ShortTag | None:
+    @overload
+    def get_short(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.ShortTag | None,
+        raise_errors: Literal[True] = False,
+    ) -> amulet_nbt.ShortTag:
+        ...
+
+    def get_short(self, string key: str | bytes, ShortTag default: amulet_nbt.ShortTag | None = None, bool raise_errors: bool = False) -> amulet_nbt.ShortTag | None:
         """Get the tag stored in key if it is a ShortTag.
     
         :param key: The key to get
         :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
         :return: The ShortTag.
-        :raises: KeyError if the key does not exist
-        :raises: TypeError if the stored type is not a ShortTag
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a ShortTag and raise_errors is True.
         """
-        cdef AbstractBaseTag tag
-        try:
-            tag = self[key]
-        except KeyError as e:
-            if default is None:
-                raise e
+        cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
+
+        if it == dereference(self.cpp).end():
+            if raise_errors:
+                raise KeyError(key)
             else:
                 return default
+
+        cdef AbstractBaseTag tag = wrap_node(&dereference(it).second)
+        if isinstance(tag, ShortTag):
+            return tag
+        elif raise_errors:
+            raise TypeError
         else:
-            if isinstance(tag, ShortTag):
-                return tag
-            else:
-                return default
+            return default
 
     def setdefault_short(self, string key: str | bytes, ShortTag default: amulet_nbt.ShortTag | None = None) -> amulet_nbt.ShortTag:
         """Populate key if not defined or value is not ShortTag. Return the value stored.
@@ -569,9 +653,8 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         If default is a ShortTag then it will be stored under key else a default instance will be created.
 
         :param key: The key to populate and get
-        :param default: The default value to use
+        :param default: The default value to use. If None, the default ShortTag is used.
         :return: The ShortTag stored in key
-        :raises: TypeError if the input types are incorrect
         """
         cdef AbstractBaseTag tag
         try:
@@ -590,10 +673,68 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return tag
 
     @overload
+    def pop_short(
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
+    ) -> amulet_nbt.ShortTag | None:
+        ...
+
+    @overload
+    def pop_short(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.ShortTag,
+        raise_errors: Literal[False] = False,
+    ) -> amulet_nbt.ShortTag:
+        ...
+
+    @overload
+    def pop_short(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.ShortTag | None,
+        raise_errors: Literal[True] = False,
+    ) -> amulet_nbt.ShortTag:
+        ...
+
+    def pop_short(self, string key: str | bytes, ShortTag default: amulet_nbt.ShortTag = None, bool raise_errors: bool = False) -> amulet_nbt.ShortTag | None:
+        """Remove the specified key and return the corresponding value if it is a ShortTag.
+
+        If the key exists but the type is incorrect, the value will not be removed.
+
+        :param key: The key to get and remove
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The ShortTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a ShortTag and raise_errors is True.
+        """
+        cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
+
+        if it == dereference(self.cpp).end():
+            if raise_errors:
+                raise KeyError(key)
+            else:
+                return default
+
+        cdef AbstractBaseTag tag = wrap_node(&dereference(it).second)
+        if isinstance(tag, ShortTag):
+            dereference(self.cpp).erase(it)
+            return tag
+        elif raise_errors:
+            raise TypeError
+        else:
+            return default
+
+
+    @overload
     def get_int(
         self,
         key: str | bytes,
         default: None = None,
+        raise_errors: Literal[False] = False,
     ) -> amulet_nbt.IntTag | None:
         ...
 
@@ -602,31 +743,44 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         self,
         key: str | bytes,
         default: amulet_nbt.IntTag,
+        raise_errors: Literal[False] = False,
     ) -> amulet_nbt.IntTag:
         ...
 
-    def get_int(self, string key: str | bytes, IntTag default: amulet_nbt.IntTag | None = None) -> amulet_nbt.IntTag | None:
+    @overload
+    def get_int(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.IntTag | None,
+        raise_errors: Literal[True] = False,
+    ) -> amulet_nbt.IntTag:
+        ...
+
+    def get_int(self, string key: str | bytes, IntTag default: amulet_nbt.IntTag | None = None, bool raise_errors: bool = False) -> amulet_nbt.IntTag | None:
         """Get the tag stored in key if it is a IntTag.
     
         :param key: The key to get
         :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
         :return: The IntTag.
-        :raises: KeyError if the key does not exist
-        :raises: TypeError if the stored type is not a IntTag
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a IntTag and raise_errors is True.
         """
-        cdef AbstractBaseTag tag
-        try:
-            tag = self[key]
-        except KeyError as e:
-            if default is None:
-                raise e
+        cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
+
+        if it == dereference(self.cpp).end():
+            if raise_errors:
+                raise KeyError(key)
             else:
                 return default
+
+        cdef AbstractBaseTag tag = wrap_node(&dereference(it).second)
+        if isinstance(tag, IntTag):
+            return tag
+        elif raise_errors:
+            raise TypeError
         else:
-            if isinstance(tag, IntTag):
-                return tag
-            else:
-                return default
+            return default
 
     def setdefault_int(self, string key: str | bytes, IntTag default: amulet_nbt.IntTag | None = None) -> amulet_nbt.IntTag:
         """Populate key if not defined or value is not IntTag. Return the value stored.
@@ -634,9 +788,8 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         If default is a IntTag then it will be stored under key else a default instance will be created.
 
         :param key: The key to populate and get
-        :param default: The default value to use
+        :param default: The default value to use. If None, the default IntTag is used.
         :return: The IntTag stored in key
-        :raises: TypeError if the input types are incorrect
         """
         cdef AbstractBaseTag tag
         try:
@@ -655,10 +808,68 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return tag
 
     @overload
+    def pop_int(
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
+    ) -> amulet_nbt.IntTag | None:
+        ...
+
+    @overload
+    def pop_int(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.IntTag,
+        raise_errors: Literal[False] = False,
+    ) -> amulet_nbt.IntTag:
+        ...
+
+    @overload
+    def pop_int(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.IntTag | None,
+        raise_errors: Literal[True] = False,
+    ) -> amulet_nbt.IntTag:
+        ...
+
+    def pop_int(self, string key: str | bytes, IntTag default: amulet_nbt.IntTag = None, bool raise_errors: bool = False) -> amulet_nbt.IntTag | None:
+        """Remove the specified key and return the corresponding value if it is a IntTag.
+
+        If the key exists but the type is incorrect, the value will not be removed.
+
+        :param key: The key to get and remove
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The IntTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a IntTag and raise_errors is True.
+        """
+        cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
+
+        if it == dereference(self.cpp).end():
+            if raise_errors:
+                raise KeyError(key)
+            else:
+                return default
+
+        cdef AbstractBaseTag tag = wrap_node(&dereference(it).second)
+        if isinstance(tag, IntTag):
+            dereference(self.cpp).erase(it)
+            return tag
+        elif raise_errors:
+            raise TypeError
+        else:
+            return default
+
+
+    @overload
     def get_long(
         self,
         key: str | bytes,
         default: None = None,
+        raise_errors: Literal[False] = False,
     ) -> amulet_nbt.LongTag | None:
         ...
 
@@ -667,31 +878,44 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         self,
         key: str | bytes,
         default: amulet_nbt.LongTag,
+        raise_errors: Literal[False] = False,
     ) -> amulet_nbt.LongTag:
         ...
 
-    def get_long(self, string key: str | bytes, LongTag default: amulet_nbt.LongTag | None = None) -> amulet_nbt.LongTag | None:
+    @overload
+    def get_long(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.LongTag | None,
+        raise_errors: Literal[True] = False,
+    ) -> amulet_nbt.LongTag:
+        ...
+
+    def get_long(self, string key: str | bytes, LongTag default: amulet_nbt.LongTag | None = None, bool raise_errors: bool = False) -> amulet_nbt.LongTag | None:
         """Get the tag stored in key if it is a LongTag.
     
         :param key: The key to get
         :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
         :return: The LongTag.
-        :raises: KeyError if the key does not exist
-        :raises: TypeError if the stored type is not a LongTag
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a LongTag and raise_errors is True.
         """
-        cdef AbstractBaseTag tag
-        try:
-            tag = self[key]
-        except KeyError as e:
-            if default is None:
-                raise e
+        cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
+
+        if it == dereference(self.cpp).end():
+            if raise_errors:
+                raise KeyError(key)
             else:
                 return default
+
+        cdef AbstractBaseTag tag = wrap_node(&dereference(it).second)
+        if isinstance(tag, LongTag):
+            return tag
+        elif raise_errors:
+            raise TypeError
         else:
-            if isinstance(tag, LongTag):
-                return tag
-            else:
-                return default
+            return default
 
     def setdefault_long(self, string key: str | bytes, LongTag default: amulet_nbt.LongTag | None = None) -> amulet_nbt.LongTag:
         """Populate key if not defined or value is not LongTag. Return the value stored.
@@ -699,9 +923,8 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         If default is a LongTag then it will be stored under key else a default instance will be created.
 
         :param key: The key to populate and get
-        :param default: The default value to use
+        :param default: The default value to use. If None, the default LongTag is used.
         :return: The LongTag stored in key
-        :raises: TypeError if the input types are incorrect
         """
         cdef AbstractBaseTag tag
         try:
@@ -720,10 +943,68 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return tag
 
     @overload
+    def pop_long(
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
+    ) -> amulet_nbt.LongTag | None:
+        ...
+
+    @overload
+    def pop_long(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.LongTag,
+        raise_errors: Literal[False] = False,
+    ) -> amulet_nbt.LongTag:
+        ...
+
+    @overload
+    def pop_long(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.LongTag | None,
+        raise_errors: Literal[True] = False,
+    ) -> amulet_nbt.LongTag:
+        ...
+
+    def pop_long(self, string key: str | bytes, LongTag default: amulet_nbt.LongTag = None, bool raise_errors: bool = False) -> amulet_nbt.LongTag | None:
+        """Remove the specified key and return the corresponding value if it is a LongTag.
+
+        If the key exists but the type is incorrect, the value will not be removed.
+
+        :param key: The key to get and remove
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The LongTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a LongTag and raise_errors is True.
+        """
+        cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
+
+        if it == dereference(self.cpp).end():
+            if raise_errors:
+                raise KeyError(key)
+            else:
+                return default
+
+        cdef AbstractBaseTag tag = wrap_node(&dereference(it).second)
+        if isinstance(tag, LongTag):
+            dereference(self.cpp).erase(it)
+            return tag
+        elif raise_errors:
+            raise TypeError
+        else:
+            return default
+
+
+    @overload
     def get_float(
         self,
         key: str | bytes,
         default: None = None,
+        raise_errors: Literal[False] = False,
     ) -> amulet_nbt.FloatTag | None:
         ...
 
@@ -732,31 +1013,44 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         self,
         key: str | bytes,
         default: amulet_nbt.FloatTag,
+        raise_errors: Literal[False] = False,
     ) -> amulet_nbt.FloatTag:
         ...
 
-    def get_float(self, string key: str | bytes, FloatTag default: amulet_nbt.FloatTag | None = None) -> amulet_nbt.FloatTag | None:
+    @overload
+    def get_float(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.FloatTag | None,
+        raise_errors: Literal[True] = False,
+    ) -> amulet_nbt.FloatTag:
+        ...
+
+    def get_float(self, string key: str | bytes, FloatTag default: amulet_nbt.FloatTag | None = None, bool raise_errors: bool = False) -> amulet_nbt.FloatTag | None:
         """Get the tag stored in key if it is a FloatTag.
     
         :param key: The key to get
         :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
         :return: The FloatTag.
-        :raises: KeyError if the key does not exist
-        :raises: TypeError if the stored type is not a FloatTag
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a FloatTag and raise_errors is True.
         """
-        cdef AbstractBaseTag tag
-        try:
-            tag = self[key]
-        except KeyError as e:
-            if default is None:
-                raise e
+        cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
+
+        if it == dereference(self.cpp).end():
+            if raise_errors:
+                raise KeyError(key)
             else:
                 return default
+
+        cdef AbstractBaseTag tag = wrap_node(&dereference(it).second)
+        if isinstance(tag, FloatTag):
+            return tag
+        elif raise_errors:
+            raise TypeError
         else:
-            if isinstance(tag, FloatTag):
-                return tag
-            else:
-                return default
+            return default
 
     def setdefault_float(self, string key: str | bytes, FloatTag default: amulet_nbt.FloatTag | None = None) -> amulet_nbt.FloatTag:
         """Populate key if not defined or value is not FloatTag. Return the value stored.
@@ -764,9 +1058,8 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         If default is a FloatTag then it will be stored under key else a default instance will be created.
 
         :param key: The key to populate and get
-        :param default: The default value to use
+        :param default: The default value to use. If None, the default FloatTag is used.
         :return: The FloatTag stored in key
-        :raises: TypeError if the input types are incorrect
         """
         cdef AbstractBaseTag tag
         try:
@@ -785,10 +1078,68 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return tag
 
     @overload
+    def pop_float(
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
+    ) -> amulet_nbt.FloatTag | None:
+        ...
+
+    @overload
+    def pop_float(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.FloatTag,
+        raise_errors: Literal[False] = False,
+    ) -> amulet_nbt.FloatTag:
+        ...
+
+    @overload
+    def pop_float(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.FloatTag | None,
+        raise_errors: Literal[True] = False,
+    ) -> amulet_nbt.FloatTag:
+        ...
+
+    def pop_float(self, string key: str | bytes, FloatTag default: amulet_nbt.FloatTag = None, bool raise_errors: bool = False) -> amulet_nbt.FloatTag | None:
+        """Remove the specified key and return the corresponding value if it is a FloatTag.
+
+        If the key exists but the type is incorrect, the value will not be removed.
+
+        :param key: The key to get and remove
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The FloatTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a FloatTag and raise_errors is True.
+        """
+        cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
+
+        if it == dereference(self.cpp).end():
+            if raise_errors:
+                raise KeyError(key)
+            else:
+                return default
+
+        cdef AbstractBaseTag tag = wrap_node(&dereference(it).second)
+        if isinstance(tag, FloatTag):
+            dereference(self.cpp).erase(it)
+            return tag
+        elif raise_errors:
+            raise TypeError
+        else:
+            return default
+
+
+    @overload
     def get_double(
         self,
         key: str | bytes,
         default: None = None,
+        raise_errors: Literal[False] = False,
     ) -> amulet_nbt.DoubleTag | None:
         ...
 
@@ -797,31 +1148,44 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         self,
         key: str | bytes,
         default: amulet_nbt.DoubleTag,
+        raise_errors: Literal[False] = False,
     ) -> amulet_nbt.DoubleTag:
         ...
 
-    def get_double(self, string key: str | bytes, DoubleTag default: amulet_nbt.DoubleTag | None = None) -> amulet_nbt.DoubleTag | None:
+    @overload
+    def get_double(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.DoubleTag | None,
+        raise_errors: Literal[True] = False,
+    ) -> amulet_nbt.DoubleTag:
+        ...
+
+    def get_double(self, string key: str | bytes, DoubleTag default: amulet_nbt.DoubleTag | None = None, bool raise_errors: bool = False) -> amulet_nbt.DoubleTag | None:
         """Get the tag stored in key if it is a DoubleTag.
     
         :param key: The key to get
         :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
         :return: The DoubleTag.
-        :raises: KeyError if the key does not exist
-        :raises: TypeError if the stored type is not a DoubleTag
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a DoubleTag and raise_errors is True.
         """
-        cdef AbstractBaseTag tag
-        try:
-            tag = self[key]
-        except KeyError as e:
-            if default is None:
-                raise e
+        cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
+
+        if it == dereference(self.cpp).end():
+            if raise_errors:
+                raise KeyError(key)
             else:
                 return default
+
+        cdef AbstractBaseTag tag = wrap_node(&dereference(it).second)
+        if isinstance(tag, DoubleTag):
+            return tag
+        elif raise_errors:
+            raise TypeError
         else:
-            if isinstance(tag, DoubleTag):
-                return tag
-            else:
-                return default
+            return default
 
     def setdefault_double(self, string key: str | bytes, DoubleTag default: amulet_nbt.DoubleTag | None = None) -> amulet_nbt.DoubleTag:
         """Populate key if not defined or value is not DoubleTag. Return the value stored.
@@ -829,9 +1193,8 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         If default is a DoubleTag then it will be stored under key else a default instance will be created.
 
         :param key: The key to populate and get
-        :param default: The default value to use
+        :param default: The default value to use. If None, the default DoubleTag is used.
         :return: The DoubleTag stored in key
-        :raises: TypeError if the input types are incorrect
         """
         cdef AbstractBaseTag tag
         try:
@@ -850,10 +1213,68 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return tag
 
     @overload
+    def pop_double(
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
+    ) -> amulet_nbt.DoubleTag | None:
+        ...
+
+    @overload
+    def pop_double(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.DoubleTag,
+        raise_errors: Literal[False] = False,
+    ) -> amulet_nbt.DoubleTag:
+        ...
+
+    @overload
+    def pop_double(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.DoubleTag | None,
+        raise_errors: Literal[True] = False,
+    ) -> amulet_nbt.DoubleTag:
+        ...
+
+    def pop_double(self, string key: str | bytes, DoubleTag default: amulet_nbt.DoubleTag = None, bool raise_errors: bool = False) -> amulet_nbt.DoubleTag | None:
+        """Remove the specified key and return the corresponding value if it is a DoubleTag.
+
+        If the key exists but the type is incorrect, the value will not be removed.
+
+        :param key: The key to get and remove
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The DoubleTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a DoubleTag and raise_errors is True.
+        """
+        cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
+
+        if it == dereference(self.cpp).end():
+            if raise_errors:
+                raise KeyError(key)
+            else:
+                return default
+
+        cdef AbstractBaseTag tag = wrap_node(&dereference(it).second)
+        if isinstance(tag, DoubleTag):
+            dereference(self.cpp).erase(it)
+            return tag
+        elif raise_errors:
+            raise TypeError
+        else:
+            return default
+
+
+    @overload
     def get_string(
         self,
         key: str | bytes,
         default: None = None,
+        raise_errors: Literal[False] = False,
     ) -> amulet_nbt.StringTag | None:
         ...
 
@@ -862,31 +1283,44 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         self,
         key: str | bytes,
         default: amulet_nbt.StringTag,
+        raise_errors: Literal[False] = False,
     ) -> amulet_nbt.StringTag:
         ...
 
-    def get_string(self, string key: str | bytes, StringTag default: amulet_nbt.StringTag | None = None) -> amulet_nbt.StringTag | None:
+    @overload
+    def get_string(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.StringTag | None,
+        raise_errors: Literal[True] = False,
+    ) -> amulet_nbt.StringTag:
+        ...
+
+    def get_string(self, string key: str | bytes, StringTag default: amulet_nbt.StringTag | None = None, bool raise_errors: bool = False) -> amulet_nbt.StringTag | None:
         """Get the tag stored in key if it is a StringTag.
     
         :param key: The key to get
         :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
         :return: The StringTag.
-        :raises: KeyError if the key does not exist
-        :raises: TypeError if the stored type is not a StringTag
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a StringTag and raise_errors is True.
         """
-        cdef AbstractBaseTag tag
-        try:
-            tag = self[key]
-        except KeyError as e:
-            if default is None:
-                raise e
+        cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
+
+        if it == dereference(self.cpp).end():
+            if raise_errors:
+                raise KeyError(key)
             else:
                 return default
+
+        cdef AbstractBaseTag tag = wrap_node(&dereference(it).second)
+        if isinstance(tag, StringTag):
+            return tag
+        elif raise_errors:
+            raise TypeError
         else:
-            if isinstance(tag, StringTag):
-                return tag
-            else:
-                return default
+            return default
 
     def setdefault_string(self, string key: str | bytes, StringTag default: amulet_nbt.StringTag | None = None) -> amulet_nbt.StringTag:
         """Populate key if not defined or value is not StringTag. Return the value stored.
@@ -894,9 +1328,8 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         If default is a StringTag then it will be stored under key else a default instance will be created.
 
         :param key: The key to populate and get
-        :param default: The default value to use
+        :param default: The default value to use. If None, the default StringTag is used.
         :return: The StringTag stored in key
-        :raises: TypeError if the input types are incorrect
         """
         cdef AbstractBaseTag tag
         try:
@@ -915,10 +1348,68 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return tag
 
     @overload
+    def pop_string(
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
+    ) -> amulet_nbt.StringTag | None:
+        ...
+
+    @overload
+    def pop_string(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.StringTag,
+        raise_errors: Literal[False] = False,
+    ) -> amulet_nbt.StringTag:
+        ...
+
+    @overload
+    def pop_string(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.StringTag | None,
+        raise_errors: Literal[True] = False,
+    ) -> amulet_nbt.StringTag:
+        ...
+
+    def pop_string(self, string key: str | bytes, StringTag default: amulet_nbt.StringTag = None, bool raise_errors: bool = False) -> amulet_nbt.StringTag | None:
+        """Remove the specified key and return the corresponding value if it is a StringTag.
+
+        If the key exists but the type is incorrect, the value will not be removed.
+
+        :param key: The key to get and remove
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The StringTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a StringTag and raise_errors is True.
+        """
+        cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
+
+        if it == dereference(self.cpp).end():
+            if raise_errors:
+                raise KeyError(key)
+            else:
+                return default
+
+        cdef AbstractBaseTag tag = wrap_node(&dereference(it).second)
+        if isinstance(tag, StringTag):
+            dereference(self.cpp).erase(it)
+            return tag
+        elif raise_errors:
+            raise TypeError
+        else:
+            return default
+
+
+    @overload
     def get_list(
         self,
         key: str | bytes,
         default: None = None,
+        raise_errors: Literal[False] = False,
     ) -> amulet_nbt.ListTag | None:
         ...
 
@@ -927,31 +1418,44 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         self,
         key: str | bytes,
         default: amulet_nbt.ListTag,
+        raise_errors: Literal[False] = False,
     ) -> amulet_nbt.ListTag:
         ...
 
-    def get_list(self, string key: str | bytes, ListTag default: amulet_nbt.ListTag | None = None) -> amulet_nbt.ListTag | None:
+    @overload
+    def get_list(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.ListTag | None,
+        raise_errors: Literal[True] = False,
+    ) -> amulet_nbt.ListTag:
+        ...
+
+    def get_list(self, string key: str | bytes, ListTag default: amulet_nbt.ListTag | None = None, bool raise_errors: bool = False) -> amulet_nbt.ListTag | None:
         """Get the tag stored in key if it is a ListTag.
     
         :param key: The key to get
         :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
         :return: The ListTag.
-        :raises: KeyError if the key does not exist
-        :raises: TypeError if the stored type is not a ListTag
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a ListTag and raise_errors is True.
         """
-        cdef AbstractBaseTag tag
-        try:
-            tag = self[key]
-        except KeyError as e:
-            if default is None:
-                raise e
+        cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
+
+        if it == dereference(self.cpp).end():
+            if raise_errors:
+                raise KeyError(key)
             else:
                 return default
+
+        cdef AbstractBaseTag tag = wrap_node(&dereference(it).second)
+        if isinstance(tag, ListTag):
+            return tag
+        elif raise_errors:
+            raise TypeError
         else:
-            if isinstance(tag, ListTag):
-                return tag
-            else:
-                return default
+            return default
 
     def setdefault_list(self, string key: str | bytes, ListTag default: amulet_nbt.ListTag | None = None) -> amulet_nbt.ListTag:
         """Populate key if not defined or value is not ListTag. Return the value stored.
@@ -959,9 +1463,8 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         If default is a ListTag then it will be stored under key else a default instance will be created.
 
         :param key: The key to populate and get
-        :param default: The default value to use
+        :param default: The default value to use. If None, the default ListTag is used.
         :return: The ListTag stored in key
-        :raises: TypeError if the input types are incorrect
         """
         cdef AbstractBaseTag tag
         try:
@@ -980,10 +1483,68 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return tag
 
     @overload
+    def pop_list(
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
+    ) -> amulet_nbt.ListTag | None:
+        ...
+
+    @overload
+    def pop_list(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.ListTag,
+        raise_errors: Literal[False] = False,
+    ) -> amulet_nbt.ListTag:
+        ...
+
+    @overload
+    def pop_list(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.ListTag | None,
+        raise_errors: Literal[True] = False,
+    ) -> amulet_nbt.ListTag:
+        ...
+
+    def pop_list(self, string key: str | bytes, ListTag default: amulet_nbt.ListTag = None, bool raise_errors: bool = False) -> amulet_nbt.ListTag | None:
+        """Remove the specified key and return the corresponding value if it is a ListTag.
+
+        If the key exists but the type is incorrect, the value will not be removed.
+
+        :param key: The key to get and remove
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The ListTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a ListTag and raise_errors is True.
+        """
+        cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
+
+        if it == dereference(self.cpp).end():
+            if raise_errors:
+                raise KeyError(key)
+            else:
+                return default
+
+        cdef AbstractBaseTag tag = wrap_node(&dereference(it).second)
+        if isinstance(tag, ListTag):
+            dereference(self.cpp).erase(it)
+            return tag
+        elif raise_errors:
+            raise TypeError
+        else:
+            return default
+
+
+    @overload
     def get_compound(
         self,
         key: str | bytes,
         default: None = None,
+        raise_errors: Literal[False] = False,
     ) -> amulet_nbt.CompoundTag | None:
         ...
 
@@ -992,31 +1553,44 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         self,
         key: str | bytes,
         default: amulet_nbt.CompoundTag,
+        raise_errors: Literal[False] = False,
     ) -> amulet_nbt.CompoundTag:
         ...
 
-    def get_compound(self, string key: str | bytes, CompoundTag default: amulet_nbt.CompoundTag | None = None) -> amulet_nbt.CompoundTag | None:
+    @overload
+    def get_compound(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.CompoundTag | None,
+        raise_errors: Literal[True] = False,
+    ) -> amulet_nbt.CompoundTag:
+        ...
+
+    def get_compound(self, string key: str | bytes, CompoundTag default: amulet_nbt.CompoundTag | None = None, bool raise_errors: bool = False) -> amulet_nbt.CompoundTag | None:
         """Get the tag stored in key if it is a CompoundTag.
     
         :param key: The key to get
         :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
         :return: The CompoundTag.
-        :raises: KeyError if the key does not exist
-        :raises: TypeError if the stored type is not a CompoundTag
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a CompoundTag and raise_errors is True.
         """
-        cdef AbstractBaseTag tag
-        try:
-            tag = self[key]
-        except KeyError as e:
-            if default is None:
-                raise e
+        cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
+
+        if it == dereference(self.cpp).end():
+            if raise_errors:
+                raise KeyError(key)
             else:
                 return default
+
+        cdef AbstractBaseTag tag = wrap_node(&dereference(it).second)
+        if isinstance(tag, CompoundTag):
+            return tag
+        elif raise_errors:
+            raise TypeError
         else:
-            if isinstance(tag, CompoundTag):
-                return tag
-            else:
-                return default
+            return default
 
     def setdefault_compound(self, string key: str | bytes, CompoundTag default: amulet_nbt.CompoundTag | None = None) -> amulet_nbt.CompoundTag:
         """Populate key if not defined or value is not CompoundTag. Return the value stored.
@@ -1024,9 +1598,8 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         If default is a CompoundTag then it will be stored under key else a default instance will be created.
 
         :param key: The key to populate and get
-        :param default: The default value to use
+        :param default: The default value to use. If None, the default CompoundTag is used.
         :return: The CompoundTag stored in key
-        :raises: TypeError if the input types are incorrect
         """
         cdef AbstractBaseTag tag
         try:
@@ -1045,10 +1618,68 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return tag
 
     @overload
+    def pop_compound(
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
+    ) -> amulet_nbt.CompoundTag | None:
+        ...
+
+    @overload
+    def pop_compound(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.CompoundTag,
+        raise_errors: Literal[False] = False,
+    ) -> amulet_nbt.CompoundTag:
+        ...
+
+    @overload
+    def pop_compound(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.CompoundTag | None,
+        raise_errors: Literal[True] = False,
+    ) -> amulet_nbt.CompoundTag:
+        ...
+
+    def pop_compound(self, string key: str | bytes, CompoundTag default: amulet_nbt.CompoundTag = None, bool raise_errors: bool = False) -> amulet_nbt.CompoundTag | None:
+        """Remove the specified key and return the corresponding value if it is a CompoundTag.
+
+        If the key exists but the type is incorrect, the value will not be removed.
+
+        :param key: The key to get and remove
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The CompoundTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a CompoundTag and raise_errors is True.
+        """
+        cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
+
+        if it == dereference(self.cpp).end():
+            if raise_errors:
+                raise KeyError(key)
+            else:
+                return default
+
+        cdef AbstractBaseTag tag = wrap_node(&dereference(it).second)
+        if isinstance(tag, CompoundTag):
+            dereference(self.cpp).erase(it)
+            return tag
+        elif raise_errors:
+            raise TypeError
+        else:
+            return default
+
+
+    @overload
     def get_byte_array(
         self,
         key: str | bytes,
         default: None = None,
+        raise_errors: Literal[False] = False,
     ) -> amulet_nbt.ByteArrayTag | None:
         ...
 
@@ -1057,31 +1688,44 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         self,
         key: str | bytes,
         default: amulet_nbt.ByteArrayTag,
+        raise_errors: Literal[False] = False,
     ) -> amulet_nbt.ByteArrayTag:
         ...
 
-    def get_byte_array(self, string key: str | bytes, ByteArrayTag default: amulet_nbt.ByteArrayTag | None = None) -> amulet_nbt.ByteArrayTag | None:
+    @overload
+    def get_byte_array(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.ByteArrayTag | None,
+        raise_errors: Literal[True] = False,
+    ) -> amulet_nbt.ByteArrayTag:
+        ...
+
+    def get_byte_array(self, string key: str | bytes, ByteArrayTag default: amulet_nbt.ByteArrayTag | None = None, bool raise_errors: bool = False) -> amulet_nbt.ByteArrayTag | None:
         """Get the tag stored in key if it is a ByteArrayTag.
     
         :param key: The key to get
         :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
         :return: The ByteArrayTag.
-        :raises: KeyError if the key does not exist
-        :raises: TypeError if the stored type is not a ByteArrayTag
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a ByteArrayTag and raise_errors is True.
         """
-        cdef AbstractBaseTag tag
-        try:
-            tag = self[key]
-        except KeyError as e:
-            if default is None:
-                raise e
+        cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
+
+        if it == dereference(self.cpp).end():
+            if raise_errors:
+                raise KeyError(key)
             else:
                 return default
+
+        cdef AbstractBaseTag tag = wrap_node(&dereference(it).second)
+        if isinstance(tag, ByteArrayTag):
+            return tag
+        elif raise_errors:
+            raise TypeError
         else:
-            if isinstance(tag, ByteArrayTag):
-                return tag
-            else:
-                return default
+            return default
 
     def setdefault_byte_array(self, string key: str | bytes, ByteArrayTag default: amulet_nbt.ByteArrayTag | None = None) -> amulet_nbt.ByteArrayTag:
         """Populate key if not defined or value is not ByteArrayTag. Return the value stored.
@@ -1089,9 +1733,8 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         If default is a ByteArrayTag then it will be stored under key else a default instance will be created.
 
         :param key: The key to populate and get
-        :param default: The default value to use
+        :param default: The default value to use. If None, the default ByteArrayTag is used.
         :return: The ByteArrayTag stored in key
-        :raises: TypeError if the input types are incorrect
         """
         cdef AbstractBaseTag tag
         try:
@@ -1110,10 +1753,68 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return tag
 
     @overload
+    def pop_byte_array(
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
+    ) -> amulet_nbt.ByteArrayTag | None:
+        ...
+
+    @overload
+    def pop_byte_array(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.ByteArrayTag,
+        raise_errors: Literal[False] = False,
+    ) -> amulet_nbt.ByteArrayTag:
+        ...
+
+    @overload
+    def pop_byte_array(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.ByteArrayTag | None,
+        raise_errors: Literal[True] = False,
+    ) -> amulet_nbt.ByteArrayTag:
+        ...
+
+    def pop_byte_array(self, string key: str | bytes, ByteArrayTag default: amulet_nbt.ByteArrayTag = None, bool raise_errors: bool = False) -> amulet_nbt.ByteArrayTag | None:
+        """Remove the specified key and return the corresponding value if it is a ByteArrayTag.
+
+        If the key exists but the type is incorrect, the value will not be removed.
+
+        :param key: The key to get and remove
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The ByteArrayTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a ByteArrayTag and raise_errors is True.
+        """
+        cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
+
+        if it == dereference(self.cpp).end():
+            if raise_errors:
+                raise KeyError(key)
+            else:
+                return default
+
+        cdef AbstractBaseTag tag = wrap_node(&dereference(it).second)
+        if isinstance(tag, ByteArrayTag):
+            dereference(self.cpp).erase(it)
+            return tag
+        elif raise_errors:
+            raise TypeError
+        else:
+            return default
+
+
+    @overload
     def get_int_array(
         self,
         key: str | bytes,
         default: None = None,
+        raise_errors: Literal[False] = False,
     ) -> amulet_nbt.IntArrayTag | None:
         ...
 
@@ -1122,31 +1823,44 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         self,
         key: str | bytes,
         default: amulet_nbt.IntArrayTag,
+        raise_errors: Literal[False] = False,
     ) -> amulet_nbt.IntArrayTag:
         ...
 
-    def get_int_array(self, string key: str | bytes, IntArrayTag default: amulet_nbt.IntArrayTag | None = None) -> amulet_nbt.IntArrayTag | None:
+    @overload
+    def get_int_array(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.IntArrayTag | None,
+        raise_errors: Literal[True] = False,
+    ) -> amulet_nbt.IntArrayTag:
+        ...
+
+    def get_int_array(self, string key: str | bytes, IntArrayTag default: amulet_nbt.IntArrayTag | None = None, bool raise_errors: bool = False) -> amulet_nbt.IntArrayTag | None:
         """Get the tag stored in key if it is a IntArrayTag.
     
         :param key: The key to get
         :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
         :return: The IntArrayTag.
-        :raises: KeyError if the key does not exist
-        :raises: TypeError if the stored type is not a IntArrayTag
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a IntArrayTag and raise_errors is True.
         """
-        cdef AbstractBaseTag tag
-        try:
-            tag = self[key]
-        except KeyError as e:
-            if default is None:
-                raise e
+        cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
+
+        if it == dereference(self.cpp).end():
+            if raise_errors:
+                raise KeyError(key)
             else:
                 return default
+
+        cdef AbstractBaseTag tag = wrap_node(&dereference(it).second)
+        if isinstance(tag, IntArrayTag):
+            return tag
+        elif raise_errors:
+            raise TypeError
         else:
-            if isinstance(tag, IntArrayTag):
-                return tag
-            else:
-                return default
+            return default
 
     def setdefault_int_array(self, string key: str | bytes, IntArrayTag default: amulet_nbt.IntArrayTag | None = None) -> amulet_nbt.IntArrayTag:
         """Populate key if not defined or value is not IntArrayTag. Return the value stored.
@@ -1154,9 +1868,8 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         If default is a IntArrayTag then it will be stored under key else a default instance will be created.
 
         :param key: The key to populate and get
-        :param default: The default value to use
+        :param default: The default value to use. If None, the default IntArrayTag is used.
         :return: The IntArrayTag stored in key
-        :raises: TypeError if the input types are incorrect
         """
         cdef AbstractBaseTag tag
         try:
@@ -1175,10 +1888,68 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return tag
 
     @overload
+    def pop_int_array(
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
+    ) -> amulet_nbt.IntArrayTag | None:
+        ...
+
+    @overload
+    def pop_int_array(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.IntArrayTag,
+        raise_errors: Literal[False] = False,
+    ) -> amulet_nbt.IntArrayTag:
+        ...
+
+    @overload
+    def pop_int_array(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.IntArrayTag | None,
+        raise_errors: Literal[True] = False,
+    ) -> amulet_nbt.IntArrayTag:
+        ...
+
+    def pop_int_array(self, string key: str | bytes, IntArrayTag default: amulet_nbt.IntArrayTag = None, bool raise_errors: bool = False) -> amulet_nbt.IntArrayTag | None:
+        """Remove the specified key and return the corresponding value if it is a IntArrayTag.
+
+        If the key exists but the type is incorrect, the value will not be removed.
+
+        :param key: The key to get and remove
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The IntArrayTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a IntArrayTag and raise_errors is True.
+        """
+        cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
+
+        if it == dereference(self.cpp).end():
+            if raise_errors:
+                raise KeyError(key)
+            else:
+                return default
+
+        cdef AbstractBaseTag tag = wrap_node(&dereference(it).second)
+        if isinstance(tag, IntArrayTag):
+            dereference(self.cpp).erase(it)
+            return tag
+        elif raise_errors:
+            raise TypeError
+        else:
+            return default
+
+
+    @overload
     def get_long_array(
         self,
         key: str | bytes,
         default: None = None,
+        raise_errors: Literal[False] = False,
     ) -> amulet_nbt.LongArrayTag | None:
         ...
 
@@ -1187,31 +1958,44 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         self,
         key: str | bytes,
         default: amulet_nbt.LongArrayTag,
+        raise_errors: Literal[False] = False,
     ) -> amulet_nbt.LongArrayTag:
         ...
 
-    def get_long_array(self, string key: str | bytes, LongArrayTag default: amulet_nbt.LongArrayTag | None = None) -> amulet_nbt.LongArrayTag | None:
+    @overload
+    def get_long_array(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.LongArrayTag | None,
+        raise_errors: Literal[True] = False,
+    ) -> amulet_nbt.LongArrayTag:
+        ...
+
+    def get_long_array(self, string key: str | bytes, LongArrayTag default: amulet_nbt.LongArrayTag | None = None, bool raise_errors: bool = False) -> amulet_nbt.LongArrayTag | None:
         """Get the tag stored in key if it is a LongArrayTag.
     
         :param key: The key to get
         :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
         :return: The LongArrayTag.
-        :raises: KeyError if the key does not exist
-        :raises: TypeError if the stored type is not a LongArrayTag
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a LongArrayTag and raise_errors is True.
         """
-        cdef AbstractBaseTag tag
-        try:
-            tag = self[key]
-        except KeyError as e:
-            if default is None:
-                raise e
+        cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
+
+        if it == dereference(self.cpp).end():
+            if raise_errors:
+                raise KeyError(key)
             else:
                 return default
+
+        cdef AbstractBaseTag tag = wrap_node(&dereference(it).second)
+        if isinstance(tag, LongArrayTag):
+            return tag
+        elif raise_errors:
+            raise TypeError
         else:
-            if isinstance(tag, LongArrayTag):
-                return tag
-            else:
-                return default
+            return default
 
     def setdefault_long_array(self, string key: str | bytes, LongArrayTag default: amulet_nbt.LongArrayTag | None = None) -> amulet_nbt.LongArrayTag:
         """Populate key if not defined or value is not LongArrayTag. Return the value stored.
@@ -1219,9 +2003,8 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         If default is a LongArrayTag then it will be stored under key else a default instance will be created.
 
         :param key: The key to populate and get
-        :param default: The default value to use
+        :param default: The default value to use. If None, the default LongArrayTag is used.
         :return: The LongArrayTag stored in key
-        :raises: TypeError if the input types are incorrect
         """
         cdef AbstractBaseTag tag
         try:
@@ -1238,3 +2021,60 @@ cdef class CompoundTag(AbstractBaseMutableTag):
                 else:
                     tag = self[key] = default
         return tag
+
+    @overload
+    def pop_long_array(
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
+    ) -> amulet_nbt.LongArrayTag | None:
+        ...
+
+    @overload
+    def pop_long_array(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.LongArrayTag,
+        raise_errors: Literal[False] = False,
+    ) -> amulet_nbt.LongArrayTag:
+        ...
+
+    @overload
+    def pop_long_array(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.LongArrayTag | None,
+        raise_errors: Literal[True] = False,
+    ) -> amulet_nbt.LongArrayTag:
+        ...
+
+    def pop_long_array(self, string key: str | bytes, LongArrayTag default: amulet_nbt.LongArrayTag = None, bool raise_errors: bool = False) -> amulet_nbt.LongArrayTag | None:
+        """Remove the specified key and return the corresponding value if it is a LongArrayTag.
+
+        If the key exists but the type is incorrect, the value will not be removed.
+
+        :param key: The key to get and remove
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The LongArrayTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a LongArrayTag and raise_errors is True.
+        """
+        cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
+
+        if it == dereference(self.cpp).end():
+            if raise_errors:
+                raise KeyError(key)
+            else:
+                return default
+
+        cdef AbstractBaseTag tag = wrap_node(&dereference(it).second)
+        if isinstance(tag, LongArrayTag):
+            dereference(self.cpp).erase(it)
+            return tag
+        elif raise_errors:
+            raise TypeError
+        else:
+            return default
+

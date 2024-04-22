@@ -12,7 +12,7 @@ from template import include
 from __future__ import annotations
 
 from collections.abc import Mapping, Iterator, Iterable, KeysView, ItemsView, ValuesView
-from typing import Any, overload, Type, TypeVar
+from typing import Any, overload, Type, TypeVar, Literal
 
 from libcpp.string cimport string
 from libcpp cimport bool

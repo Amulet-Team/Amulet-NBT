@@ -3,6 +3,7 @@ import pickle
 import itertools
 import unittest
 import faulthandler
+from contextlib import contextmanager
 
 faulthandler.enable()
 
@@ -405,15 +406,35 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
             comp = CompoundTag(key=tag)
             with self.subTest(cls=cls):
                 self.assertEqual(tag, getattr(comp, f"get_{tag_name}")("key"))
-                self.assertEqual(tag, getattr(comp, f"get_{tag_name}")("key", cls()))
-                with self.assertRaises(KeyError):
-                    getattr(comp, f"get_{tag_name}")("key2")
+                self.assertEqual(None, getattr(comp, f"get_{tag_name}")("key2"))
+                self.assertEqual(tag, getattr(comp, f"get_{tag_name}")("key", tag))
                 self.assertEqual(tag, getattr(comp, f"get_{tag_name}")("key2", tag))
+                self.assertEqual(tag, getattr(comp, f"get_{tag_name}")("key", raise_errors=True))
+                with self.assertRaises(KeyError):
+                    getattr(comp, f"get_{tag_name}")("key2", raise_errors=True)
+                self.assertEqual(tag, getattr(comp, f"get_{tag_name}")("key", tag, raise_errors=True))
+                with self.assertRaises(KeyError):
+                    getattr(comp, f"get_{tag_name}")("key2", tag, raise_errors=True)
             for cls2 in self.nbt_types:
                 tag_name2 = TagNameMap[cls2]
+                tag2 = cls2()
                 if cls is cls2:
                     continue
-                self.assertIs(None, getattr(comp, f"get_{tag_name2}")("key"))
+
+                with self.assertRaises(TypeError):
+                    getattr(comp, f"get_{tag_name}")("key", tag2)
+                self.assertEqual(None, getattr(comp, f"get_{tag_name2}")("key"))
+                self.assertEqual(None, getattr(comp, f"get_{tag_name2}")("key2"))
+                self.assertEqual(tag2, getattr(comp, f"get_{tag_name2}")("key", tag2))
+                self.assertEqual(tag2, getattr(comp, f"get_{tag_name2}")("key2", tag2))
+                with self.assertRaises(TypeError):
+                    getattr(comp, f"get_{tag_name2}")("key", raise_errors=True)
+                with self.assertRaises(KeyError):
+                    getattr(comp, f"get_{tag_name2}")("key2", raise_errors=True)
+                with self.assertRaises(TypeError):
+                    getattr(comp, f"get_{tag_name2}")("key", tag2, raise_errors=True)
+                with self.assertRaises(KeyError):
+                    getattr(comp, f"get_{tag_name2}")("key2", tag2, raise_errors=True)
 
     def test_pop(self) -> None:
         tag = CompoundTag(
@@ -433,6 +454,61 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
             tag.pop("key1")
         self.assertIs(None, tag.pop("key1", None))
         self.assertEqual(StringTag("val1"), tag.pop("key1", StringTag("val1")))
+
+    def test_pop_typed(self) -> None:
+        @contextmanager
+        def compound_manager(pops: bool):
+            comp_ = CompoundTag(key=tag)
+            yield comp_
+            if pops:
+                self.assertNotIn("key", comp_)
+            else:
+                self.assertIn("key", comp_)
+
+        for cls in self.nbt_types:
+            tag_name = TagNameMap[cls]
+            tag = cls()
+            with self.subTest(cls=cls):
+                with compound_manager(True) as comp:
+                    self.assertEqual(tag, getattr(comp, f"pop_{tag_name}")("key"))
+                with compound_manager(False) as comp:
+                    self.assertEqual(None, getattr(comp, f"pop_{tag_name}")("key2"))
+                with compound_manager(True) as comp:
+                    self.assertEqual(tag, getattr(comp, f"pop_{tag_name}")("key", tag))
+                with compound_manager(False) as comp:
+                    self.assertEqual(tag, getattr(comp, f"pop_{tag_name}")("key2", tag))
+                with compound_manager(True) as comp:
+                    self.assertEqual(tag, getattr(comp, f"pop_{tag_name}")("key", raise_errors=True))
+                with compound_manager(False) as comp, self.assertRaises(KeyError):
+                    getattr(comp, f"pop_{tag_name}")("key2", raise_errors=True)
+                with compound_manager(True) as comp:
+                    self.assertEqual(tag, getattr(comp, f"pop_{tag_name}")("key", tag, raise_errors=True))
+                with compound_manager(False) as comp, self.assertRaises(KeyError):
+                    getattr(comp, f"pop_{tag_name}")("key2", tag, raise_errors=True)
+            for cls2 in self.nbt_types:
+                tag_name2 = TagNameMap[cls2]
+                tag2 = cls2()
+                if cls is cls2:
+                    continue
+
+                with compound_manager(False) as comp, self.assertRaises(TypeError):
+                    getattr(comp, f"pop_{tag_name}")("key", tag2)
+                with compound_manager(False) as comp:
+                    self.assertEqual(None, getattr(comp, f"pop_{tag_name2}")("key"))
+                with compound_manager(False) as comp:
+                    self.assertEqual(None, getattr(comp, f"pop_{tag_name2}")("key2"))
+                with compound_manager(False) as comp:
+                    self.assertEqual(tag2, getattr(comp, f"pop_{tag_name2}")("key", tag2))
+                with compound_manager(False) as comp:
+                    self.assertEqual(tag2, getattr(comp, f"pop_{tag_name2}")("key2", tag2))
+                with compound_manager(False) as comp, self.assertRaises(TypeError):
+                    getattr(comp, f"pop_{tag_name2}")("key", raise_errors=True)
+                with compound_manager(False) as comp, self.assertRaises(KeyError):
+                    getattr(comp, f"pop_{tag_name2}")("key2", raise_errors=True)
+                with compound_manager(False) as comp, self.assertRaises(TypeError):
+                    getattr(comp, f"pop_{tag_name2}")("key", tag2, raise_errors=True)
+                with compound_manager(False) as comp, self.assertRaises(KeyError):
+                    getattr(comp, f"pop_{tag_name2}")("key2", tag2, raise_errors=True)
 
     def test_setitem(self) -> None:
         tag = CompoundTag()

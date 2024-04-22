@@ -3,6 +3,7 @@
         self,
         key: str | bytes,
         default: None = None,
+        raise_errors: Literal[False] = False,
     ) -> amulet_nbt.{{py_cls}} | None:
         ...
 
@@ -11,31 +12,44 @@
         self,
         key: str | bytes,
         default: amulet_nbt.{{py_cls}},
+        raise_errors: Literal[False] = False,
     ) -> amulet_nbt.{{py_cls}}:
         ...
 
-    def get_{{tag_name}}(self, string key: str | bytes, {{py_cls}} default: amulet_nbt.{{py_cls}} | None = None) -> amulet_nbt.{{py_cls}} | None:
+    @overload
+    def get_{{tag_name}}(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.{{py_cls}} | None,
+        raise_errors: Literal[True] = False,
+    ) -> amulet_nbt.{{py_cls}}:
+        ...
+
+    def get_{{tag_name}}(self, string key: str | bytes, {{py_cls}} default: amulet_nbt.{{py_cls}} | None = None, bool raise_errors: bool = False) -> amulet_nbt.{{py_cls}} | None:
         """Get the tag stored in key if it is a {{py_cls}}.
     
         :param key: The key to get
         :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
         :return: The {{py_cls}}.
-        :raises: KeyError if the key does not exist
-        :raises: TypeError if the stored type is not a {{py_cls}}
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a {{py_cls}} and raise_errors is True.
         """
-        cdef AbstractBaseTag tag
-        try:
-            tag = self[key]
-        except KeyError as e:
-            if default is None:
-                raise e
+        cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
+
+        if it == dereference(self.cpp).end():
+            if raise_errors:
+                raise KeyError(key)
             else:
                 return default
+
+        cdef AbstractBaseTag tag = wrap_node(&dereference(it).second)
+        if isinstance(tag, {{py_cls}}):
+            return tag
+        elif raise_errors:
+            raise TypeError
         else:
-            if isinstance(tag, {{py_cls}}):
-                return tag
-            else:
-                return default
+            return default
 
     def setdefault_{{tag_name}}(self, string key: str | bytes, {{py_cls}} default: amulet_nbt.{{py_cls}} | None = None) -> amulet_nbt.{{py_cls}}:
         """Populate key if not defined or value is not {{py_cls}}. Return the value stored.
@@ -43,9 +57,8 @@
         If default is a {{py_cls}} then it will be stored under key else a default instance will be created.
 
         :param key: The key to populate and get
-        :param default: The default value to use
+        :param default: The default value to use. If None, the default {{py_cls}} is used.
         :return: The {{py_cls}} stored in key
-        :raises: TypeError if the input types are incorrect
         """
         cdef AbstractBaseTag tag
         try:
@@ -62,3 +75,59 @@
                 else:
                     tag = self[key] = default
         return tag
+
+    @overload
+    def pop_{{tag_name}}(
+        self,
+        key: str | bytes,
+        default: None = None,
+        raise_errors: Literal[False] = False,
+    ) -> amulet_nbt.{{py_cls}} | None:
+        ...
+
+    @overload
+    def pop_{{tag_name}}(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.{{py_cls}},
+        raise_errors: Literal[False] = False,
+    ) -> amulet_nbt.{{py_cls}}:
+        ...
+
+    @overload
+    def pop_{{tag_name}}(
+        self,
+        key: str | bytes,
+        default: amulet_nbt.{{py_cls}} | None,
+        raise_errors: Literal[True] = False,
+    ) -> amulet_nbt.{{py_cls}}:
+        ...
+
+    def pop_{{tag_name}}(self, string key: str | bytes, {{py_cls}} default: amulet_nbt.{{py_cls}} = None, bool raise_errors: bool = False) -> amulet_nbt.{{py_cls}} | None:
+        """Remove the specified key and return the corresponding value if it is a {{py_cls}}.
+
+        If the key exists but the type is incorrect, the value will not be removed.
+
+        :param key: The key to get and remove
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The {{py_cls}}.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a {{py_cls}} and raise_errors is True.
+        """
+        cdef CCompoundTag.iterator it = dereference(self.cpp).find(key)
+
+        if it == dereference(self.cpp).end():
+            if raise_errors:
+                raise KeyError(key)
+            else:
+                return default
+
+        cdef AbstractBaseTag tag = wrap_node(&dereference(it).second)
+        if isinstance(tag, {{py_cls}}):
+            dereference(self.cpp).erase(it)
+            return tag
+        elif raise_errors:
+            raise TypeError
+        else:
+            return default

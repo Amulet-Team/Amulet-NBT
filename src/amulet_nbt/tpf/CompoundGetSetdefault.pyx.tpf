@@ -1,31 +1,17 @@
     @overload
-    def get_{{tag_name}}(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.{{py_cls}} | None:
-        ...
-
+    def get_{{tag_name}}(self, key: str | bytes) -> amulet_nbt.{{py_cls}} | None: ...
     @overload
-    def get_{{tag_name}}(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.{{py_cls}},
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.{{py_cls}}:
-        ...
-
+    def get_{{tag_name}}(self, key: str | bytes, default: _T) -> amulet_nbt.{{py_cls}} | _T: ...
     @overload
-    def get_{{tag_name}}(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.{{py_cls}} | None,
-        raise_errors: Literal[True] = False,
-    ) -> amulet_nbt.{{py_cls}}:
-        ...
+    def get_{{tag_name}}(self, key: str | bytes, default: _T, raise_errors: Literal[False]) -> amulet_nbt.{{py_cls}} | _T: ...
+    @overload
+    def get_{{tag_name}}(self, key: str | bytes, default: _T, raise_errors: Literal[True]) -> amulet_nbt.{{py_cls}}: ...
+    @overload
+    def get_{{tag_name}}(self, key: str | bytes, *, raise_errors: Literal[False]) -> amulet_nbt.{{py_cls}} | None: ...
+    @overload
+    def get_{{tag_name}}(self, key: str | bytes, *, raise_errors: Literal[True]) -> amulet_nbt.{{py_cls}}: ...
 
-    def get_{{tag_name}}(self, string key: str | bytes, {{py_cls}} default: amulet_nbt.{{py_cls}} | None = None, bool raise_errors: bool = False) -> amulet_nbt.{{py_cls}} | None:
+    def get_{{tag_name}}(self, string key: str | bytes, object default: _T = None, bool raise_errors: bool = False) -> amulet_nbt.{{py_cls}} | _T:
         """Get the tag stored in key if it is a {{py_cls}}.
     
         :param key: The key to get
@@ -77,33 +63,19 @@
         return tag
 
     @overload
-    def pop_{{tag_name}}(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.{{py_cls}} | None:
-        ...
-
+    def pop_{{tag_name}}(self, key: str | bytes) -> amulet_nbt.{{py_cls}} | None: ...
     @overload
-    def pop_{{tag_name}}(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.{{py_cls}},
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.{{py_cls}}:
-        ...
-
+    def pop_{{tag_name}}(self, key: str | bytes, default: _T) -> amulet_nbt.{{py_cls}} | _T: ...
     @overload
-    def pop_{{tag_name}}(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.{{py_cls}} | None,
-        raise_errors: Literal[True] = False,
-    ) -> amulet_nbt.{{py_cls}}:
-        ...
+    def pop_{{tag_name}}(self, key: str | bytes, default: _T, raise_errors: Literal[False]) -> amulet_nbt.{{py_cls}} | _T: ...
+    @overload
+    def pop_{{tag_name}}(self, key: str | bytes, default: _T, raise_errors: Literal[True]) -> amulet_nbt.{{py_cls}}: ...
+    @overload
+    def pop_{{tag_name}}(self, key: str | bytes, *, raise_errors: Literal[False]) -> amulet_nbt.{{py_cls}} | None: ...
+    @overload
+    def pop_{{tag_name}}(self, key: str | bytes, *, raise_errors: Literal[True]) -> amulet_nbt.{{py_cls}}: ...
 
-    def pop_{{tag_name}}(self, string key: str | bytes, {{py_cls}} default: amulet_nbt.{{py_cls}} = None, bool raise_errors: bool = False) -> amulet_nbt.{{py_cls}} | None:
+    def pop_{{tag_name}}(self, string key: str | bytes, object default: _T = None, bool raise_errors: bool = False) -> amulet_nbt.{{py_cls}} | _T:
         """Remove the specified key and return the corresponding value if it is a {{py_cls}}.
 
         If the key exists but the type is incorrect, the value will not be removed.

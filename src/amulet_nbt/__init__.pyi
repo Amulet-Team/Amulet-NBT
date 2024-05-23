@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import (
     Union,
     Any,
@@ -13,10 +14,13 @@ from typing import (
     Mapping,
     Optional,
     Literal,
+    TypeAlias,
 )
 from collections.abc import MutableSequence, MutableMapping
 import numpy
 from numpy.typing import NDArray, ArrayLike
+
+_T = TypeVar("_T")
 
 __version__: str
 __major__: int
@@ -191,7 +195,6 @@ class AbstractBaseTag(AbstractBase):
         >>> tag1 == tag2  # False
         >>> tag1 == tag3  # False
         """
-        ...
 
     def __repr__(self) -> str:
         """A string representation of the object to show how it can be constructed.
@@ -204,7 +207,7 @@ class AbstractBaseTag(AbstractBase):
     def __str__(self) -> str:
         """A string representation of the object."""
 
-    def __reduce__(self): ...
+    def __reduce__(self) -> Any: ...
     def copy(self) -> Self:
         """Return a shallow copy of the class"""
 
@@ -217,7 +220,7 @@ class AbstractBaseTag(AbstractBase):
         >>> tag2 = copy.copy(tag)
         """
 
-    def __deepcopy__(self, memo=None) -> Self:
+    def __deepcopy__(self, memo: dict[int, object] | None = None) -> Self:
         """A deep copy of the class
 
         >>> import copy
@@ -235,7 +238,7 @@ class AbstractBaseImmutableTag(AbstractBaseTag):
 class AbstractBaseMutableTag(AbstractBaseTag):
     """Abstract Base Class for all mutable Tag classes"""
 
-    __hash__ = None
+    __hash__ = None  # type: ignore
 
 class AbstractBaseNumericTag(AbstractBaseImmutableTag):
     """Abstract Base Class for all numeric Tag classes"""
@@ -341,7 +344,7 @@ class ListTag(AbstractBaseMutableTag, MutableSequence[AnyNBTT]):
     @overload
     def __init__(self, value: Iterable[AnyNBTT] = ()) -> None: ...
     @overload
-    def __init__(self, value: Iterable[AnyNBTT] = (), element_tag_id=1) -> None: ...
+    def __init__(self, value: Iterable[AnyNBTT] = (), element_tag_id: int = 1) -> None: ...
     @property
     def py_list(self) -> list[AnyNBTT]:
         """A python list representation of the class.
@@ -389,15 +392,14 @@ class ListTag(AbstractBaseMutableTag, MutableSequence[AnyNBTT]):
     def get_byte_array(self, index: int) -> ByteArrayTag: ...
     def get_int_array(self, index: int) -> IntArrayTag: ...
     def get_long_array(self, index: int) -> LongArrayTag: ...
-    def insert(self, index: int, value: AnyNBT) -> None:
-        pass
+    def insert(self, index: int, value: AnyNBTT) -> None: ...
 
     @overload
-    def __getitem__(self, index: int) -> AnyNBT: ...
+    def __getitem__(self, index: int) -> AnyNBTT: ...
     @overload
-    def __getitem__(self, index: slice) -> list[AnyNBT]: ...
+    def __getitem__(self, index: slice) -> list[AnyNBTT]: ...
     @overload
-    def __setitem__(self, index: int, value: AnyNBT) -> None: ...
+    def __setitem__(self, index: int, value: AnyNBTT) -> None: ...
     @overload
     def __setitem__(self, index: slice, value: Iterable[AbstractBaseTag]) -> None: ...
     @overload
@@ -409,23 +411,28 @@ class ListTag(AbstractBaseMutableTag, MutableSequence[AnyNBTT]):
 
 _TagT = TypeVar("_TagT", bound=AbstractBaseTag)
 
-class CompoundTag(AbstractBaseMutableTag, MutableMapping[str | bytes, AbstractBaseTag]):
+class CompoundTag(AbstractBaseMutableTag, MutableMapping[str | bytes, AnyNBT]):
     def __init__(
         self,
         value: (
-            Mapping[str | bytes, AbstractBaseTag]
-            | Iterable[tuple[str | bytes, AbstractBaseTag]]
-            | Mapping[str, AbstractBaseTag]
-            | Mapping[bytes, AbstractBaseTag]
+            Mapping[str | bytes, AnyNBT]
+            | Iterable[tuple[str | bytes, AnyNBT]]
+            | Mapping[str, AnyNBT]
+            | Mapping[bytes, AnyNBT]
         ) = (),
-        **kwvals: AbstractBaseTag,
+        **kwvals: AnyNBT,
     ): ...
     @property
     def py_dict(self) -> dict[str, AnyNBT]:
         """A shallow copy of the CompoundTag as a python dictionary."""
-
     @overload
-    def get(self, key: str | bytes, default: None = None) -> AnyNBT | None:
+    def get(self, key: str | bytes) -> AnyNBT | None: ...
+    @overload
+    def get(self, key: str | bytes, default: _T) -> AnyNBT | _T: ...
+    @overload
+    def get(self, key: str | bytes, *, cls: Type[_TagT]) -> _TagT | None: ...
+    @overload
+    def get(self, key: str | bytes, default: _T, cls: Type[_TagT]) -> _TagT | _T:
         """Get an item from the CompoundTag.
 
         :param key: The key to get
@@ -435,277 +442,154 @@ class CompoundTag(AbstractBaseMutableTag, MutableMapping[str | bytes, AbstractBa
         :raises: KeyError if the key does not exist.
         :raises: TypeError if the stored type is not a subclass of cls.
         """
+    @classmethod
+    def fromkeys(cls, keys: Iterable[str | bytes], value: AnyNBT) -> Self: ...
 
     @overload
-    def get(self, key: str | bytes, default: _TagT = None) -> AnyNBT: ...
+    def get_byte(self, key: str | bytes) -> ByteTag | None: ...
     @overload
-    def get(
-        self,
-        key: str | bytes,
-        default: None = None,
-        cls: Type[_TagT] = AbstractBaseTag,
-    ) -> _TagT | None: ...
+    def get_byte(self, key: str | bytes, default: _T) -> ByteTag | _T: ...
     @overload
-    def get(
-        self,
-        key: str | bytes,
-        default: _TagT = None,
-        cls: Type[_TagT] = AbstractBaseTag,
-    ) -> _TagT: ...
-    @staticmethod
-    def fromkeys(keys: Iterable[str | bytes], value: AnyNBT = None): ...
+    def get_byte(self, key: str | bytes, default: _T, raise_errors: Literal[False]) -> ByteTag | _T: ...
     @overload
-    def get_byte(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> ByteTag | None: ...
+    def get_byte(self, key: str | bytes, default: _T, raise_errors: Literal[True]) -> ByteTag: ...
     @overload
-    def get_byte(
-        self,
-        key: str | bytes,
-        default: ByteTag = None,
-        raise_errors: Literal[False] = False,
-    ) -> ByteTag: ...
+    def get_byte(self, key: str | bytes, *, raise_errors: Literal[False]) -> ByteTag | None: ...
     @overload
-    def get_byte(
-        self,
-        key: str | bytes,
-        default: ByteTag | None = None,
-        raise_errors: Literal[True] = False,
-    ) -> ByteTag: ...
+    def get_byte(self, key: str | bytes, *, raise_errors: Literal[True]) -> ByteTag: ...
     @overload
-    def get_short(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> ShortTag | None: ...
+    def get_short(self, key: str | bytes) -> ShortTag | None: ...
     @overload
-    def get_short(
-        self,
-        key: str | bytes,
-        default: ShortTag = None,
-        raise_errors: Literal[False] = False,
-    ) -> ShortTag: ...
+    def get_short(self, key: str | bytes, default: _T) -> ShortTag | _T: ...
     @overload
-    def get_short(
-        self,
-        key: str | bytes,
-        default: ShortTag | None = None,
-        raise_errors: Literal[True] = False,
-    ) -> ShortTag: ...
+    def get_short(self, key: str | bytes, default: _T, raise_errors: Literal[False]) -> ShortTag | _T: ...
     @overload
-    def get_int(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> IntTag | None: ...
+    def get_short(self, key: str | bytes, default: _T, raise_errors: Literal[True]) -> ShortTag: ...
     @overload
-    def get_int(
-        self,
-        key: str | bytes,
-        default: IntTag = None,
-        raise_errors: Literal[False] = False,
-    ) -> IntTag: ...
+    def get_short(self, key: str | bytes, *, raise_errors: Literal[False]) -> ShortTag | None: ...
     @overload
-    def get_int(
-        self,
-        key: str | bytes,
-        default: IntTag | None = None,
-        raise_errors: Literal[True] = False,
-    ) -> IntTag: ...
+    def get_short(self, key: str | bytes, *, raise_errors: Literal[True]) -> ShortTag: ...
     @overload
-    def get_long(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> LongTag | None: ...
+    def get_int(self, key: str | bytes) -> IntTag | None: ...
     @overload
-    def get_long(
-        self,
-        key: str | bytes,
-        default: LongTag = None,
-        raise_errors: Literal[False] = False,
-    ) -> LongTag: ...
+    def get_int(self, key: str | bytes, default: _T) -> IntTag | _T: ...
     @overload
-    def get_long(
-        self,
-        key: str | bytes,
-        default: LongTag | None = None,
-        raise_errors: Literal[True] = False,
-    ) -> LongTag: ...
+    def get_int(self, key: str | bytes, default: _T, raise_errors: Literal[False]) -> IntTag | _T: ...
     @overload
-    def get_float(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> FloatTag | None: ...
+    def get_int(self, key: str | bytes, default: _T, raise_errors: Literal[True]) -> IntTag: ...
     @overload
-    def get_float(
-        self,
-        key: str | bytes,
-        default: FloatTag = None,
-        raise_errors: Literal[False] = False,
-    ) -> FloatTag: ...
+    def get_int(self, key: str | bytes, *, raise_errors: Literal[False]) -> IntTag | None: ...
     @overload
-    def get_float(
-        self,
-        key: str | bytes,
-        default: FloatTag | None = None,
-        raise_errors: Literal[True] = False,
-    ) -> FloatTag: ...
+    def get_int(self, key: str | bytes, *, raise_errors: Literal[True]) -> IntTag: ...
     @overload
-    def get_double(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> DoubleTag | None: ...
+    def get_long(self, key: str | bytes) -> LongTag | None: ...
     @overload
-    def get_double(
-        self,
-        key: str | bytes,
-        default: DoubleTag = None,
-        raise_errors: Literal[False] = False,
-    ) -> DoubleTag: ...
+    def get_long(self, key: str | bytes, default: _T) -> LongTag | _T: ...
     @overload
-    def get_double(
-        self,
-        key: str | bytes,
-        default: DoubleTag | None = None,
-        raise_errors: Literal[True] = False,
-    ) -> DoubleTag: ...
+    def get_long(self, key: str | bytes, default: _T, raise_errors: Literal[False]) -> LongTag | _T: ...
     @overload
-    def get_string(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> StringTag | None: ...
+    def get_long(self, key: str | bytes, default: _T, raise_errors: Literal[True]) -> LongTag: ...
     @overload
-    def get_string(
-        self,
-        key: str | bytes,
-        default: StringTag = None,
-        raise_errors: Literal[False] = False,
-    ) -> StringTag: ...
+    def get_long(self, key: str | bytes, *, raise_errors: Literal[False]) -> LongTag | None: ...
     @overload
-    def get_string(
-        self,
-        key: str | bytes,
-        default: StringTag | None = None,
-        raise_errors: Literal[True] = False,
-    ) -> StringTag: ...
+    def get_long(self, key: str | bytes, *, raise_errors: Literal[True]) -> LongTag: ...
     @overload
-    def get_list(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> ListTag | None: ...
+    def get_float(self, key: str | bytes) -> FloatTag | None: ...
     @overload
-    def get_list(
-        self,
-        key: str | bytes,
-        default: ListTag = None,
-        raise_errors: Literal[False] = False,
-    ) -> ListTag: ...
+    def get_float(self, key: str | bytes, default: _T) -> FloatTag | _T: ...
     @overload
-    def get_list(
-        self,
-        key: str | bytes,
-        default: ListTag | None = None,
-        raise_errors: Literal[True] = False,
-    ) -> ListTag: ...
+    def get_float(self, key: str | bytes, default: _T, raise_errors: Literal[False]) -> FloatTag | _T: ...
     @overload
-    def get_compound(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> CompoundTag | None: ...
+    def get_float(self, key: str | bytes, default: _T, raise_errors: Literal[True]) -> FloatTag: ...
     @overload
-    def get_compound(
-        self,
-        key: str | bytes,
-        default: CompoundTag = None,
-        raise_errors: Literal[False] = False,
-    ) -> CompoundTag: ...
+    def get_float(self, key: str | bytes, *, raise_errors: Literal[False]) -> FloatTag | None: ...
     @overload
-    def get_compound(
-        self,
-        key: str | bytes,
-        default: CompoundTag | None = None,
-        raise_errors: Literal[True] = False,
-    ) -> CompoundTag: ...
+    def get_float(self, key: str | bytes, *, raise_errors: Literal[True]) -> FloatTag: ...
     @overload
-    def get_byte_array(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> ByteArrayTag | None: ...
+    def get_double(self, key: str | bytes) -> DoubleTag | None: ...
     @overload
-    def get_byte_array(
-        self,
-        key: str | bytes,
-        default: ByteArrayTag = None,
-        raise_errors: Literal[False] = False,
-    ) -> ByteArrayTag: ...
+    def get_double(self, key: str | bytes, default: _T) -> DoubleTag | _T: ...
     @overload
-    def get_byte_array(
-        self,
-        key: str | bytes,
-        default: ByteArrayTag | None = None,
-        raise_errors: Literal[True] = False,
-    ) -> ByteArrayTag: ...
+    def get_double(self, key: str | bytes, default: _T, raise_errors: Literal[False]) -> DoubleTag | _T: ...
     @overload
-    def get_int_array(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> IntArrayTag | None: ...
+    def get_double(self, key: str | bytes, default: _T, raise_errors: Literal[True]) -> DoubleTag: ...
     @overload
-    def get_int_array(
-        self,
-        key: str | bytes,
-        default: IntArrayTag = None,
-        raise_errors: Literal[False] = False,
-    ) -> IntArrayTag: ...
+    def get_double(self, key: str | bytes, *, raise_errors: Literal[False]) -> DoubleTag | None: ...
     @overload
-    def get_int_array(
-        self,
-        key: str | bytes,
-        default: IntArrayTag | None = None,
-        raise_errors: Literal[True] = False,
-    ) -> IntArrayTag: ...
+    def get_double(self, key: str | bytes, *, raise_errors: Literal[True]) -> DoubleTag: ...
     @overload
-    def get_long_array(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> LongArrayTag | None: ...
+    def get_byte_array(self, key: str | bytes) -> ByteArrayTag | None: ...
     @overload
-    def get_long_array(
-        self,
-        key: str | bytes,
-        default: LongArrayTag = None,
-        raise_errors: Literal[False] = False,
-    ) -> LongArrayTag: ...
+    def get_byte_array(self, key: str | bytes, default: _T) -> ByteArrayTag | _T: ...
     @overload
-    def get_long_array(
-        self,
-        key: str | bytes,
-        default: LongArrayTag | None = None,
-        raise_errors: Literal[True] = False,
-    ) -> LongArrayTag: ...
+    def get_byte_array(self, key: str | bytes, default: _T, raise_errors: Literal[False]) -> ByteArrayTag | _T: ...
+    @overload
+    def get_byte_array(self, key: str | bytes, default: _T, raise_errors: Literal[True]) -> ByteArrayTag: ...
+    @overload
+    def get_byte_array(self, key: str | bytes, *, raise_errors: Literal[False]) -> ByteArrayTag | None: ...
+    @overload
+    def get_byte_array(self, key: str | bytes, *, raise_errors: Literal[True]) -> ByteArrayTag: ...
+    @overload
+    def get_string(self, key: str | bytes) -> StringTag | None: ...
+    @overload
+    def get_string(self, key: str | bytes, default: _T) -> StringTag | _T: ...
+    @overload
+    def get_string(self, key: str | bytes, default: _T, raise_errors: Literal[False]) -> StringTag | _T: ...
+    @overload
+    def get_string(self, key: str | bytes, default: _T, raise_errors: Literal[True]) -> StringTag: ...
+    @overload
+    def get_string(self, key: str | bytes, *, raise_errors: Literal[False]) -> StringTag | None: ...
+    @overload
+    def get_string(self, key: str | bytes, *, raise_errors: Literal[True]) -> StringTag: ...
+    @overload
+    def get_list(self, key: str | bytes) -> ListTag | None: ...
+    @overload
+    def get_list(self, key: str | bytes, default: _T) -> ListTag | _T: ...
+    @overload
+    def get_list(self, key: str | bytes, default: _T, raise_errors: Literal[False]) -> ListTag | _T: ...
+    @overload
+    def get_list(self, key: str | bytes, default: _T, raise_errors: Literal[True]) -> ListTag: ...
+    @overload
+    def get_list(self, key: str | bytes, *, raise_errors: Literal[False]) -> ListTag | None: ...
+    @overload
+    def get_list(self, key: str | bytes, *, raise_errors: Literal[True]) -> ListTag: ...
+    @overload
+    def get_compound(self, key: str | bytes) -> CompoundTag | None: ...
+    @overload
+    def get_compound(self, key: str | bytes, default: _T) -> CompoundTag | _T: ...
+    @overload
+    def get_compound(self, key: str | bytes, default: _T, raise_errors: Literal[False]) -> CompoundTag | _T: ...
+    @overload
+    def get_compound(self, key: str | bytes, default: _T, raise_errors: Literal[True]) -> CompoundTag: ...
+    @overload
+    def get_compound(self, key: str | bytes, *, raise_errors: Literal[False]) -> CompoundTag | None: ...
+    @overload
+    def get_compound(self, key: str | bytes, *, raise_errors: Literal[True]) -> CompoundTag: ...
+    @overload
+    def get_int_array(self, key: str | bytes) -> IntArrayTag | None: ...
+    @overload
+    def get_int_array(self, key: str | bytes, default: _T) -> IntArrayTag | _T: ...
+    @overload
+    def get_int_array(self, key: str | bytes, default: _T, raise_errors: Literal[False]) -> IntArrayTag | _T: ...
+    @overload
+    def get_int_array(self, key: str | bytes, default: _T, raise_errors: Literal[True]) -> IntArrayTag: ...
+    @overload
+    def get_int_array(self, key: str | bytes, *, raise_errors: Literal[False]) -> IntArrayTag | None: ...
+    @overload
+    def get_int_array(self, key: str | bytes, *, raise_errors: Literal[True]) -> IntArrayTag: ...
+    @overload
+    def get_long_array(self, key: str | bytes) -> LongArrayTag | None: ...
+    @overload
+    def get_long_array(self, key: str | bytes, default: _T) -> LongArrayTag | _T: ...
+    @overload
+    def get_long_array(self, key: str | bytes, default: _T, raise_errors: Literal[False]) -> LongArrayTag | _T: ...
+    @overload
+    def get_long_array(self, key: str | bytes, default: _T, raise_errors: Literal[True]) -> LongArrayTag: ...
+    @overload
+    def get_long_array(self, key: str | bytes, *, raise_errors: Literal[False]) -> LongArrayTag | None: ...
+    @overload
+    def get_long_array(self, key: str | bytes, *, raise_errors: Literal[True]) -> LongArrayTag: ...
+
     def setdefault_byte(
         self, key: str | bytes, default: ByteTag | None = None
     ) -> ByteTag: ...
@@ -742,258 +626,152 @@ class CompoundTag(AbstractBaseMutableTag, MutableMapping[str | bytes, AbstractBa
     def setdefault_long_array(
         self, key: str | bytes, default: LongArrayTag | None = None
     ) -> LongArrayTag: ...
+
     @overload
-    def pop_byte(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> ByteTag | None: ...
+    def pop_byte(self, key: str | bytes) -> ByteTag | None: ...
     @overload
-    def pop_byte(
-        self,
-        key: str | bytes,
-        default: ByteTag = None,
-        raise_errors: Literal[False] = False,
-    ) -> ByteTag: ...
+    def pop_byte(self, key: str | bytes, default: _T) -> ByteTag | _T: ...
     @overload
-    def pop_byte(
-        self,
-        key: str | bytes,
-        default: ByteTag | None = None,
-        raise_errors: Literal[True] = False,
-    ) -> ByteTag: ...
+    def pop_byte(self, key: str | bytes, default: _T, raise_errors: Literal[False]) -> ByteTag | _T: ...
     @overload
-    def pop_short(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> ShortTag | None: ...
+    def pop_byte(self, key: str | bytes, default: _T, raise_errors: Literal[True]) -> ByteTag: ...
     @overload
-    def pop_short(
-        self,
-        key: str | bytes,
-        default: ShortTag = None,
-        raise_errors: Literal[False] = False,
-    ) -> ShortTag: ...
+    def pop_byte(self, key: str | bytes, *, raise_errors: Literal[False]) -> ByteTag | None: ...
     @overload
-    def pop_short(
-        self,
-        key: str | bytes,
-        default: ShortTag | None = None,
-        raise_errors: Literal[True] = False,
-    ) -> ShortTag: ...
+    def pop_byte(self, key: str | bytes, *, raise_errors: Literal[True]) -> ByteTag: ...
     @overload
-    def pop_int(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> IntTag | None: ...
+    def pop_short(self, key: str | bytes) -> ShortTag | None: ...
     @overload
-    def pop_int(
-        self,
-        key: str | bytes,
-        default: IntTag = None,
-        raise_errors: Literal[False] = False,
-    ) -> IntTag: ...
+    def pop_short(self, key: str | bytes, default: _T) -> ShortTag | _T: ...
     @overload
-    def pop_int(
-        self,
-        key: str | bytes,
-        default: IntTag | None = None,
-        raise_errors: Literal[True] = False,
-    ) -> IntTag: ...
+    def pop_short(self, key: str | bytes, default: _T, raise_errors: Literal[False]) -> ShortTag | _T: ...
     @overload
-    def pop_long(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> LongTag | None: ...
+    def pop_short(self, key: str | bytes, default: _T, raise_errors: Literal[True]) -> ShortTag: ...
     @overload
-    def pop_long(
-        self,
-        key: str | bytes,
-        default: LongTag = None,
-        raise_errors: Literal[False] = False,
-    ) -> LongTag: ...
+    def pop_short(self, key: str | bytes, *, raise_errors: Literal[False]) -> ShortTag | None: ...
     @overload
-    def pop_long(
-        self,
-        key: str | bytes,
-        default: LongTag | None = None,
-        raise_errors: Literal[True] = False,
-    ) -> LongTag: ...
+    def pop_short(self, key: str | bytes, *, raise_errors: Literal[True]) -> ShortTag: ...
     @overload
-    def pop_float(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> FloatTag | None: ...
+    def pop_int(self, key: str | bytes) -> IntTag | None: ...
     @overload
-    def pop_float(
-        self,
-        key: str | bytes,
-        default: FloatTag = None,
-        raise_errors: Literal[False] = False,
-    ) -> FloatTag: ...
+    def pop_int(self, key: str | bytes, default: _T) -> IntTag | _T: ...
     @overload
-    def pop_float(
-        self,
-        key: str | bytes,
-        default: FloatTag | None = None,
-        raise_errors: Literal[True] = False,
-    ) -> FloatTag: ...
+    def pop_int(self, key: str | bytes, default: _T, raise_errors: Literal[False]) -> IntTag | _T: ...
     @overload
-    def pop_double(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> DoubleTag | None: ...
+    def pop_int(self, key: str | bytes, default: _T, raise_errors: Literal[True]) -> IntTag: ...
     @overload
-    def pop_double(
-        self,
-        key: str | bytes,
-        default: DoubleTag = None,
-        raise_errors: Literal[False] = False,
-    ) -> DoubleTag: ...
+    def pop_int(self, key: str | bytes, *, raise_errors: Literal[False]) -> IntTag | None: ...
     @overload
-    def pop_double(
-        self,
-        key: str | bytes,
-        default: DoubleTag | None = None,
-        raise_errors: Literal[True] = False,
-    ) -> DoubleTag: ...
+    def pop_int(self, key: str | bytes, *, raise_errors: Literal[True]) -> IntTag: ...
     @overload
-    def pop_string(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> StringTag | None: ...
+    def pop_long(self, key: str | bytes) -> LongTag | None: ...
     @overload
-    def pop_string(
-        self,
-        key: str | bytes,
-        default: StringTag = None,
-        raise_errors: Literal[False] = False,
-    ) -> StringTag: ...
+    def pop_long(self, key: str | bytes, default: _T) -> LongTag | _T: ...
     @overload
-    def pop_string(
-        self,
-        key: str | bytes,
-        default: StringTag | None = None,
-        raise_errors: Literal[True] = False,
-    ) -> StringTag: ...
+    def pop_long(self, key: str | bytes, default: _T, raise_errors: Literal[False]) -> LongTag | _T: ...
     @overload
-    def pop_list(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> ListTag | None: ...
+    def pop_long(self, key: str | bytes, default: _T, raise_errors: Literal[True]) -> LongTag: ...
     @overload
-    def pop_list(
-        self,
-        key: str | bytes,
-        default: ListTag = None,
-        raise_errors: Literal[False] = False,
-    ) -> ListTag: ...
+    def pop_long(self, key: str | bytes, *, raise_errors: Literal[False]) -> LongTag | None: ...
     @overload
-    def pop_list(
-        self,
-        key: str | bytes,
-        default: ListTag | None = None,
-        raise_errors: Literal[True] = False,
-    ) -> ListTag: ...
+    def pop_long(self, key: str | bytes, *, raise_errors: Literal[True]) -> LongTag: ...
     @overload
-    def pop_compound(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> CompoundTag | None: ...
+    def pop_float(self, key: str | bytes) -> FloatTag | None: ...
     @overload
-    def pop_compound(
-        self,
-        key: str | bytes,
-        default: CompoundTag = None,
-        raise_errors: Literal[False] = False,
-    ) -> CompoundTag: ...
+    def pop_float(self, key: str | bytes, default: _T) -> FloatTag | _T: ...
     @overload
-    def pop_compound(
-        self,
-        key: str | bytes,
-        default: CompoundTag | None = None,
-        raise_errors: Literal[True] = False,
-    ) -> CompoundTag: ...
+    def pop_float(self, key: str | bytes, default: _T, raise_errors: Literal[False]) -> FloatTag | _T: ...
     @overload
-    def pop_byte_array(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> ByteArrayTag | None: ...
+    def pop_float(self, key: str | bytes, default: _T, raise_errors: Literal[True]) -> FloatTag: ...
     @overload
-    def pop_byte_array(
-        self,
-        key: str | bytes,
-        default: ByteArrayTag = None,
-        raise_errors: Literal[False] = False,
-    ) -> ByteArrayTag: ...
+    def pop_float(self, key: str | bytes, *, raise_errors: Literal[False]) -> FloatTag | None: ...
     @overload
-    def pop_byte_array(
-        self,
-        key: str | bytes,
-        default: ByteArrayTag | None = None,
-        raise_errors: Literal[True] = False,
-    ) -> ByteArrayTag: ...
+    def pop_float(self, key: str | bytes, *, raise_errors: Literal[True]) -> FloatTag: ...
     @overload
-    def pop_int_array(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> IntArrayTag | None: ...
+    def pop_double(self, key: str | bytes) -> DoubleTag | None: ...
     @overload
-    def pop_int_array(
-        self,
-        key: str | bytes,
-        default: IntArrayTag = None,
-        raise_errors: Literal[False] = False,
-    ) -> IntArrayTag: ...
+    def pop_double(self, key: str | bytes, default: _T) -> DoubleTag | _T: ...
     @overload
-    def pop_int_array(
-        self,
-        key: str | bytes,
-        default: IntArrayTag | None = None,
-        raise_errors: Literal[True] = False,
-    ) -> IntArrayTag: ...
+    def pop_double(self, key: str | bytes, default: _T, raise_errors: Literal[False]) -> DoubleTag | _T: ...
     @overload
-    def pop_long_array(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> LongArrayTag | None: ...
+    def pop_double(self, key: str | bytes, default: _T, raise_errors: Literal[True]) -> DoubleTag: ...
     @overload
-    def pop_long_array(
-        self,
-        key: str | bytes,
-        default: LongArrayTag = None,
-        raise_errors: Literal[False] = False,
-    ) -> LongArrayTag: ...
+    def pop_double(self, key: str | bytes, *, raise_errors: Literal[False]) -> DoubleTag | None: ...
     @overload
-    def pop_long_array(
-        self,
-        key: str | bytes,
-        default: LongArrayTag | None = None,
-        raise_errors: Literal[True] = False,
-    ) -> LongArrayTag: ...
+    def pop_double(self, key: str | bytes, *, raise_errors: Literal[True]) -> DoubleTag: ...
+    @overload
+    def pop_byte_array(self, key: str | bytes) -> ByteArrayTag | None: ...
+    @overload
+    def pop_byte_array(self, key: str | bytes, default: _T) -> ByteArrayTag | _T: ...
+    @overload
+    def pop_byte_array(self, key: str | bytes, default: _T, raise_errors: Literal[False]) -> ByteArrayTag | _T: ...
+    @overload
+    def pop_byte_array(self, key: str | bytes, default: _T, raise_errors: Literal[True]) -> ByteArrayTag: ...
+    @overload
+    def pop_byte_array(self, key: str | bytes, *, raise_errors: Literal[False]) -> ByteArrayTag | None: ...
+    @overload
+    def pop_byte_array(self, key: str | bytes, *, raise_errors: Literal[True]) -> ByteArrayTag: ...
+    @overload
+    def pop_string(self, key: str | bytes) -> StringTag | None: ...
+    @overload
+    def pop_string(self, key: str | bytes, default: _T) -> StringTag | _T: ...
+    @overload
+    def pop_string(self, key: str | bytes, default: _T, raise_errors: Literal[False]) -> StringTag | _T: ...
+    @overload
+    def pop_string(self, key: str | bytes, default: _T, raise_errors: Literal[True]) -> StringTag: ...
+    @overload
+    def pop_string(self, key: str | bytes, *, raise_errors: Literal[False]) -> StringTag | None: ...
+    @overload
+    def pop_string(self, key: str | bytes, *, raise_errors: Literal[True]) -> StringTag: ...
+    @overload
+    def pop_list(self, key: str | bytes) -> ListTag | None: ...
+    @overload
+    def pop_list(self, key: str | bytes, default: _T) -> ListTag | _T: ...
+    @overload
+    def pop_list(self, key: str | bytes, default: _T, raise_errors: Literal[False]) -> ListTag | _T: ...
+    @overload
+    def pop_list(self, key: str | bytes, default: _T, raise_errors: Literal[True]) -> ListTag: ...
+    @overload
+    def pop_list(self, key: str | bytes, *, raise_errors: Literal[False]) -> ListTag | None: ...
+    @overload
+    def pop_list(self, key: str | bytes, *, raise_errors: Literal[True]) -> ListTag: ...
+    @overload
+    def pop_compound(self, key: str | bytes) -> CompoundTag | None: ...
+    @overload
+    def pop_compound(self, key: str | bytes, default: _T) -> CompoundTag | _T: ...
+    @overload
+    def pop_compound(self, key: str | bytes, default: _T, raise_errors: Literal[False]) -> CompoundTag | _T: ...
+    @overload
+    def pop_compound(self, key: str | bytes, default: _T, raise_errors: Literal[True]) -> CompoundTag: ...
+    @overload
+    def pop_compound(self, key: str | bytes, *, raise_errors: Literal[False]) -> CompoundTag | None: ...
+    @overload
+    def pop_compound(self, key: str | bytes, *, raise_errors: Literal[True]) -> CompoundTag: ...
+    @overload
+    def pop_int_array(self, key: str | bytes) -> IntArrayTag | None: ...
+    @overload
+    def pop_int_array(self, key: str | bytes, default: _T) -> IntArrayTag | _T: ...
+    @overload
+    def pop_int_array(self, key: str | bytes, default: _T, raise_errors: Literal[False]) -> IntArrayTag | _T: ...
+    @overload
+    def pop_int_array(self, key: str | bytes, default: _T, raise_errors: Literal[True]) -> IntArrayTag: ...
+    @overload
+    def pop_int_array(self, key: str | bytes, *, raise_errors: Literal[False]) -> IntArrayTag | None: ...
+    @overload
+    def pop_int_array(self, key: str | bytes, *, raise_errors: Literal[True]) -> IntArrayTag: ...
+    @overload
+    def pop_long_array(self, key: str | bytes) -> LongArrayTag | None: ...
+    @overload
+    def pop_long_array(self, key: str | bytes, default: _T) -> LongArrayTag | _T: ...
+    @overload
+    def pop_long_array(self, key: str | bytes, default: _T, raise_errors: Literal[False]) -> LongArrayTag | _T: ...
+    @overload
+    def pop_long_array(self, key: str | bytes, default: _T, raise_errors: Literal[True]) -> LongArrayTag: ...
+    @overload
+    def pop_long_array(self, key: str | bytes, *, raise_errors: Literal[False]) -> LongArrayTag | None: ...
+    @overload
+    def pop_long_array(self, key: str | bytes, *, raise_errors: Literal[True]) -> LongArrayTag: ...
+
     def __setitem__(self, key: str | bytes, value: AnyNBT) -> None: ...
     def __delitem__(self, key: str | bytes) -> None: ...
     def __getitem__(self, key: str | bytes) -> AnyNBT: ...
@@ -1009,7 +787,7 @@ class AbstractBaseArrayTag(AbstractBaseMutableTag):
         Changes to the array will also modify the internal state.
         """
 
-    def __len__(self):
+    def __len__(self) -> int:
         """The length of the array.
 
         >>> from amulet_nbt import ByteArrayTag
@@ -1018,16 +796,7 @@ class AbstractBaseArrayTag(AbstractBaseMutableTag):
         """
 
     @overload
-    def __getitem__(self, item: int) -> numpy.int8 | numpy.int32 | numpy.int64: ...
-    @overload
-    def __getitem__(
-        self, item: slice
-    ) -> NDArray[numpy.int8 | numpy.int32 | numpy.int64]: ...
-    @overload
-    def __getitem__(
-        self, item: ArrayLike
-    ) -> NDArray[numpy.int8 | numpy.int32 | numpy.int64]: ...
-    def __getitem__(self, item):
+    def __getitem__(self, item: int) -> numpy.int8 | numpy.int32 | numpy.int64:
         """Get item(s) from the array.
 
         This supports the full numpy protocol.
@@ -1040,6 +809,14 @@ class AbstractBaseArrayTag(AbstractBaseMutableTag):
         >>> tag[:1]  # numpy.array([1], dtype=numpy.int8)
         >>> tag[numpy.array([1, 2])]  # numpy.array([2, 3], dtype=int8)
         """
+    @overload
+    def __getitem__(
+        self, item: slice
+    ) -> NDArray[numpy.int8 | numpy.int32 | numpy.int64]: ...
+    @overload
+    def __getitem__(
+        self, item: NDArray[numpy.integer]
+    ) -> NDArray[numpy.int8 | numpy.int32 | numpy.int64]: ...
 
     def __iter__(self) -> Iterator[numpy.int8 | numpy.int32 | numpy.int64]:
         """Iterate through the items in the array.
@@ -1074,11 +851,11 @@ class AbstractBaseArrayTag(AbstractBaseMutableTag):
     ) -> None: ...
     @overload
     def __setitem__(
-        self, item: slice, value: ArrayLike[numpy.int8 | numpy.int32 | numpy.int64]
+        self, item: slice, value: NDArray[numpy.int8] | NDArray[numpy.int32] | NDArray[numpy.int64]
     ) -> None: ...
     @overload
     def __setitem__(
-        self, item: ArrayLike, value: ArrayLike[numpy.int8 | numpy.int32 | numpy.int64]
+        self, item: ArrayLike, value: NDArray[numpy.int8] | NDArray[numpy.int32] | NDArray[numpy.int64]
     ) -> None:
         """Set item(s) in the array.
 
@@ -1092,7 +869,7 @@ class AbstractBaseArrayTag(AbstractBaseMutableTag):
         >>> tag[numpy.array([1, 2])] = [6, 7]  # [4, 6, 7]
         """
 
-    def __array__(self, dtype=None) -> NDArray[numpy.int8 | numpy.int32 | numpy.int64]:
+    def __array__(self, dtype: numpy.dtype | None = None) -> NDArray[numpy.int8 | numpy.int32 | numpy.int64]:
         """Get a numpy array representation of the stored data.
 
         >>> from amulet_nbt import ByteArrayTag
@@ -1113,11 +890,7 @@ class ByteArrayTag(AbstractBaseArrayTag):
         """
 
     @overload
-    def __getitem__(self, item: int) -> numpy.int8: ...
-    @overload
-    def __getitem__(self, item: slice) -> NDArray[numpy.int8]: ...
-    @overload
-    def __getitem__(self, item: ArrayLike) -> NDArray[numpy.int8]:
+    def __getitem__(self, item: int) -> numpy.int8:
         """Get item(s) from the array.
 
         This supports the full numpy protocol.
@@ -1130,6 +903,10 @@ class ByteArrayTag(AbstractBaseArrayTag):
         >>> tag[:1]  # numpy.array([1], dtype=numpy.int8)
         >>> tag[numpy.array([1, 2])]  # numpy.array([2, 3], dtype=int8)
         """
+    @overload
+    def __getitem__(self, item: slice) -> NDArray[numpy.int8]: ...
+    @overload
+    def __getitem__(self, item: NDArray[numpy.integer]) -> NDArray[numpy.int8]: ...
 
     def __iter__(self) -> Iterator[numpy.int8]:
         """Iterate through the items in the array.
@@ -1150,7 +927,7 @@ class ByteArrayTag(AbstractBaseArrayTag):
         >>>     pass
         """
 
-    def __contains__(self, value) -> bool:
+    def __contains__(self, value: int) -> bool:
         """Check if an item is in the array.
 
         >>> from amulet_nbt import ByteArrayTag
@@ -1161,9 +938,9 @@ class ByteArrayTag(AbstractBaseArrayTag):
     @overload
     def __setitem__(self, item: int, value: numpy.integer) -> None: ...
     @overload
-    def __setitem__(self, item: slice, value: ArrayLike[numpy.integer]) -> None: ...
+    def __setitem__(self, item: slice, value: NDArray[numpy.integer]) -> None: ...
     @overload
-    def __setitem__(self, item: ArrayLike, value: ArrayLike[numpy.integer]) -> None:
+    def __setitem__(self, item: ArrayLike, value: NDArray[numpy.integer]) -> None:
         """Set item(s) in the array.
 
         This supports the full numpy protocol.
@@ -1176,7 +953,7 @@ class ByteArrayTag(AbstractBaseArrayTag):
         >>> tag[numpy.array([1, 2])] = [6, 7]  # [4, 6, 7]
         """
 
-    def __array__(self, dtype=None) -> NDArray[numpy.int8]:
+    def __array__(self, dtype: numpy.dtype | None = None) -> NDArray[numpy.int8]:
         """Get a numpy array representation of the stored data.
 
         >>> from amulet_nbt import ByteArrayTag
@@ -1197,16 +974,12 @@ class IntArrayTag(AbstractBaseArrayTag):
         """
 
     @overload
-    def __getitem__(self, item: int) -> numpy.int32: ...
-    @overload
-    def __getitem__(self, item: slice) -> NDArray[numpy.int32]: ...
-    @overload
-    def __getitem__(self, item: ArrayLike) -> NDArray[numpy.int32]:
+    def __getitem__(self, item: int) -> numpy.int32:
         """Get item(s) from the array.
-
+        
         This supports the full numpy protocol.
         If a numpy array is returned, the array data is the same as the data contained in this class.
-
+        
         >>> from amulet_nbt import IntArrayTag
         >>> import numpy
         >>> tag = IntArrayTag([1, 2, 3])
@@ -1214,6 +987,10 @@ class IntArrayTag(AbstractBaseArrayTag):
         >>> tag[:1]  # numpy.array([1], dtype=numpy.int32)
         >>> tag[numpy.array([1, 2])]  # numpy.array([2, 3], dtype=int32)
         """
+    @overload
+    def __getitem__(self, item: slice) -> NDArray[numpy.int32]: ...
+    @overload
+    def __getitem__(self, item: NDArray[numpy.integer]) -> NDArray[numpy.int32]: ...
 
     def __iter__(self) -> Iterator[numpy.int32]:
         """Iterate through the items in the array.
@@ -1234,7 +1011,7 @@ class IntArrayTag(AbstractBaseArrayTag):
         >>>     pass
         """
 
-    def __contains__(self, value) -> bool:
+    def __contains__(self, value: int) -> bool:
         """Check if an item is in the array.
 
         >>> from amulet_nbt import IntArrayTag
@@ -1245,9 +1022,9 @@ class IntArrayTag(AbstractBaseArrayTag):
     @overload
     def __setitem__(self, item: int, value: numpy.integer) -> None: ...
     @overload
-    def __setitem__(self, item: slice, value: ArrayLike[numpy.integer]) -> None: ...
+    def __setitem__(self, item: slice, value: NDArray[numpy.integer]) -> None: ...
     @overload
-    def __setitem__(self, item: ArrayLike, value: ArrayLike[numpy.integer]) -> None:
+    def __setitem__(self, item: ArrayLike, value: NDArray[numpy.integer]) -> None:
         """Set item(s) in the array.
 
         This supports the full numpy protocol.
@@ -1260,7 +1037,7 @@ class IntArrayTag(AbstractBaseArrayTag):
         >>> tag[numpy.array([1, 2])] = [6, 7]  # [4, 6, 7]
         """
 
-    def __array__(self, dtype=None) -> NDArray[numpy.int32]:
+    def __array__(self, dtype: numpy.dtype | None = None) -> NDArray[numpy.int32]:
         """Get a numpy array representation of the stored data.
 
         >>> from amulet_nbt import IntArrayTag
@@ -1281,11 +1058,7 @@ class LongArrayTag(AbstractBaseArrayTag):
         """
 
     @overload
-    def __getitem__(self, item: int) -> numpy.int64: ...
-    @overload
-    def __getitem__(self, item: slice) -> NDArray[numpy.int64]: ...
-    @overload
-    def __getitem__(self, item: ArrayLike) -> NDArray[numpy.int64]:
+    def __getitem__(self, item: int) -> numpy.int64:
         """Get item(s) from the array.
 
         This supports the full numpy protocol.
@@ -1298,6 +1071,10 @@ class LongArrayTag(AbstractBaseArrayTag):
         >>> tag[:1]  # numpy.array([1], dtype=numpy.int64)
         >>> tag[numpy.array([1, 2])]  # numpy.array([2, 3], dtype=int64)
         """
+    @overload
+    def __getitem__(self, item: slice) -> NDArray[numpy.int64]: ...
+    @overload
+    def __getitem__(self, item: NDArray[numpy.integer]) -> NDArray[numpy.int64]: ...
 
     def __iter__(self) -> Iterator[numpy.int64]:
         """Iterate through the items in the array.
@@ -1318,7 +1095,7 @@ class LongArrayTag(AbstractBaseArrayTag):
         >>>     pass
         """
 
-    def __contains__(self, value) -> bool:
+    def __contains__(self, value: int) -> bool:
         """Check if an item is in the array.
 
         >>> from amulet_nbt import LongArrayTag
@@ -1329,9 +1106,9 @@ class LongArrayTag(AbstractBaseArrayTag):
     @overload
     def __setitem__(self, item: int, value: numpy.integer) -> None: ...
     @overload
-    def __setitem__(self, item: slice, value: ArrayLike[numpy.integer]) -> None: ...
+    def __setitem__(self, item: slice, value: NDArray[numpy.integer]) -> None: ...
     @overload
-    def __setitem__(self, item: ArrayLike, value: ArrayLike[numpy.integer]) -> None:
+    def __setitem__(self, item: ArrayLike, value: NDArray[numpy.integer]) -> None:
         """Set item(s) in the array.
 
         This supports the full numpy protocol.
@@ -1344,7 +1121,7 @@ class LongArrayTag(AbstractBaseArrayTag):
         >>> tag[numpy.array([1, 2])] = [6, 7]  # [4, 6, 7]
         """
 
-    def __array__(self, dtype=None) -> NDArray[numpy.int64]:
+    def __array__(self, dtype: numpy.dtype | None = None) -> NDArray[numpy.int64]:
         """Get a numpy array representation of the stored data.
 
         >>> from amulet_nbt import LongArrayTag
@@ -1353,19 +1130,37 @@ class LongArrayTag(AbstractBaseArrayTag):
         >>> arr = numpy.asarray(tag)
         """
 
+
+AnyNBT: TypeAlias = Union[
+    ByteTag,
+    ShortTag,
+    IntTag,
+    LongTag,
+    FloatTag,
+    DoubleTag,
+    ByteArrayTag,
+    StringTag,
+    ListTag,
+    CompoundTag,
+    IntArrayTag,
+    LongArrayTag,
+]
+
+
 # Alias
-TAG_Byte = ByteTag
-TAG_Short = ShortTag
-TAG_Int = IntTag
-TAG_Long = LongTag
-TAG_Float = FloatTag
-TAG_Double = DoubleTag
-TAG_String = StringTag
-TAG_Byte_Array = ByteArrayTag
-TAG_List = ListTag
-TAG_Compound = CompoundTag
-TAG_Int_Array = IntArrayTag
-TAG_Long_Array = LongArrayTag
+TAG_Byte: TypeAlias = ByteTag
+TAG_Short: TypeAlias = ShortTag
+TAG_Int: TypeAlias = IntTag
+TAG_Long: TypeAlias = LongTag
+TAG_Float: TypeAlias = FloatTag
+TAG_Double: TypeAlias = DoubleTag
+TAG_String: TypeAlias = StringTag
+TAG_Byte_Array: TypeAlias = ByteArrayTag
+TAG_List: TypeAlias = ListTag
+TAG_Compound: TypeAlias = CompoundTag
+TAG_Int_Array: TypeAlias = IntArrayTag
+TAG_Long_Array: TypeAlias = LongArrayTag
+
 
 class NamedTag(AbstractBase):
     def __init__(self, tag: AnyNBT | None = None, name: str | bytes = "") -> None: ...
@@ -1502,27 +1297,12 @@ def from_snbt(snbt: str) -> AbstractBaseTag:
     Load Stringified NBT into a tag.
     """
 
-SNBTType = str
+SNBTType: TypeAlias = str
 
-IntType = Union[ByteTag, ShortTag, IntTag, LongTag]
+IntType: TypeAlias = Union[ByteTag, ShortTag, IntTag, LongTag]
 
-FloatType = Union[FloatTag, DoubleTag]
+FloatType: TypeAlias = Union[FloatTag, DoubleTag]
 
-NumberType = Union[ByteTag, ShortTag, IntTag, LongTag, FloatTag, DoubleTag]
+NumberType: TypeAlias = Union[ByteTag, ShortTag, IntTag, LongTag, FloatTag, DoubleTag]
 
-ArrayType = Union[ByteArrayTag, IntArrayTag, LongArrayTag]
-
-AnyNBT = Union[
-    ByteTag,
-    ShortTag,
-    IntTag,
-    LongTag,
-    FloatTag,
-    DoubleTag,
-    ByteArrayTag,
-    StringTag,
-    ListTag,
-    CompoundTag,
-    IntArrayTag,
-    LongArrayTag,
-]
+ArrayType: TypeAlias = Union[ByteArrayTag, IntArrayTag, LongArrayTag]

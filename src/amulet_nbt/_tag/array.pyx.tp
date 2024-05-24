@@ -61,7 +61,7 @@ cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
         ...
 
     @overload
-    def __getitem__(self, item: ArrayLike) -> NDArray[numpy.int8 | numpy.int32 | numpy.int64]:
+    def __getitem__(self, item: NDArray[numpy.integer]) -> NDArray[numpy.int8 | numpy.int32 | numpy.int64]:
         ...
 
     def __getitem__(self, item):

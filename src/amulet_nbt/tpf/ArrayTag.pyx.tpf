@@ -78,7 +78,7 @@ cdef class {{py_cls}}(AbstractBaseArrayTag):
         ...
 
     @overload
-    def __getitem__(self, item: ArrayLike) -> NDArray[numpy.int{{int_byte_width*8}}]:
+    def __getitem__(self, item: NDArray[numpy.integer]) -> NDArray[numpy.int{{int_byte_width*8}}]:
         ...
 
     def __getitem__(self, object item):
@@ -119,7 +119,7 @@ cdef class {{py_cls}}(AbstractBaseArrayTag):
         """
         return reversed(numpy.asarray(self))
 
-    def __contains__(self, value) -> bool:
+    def __contains__(self, value: int) -> bool:
         """Check if an item is in the array.
 
         >>> from amulet_nbt import {{py_cls}}
@@ -134,11 +134,11 @@ cdef class {{py_cls}}(AbstractBaseArrayTag):
         ...
 
     @overload
-    def __setitem__(self, item: slice, value: ArrayLike[numpy.integer]) -> None:
+    def __setitem__(self, item: slice, value: NDArray[numpy.integer]) -> None:
         ...
 
     @overload
-    def __setitem__(self, item: ArrayLike, value: ArrayLike[numpy.integer]) -> None:
+    def __setitem__(self, item: ArrayLike, value: NDArray[numpy.integer]) -> None:
         ...
 
     def __setitem__(self, object item, object value):

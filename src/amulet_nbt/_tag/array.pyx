@@ -58,7 +58,7 @@ cdef class AbstractBaseArrayTag(AbstractBaseMutableTag):
         ...
 
     @overload
-    def __getitem__(self, item: ArrayLike) -> NDArray[numpy.int8 | numpy.int32 | numpy.int64]:
+    def __getitem__(self, item: NDArray[numpy.integer]) -> NDArray[numpy.int8 | numpy.int32 | numpy.int64]:
         ...
 
     def __getitem__(self, item):
@@ -230,7 +230,7 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
         ...
 
     @overload
-    def __getitem__(self, item: ArrayLike) -> NDArray[numpy.int8]:
+    def __getitem__(self, item: NDArray[numpy.integer]) -> NDArray[numpy.int8]:
         ...
 
     def __getitem__(self, object item):
@@ -271,7 +271,7 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
         """
         return reversed(numpy.asarray(self))
 
-    def __contains__(self, value) -> bool:
+    def __contains__(self, value: int) -> bool:
         """Check if an item is in the array.
 
         >>> from amulet_nbt import ByteArrayTag
@@ -286,11 +286,11 @@ cdef class ByteArrayTag(AbstractBaseArrayTag):
         ...
 
     @overload
-    def __setitem__(self, item: slice, value: ArrayLike[numpy.integer]) -> None:
+    def __setitem__(self, item: slice, value: NDArray[numpy.integer]) -> None:
         ...
 
     @overload
-    def __setitem__(self, item: ArrayLike, value: ArrayLike[numpy.integer]) -> None:
+    def __setitem__(self, item: ArrayLike, value: NDArray[numpy.integer]) -> None:
         ...
 
     def __setitem__(self, object item, object value):
@@ -408,7 +408,7 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
         ...
 
     @overload
-    def __getitem__(self, item: ArrayLike) -> NDArray[numpy.int32]:
+    def __getitem__(self, item: NDArray[numpy.integer]) -> NDArray[numpy.int32]:
         ...
 
     def __getitem__(self, object item):
@@ -449,7 +449,7 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
         """
         return reversed(numpy.asarray(self))
 
-    def __contains__(self, value) -> bool:
+    def __contains__(self, value: int) -> bool:
         """Check if an item is in the array.
 
         >>> from amulet_nbt import IntArrayTag
@@ -464,11 +464,11 @@ cdef class IntArrayTag(AbstractBaseArrayTag):
         ...
 
     @overload
-    def __setitem__(self, item: slice, value: ArrayLike[numpy.integer]) -> None:
+    def __setitem__(self, item: slice, value: NDArray[numpy.integer]) -> None:
         ...
 
     @overload
-    def __setitem__(self, item: ArrayLike, value: ArrayLike[numpy.integer]) -> None:
+    def __setitem__(self, item: ArrayLike, value: NDArray[numpy.integer]) -> None:
         ...
 
     def __setitem__(self, object item, object value):
@@ -586,7 +586,7 @@ cdef class LongArrayTag(AbstractBaseArrayTag):
         ...
 
     @overload
-    def __getitem__(self, item: ArrayLike) -> NDArray[numpy.int64]:
+    def __getitem__(self, item: NDArray[numpy.integer]) -> NDArray[numpy.int64]:
         ...
 
     def __getitem__(self, object item):
@@ -627,7 +627,7 @@ cdef class LongArrayTag(AbstractBaseArrayTag):
         """
         return reversed(numpy.asarray(self))
 
-    def __contains__(self, value) -> bool:
+    def __contains__(self, value: int) -> bool:
         """Check if an item is in the array.
 
         >>> from amulet_nbt import LongArrayTag
@@ -642,11 +642,11 @@ cdef class LongArrayTag(AbstractBaseArrayTag):
         ...
 
     @overload
-    def __setitem__(self, item: slice, value: ArrayLike[numpy.integer]) -> None:
+    def __setitem__(self, item: slice, value: NDArray[numpy.integer]) -> None:
         ...
 
     @overload
-    def __setitem__(self, item: ArrayLike, value: ArrayLike[numpy.integer]) -> None:
+    def __setitem__(self, item: ArrayLike, value: NDArray[numpy.integer]) -> None:
         ...
 
     def __setitem__(self, object item, object value):

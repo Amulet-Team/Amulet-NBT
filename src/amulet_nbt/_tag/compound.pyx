@@ -55,6 +55,8 @@ from .deepcopy cimport CCompoundTagPtr_deepcopy
 
 import amulet_nbt
 
+_T = TypeVar("_T")
+
 cdef inline bool _is_byte_tag_node_eq(TagNode* a, TagNode* b) noexcept nogil:
     if dereference(b).index() == 1:
         return get[CByteTag](dereference(a)) == get[CByteTag](dereference(b))
@@ -330,20 +332,20 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return wrap_node(&dereference(it).second)
 
     @overload
-    def get(self, key: str | bytes, default: None = None) -> amulet_nbt.AnyNBT | None:...
+    def get(self, key: str | bytes) -> AnyNBT | None: ...
     @overload
-    def get(self, key: str | bytes, default: _TagT = None) -> amulet_nbt.AnyNBT: ...
+    def get(self, key: str | bytes, default: _T) -> AnyNBT | _T: ...
     @overload
-    def get(self, key: str | bytes, default: None = None, cls: Type[_TagT] = AbstractBaseTag) -> _TagT | None: ...
+    def get(self, key: str | bytes, *, cls: Type[_TagT]) -> _TagT | None: ...
     @overload
-    def get(self, key: str | bytes, default: _TagT = None, cls: Type[_TagT] = AbstractBaseTag) -> _TagT: ...
+    def get(self, key: str | bytes, default: _T, cls: Type[_TagT]) -> _TagT | _T: ...
 
     def get(
         self,
         string key: str | bytes,
-        object default: _TagT | None = None,
+        object default: _T = None,
         object cls: Type[_TagT] = AbstractBaseTag
-    ) -> _TagT | None:
+    ) -> _TagT | _T:
         """Get an item from the CompoundTag.
 
         :param key: The key to get
@@ -460,33 +462,23 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return cls(dict.fromkeys(keys, value))
 
     @overload
-    def get_byte(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.ByteTag | None:
-        ...
-
+    def get_byte(self, key: str | bytes) -> amulet_nbt.ByteTag | None: ...
     @overload
-    def get_byte(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.ByteTag,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.ByteTag:
-        ...
-
+    def get_byte(self, key: str | bytes, default: None) -> amulet_nbt.ByteTag | None: ...
     @overload
-    def get_byte(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.ByteTag | None,
-        raise_errors: Literal[True] = False,
-    ) -> amulet_nbt.ByteTag:
-        ...
+    def get_byte(self, key: str | bytes, default: amulet_nbt.ByteTag) -> amulet_nbt.ByteTag: ...
+    @overload
+    def get_byte(self, key: str | bytes, default: None, raise_errors: Literal[False]) -> amulet_nbt.ByteTag | None: ...
+    @overload
+    def get_byte(self, key: str | bytes, default: amulet_nbt.ByteTag, raise_errors: Literal[False]) -> amulet_nbt.ByteTag: ...
+    @overload
+    def get_byte(self, key: str | bytes, default: amulet_nbt.ByteTag | None, raise_errors: Literal[True]) -> amulet_nbt.ByteTag: ...
+    @overload
+    def get_byte(self, key: str | bytes, *, raise_errors: Literal[False]) -> amulet_nbt.ByteTag | None: ...
+    @overload
+    def get_byte(self, key: str | bytes, *, raise_errors: Literal[True]) -> amulet_nbt.ByteTag: ...
 
-    def get_byte(self, string key: str | bytes, ByteTag default: amulet_nbt.ByteTag | None = None, bool raise_errors: bool = False) -> amulet_nbt.ByteTag | None:
+    def get_byte(self, string key: str | bytes, ByteTag default: _T = None, bool raise_errors: bool = False) -> amulet_nbt.ByteTag | _T:
         """Get the tag stored in key if it is a ByteTag.
     
         :param key: The key to get
@@ -538,33 +530,23 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return tag
 
     @overload
-    def pop_byte(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.ByteTag | None:
-        ...
-
+    def pop_byte(self, key: str | bytes) -> amulet_nbt.ByteTag | None: ...
     @overload
-    def pop_byte(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.ByteTag,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.ByteTag:
-        ...
-
+    def pop_byte(self, key: str | bytes, default: None) -> amulet_nbt.ByteTag | None: ...
     @overload
-    def pop_byte(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.ByteTag | None,
-        raise_errors: Literal[True] = False,
-    ) -> amulet_nbt.ByteTag:
-        ...
+    def pop_byte(self, key: str | bytes, default: amulet_nbt.ByteTag) -> amulet_nbt.ByteTag: ...
+    @overload
+    def pop_byte(self, key: str | bytes, default: None, raise_errors: Literal[False]) -> amulet_nbt.ByteTag | None: ...
+    @overload
+    def pop_byte(self, key: str | bytes, default: amulet_nbt.ByteTag, raise_errors: Literal[False]) -> amulet_nbt.ByteTag: ...
+    @overload
+    def pop_byte(self, key: str | bytes, default: amulet_nbt.ByteTag | None, raise_errors: Literal[True]) -> amulet_nbt.ByteTag: ...
+    @overload
+    def pop_byte(self, key: str | bytes, *, raise_errors: Literal[False]) -> amulet_nbt.ByteTag | None: ...
+    @overload
+    def pop_byte(self, key: str | bytes, *, raise_errors: Literal[True]) -> amulet_nbt.ByteTag: ...
 
-    def pop_byte(self, string key: str | bytes, ByteTag default: amulet_nbt.ByteTag = None, bool raise_errors: bool = False) -> amulet_nbt.ByteTag | None:
+    def pop_byte(self, string key: str | bytes, ByteTag default: _T = None, bool raise_errors: bool = False) -> amulet_nbt.ByteTag | _T:
         """Remove the specified key and return the corresponding value if it is a ByteTag.
 
         If the key exists but the type is incorrect, the value will not be removed.
@@ -595,33 +577,23 @@ cdef class CompoundTag(AbstractBaseMutableTag):
 
 
     @overload
-    def get_short(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.ShortTag | None:
-        ...
-
+    def get_short(self, key: str | bytes) -> amulet_nbt.ShortTag | None: ...
     @overload
-    def get_short(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.ShortTag,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.ShortTag:
-        ...
-
+    def get_short(self, key: str | bytes, default: None) -> amulet_nbt.ShortTag | None: ...
     @overload
-    def get_short(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.ShortTag | None,
-        raise_errors: Literal[True] = False,
-    ) -> amulet_nbt.ShortTag:
-        ...
+    def get_short(self, key: str | bytes, default: amulet_nbt.ShortTag) -> amulet_nbt.ShortTag: ...
+    @overload
+    def get_short(self, key: str | bytes, default: None, raise_errors: Literal[False]) -> amulet_nbt.ShortTag | None: ...
+    @overload
+    def get_short(self, key: str | bytes, default: amulet_nbt.ShortTag, raise_errors: Literal[False]) -> amulet_nbt.ShortTag: ...
+    @overload
+    def get_short(self, key: str | bytes, default: amulet_nbt.ShortTag | None, raise_errors: Literal[True]) -> amulet_nbt.ShortTag: ...
+    @overload
+    def get_short(self, key: str | bytes, *, raise_errors: Literal[False]) -> amulet_nbt.ShortTag | None: ...
+    @overload
+    def get_short(self, key: str | bytes, *, raise_errors: Literal[True]) -> amulet_nbt.ShortTag: ...
 
-    def get_short(self, string key: str | bytes, ShortTag default: amulet_nbt.ShortTag | None = None, bool raise_errors: bool = False) -> amulet_nbt.ShortTag | None:
+    def get_short(self, string key: str | bytes, ShortTag default: _T = None, bool raise_errors: bool = False) -> amulet_nbt.ShortTag | _T:
         """Get the tag stored in key if it is a ShortTag.
     
         :param key: The key to get
@@ -673,33 +645,23 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return tag
 
     @overload
-    def pop_short(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.ShortTag | None:
-        ...
-
+    def pop_short(self, key: str | bytes) -> amulet_nbt.ShortTag | None: ...
     @overload
-    def pop_short(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.ShortTag,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.ShortTag:
-        ...
-
+    def pop_short(self, key: str | bytes, default: None) -> amulet_nbt.ShortTag | None: ...
     @overload
-    def pop_short(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.ShortTag | None,
-        raise_errors: Literal[True] = False,
-    ) -> amulet_nbt.ShortTag:
-        ...
+    def pop_short(self, key: str | bytes, default: amulet_nbt.ShortTag) -> amulet_nbt.ShortTag: ...
+    @overload
+    def pop_short(self, key: str | bytes, default: None, raise_errors: Literal[False]) -> amulet_nbt.ShortTag | None: ...
+    @overload
+    def pop_short(self, key: str | bytes, default: amulet_nbt.ShortTag, raise_errors: Literal[False]) -> amulet_nbt.ShortTag: ...
+    @overload
+    def pop_short(self, key: str | bytes, default: amulet_nbt.ShortTag | None, raise_errors: Literal[True]) -> amulet_nbt.ShortTag: ...
+    @overload
+    def pop_short(self, key: str | bytes, *, raise_errors: Literal[False]) -> amulet_nbt.ShortTag | None: ...
+    @overload
+    def pop_short(self, key: str | bytes, *, raise_errors: Literal[True]) -> amulet_nbt.ShortTag: ...
 
-    def pop_short(self, string key: str | bytes, ShortTag default: amulet_nbt.ShortTag = None, bool raise_errors: bool = False) -> amulet_nbt.ShortTag | None:
+    def pop_short(self, string key: str | bytes, ShortTag default: _T = None, bool raise_errors: bool = False) -> amulet_nbt.ShortTag | _T:
         """Remove the specified key and return the corresponding value if it is a ShortTag.
 
         If the key exists but the type is incorrect, the value will not be removed.
@@ -730,33 +692,23 @@ cdef class CompoundTag(AbstractBaseMutableTag):
 
 
     @overload
-    def get_int(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.IntTag | None:
-        ...
-
+    def get_int(self, key: str | bytes) -> amulet_nbt.IntTag | None: ...
     @overload
-    def get_int(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.IntTag,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.IntTag:
-        ...
-
+    def get_int(self, key: str | bytes, default: None) -> amulet_nbt.IntTag | None: ...
     @overload
-    def get_int(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.IntTag | None,
-        raise_errors: Literal[True] = False,
-    ) -> amulet_nbt.IntTag:
-        ...
+    def get_int(self, key: str | bytes, default: amulet_nbt.IntTag) -> amulet_nbt.IntTag: ...
+    @overload
+    def get_int(self, key: str | bytes, default: None, raise_errors: Literal[False]) -> amulet_nbt.IntTag | None: ...
+    @overload
+    def get_int(self, key: str | bytes, default: amulet_nbt.IntTag, raise_errors: Literal[False]) -> amulet_nbt.IntTag: ...
+    @overload
+    def get_int(self, key: str | bytes, default: amulet_nbt.IntTag | None, raise_errors: Literal[True]) -> amulet_nbt.IntTag: ...
+    @overload
+    def get_int(self, key: str | bytes, *, raise_errors: Literal[False]) -> amulet_nbt.IntTag | None: ...
+    @overload
+    def get_int(self, key: str | bytes, *, raise_errors: Literal[True]) -> amulet_nbt.IntTag: ...
 
-    def get_int(self, string key: str | bytes, IntTag default: amulet_nbt.IntTag | None = None, bool raise_errors: bool = False) -> amulet_nbt.IntTag | None:
+    def get_int(self, string key: str | bytes, IntTag default: _T = None, bool raise_errors: bool = False) -> amulet_nbt.IntTag | _T:
         """Get the tag stored in key if it is a IntTag.
     
         :param key: The key to get
@@ -808,33 +760,23 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return tag
 
     @overload
-    def pop_int(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.IntTag | None:
-        ...
-
+    def pop_int(self, key: str | bytes) -> amulet_nbt.IntTag | None: ...
     @overload
-    def pop_int(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.IntTag,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.IntTag:
-        ...
-
+    def pop_int(self, key: str | bytes, default: None) -> amulet_nbt.IntTag | None: ...
     @overload
-    def pop_int(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.IntTag | None,
-        raise_errors: Literal[True] = False,
-    ) -> amulet_nbt.IntTag:
-        ...
+    def pop_int(self, key: str | bytes, default: amulet_nbt.IntTag) -> amulet_nbt.IntTag: ...
+    @overload
+    def pop_int(self, key: str | bytes, default: None, raise_errors: Literal[False]) -> amulet_nbt.IntTag | None: ...
+    @overload
+    def pop_int(self, key: str | bytes, default: amulet_nbt.IntTag, raise_errors: Literal[False]) -> amulet_nbt.IntTag: ...
+    @overload
+    def pop_int(self, key: str | bytes, default: amulet_nbt.IntTag | None, raise_errors: Literal[True]) -> amulet_nbt.IntTag: ...
+    @overload
+    def pop_int(self, key: str | bytes, *, raise_errors: Literal[False]) -> amulet_nbt.IntTag | None: ...
+    @overload
+    def pop_int(self, key: str | bytes, *, raise_errors: Literal[True]) -> amulet_nbt.IntTag: ...
 
-    def pop_int(self, string key: str | bytes, IntTag default: amulet_nbt.IntTag = None, bool raise_errors: bool = False) -> amulet_nbt.IntTag | None:
+    def pop_int(self, string key: str | bytes, IntTag default: _T = None, bool raise_errors: bool = False) -> amulet_nbt.IntTag | _T:
         """Remove the specified key and return the corresponding value if it is a IntTag.
 
         If the key exists but the type is incorrect, the value will not be removed.
@@ -865,33 +807,23 @@ cdef class CompoundTag(AbstractBaseMutableTag):
 
 
     @overload
-    def get_long(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.LongTag | None:
-        ...
-
+    def get_long(self, key: str | bytes) -> amulet_nbt.LongTag | None: ...
     @overload
-    def get_long(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.LongTag,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.LongTag:
-        ...
-
+    def get_long(self, key: str | bytes, default: None) -> amulet_nbt.LongTag | None: ...
     @overload
-    def get_long(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.LongTag | None,
-        raise_errors: Literal[True] = False,
-    ) -> amulet_nbt.LongTag:
-        ...
+    def get_long(self, key: str | bytes, default: amulet_nbt.LongTag) -> amulet_nbt.LongTag: ...
+    @overload
+    def get_long(self, key: str | bytes, default: None, raise_errors: Literal[False]) -> amulet_nbt.LongTag | None: ...
+    @overload
+    def get_long(self, key: str | bytes, default: amulet_nbt.LongTag, raise_errors: Literal[False]) -> amulet_nbt.LongTag: ...
+    @overload
+    def get_long(self, key: str | bytes, default: amulet_nbt.LongTag | None, raise_errors: Literal[True]) -> amulet_nbt.LongTag: ...
+    @overload
+    def get_long(self, key: str | bytes, *, raise_errors: Literal[False]) -> amulet_nbt.LongTag | None: ...
+    @overload
+    def get_long(self, key: str | bytes, *, raise_errors: Literal[True]) -> amulet_nbt.LongTag: ...
 
-    def get_long(self, string key: str | bytes, LongTag default: amulet_nbt.LongTag | None = None, bool raise_errors: bool = False) -> amulet_nbt.LongTag | None:
+    def get_long(self, string key: str | bytes, LongTag default: _T = None, bool raise_errors: bool = False) -> amulet_nbt.LongTag | _T:
         """Get the tag stored in key if it is a LongTag.
     
         :param key: The key to get
@@ -943,33 +875,23 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return tag
 
     @overload
-    def pop_long(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.LongTag | None:
-        ...
-
+    def pop_long(self, key: str | bytes) -> amulet_nbt.LongTag | None: ...
     @overload
-    def pop_long(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.LongTag,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.LongTag:
-        ...
-
+    def pop_long(self, key: str | bytes, default: None) -> amulet_nbt.LongTag | None: ...
     @overload
-    def pop_long(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.LongTag | None,
-        raise_errors: Literal[True] = False,
-    ) -> amulet_nbt.LongTag:
-        ...
+    def pop_long(self, key: str | bytes, default: amulet_nbt.LongTag) -> amulet_nbt.LongTag: ...
+    @overload
+    def pop_long(self, key: str | bytes, default: None, raise_errors: Literal[False]) -> amulet_nbt.LongTag | None: ...
+    @overload
+    def pop_long(self, key: str | bytes, default: amulet_nbt.LongTag, raise_errors: Literal[False]) -> amulet_nbt.LongTag: ...
+    @overload
+    def pop_long(self, key: str | bytes, default: amulet_nbt.LongTag | None, raise_errors: Literal[True]) -> amulet_nbt.LongTag: ...
+    @overload
+    def pop_long(self, key: str | bytes, *, raise_errors: Literal[False]) -> amulet_nbt.LongTag | None: ...
+    @overload
+    def pop_long(self, key: str | bytes, *, raise_errors: Literal[True]) -> amulet_nbt.LongTag: ...
 
-    def pop_long(self, string key: str | bytes, LongTag default: amulet_nbt.LongTag = None, bool raise_errors: bool = False) -> amulet_nbt.LongTag | None:
+    def pop_long(self, string key: str | bytes, LongTag default: _T = None, bool raise_errors: bool = False) -> amulet_nbt.LongTag | _T:
         """Remove the specified key and return the corresponding value if it is a LongTag.
 
         If the key exists but the type is incorrect, the value will not be removed.
@@ -1000,33 +922,23 @@ cdef class CompoundTag(AbstractBaseMutableTag):
 
 
     @overload
-    def get_float(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.FloatTag | None:
-        ...
-
+    def get_float(self, key: str | bytes) -> amulet_nbt.FloatTag | None: ...
     @overload
-    def get_float(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.FloatTag,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.FloatTag:
-        ...
-
+    def get_float(self, key: str | bytes, default: None) -> amulet_nbt.FloatTag | None: ...
     @overload
-    def get_float(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.FloatTag | None,
-        raise_errors: Literal[True] = False,
-    ) -> amulet_nbt.FloatTag:
-        ...
+    def get_float(self, key: str | bytes, default: amulet_nbt.FloatTag) -> amulet_nbt.FloatTag: ...
+    @overload
+    def get_float(self, key: str | bytes, default: None, raise_errors: Literal[False]) -> amulet_nbt.FloatTag | None: ...
+    @overload
+    def get_float(self, key: str | bytes, default: amulet_nbt.FloatTag, raise_errors: Literal[False]) -> amulet_nbt.FloatTag: ...
+    @overload
+    def get_float(self, key: str | bytes, default: amulet_nbt.FloatTag | None, raise_errors: Literal[True]) -> amulet_nbt.FloatTag: ...
+    @overload
+    def get_float(self, key: str | bytes, *, raise_errors: Literal[False]) -> amulet_nbt.FloatTag | None: ...
+    @overload
+    def get_float(self, key: str | bytes, *, raise_errors: Literal[True]) -> amulet_nbt.FloatTag: ...
 
-    def get_float(self, string key: str | bytes, FloatTag default: amulet_nbt.FloatTag | None = None, bool raise_errors: bool = False) -> amulet_nbt.FloatTag | None:
+    def get_float(self, string key: str | bytes, FloatTag default: _T = None, bool raise_errors: bool = False) -> amulet_nbt.FloatTag | _T:
         """Get the tag stored in key if it is a FloatTag.
     
         :param key: The key to get
@@ -1078,33 +990,23 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return tag
 
     @overload
-    def pop_float(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.FloatTag | None:
-        ...
-
+    def pop_float(self, key: str | bytes) -> amulet_nbt.FloatTag | None: ...
     @overload
-    def pop_float(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.FloatTag,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.FloatTag:
-        ...
-
+    def pop_float(self, key: str | bytes, default: None) -> amulet_nbt.FloatTag | None: ...
     @overload
-    def pop_float(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.FloatTag | None,
-        raise_errors: Literal[True] = False,
-    ) -> amulet_nbt.FloatTag:
-        ...
+    def pop_float(self, key: str | bytes, default: amulet_nbt.FloatTag) -> amulet_nbt.FloatTag: ...
+    @overload
+    def pop_float(self, key: str | bytes, default: None, raise_errors: Literal[False]) -> amulet_nbt.FloatTag | None: ...
+    @overload
+    def pop_float(self, key: str | bytes, default: amulet_nbt.FloatTag, raise_errors: Literal[False]) -> amulet_nbt.FloatTag: ...
+    @overload
+    def pop_float(self, key: str | bytes, default: amulet_nbt.FloatTag | None, raise_errors: Literal[True]) -> amulet_nbt.FloatTag: ...
+    @overload
+    def pop_float(self, key: str | bytes, *, raise_errors: Literal[False]) -> amulet_nbt.FloatTag | None: ...
+    @overload
+    def pop_float(self, key: str | bytes, *, raise_errors: Literal[True]) -> amulet_nbt.FloatTag: ...
 
-    def pop_float(self, string key: str | bytes, FloatTag default: amulet_nbt.FloatTag = None, bool raise_errors: bool = False) -> amulet_nbt.FloatTag | None:
+    def pop_float(self, string key: str | bytes, FloatTag default: _T = None, bool raise_errors: bool = False) -> amulet_nbt.FloatTag | _T:
         """Remove the specified key and return the corresponding value if it is a FloatTag.
 
         If the key exists but the type is incorrect, the value will not be removed.
@@ -1135,33 +1037,23 @@ cdef class CompoundTag(AbstractBaseMutableTag):
 
 
     @overload
-    def get_double(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.DoubleTag | None:
-        ...
-
+    def get_double(self, key: str | bytes) -> amulet_nbt.DoubleTag | None: ...
     @overload
-    def get_double(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.DoubleTag,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.DoubleTag:
-        ...
-
+    def get_double(self, key: str | bytes, default: None) -> amulet_nbt.DoubleTag | None: ...
     @overload
-    def get_double(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.DoubleTag | None,
-        raise_errors: Literal[True] = False,
-    ) -> amulet_nbt.DoubleTag:
-        ...
+    def get_double(self, key: str | bytes, default: amulet_nbt.DoubleTag) -> amulet_nbt.DoubleTag: ...
+    @overload
+    def get_double(self, key: str | bytes, default: None, raise_errors: Literal[False]) -> amulet_nbt.DoubleTag | None: ...
+    @overload
+    def get_double(self, key: str | bytes, default: amulet_nbt.DoubleTag, raise_errors: Literal[False]) -> amulet_nbt.DoubleTag: ...
+    @overload
+    def get_double(self, key: str | bytes, default: amulet_nbt.DoubleTag | None, raise_errors: Literal[True]) -> amulet_nbt.DoubleTag: ...
+    @overload
+    def get_double(self, key: str | bytes, *, raise_errors: Literal[False]) -> amulet_nbt.DoubleTag | None: ...
+    @overload
+    def get_double(self, key: str | bytes, *, raise_errors: Literal[True]) -> amulet_nbt.DoubleTag: ...
 
-    def get_double(self, string key: str | bytes, DoubleTag default: amulet_nbt.DoubleTag | None = None, bool raise_errors: bool = False) -> amulet_nbt.DoubleTag | None:
+    def get_double(self, string key: str | bytes, DoubleTag default: _T = None, bool raise_errors: bool = False) -> amulet_nbt.DoubleTag | _T:
         """Get the tag stored in key if it is a DoubleTag.
     
         :param key: The key to get
@@ -1213,33 +1105,23 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return tag
 
     @overload
-    def pop_double(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.DoubleTag | None:
-        ...
-
+    def pop_double(self, key: str | bytes) -> amulet_nbt.DoubleTag | None: ...
     @overload
-    def pop_double(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.DoubleTag,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.DoubleTag:
-        ...
-
+    def pop_double(self, key: str | bytes, default: None) -> amulet_nbt.DoubleTag | None: ...
     @overload
-    def pop_double(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.DoubleTag | None,
-        raise_errors: Literal[True] = False,
-    ) -> amulet_nbt.DoubleTag:
-        ...
+    def pop_double(self, key: str | bytes, default: amulet_nbt.DoubleTag) -> amulet_nbt.DoubleTag: ...
+    @overload
+    def pop_double(self, key: str | bytes, default: None, raise_errors: Literal[False]) -> amulet_nbt.DoubleTag | None: ...
+    @overload
+    def pop_double(self, key: str | bytes, default: amulet_nbt.DoubleTag, raise_errors: Literal[False]) -> amulet_nbt.DoubleTag: ...
+    @overload
+    def pop_double(self, key: str | bytes, default: amulet_nbt.DoubleTag | None, raise_errors: Literal[True]) -> amulet_nbt.DoubleTag: ...
+    @overload
+    def pop_double(self, key: str | bytes, *, raise_errors: Literal[False]) -> amulet_nbt.DoubleTag | None: ...
+    @overload
+    def pop_double(self, key: str | bytes, *, raise_errors: Literal[True]) -> amulet_nbt.DoubleTag: ...
 
-    def pop_double(self, string key: str | bytes, DoubleTag default: amulet_nbt.DoubleTag = None, bool raise_errors: bool = False) -> amulet_nbt.DoubleTag | None:
+    def pop_double(self, string key: str | bytes, DoubleTag default: _T = None, bool raise_errors: bool = False) -> amulet_nbt.DoubleTag | _T:
         """Remove the specified key and return the corresponding value if it is a DoubleTag.
 
         If the key exists but the type is incorrect, the value will not be removed.
@@ -1270,33 +1152,23 @@ cdef class CompoundTag(AbstractBaseMutableTag):
 
 
     @overload
-    def get_string(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.StringTag | None:
-        ...
-
+    def get_string(self, key: str | bytes) -> amulet_nbt.StringTag | None: ...
     @overload
-    def get_string(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.StringTag,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.StringTag:
-        ...
-
+    def get_string(self, key: str | bytes, default: None) -> amulet_nbt.StringTag | None: ...
     @overload
-    def get_string(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.StringTag | None,
-        raise_errors: Literal[True] = False,
-    ) -> amulet_nbt.StringTag:
-        ...
+    def get_string(self, key: str | bytes, default: amulet_nbt.StringTag) -> amulet_nbt.StringTag: ...
+    @overload
+    def get_string(self, key: str | bytes, default: None, raise_errors: Literal[False]) -> amulet_nbt.StringTag | None: ...
+    @overload
+    def get_string(self, key: str | bytes, default: amulet_nbt.StringTag, raise_errors: Literal[False]) -> amulet_nbt.StringTag: ...
+    @overload
+    def get_string(self, key: str | bytes, default: amulet_nbt.StringTag | None, raise_errors: Literal[True]) -> amulet_nbt.StringTag: ...
+    @overload
+    def get_string(self, key: str | bytes, *, raise_errors: Literal[False]) -> amulet_nbt.StringTag | None: ...
+    @overload
+    def get_string(self, key: str | bytes, *, raise_errors: Literal[True]) -> amulet_nbt.StringTag: ...
 
-    def get_string(self, string key: str | bytes, StringTag default: amulet_nbt.StringTag | None = None, bool raise_errors: bool = False) -> amulet_nbt.StringTag | None:
+    def get_string(self, string key: str | bytes, StringTag default: _T = None, bool raise_errors: bool = False) -> amulet_nbt.StringTag | _T:
         """Get the tag stored in key if it is a StringTag.
     
         :param key: The key to get
@@ -1348,33 +1220,23 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return tag
 
     @overload
-    def pop_string(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.StringTag | None:
-        ...
-
+    def pop_string(self, key: str | bytes) -> amulet_nbt.StringTag | None: ...
     @overload
-    def pop_string(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.StringTag,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.StringTag:
-        ...
-
+    def pop_string(self, key: str | bytes, default: None) -> amulet_nbt.StringTag | None: ...
     @overload
-    def pop_string(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.StringTag | None,
-        raise_errors: Literal[True] = False,
-    ) -> amulet_nbt.StringTag:
-        ...
+    def pop_string(self, key: str | bytes, default: amulet_nbt.StringTag) -> amulet_nbt.StringTag: ...
+    @overload
+    def pop_string(self, key: str | bytes, default: None, raise_errors: Literal[False]) -> amulet_nbt.StringTag | None: ...
+    @overload
+    def pop_string(self, key: str | bytes, default: amulet_nbt.StringTag, raise_errors: Literal[False]) -> amulet_nbt.StringTag: ...
+    @overload
+    def pop_string(self, key: str | bytes, default: amulet_nbt.StringTag | None, raise_errors: Literal[True]) -> amulet_nbt.StringTag: ...
+    @overload
+    def pop_string(self, key: str | bytes, *, raise_errors: Literal[False]) -> amulet_nbt.StringTag | None: ...
+    @overload
+    def pop_string(self, key: str | bytes, *, raise_errors: Literal[True]) -> amulet_nbt.StringTag: ...
 
-    def pop_string(self, string key: str | bytes, StringTag default: amulet_nbt.StringTag = None, bool raise_errors: bool = False) -> amulet_nbt.StringTag | None:
+    def pop_string(self, string key: str | bytes, StringTag default: _T = None, bool raise_errors: bool = False) -> amulet_nbt.StringTag | _T:
         """Remove the specified key and return the corresponding value if it is a StringTag.
 
         If the key exists but the type is incorrect, the value will not be removed.
@@ -1405,33 +1267,23 @@ cdef class CompoundTag(AbstractBaseMutableTag):
 
 
     @overload
-    def get_list(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.ListTag | None:
-        ...
-
+    def get_list(self, key: str | bytes) -> amulet_nbt.ListTag | None: ...
     @overload
-    def get_list(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.ListTag,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.ListTag:
-        ...
-
+    def get_list(self, key: str | bytes, default: None) -> amulet_nbt.ListTag | None: ...
     @overload
-    def get_list(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.ListTag | None,
-        raise_errors: Literal[True] = False,
-    ) -> amulet_nbt.ListTag:
-        ...
+    def get_list(self, key: str | bytes, default: amulet_nbt.ListTag) -> amulet_nbt.ListTag: ...
+    @overload
+    def get_list(self, key: str | bytes, default: None, raise_errors: Literal[False]) -> amulet_nbt.ListTag | None: ...
+    @overload
+    def get_list(self, key: str | bytes, default: amulet_nbt.ListTag, raise_errors: Literal[False]) -> amulet_nbt.ListTag: ...
+    @overload
+    def get_list(self, key: str | bytes, default: amulet_nbt.ListTag | None, raise_errors: Literal[True]) -> amulet_nbt.ListTag: ...
+    @overload
+    def get_list(self, key: str | bytes, *, raise_errors: Literal[False]) -> amulet_nbt.ListTag | None: ...
+    @overload
+    def get_list(self, key: str | bytes, *, raise_errors: Literal[True]) -> amulet_nbt.ListTag: ...
 
-    def get_list(self, string key: str | bytes, ListTag default: amulet_nbt.ListTag | None = None, bool raise_errors: bool = False) -> amulet_nbt.ListTag | None:
+    def get_list(self, string key: str | bytes, ListTag default: _T = None, bool raise_errors: bool = False) -> amulet_nbt.ListTag | _T:
         """Get the tag stored in key if it is a ListTag.
     
         :param key: The key to get
@@ -1483,33 +1335,23 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return tag
 
     @overload
-    def pop_list(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.ListTag | None:
-        ...
-
+    def pop_list(self, key: str | bytes) -> amulet_nbt.ListTag | None: ...
     @overload
-    def pop_list(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.ListTag,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.ListTag:
-        ...
-
+    def pop_list(self, key: str | bytes, default: None) -> amulet_nbt.ListTag | None: ...
     @overload
-    def pop_list(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.ListTag | None,
-        raise_errors: Literal[True] = False,
-    ) -> amulet_nbt.ListTag:
-        ...
+    def pop_list(self, key: str | bytes, default: amulet_nbt.ListTag) -> amulet_nbt.ListTag: ...
+    @overload
+    def pop_list(self, key: str | bytes, default: None, raise_errors: Literal[False]) -> amulet_nbt.ListTag | None: ...
+    @overload
+    def pop_list(self, key: str | bytes, default: amulet_nbt.ListTag, raise_errors: Literal[False]) -> amulet_nbt.ListTag: ...
+    @overload
+    def pop_list(self, key: str | bytes, default: amulet_nbt.ListTag | None, raise_errors: Literal[True]) -> amulet_nbt.ListTag: ...
+    @overload
+    def pop_list(self, key: str | bytes, *, raise_errors: Literal[False]) -> amulet_nbt.ListTag | None: ...
+    @overload
+    def pop_list(self, key: str | bytes, *, raise_errors: Literal[True]) -> amulet_nbt.ListTag: ...
 
-    def pop_list(self, string key: str | bytes, ListTag default: amulet_nbt.ListTag = None, bool raise_errors: bool = False) -> amulet_nbt.ListTag | None:
+    def pop_list(self, string key: str | bytes, ListTag default: _T = None, bool raise_errors: bool = False) -> amulet_nbt.ListTag | _T:
         """Remove the specified key and return the corresponding value if it is a ListTag.
 
         If the key exists but the type is incorrect, the value will not be removed.
@@ -1540,33 +1382,23 @@ cdef class CompoundTag(AbstractBaseMutableTag):
 
 
     @overload
-    def get_compound(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.CompoundTag | None:
-        ...
-
+    def get_compound(self, key: str | bytes) -> amulet_nbt.CompoundTag | None: ...
     @overload
-    def get_compound(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.CompoundTag,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.CompoundTag:
-        ...
-
+    def get_compound(self, key: str | bytes, default: None) -> amulet_nbt.CompoundTag | None: ...
     @overload
-    def get_compound(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.CompoundTag | None,
-        raise_errors: Literal[True] = False,
-    ) -> amulet_nbt.CompoundTag:
-        ...
+    def get_compound(self, key: str | bytes, default: amulet_nbt.CompoundTag) -> amulet_nbt.CompoundTag: ...
+    @overload
+    def get_compound(self, key: str | bytes, default: None, raise_errors: Literal[False]) -> amulet_nbt.CompoundTag | None: ...
+    @overload
+    def get_compound(self, key: str | bytes, default: amulet_nbt.CompoundTag, raise_errors: Literal[False]) -> amulet_nbt.CompoundTag: ...
+    @overload
+    def get_compound(self, key: str | bytes, default: amulet_nbt.CompoundTag | None, raise_errors: Literal[True]) -> amulet_nbt.CompoundTag: ...
+    @overload
+    def get_compound(self, key: str | bytes, *, raise_errors: Literal[False]) -> amulet_nbt.CompoundTag | None: ...
+    @overload
+    def get_compound(self, key: str | bytes, *, raise_errors: Literal[True]) -> amulet_nbt.CompoundTag: ...
 
-    def get_compound(self, string key: str | bytes, CompoundTag default: amulet_nbt.CompoundTag | None = None, bool raise_errors: bool = False) -> amulet_nbt.CompoundTag | None:
+    def get_compound(self, string key: str | bytes, CompoundTag default: _T = None, bool raise_errors: bool = False) -> amulet_nbt.CompoundTag | _T:
         """Get the tag stored in key if it is a CompoundTag.
     
         :param key: The key to get
@@ -1618,33 +1450,23 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return tag
 
     @overload
-    def pop_compound(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.CompoundTag | None:
-        ...
-
+    def pop_compound(self, key: str | bytes) -> amulet_nbt.CompoundTag | None: ...
     @overload
-    def pop_compound(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.CompoundTag,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.CompoundTag:
-        ...
-
+    def pop_compound(self, key: str | bytes, default: None) -> amulet_nbt.CompoundTag | None: ...
     @overload
-    def pop_compound(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.CompoundTag | None,
-        raise_errors: Literal[True] = False,
-    ) -> amulet_nbt.CompoundTag:
-        ...
+    def pop_compound(self, key: str | bytes, default: amulet_nbt.CompoundTag) -> amulet_nbt.CompoundTag: ...
+    @overload
+    def pop_compound(self, key: str | bytes, default: None, raise_errors: Literal[False]) -> amulet_nbt.CompoundTag | None: ...
+    @overload
+    def pop_compound(self, key: str | bytes, default: amulet_nbt.CompoundTag, raise_errors: Literal[False]) -> amulet_nbt.CompoundTag: ...
+    @overload
+    def pop_compound(self, key: str | bytes, default: amulet_nbt.CompoundTag | None, raise_errors: Literal[True]) -> amulet_nbt.CompoundTag: ...
+    @overload
+    def pop_compound(self, key: str | bytes, *, raise_errors: Literal[False]) -> amulet_nbt.CompoundTag | None: ...
+    @overload
+    def pop_compound(self, key: str | bytes, *, raise_errors: Literal[True]) -> amulet_nbt.CompoundTag: ...
 
-    def pop_compound(self, string key: str | bytes, CompoundTag default: amulet_nbt.CompoundTag = None, bool raise_errors: bool = False) -> amulet_nbt.CompoundTag | None:
+    def pop_compound(self, string key: str | bytes, CompoundTag default: _T = None, bool raise_errors: bool = False) -> amulet_nbt.CompoundTag | _T:
         """Remove the specified key and return the corresponding value if it is a CompoundTag.
 
         If the key exists but the type is incorrect, the value will not be removed.
@@ -1675,33 +1497,23 @@ cdef class CompoundTag(AbstractBaseMutableTag):
 
 
     @overload
-    def get_byte_array(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.ByteArrayTag | None:
-        ...
-
+    def get_byte_array(self, key: str | bytes) -> amulet_nbt.ByteArrayTag | None: ...
     @overload
-    def get_byte_array(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.ByteArrayTag,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.ByteArrayTag:
-        ...
-
+    def get_byte_array(self, key: str | bytes, default: None) -> amulet_nbt.ByteArrayTag | None: ...
     @overload
-    def get_byte_array(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.ByteArrayTag | None,
-        raise_errors: Literal[True] = False,
-    ) -> amulet_nbt.ByteArrayTag:
-        ...
+    def get_byte_array(self, key: str | bytes, default: amulet_nbt.ByteArrayTag) -> amulet_nbt.ByteArrayTag: ...
+    @overload
+    def get_byte_array(self, key: str | bytes, default: None, raise_errors: Literal[False]) -> amulet_nbt.ByteArrayTag | None: ...
+    @overload
+    def get_byte_array(self, key: str | bytes, default: amulet_nbt.ByteArrayTag, raise_errors: Literal[False]) -> amulet_nbt.ByteArrayTag: ...
+    @overload
+    def get_byte_array(self, key: str | bytes, default: amulet_nbt.ByteArrayTag | None, raise_errors: Literal[True]) -> amulet_nbt.ByteArrayTag: ...
+    @overload
+    def get_byte_array(self, key: str | bytes, *, raise_errors: Literal[False]) -> amulet_nbt.ByteArrayTag | None: ...
+    @overload
+    def get_byte_array(self, key: str | bytes, *, raise_errors: Literal[True]) -> amulet_nbt.ByteArrayTag: ...
 
-    def get_byte_array(self, string key: str | bytes, ByteArrayTag default: amulet_nbt.ByteArrayTag | None = None, bool raise_errors: bool = False) -> amulet_nbt.ByteArrayTag | None:
+    def get_byte_array(self, string key: str | bytes, ByteArrayTag default: _T = None, bool raise_errors: bool = False) -> amulet_nbt.ByteArrayTag | _T:
         """Get the tag stored in key if it is a ByteArrayTag.
     
         :param key: The key to get
@@ -1753,33 +1565,23 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return tag
 
     @overload
-    def pop_byte_array(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.ByteArrayTag | None:
-        ...
-
+    def pop_byte_array(self, key: str | bytes) -> amulet_nbt.ByteArrayTag | None: ...
     @overload
-    def pop_byte_array(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.ByteArrayTag,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.ByteArrayTag:
-        ...
-
+    def pop_byte_array(self, key: str | bytes, default: None) -> amulet_nbt.ByteArrayTag | None: ...
     @overload
-    def pop_byte_array(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.ByteArrayTag | None,
-        raise_errors: Literal[True] = False,
-    ) -> amulet_nbt.ByteArrayTag:
-        ...
+    def pop_byte_array(self, key: str | bytes, default: amulet_nbt.ByteArrayTag) -> amulet_nbt.ByteArrayTag: ...
+    @overload
+    def pop_byte_array(self, key: str | bytes, default: None, raise_errors: Literal[False]) -> amulet_nbt.ByteArrayTag | None: ...
+    @overload
+    def pop_byte_array(self, key: str | bytes, default: amulet_nbt.ByteArrayTag, raise_errors: Literal[False]) -> amulet_nbt.ByteArrayTag: ...
+    @overload
+    def pop_byte_array(self, key: str | bytes, default: amulet_nbt.ByteArrayTag | None, raise_errors: Literal[True]) -> amulet_nbt.ByteArrayTag: ...
+    @overload
+    def pop_byte_array(self, key: str | bytes, *, raise_errors: Literal[False]) -> amulet_nbt.ByteArrayTag | None: ...
+    @overload
+    def pop_byte_array(self, key: str | bytes, *, raise_errors: Literal[True]) -> amulet_nbt.ByteArrayTag: ...
 
-    def pop_byte_array(self, string key: str | bytes, ByteArrayTag default: amulet_nbt.ByteArrayTag = None, bool raise_errors: bool = False) -> amulet_nbt.ByteArrayTag | None:
+    def pop_byte_array(self, string key: str | bytes, ByteArrayTag default: _T = None, bool raise_errors: bool = False) -> amulet_nbt.ByteArrayTag | _T:
         """Remove the specified key and return the corresponding value if it is a ByteArrayTag.
 
         If the key exists but the type is incorrect, the value will not be removed.
@@ -1810,33 +1612,23 @@ cdef class CompoundTag(AbstractBaseMutableTag):
 
 
     @overload
-    def get_int_array(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.IntArrayTag | None:
-        ...
-
+    def get_int_array(self, key: str | bytes) -> amulet_nbt.IntArrayTag | None: ...
     @overload
-    def get_int_array(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.IntArrayTag,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.IntArrayTag:
-        ...
-
+    def get_int_array(self, key: str | bytes, default: None) -> amulet_nbt.IntArrayTag | None: ...
     @overload
-    def get_int_array(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.IntArrayTag | None,
-        raise_errors: Literal[True] = False,
-    ) -> amulet_nbt.IntArrayTag:
-        ...
+    def get_int_array(self, key: str | bytes, default: amulet_nbt.IntArrayTag) -> amulet_nbt.IntArrayTag: ...
+    @overload
+    def get_int_array(self, key: str | bytes, default: None, raise_errors: Literal[False]) -> amulet_nbt.IntArrayTag | None: ...
+    @overload
+    def get_int_array(self, key: str | bytes, default: amulet_nbt.IntArrayTag, raise_errors: Literal[False]) -> amulet_nbt.IntArrayTag: ...
+    @overload
+    def get_int_array(self, key: str | bytes, default: amulet_nbt.IntArrayTag | None, raise_errors: Literal[True]) -> amulet_nbt.IntArrayTag: ...
+    @overload
+    def get_int_array(self, key: str | bytes, *, raise_errors: Literal[False]) -> amulet_nbt.IntArrayTag | None: ...
+    @overload
+    def get_int_array(self, key: str | bytes, *, raise_errors: Literal[True]) -> amulet_nbt.IntArrayTag: ...
 
-    def get_int_array(self, string key: str | bytes, IntArrayTag default: amulet_nbt.IntArrayTag | None = None, bool raise_errors: bool = False) -> amulet_nbt.IntArrayTag | None:
+    def get_int_array(self, string key: str | bytes, IntArrayTag default: _T = None, bool raise_errors: bool = False) -> amulet_nbt.IntArrayTag | _T:
         """Get the tag stored in key if it is a IntArrayTag.
     
         :param key: The key to get
@@ -1888,33 +1680,23 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return tag
 
     @overload
-    def pop_int_array(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.IntArrayTag | None:
-        ...
-
+    def pop_int_array(self, key: str | bytes) -> amulet_nbt.IntArrayTag | None: ...
     @overload
-    def pop_int_array(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.IntArrayTag,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.IntArrayTag:
-        ...
-
+    def pop_int_array(self, key: str | bytes, default: None) -> amulet_nbt.IntArrayTag | None: ...
     @overload
-    def pop_int_array(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.IntArrayTag | None,
-        raise_errors: Literal[True] = False,
-    ) -> amulet_nbt.IntArrayTag:
-        ...
+    def pop_int_array(self, key: str | bytes, default: amulet_nbt.IntArrayTag) -> amulet_nbt.IntArrayTag: ...
+    @overload
+    def pop_int_array(self, key: str | bytes, default: None, raise_errors: Literal[False]) -> amulet_nbt.IntArrayTag | None: ...
+    @overload
+    def pop_int_array(self, key: str | bytes, default: amulet_nbt.IntArrayTag, raise_errors: Literal[False]) -> amulet_nbt.IntArrayTag: ...
+    @overload
+    def pop_int_array(self, key: str | bytes, default: amulet_nbt.IntArrayTag | None, raise_errors: Literal[True]) -> amulet_nbt.IntArrayTag: ...
+    @overload
+    def pop_int_array(self, key: str | bytes, *, raise_errors: Literal[False]) -> amulet_nbt.IntArrayTag | None: ...
+    @overload
+    def pop_int_array(self, key: str | bytes, *, raise_errors: Literal[True]) -> amulet_nbt.IntArrayTag: ...
 
-    def pop_int_array(self, string key: str | bytes, IntArrayTag default: amulet_nbt.IntArrayTag = None, bool raise_errors: bool = False) -> amulet_nbt.IntArrayTag | None:
+    def pop_int_array(self, string key: str | bytes, IntArrayTag default: _T = None, bool raise_errors: bool = False) -> amulet_nbt.IntArrayTag | _T:
         """Remove the specified key and return the corresponding value if it is a IntArrayTag.
 
         If the key exists but the type is incorrect, the value will not be removed.
@@ -1945,33 +1727,23 @@ cdef class CompoundTag(AbstractBaseMutableTag):
 
 
     @overload
-    def get_long_array(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.LongArrayTag | None:
-        ...
-
+    def get_long_array(self, key: str | bytes) -> amulet_nbt.LongArrayTag | None: ...
     @overload
-    def get_long_array(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.LongArrayTag,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.LongArrayTag:
-        ...
-
+    def get_long_array(self, key: str | bytes, default: None) -> amulet_nbt.LongArrayTag | None: ...
     @overload
-    def get_long_array(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.LongArrayTag | None,
-        raise_errors: Literal[True] = False,
-    ) -> amulet_nbt.LongArrayTag:
-        ...
+    def get_long_array(self, key: str | bytes, default: amulet_nbt.LongArrayTag) -> amulet_nbt.LongArrayTag: ...
+    @overload
+    def get_long_array(self, key: str | bytes, default: None, raise_errors: Literal[False]) -> amulet_nbt.LongArrayTag | None: ...
+    @overload
+    def get_long_array(self, key: str | bytes, default: amulet_nbt.LongArrayTag, raise_errors: Literal[False]) -> amulet_nbt.LongArrayTag: ...
+    @overload
+    def get_long_array(self, key: str | bytes, default: amulet_nbt.LongArrayTag | None, raise_errors: Literal[True]) -> amulet_nbt.LongArrayTag: ...
+    @overload
+    def get_long_array(self, key: str | bytes, *, raise_errors: Literal[False]) -> amulet_nbt.LongArrayTag | None: ...
+    @overload
+    def get_long_array(self, key: str | bytes, *, raise_errors: Literal[True]) -> amulet_nbt.LongArrayTag: ...
 
-    def get_long_array(self, string key: str | bytes, LongArrayTag default: amulet_nbt.LongArrayTag | None = None, bool raise_errors: bool = False) -> amulet_nbt.LongArrayTag | None:
+    def get_long_array(self, string key: str | bytes, LongArrayTag default: _T = None, bool raise_errors: bool = False) -> amulet_nbt.LongArrayTag | _T:
         """Get the tag stored in key if it is a LongArrayTag.
     
         :param key: The key to get
@@ -2023,33 +1795,23 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return tag
 
     @overload
-    def pop_long_array(
-        self,
-        key: str | bytes,
-        default: None = None,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.LongArrayTag | None:
-        ...
-
+    def pop_long_array(self, key: str | bytes) -> amulet_nbt.LongArrayTag | None: ...
     @overload
-    def pop_long_array(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.LongArrayTag,
-        raise_errors: Literal[False] = False,
-    ) -> amulet_nbt.LongArrayTag:
-        ...
-
+    def pop_long_array(self, key: str | bytes, default: None) -> amulet_nbt.LongArrayTag | None: ...
     @overload
-    def pop_long_array(
-        self,
-        key: str | bytes,
-        default: amulet_nbt.LongArrayTag | None,
-        raise_errors: Literal[True] = False,
-    ) -> amulet_nbt.LongArrayTag:
-        ...
+    def pop_long_array(self, key: str | bytes, default: amulet_nbt.LongArrayTag) -> amulet_nbt.LongArrayTag: ...
+    @overload
+    def pop_long_array(self, key: str | bytes, default: None, raise_errors: Literal[False]) -> amulet_nbt.LongArrayTag | None: ...
+    @overload
+    def pop_long_array(self, key: str | bytes, default: amulet_nbt.LongArrayTag, raise_errors: Literal[False]) -> amulet_nbt.LongArrayTag: ...
+    @overload
+    def pop_long_array(self, key: str | bytes, default: amulet_nbt.LongArrayTag | None, raise_errors: Literal[True]) -> amulet_nbt.LongArrayTag: ...
+    @overload
+    def pop_long_array(self, key: str | bytes, *, raise_errors: Literal[False]) -> amulet_nbt.LongArrayTag | None: ...
+    @overload
+    def pop_long_array(self, key: str | bytes, *, raise_errors: Literal[True]) -> amulet_nbt.LongArrayTag: ...
 
-    def pop_long_array(self, string key: str | bytes, LongArrayTag default: amulet_nbt.LongArrayTag = None, bool raise_errors: bool = False) -> amulet_nbt.LongArrayTag | None:
+    def pop_long_array(self, string key: str | bytes, LongArrayTag default: _T = None, bool raise_errors: bool = False) -> amulet_nbt.LongArrayTag | _T:
         """Remove the specified key and return the corresponding value if it is a LongArrayTag.
 
         If the key exists but the type is incorrect, the value will not be removed.

@@ -57,6 +57,8 @@ from .deepcopy cimport CCompoundTagPtr_deepcopy
 
 import amulet_nbt
 
+_T = TypeVar("_T")
+
 {{py:
 ClassData = (
     #id,  C cls,           C node cls          C list cls        py cls,         tag var,          list var
@@ -236,20 +238,20 @@ cdef class CompoundTag(AbstractBaseMutableTag):
         return wrap_node(&dereference(it).second)
 
     @overload
-    def get(self, key: str | bytes, default: None = None) -> amulet_nbt.AnyNBT | None:...
+    def get(self, key: str | bytes) -> AnyNBT | None: ...
     @overload
-    def get(self, key: str | bytes, default: _TagT = None) -> amulet_nbt.AnyNBT: ...
+    def get(self, key: str | bytes, default: _T) -> AnyNBT | _T: ...
     @overload
-    def get(self, key: str | bytes, default: None = None, cls: Type[_TagT] = AbstractBaseTag) -> _TagT | None: ...
+    def get(self, key: str | bytes, *, cls: Type[_TagT]) -> _TagT | None: ...
     @overload
-    def get(self, key: str | bytes, default: _TagT = None, cls: Type[_TagT] = AbstractBaseTag) -> _TagT: ...
+    def get(self, key: str | bytes, default: _T, cls: Type[_TagT]) -> _TagT | _T: ...
 
     def get(
         self,
         string key: str | bytes,
-        object default: _TagT | None = None,
+        object default: _T = None,
         object cls: Type[_TagT] = AbstractBaseTag
-    ) -> _TagT | None:
+    ) -> _TagT | _T:
         """Get an item from the CompoundTag.
 
         :param key: The key to get

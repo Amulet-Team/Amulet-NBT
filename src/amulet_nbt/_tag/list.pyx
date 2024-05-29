@@ -2548,6 +2548,9 @@ cdef class ListTag(AbstractBaseMutableTag):
         node.emplace[CListTagPtr](self.cpp)
         return node
 
+    def __class_getitem__(cls, key: Any) -> type[ListTag]:
+        return cls
+
     @property
     def py_list(self) -> list[ByteTag] | list[ShortTag] | list[IntTag] | list[LongTag] | list[FloatTag] | list[
         DoubleTag] | list[StringTag] | list[CompoundTag] | list[ByteArrayTag] | list[IntArrayTag] | list[LongArrayTag]:

@@ -76,18 +76,18 @@ class FloatTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
                 float_cls(5.0)
                 float_cls(-5.0)
                 with self.assertRaises(TypeError):
-                    float_cls(None)
+                    float_cls(None)  # type: ignore
 
         for cls in self.nbt_types:
             tag = cls()
             try:
-                float(tag)
+                float(tag)  # type: ignore
             except:
                 pass
             else:
                 for float_cls in self.float_types:
                     with self.subTest(cls=cls, float_cls=float_cls):
-                        float_cls(tag)
+                        float_cls(tag)  # type: ignore
 
         for obj in self.not_nbt:
             try:

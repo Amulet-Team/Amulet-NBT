@@ -9,7 +9,7 @@ datas = {
 }
 
 
-def main():
+def main() -> None:
     data_dir = os.path.join(os.path.dirname(__file__), "src")
     input_dir = os.path.join(data_dir, "big_endian_compressed_nbt")
 

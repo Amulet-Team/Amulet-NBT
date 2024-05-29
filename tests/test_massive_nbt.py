@@ -20,7 +20,7 @@ from amulet_nbt import (
 
 
 class MassiveNBTTests(unittest.TestCase):
-    def test_api(self):
+    def test_api(self) -> None:
         compound = CompoundTag()
         named_compound = NamedTag(compound, name="hello")
 

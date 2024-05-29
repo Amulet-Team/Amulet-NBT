@@ -195,7 +195,7 @@ class NamedTagTestCase(AbstractBaseTestCase, unittest.TestCase):
         self.assertEqual(name, named_tag[0])
         self.assertEqual(tag, named_tag[1])
         with self.assertRaises(IndexError):
-            named_tag[2]
+            named_tag[2]  # type: ignore
 
     def test_to_nbt(self) -> None:
         for cls in self.nbt_types:
@@ -209,19 +209,25 @@ class NamedTagTestCase(AbstractBaseTestCase, unittest.TestCase):
                         utf8_encoding,
                         utf8_escape_encoding,
                     ):
-                        self.assertEqual(
-                            tag.to_nbt(
-                                compressed=compressed,
-                                little_endian=little_endian,
-                                string_encoding=string_encoding,
-                                name=name,
-                            ),
-                            named_tag.to_nbt(
-                                compressed=compressed,
-                                little_endian=little_endian,
-                                string_encoding=string_encoding,
-                            ),
-                        )
+                        with self.subTest(
+                            cls=cls,
+                            little_endian=little_endian,
+                            compressed=compressed,
+                            string_encoding=string_encoding,
+                        ):
+                            self.assertEqual(
+                                tag.to_nbt(
+                                    compressed=compressed,
+                                    little_endian=little_endian,
+                                    string_encoding=string_encoding,
+                                    name=name,
+                                ),
+                                named_tag.to_nbt(
+                                    compressed=compressed,
+                                    little_endian=little_endian,
+                                    string_encoding=string_encoding,
+                                ),
+                            )
 
     def test_from_nbt(self) -> None:
         for bnbt, correct_named_tag in (

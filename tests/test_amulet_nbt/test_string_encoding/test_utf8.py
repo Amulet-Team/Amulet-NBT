@@ -3,7 +3,7 @@ from amulet_nbt import mutf8_encoding, utf8_encoding
 
 
 class TestUTF(unittest.TestCase):
-    def test_range(self):
+    def test_range(self) -> None:
         """For every valid UTF-8 character try encoding and decoding."""
         for i in range(1114112):
             c = chr(i)
@@ -20,7 +20,7 @@ class TestUTF(unittest.TestCase):
                 else:
                     self.assertEqual(utf8, mutf8_encoding.decode(mutf8))
 
-    def test_powers(self):
+    def test_powers(self) -> None:
         for v, mutf8_true_bin in (
             (0, [0b11000000, 0b10000000]),
             (1, [0b00000001]),

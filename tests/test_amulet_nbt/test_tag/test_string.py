@@ -103,7 +103,7 @@ class StringTagTestCase(AbstractBaseImmutableTagTestCase, unittest.TestCase):
         self.assertTrue(StringTag("val1") >= StringTag("val1"))
         self.assertFalse(StringTag("val1") >= StringTag("val2"))
 
-    def test_to_nbt(self):
+    def test_to_nbt(self) -> None:
         self.assertEqual(
             b"\x08\x00\x00\x00\x00",
             StringTag().to_nbt(compressed=False, little_endian=False),
@@ -159,7 +159,7 @@ class StringTagTestCase(AbstractBaseImmutableTagTestCase, unittest.TestCase):
         with self.assertRaises(OverflowError):
             StringTag("a" * 65536).to_nbt(compressed=False)
 
-    def test_from_nbt(self):
+    def test_from_nbt(self) -> None:
         self.assertEqual(
             StringTag(),
             load_nbt(
@@ -215,13 +215,13 @@ class StringTagTestCase(AbstractBaseImmutableTagTestCase, unittest.TestCase):
         with self.assertRaises(NBTFormatError):
             load_nbt(b"\x08\x00\x00\x00\x05abcd")
 
-    def test_to_snbt(self):
+    def test_to_snbt(self) -> None:
         self.assertEqual('""', StringTag().to_snbt())
         self.assertEqual('"value"', StringTag("value").to_snbt())
         self.assertEqual('"quote\\"value"', StringTag('quote"value').to_snbt())
         self.assertEqual('"quote\'value"', StringTag("quote'value").to_snbt())
 
-    def test_from_snbt(self):
+    def test_from_snbt(self) -> None:
         self.assertEqual(StringTag(), from_snbt("''"))
         self.assertEqual(StringTag(), from_snbt('""'))
 

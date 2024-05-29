@@ -159,7 +159,7 @@ class ArrayTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                     numpy.asarray(cls([-3, -2, -1, 0, 1, 2, 3])),
                 )
 
-    def test_to_nbt(self):
+    def test_to_nbt(self) -> None:
         self.assertEqual(
             b"\x07\x00\x00\x00\x00\x00\x00",
             ByteArrayTag().to_nbt(compressed=False, little_endian=False),
@@ -209,7 +209,7 @@ class ArrayTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
             ),
         )
 
-    def test_from_nbt(self):
+    def test_from_nbt(self) -> None:
         self.assertEqual(
             ByteArrayTag(),
             load_nbt(
@@ -345,7 +345,7 @@ class ArrayTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 b"\x0C\x00\x00\x00\x00\x00\x02\x00",
             )
 
-    def test_to_snbt(self):
+    def test_to_snbt(self) -> None:
         with self.subTest():
             self.assertEqual("[B;]", ByteArrayTag().to_snbt())
             self.assertEqual(
@@ -365,7 +365,7 @@ class ArrayTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 LongArrayTag([-3, -2, -1, 0, 1, 2, 3]).to_snbt(),
             )
 
-    def test_from_snbt(self):
+    def test_from_snbt(self) -> None:
         with self.subTest("ByteArrayTag"):
             self.assertEqual(ByteArrayTag(), from_snbt("[B;]"))
             self.assertEqual(

@@ -1,3 +1,4 @@
+from typing import Any
 import copy
 import pickle
 import itertools
@@ -29,7 +30,7 @@ from amulet_nbt import (
 )
 
 
-def is_iterable(obj):
+def is_iterable(obj: Any) -> bool:
     try:
         iter(obj)
     except TypeError:
@@ -60,7 +61,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 self.assertEqual(cls.tag_id, ListTag([cls()]).element_tag_id)
 
                 with self.assertRaises(TypeError):
-                    ListTag(None)
+                    ListTag(None)  # type: ignore
 
             for cls2 in self.nbt_types:
                 if cls is not cls2:
@@ -75,14 +76,14 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
     def test_equal(self) -> None:
         for cls1, cls2 in itertools.product(self.nbt_types, repeat=2):
             with self.subTest(cls1=cls1, cls2=cls2):
-                i1 = cls1()
-                i2 = cls2()
-                if i1 == i2:
-                    self.assertEqual(ListTag([i1]), ListTag([i2]))
-                    self.assertEqual(ListTag([i1, i1]), ListTag([i2, i2]))
+                c1 = cls1()
+                c2 = cls2()
+                if c1 == c2:
+                    self.assertEqual(ListTag([c1]), ListTag([c2]))
+                    self.assertEqual(ListTag([c1, c1]), ListTag([c2, c2]))
                 else:
-                    self.assertNotEqual(ListTag([i1]), ListTag([i2]))
-                    self.assertNotEqual(ListTag([i1, i1]), ListTag([i2, i2]))
+                    self.assertNotEqual(ListTag([c1]), ListTag([c2]))
+                    self.assertNotEqual(ListTag([c1, c1]), ListTag([c2, c2]))
 
         # empty lists should always be equal regardless of the data type specified
         for i1, i2 in itertools.product(range(0, 13), repeat=2):
@@ -92,7 +93,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 )
 
     def test_py_data(self) -> None:
-        tag = ListTag()
+        tag = ListTag[Any]()
         self.assertIsInstance(tag.py_list, list)
         self.assertEqual(tag.py_list, [])
 
@@ -315,7 +316,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
     def test_copy(self) -> None:
         for cls in self.nbt_types:
             with self.subTest("copy append", cls=cls):
-                tag = ListTag([])
+                tag = ListTag[Any]([])
                 tag2 = copy.copy(tag)
 
                 self.assertEqual(tag.element_tag_id, tag2.element_tag_id)
@@ -367,7 +368,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
     def test_deepcopy(self) -> None:
         for cls in self.nbt_types:
             with self.subTest("deepcopy append", cls=cls):
-                tag = ListTag([])
+                tag = ListTag[Any]([])
                 tag2 = copy.deepcopy(tag)
 
                 self.assertEqual(tag.element_tag_id, tag2.element_tag_id)
@@ -630,20 +631,22 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         )
 
     def test_index(self) -> None:
-        tag = ListTag([StringTag("val1"), StringTag("val2"), StringTag("val2")])
-        self.assertEqual(1, tag.index(StringTag("val2")))
+        str_list_tag = ListTag(
+            [StringTag("val1"), StringTag("val2"), StringTag("val2")]
+        )
+        self.assertEqual(1, str_list_tag.index(StringTag("val2")))
         with self.assertRaises(ValueError):
-            tag.index(StringTag("val3"))
+            str_list_tag.index(StringTag("val3"))
 
         for obj in self.not_nbt:
             with self.subTest(val=obj), self.assertRaises(ValueError):
-                tag.index(obj)
+                str_list_tag.index(obj)
 
-        tag = ListTag([ByteTag(1), ByteTag(2), ByteTag(3)])
+        byte_list_tag = ListTag([ByteTag(1), ByteTag(2), ByteTag(3)])
         with self.assertRaises(ValueError):
-            tag.index(ShortTag(2))
+            byte_list_tag.index(ShortTag(2))
         with self.assertRaises(ValueError):
-            tag.index(True)
+            byte_list_tag.index(True)
 
     def test_count(self) -> None:
         tag = ListTag([StringTag("val1"), StringTag("val2"), StringTag("val2")])
@@ -656,7 +659,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
     def test_append(self) -> None:
         for cls1 in self.nbt_types:
             with self.subTest(cls1=cls1):
-                tag = ListTag()
+                tag = ListTag[Any]()
                 tag.append(cls1())
                 self.assertEqual(ListTag([cls1()]), tag)
                 self.assertEqual(cls1.tag_id, tag.element_tag_id)
@@ -773,7 +776,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         tag.clear()
         self.assertEqual(ListTag(), tag)
 
-    def test_to_nbt(self):
+    def test_to_nbt(self) -> None:
         self.assertEqual(
             b"\x09\x00\x00\x00\x00\x00\x00\x00",
             ListTag(element_tag_id=0).to_nbt(compressed=False, little_endian=False),
@@ -835,7 +838,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
             ),
         )
 
-    def test_from_nbt(self):
+    def test_from_nbt(self) -> None:
         self.assertEqual(
             ListTag([], 1), load_nbt(b"\x09\x00\x00\x01\xFF\xFF\xFF\xFF").list
         )
@@ -853,7 +856,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         with self.assertRaises(NBTFormatError):
             load_nbt(b"\x09\x00\x00\x00\x00\x00\x00")
 
-    def test_to_snbt(self):
+    def test_to_snbt(self) -> None:
         self.assertEqual("[]", ListTag().to_snbt())
 
         for cls in self.nbt_types:
@@ -864,7 +867,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                     f"[{tag.to_snbt()}, {tag.to_snbt()}]", ListTag([tag, tag]).to_snbt()
                 )
 
-    def test_from_snbt(self):
+    def test_from_snbt(self) -> None:
         with self.subTest("Formatting"):
             self.assertEqual(ListTag(), from_snbt("[]"))
             self.assertEqual(ListTag([IntTag(5)]), from_snbt("[5]"))

@@ -1,9 +1,15 @@
 from abc import ABC, abstractmethod
+from typing import Any
 import faulthandler
 
 faulthandler.enable()
 
 from amulet_nbt import (
+    AbstractBaseTag,
+    AbstractBaseNumericTag,
+    AbstractBaseIntTag,
+    AbstractBaseFloatTag,
+    AbstractBaseArrayTag,
     ByteTag,
     ShortTag,
     IntTag,
@@ -36,30 +42,32 @@ TagNameMap = {
 
 
 class AbstractBaseTestCase(ABC):
-    int_types = (
+    int_types: tuple[type[AbstractBaseIntTag], ...] = (
         ByteTag,
         ShortTag,
         IntTag,
         LongTag,
     )
-    float_types = (
+    float_types: tuple[type[AbstractBaseFloatTag], ...] = (
         FloatTag,
         DoubleTag,
     )
-    numerical_types = int_types + float_types
-    string_types = (StringTag,)
-    array_types = (
+    numerical_types: tuple[type[AbstractBaseNumericTag], ...] = int_types + float_types
+    string_types: tuple[type[StringTag]] = (StringTag,)
+    array_types: tuple[type[AbstractBaseArrayTag], ...] = (
         ByteArrayTag,
         IntArrayTag,
         LongArrayTag,
     )
-    container_types = (
+    container_types: tuple[type[ListTag | CompoundTag]] = (
         ListTag,
         CompoundTag,
     )
-    nbt_types = numerical_types + string_types + array_types + container_types
+    nbt_types: tuple[type[AbstractBaseTag], ...] = (
+        numerical_types + string_types + array_types + container_types
+    )
 
-    not_nbt = (None, True, False, 0, 0.0, "str", [], {}, set())
+    not_nbt: tuple[Any, ...] = (None, True, False, 0, 0.0, "str", [], {}, set())
 
     @abstractmethod
     def test_constructor(self) -> None:

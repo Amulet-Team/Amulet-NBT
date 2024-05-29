@@ -3,7 +3,7 @@ This bakes the template files into real cython files."""
 
 import glob
 import os
-from typing import Optional
+from typing import Optional, Any
 
 from Cython import Tempita as tempita
 
@@ -12,7 +12,7 @@ ROOT_PATH = os.path.dirname(__file__)
 SRC_PATH = os.path.join(ROOT_PATH, "src")
 
 
-def include(rel_path, **kwargs):
+def include(rel_path: str, **kwargs: Any) -> str:
     """
     Load and bake a template file.
 
@@ -20,7 +20,7 @@ def include(rel_path, **kwargs):
     :return: The baked cython code.
     """
     with open(os.path.join(SRC_PATH, rel_path)) as f:
-        return tempita.sub(f.read(), **kwargs)
+        return tempita.sub(f.read(), **kwargs)  # type: ignore
 
 
 class TempitaManager:
@@ -49,7 +49,7 @@ class TempitaFile:
     def baked(self) -> str:
         """The result when the template is baked out."""
         with open(self.src_path) as template:
-            return tempita.sub(template.read())
+            return tempita.sub(template.read())  # type: ignore
 
     @property
     def written(self) -> Optional[str]:

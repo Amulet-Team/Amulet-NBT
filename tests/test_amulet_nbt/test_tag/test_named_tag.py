@@ -209,19 +209,25 @@ class NamedTagTestCase(AbstractBaseTestCase, unittest.TestCase):
                         utf8_encoding,
                         utf8_escape_encoding,
                     ):
-                        self.assertEqual(
-                            tag.to_nbt(
-                                compressed=compressed,
-                                little_endian=little_endian,
-                                string_encoding=string_encoding,
-                                name=name,
-                            ),
-                            named_tag.to_nbt(
-                                compressed=compressed,
-                                little_endian=little_endian,
-                                string_encoding=string_encoding,
-                            ),
-                        )
+                        with self.subTest(
+                            cls=cls,
+                            little_endian=little_endian,
+                            compressed=compressed,
+                            string_encoding=string_encoding,
+                        ):
+                            self.assertEqual(
+                                tag.to_nbt(
+                                    compressed=compressed,
+                                    little_endian=little_endian,
+                                    string_encoding=string_encoding,
+                                    name=name,
+                                ),
+                                named_tag.to_nbt(
+                                    compressed=compressed,
+                                    little_endian=little_endian,
+                                    string_encoding=string_encoding,
+                                ),
+                            )
 
     def test_from_nbt(self) -> None:
         for bnbt, correct_named_tag in (

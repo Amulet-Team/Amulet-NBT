@@ -1,15 +1,22 @@
 import os
+from typing import Callable, TypeVar, Sequence, TypeAlias
 import unittest
-from amulet_nbt import CompoundTag, load, from_snbt, NamedTag
+from amulet_nbt import CompoundTag, load, from_snbt, NamedTag, AbstractBaseTag
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "src")
 
+EncodedT = TypeVar("EncodedT")
+# Group name, decoder, encoder
+GroupType: TypeAlias = tuple[
+    str, Callable[[EncodedT], NamedTag], Callable[[NamedTag], EncodedT]
+]
+
 
 class FileNBTTests(unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.maxDiff = None
 
-        def _open_snbt(path_):
+        def _open_snbt(path_: str) -> NamedTag:
             if os.path.isfile(path_):
                 with open(path_, encoding="utf-8") as f_:
                     snbt = f_.read()
@@ -17,7 +24,7 @@ class FileNBTTests(unittest.TestCase):
                 snbt = path_
             return NamedTag(from_snbt(snbt))
 
-        self._groups = (
+        self._groups: Sequence[GroupType] = (
             (
                 "big_endian_compressed_nbt",
                 lambda path_: load(path_, compressed=True, little_endian=False),
@@ -40,9 +47,9 @@ class FileNBTTests(unittest.TestCase):
             ),
         )
 
-    def test_load_nbt(self):
+    def test_load_nbt(self) -> None:
         # read in all the data
-        group_data = {}
+        group_data: dict[str, dict[str, NamedTag]] = {}
         for group1, load1, _ in self._groups:
             for path1 in os.listdir(os.path.join(DATA_DIR, group1)):
                 name = os.path.splitext(path1)[0]

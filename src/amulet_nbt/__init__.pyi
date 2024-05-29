@@ -15,6 +15,7 @@ from typing import (
     Optional,
     Literal,
     TypeAlias,
+    ClassVar,
 )
 from collections.abc import MutableSequence, MutableMapping
 import numpy
@@ -118,7 +119,7 @@ class AbstractBase:
 class AbstractBaseTag(AbstractBase):
     """Abstract Base Class for all Tag classes"""
 
-    tag_id: int
+    tag_id: ClassVar[int]
 
     @property
     def py_data(self) -> Any:
@@ -1193,20 +1194,18 @@ class AbstractBaseArrayTag(AbstractBaseMutableTag):
         """
 
     @overload
-    def __setitem__(
-        self, item: int, value: numpy.int8 | numpy.int32 | numpy.int64
-    ) -> None: ...
+    def __setitem__(self, item: int, value: SupportsInt) -> None: ...
     @overload
     def __setitem__(
         self,
         item: slice,
-        value: NDArray[numpy.int8] | NDArray[numpy.int32] | NDArray[numpy.int64],
+        value: Iterable[SupportsInt],
     ) -> None: ...
     @overload
     def __setitem__(
         self,
         item: ArrayLike,
-        value: NDArray[numpy.int8] | NDArray[numpy.int32] | NDArray[numpy.int64],
+        value: Iterable[SupportsInt],
     ) -> None:
         """Set item(s) in the array.
 
@@ -1289,11 +1288,11 @@ class ByteArrayTag(AbstractBaseArrayTag):
         """
 
     @overload
-    def __setitem__(self, item: int, value: numpy.integer) -> None: ...
+    def __setitem__(self, item: int, value: SupportsInt) -> None: ...
     @overload
-    def __setitem__(self, item: slice, value: NDArray[numpy.integer]) -> None: ...
+    def __setitem__(self, item: slice, value: Iterable[SupportsInt]) -> None: ...
     @overload
-    def __setitem__(self, item: ArrayLike, value: NDArray[numpy.integer]) -> None:
+    def __setitem__(self, item: ArrayLike, value: Iterable[SupportsInt]) -> None:
         """Set item(s) in the array.
 
         This supports the full numpy protocol.
@@ -1373,11 +1372,11 @@ class IntArrayTag(AbstractBaseArrayTag):
         """
 
     @overload
-    def __setitem__(self, item: int, value: numpy.integer) -> None: ...
+    def __setitem__(self, item: int, value: SupportsInt) -> None: ...
     @overload
-    def __setitem__(self, item: slice, value: NDArray[numpy.integer]) -> None: ...
+    def __setitem__(self, item: slice, value: Iterable[SupportsInt]) -> None: ...
     @overload
-    def __setitem__(self, item: ArrayLike, value: NDArray[numpy.integer]) -> None:
+    def __setitem__(self, item: ArrayLike, value: Iterable[SupportsInt]) -> None:
         """Set item(s) in the array.
 
         This supports the full numpy protocol.
@@ -1457,11 +1456,11 @@ class LongArrayTag(AbstractBaseArrayTag):
         """
 
     @overload
-    def __setitem__(self, item: int, value: numpy.integer) -> None: ...
+    def __setitem__(self, item: int, value: SupportsInt) -> None: ...
     @overload
-    def __setitem__(self, item: slice, value: NDArray[numpy.integer]) -> None: ...
+    def __setitem__(self, item: slice, value: Iterable[SupportsInt]) -> None: ...
     @overload
-    def __setitem__(self, item: ArrayLike, value: NDArray[numpy.integer]) -> None:
+    def __setitem__(self, item: ArrayLike, value: Iterable[SupportsInt]) -> None:
         """Set item(s) in the array.
 
         This supports the full numpy protocol.
@@ -1512,8 +1511,10 @@ TAG_Compound: TypeAlias = CompoundTag
 TAG_Int_Array: TypeAlias = IntArrayTag
 TAG_Long_Array: TypeAlias = LongArrayTag
 
-class NamedTag(AbstractBase):
-    def __init__(self, tag: AnyNBT | None = None, name: str | bytes = "") -> None: ...
+class NamedTag(AbstractBase, tuple[str | bytes, AnyNBT]):
+    def __init__(
+        self, tag: AbstractBaseTag | AnyNBT | None = None, name: str | bytes = ""
+    ) -> None: ...
     @property
     def tag(self) -> AnyNBT: ...
     @tag.setter

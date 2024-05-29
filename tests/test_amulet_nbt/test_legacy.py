@@ -3,7 +3,7 @@ import amulet_nbt
 
 
 class LegacyNBTTests(unittest.TestCase):
-    def test_legacy(self):
+    def test_legacy(self) -> None:
         self.assertIs(amulet_nbt.ByteTag, amulet_nbt.TAG_Byte)
         self.assertIs(amulet_nbt.ShortTag, amulet_nbt.TAG_Short)
         self.assertIs(amulet_nbt.IntTag, amulet_nbt.TAG_Int)

@@ -3,7 +3,7 @@ from template import TempitaManager
 
 
 class TestString(unittest.TestCase):
-    def test_is_compiled(self):
+    def test_is_compiled(self) -> None:
         """Check if the files have been baked out."""
         for file in TempitaManager().files:
             if file.changed:

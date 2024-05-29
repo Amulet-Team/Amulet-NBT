@@ -17,7 +17,7 @@ ArrayPath = os.path.join(DirPath, "array.nbt")
 
 
 class LoadTests(unittest.TestCase):
-    def test_load(self):
+    def test_load(self) -> None:
         load_nbt_array(OnePath)
 
         with self.assertRaises(NBTLoadError):

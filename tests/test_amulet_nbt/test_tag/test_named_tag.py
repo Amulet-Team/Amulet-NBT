@@ -195,7 +195,7 @@ class NamedTagTestCase(AbstractBaseTestCase, unittest.TestCase):
         self.assertEqual(name, named_tag[0])
         self.assertEqual(tag, named_tag[1])
         with self.assertRaises(IndexError):
-            named_tag[2]
+            named_tag[2]  # type: ignore
 
     def test_to_nbt(self) -> None:
         for cls in self.nbt_types:

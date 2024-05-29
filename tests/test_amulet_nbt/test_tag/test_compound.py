@@ -732,7 +732,7 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
             ),
         )
 
-    def test_to_nbt(self):
+    def test_to_nbt(self) -> None:
         self.assertEqual(
             b"\x0A\x00\x00\x00",
             CompoundTag().to_nbt(compressed=False, little_endian=False),
@@ -777,7 +777,7 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
             CompoundTag(long=LongTag(5)).to_nbt(compressed=False, little_endian=True),
         )
 
-    def test_from_nbt(self):
+    def test_from_nbt(self) -> None:
         self.assertEqual(
             CompoundTag(byte=ByteTag(5)),
             load_nbt(b"\x0A\x00\x00\x01\x00\x04byte\x05\x00").compound,
@@ -827,7 +827,7 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         with self.assertRaises(NBTFormatError):
             load_nbt(b"\x0A\x00\x00")
 
-    def test_to_snbt(self):
+    def test_to_snbt(self) -> None:
         full_compound = CompoundTag(
             byte=ByteTag(),
             short=ShortTag(),
@@ -916,7 +916,7 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
             full_compound.to_snbt("\t"),
         )
 
-    def test_from_snbt(self):
+    def test_from_snbt(self) -> None:
         self.assertEqual(CompoundTag(), from_snbt("{}"))
 
         with self.subTest("Formatting"):

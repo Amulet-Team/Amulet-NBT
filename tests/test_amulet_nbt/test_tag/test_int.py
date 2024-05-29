@@ -33,7 +33,7 @@ class IntTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
                 int_cls(5.0)
                 int_cls(-5.0)
                 with self.assertRaises(TypeError):
-                    int_cls(None)
+                    int_cls(None)  # type: ignore
 
                 # overflow
                 self.assertEqual(ByteTag(-(2**7)), ByteTag(2**7))
@@ -50,13 +50,13 @@ class IntTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
         for cls in self.nbt_types:
             tag = cls()
             try:
-                int(tag)
+                int(tag)  # type: ignore
             except:
                 pass
             else:
                 for int_cls in self.int_types:
                     with self.subTest(cls=cls, int_cls=int_cls):
-                        int_cls(tag)
+                        int_cls(tag)  # type: ignore
 
         for obj in self.not_nbt:
             try:
@@ -68,7 +68,7 @@ class IntTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
                     with self.subTest(obj=obj, int_cls=int_cls):
                         int_cls(obj)
 
-    def test_numpy_constructor(self):
+    def test_numpy_constructor(self) -> None:
         for int_cls in self.int_types:
             with self.subTest(int_cls=int_cls):
                 self.assertEqual(int_cls(0), int_cls(numpy.uint8(0)))
@@ -256,7 +256,7 @@ class IntTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
                 self.assertEqual(False, bool(cls(0)))
                 self.assertEqual(True, bool(cls(5.5)))
 
-    def test_to_nbt(self):
+    def test_to_nbt(self) -> None:
         self.assertEqual(
             b"\x01\x00\x00\x05",
             ByteTag(5).to_nbt(compressed=False, little_endian=False),
@@ -290,7 +290,7 @@ class IntTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
             LongTag(5).to_nbt(compressed=False, little_endian=True),
         )
 
-    def test_from_nbt(self):
+    def test_from_nbt(self) -> None:
         self.assertEqual(
             ByteTag(5),
             load_nbt(b"\x01\x00\x00\x05", little_endian=False).byte,
@@ -328,7 +328,7 @@ class IntTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
             ).long,
         )
 
-    def test_to_snbt(self):
+    def test_to_snbt(self) -> None:
         with self.subTest():
             self.assertEqual("-5b", ByteTag(-5).to_snbt())
             self.assertEqual("0b", ByteTag(0).to_snbt())
@@ -349,7 +349,7 @@ class IntTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
             self.assertEqual("0L", LongTag(0).to_snbt())
             self.assertEqual("5L", LongTag(5).to_snbt())
 
-    def test_from_snbt(self):
+    def test_from_snbt(self) -> None:
         with self.subTest():
             self.assertEqual(ByteTag(-5), from_snbt("-5b"))
             self.assertEqual(ByteTag(-5), from_snbt("-5B"))

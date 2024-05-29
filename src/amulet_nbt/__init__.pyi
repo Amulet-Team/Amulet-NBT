@@ -416,10 +416,10 @@ class CompoundTag(AbstractBaseMutableTag, MutableMapping[str | bytes, AnyNBT]):
     def __init__(
         self,
         value: (
-            Mapping[str | bytes, AnyNBT]
-            | Iterable[tuple[str | bytes, AnyNBT]]
-            | Mapping[str, AnyNBT]
-            | Mapping[bytes, AnyNBT]
+            Mapping[str | bytes, AnyNBT | AbstractBaseTag]
+            | Iterable[tuple[str | bytes, AnyNBT | AbstractBaseTag]]
+            | Mapping[str, AnyNBT | AbstractBaseTag]
+            | Mapping[bytes, AnyNBT | AbstractBaseTag]
         ) = (),
         **kwvals: AnyNBT,
     ): ...

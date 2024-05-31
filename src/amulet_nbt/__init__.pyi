@@ -1643,7 +1643,7 @@ def load_array(
     :raises: NBTLoadError if an error occurred when loading the data.
     """
 
-def from_snbt(snbt: str) -> AbstractBaseTag:
+def from_snbt(snbt: str) -> AnyNBT:
     """
     Load Stringified NBT into a tag.
     """

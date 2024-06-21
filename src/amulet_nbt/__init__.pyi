@@ -87,12 +87,8 @@ class NBTError(Exception):
 class NBTLoadError(NBTError):
     """The NBT data failed to load for some reason."""
 
-    pass
-
 class NBTFormatError(NBTLoadError):
     """Indicates the NBT format is invalid."""
-
-    pass
 
 class SNBTParseError(NBTError):
     """Indicates the SNBT format is invalid."""
@@ -113,10 +109,8 @@ class EncodingPreset:
 java_encoding: EncodingPreset
 bedrock_encoding: EncodingPreset
 
-class AbstractBase:
-    """Abstract Base class for all Tags and the NamedTag"""
 
-class AbstractBaseTag(AbstractBase):
+class AbstractBaseTag:
     """Abstract Base Class for all Tag classes"""
 
     tag_id: ClassVar[int]
@@ -1511,7 +1505,7 @@ TAG_Compound: TypeAlias = CompoundTag
 TAG_Int_Array: TypeAlias = IntArrayTag
 TAG_Long_Array: TypeAlias = LongArrayTag
 
-class NamedTag(AbstractBase, tuple[str | bytes, AnyNBT]):
+class NamedTag(tuple[str | bytes, AnyNBT]):
     def __init__(
         self, tag: AbstractBaseTag | AnyNBT | None = None, name: str | bytes = ""
     ) -> None: ...

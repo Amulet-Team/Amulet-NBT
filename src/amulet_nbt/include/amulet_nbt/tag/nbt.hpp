@@ -31,33 +31,33 @@ namespace Amulet {
     typedef std::shared_ptr<LongArrayTag> LongArrayTagPtr;
 
     // List types
-    typedef std::vector<ByteTag> ByteList;
-    typedef std::vector<ShortTag> ShortList;
-    typedef std::vector<IntTag> IntList;
-    typedef std::vector<LongTag> LongList;
-    typedef std::vector<FloatTag> FloatList;
-    typedef std::vector<DoubleTag> DoubleList;
-    typedef std::vector<ByteArrayTagPtr> ByteArrayList;
-    typedef std::vector<StringTag> StringList;
-    typedef std::vector<ListTagPtr> ListList;
-    typedef std::vector<CompoundTagPtr> CompoundList;
-    typedef std::vector<IntArrayTagPtr> IntArrayList;
-    typedef std::vector<LongArrayTagPtr> LongArrayList;
+    typedef std::vector<ByteTag> ByteListTag;
+    typedef std::vector<ShortTag> ShortListTag;
+    typedef std::vector<IntTag> IntListTag;
+    typedef std::vector<LongTag> LongListTag;
+    typedef std::vector<FloatTag> FloatListTag;
+    typedef std::vector<DoubleTag> DoubleListTag;
+    typedef std::vector<ByteArrayTagPtr> ByteArrayListTag;
+    typedef std::vector<StringTag> StringListTag;
+    typedef std::vector<ListTagPtr> ListListTag;
+    typedef std::vector<CompoundTagPtr> CompoundListTag;
+    typedef std::vector<IntArrayTagPtr> IntArrayListTag;
+    typedef std::vector<LongArrayTagPtr> LongArrayListTag;
 
     class ListTag : public std::variant<
         std::monostate,
-        ByteList,
-        ShortList,
-        IntList,
-        LongList,
-        FloatList,
-        DoubleList,
-        ByteArrayList,
-        StringList,
-        ListList,
-        CompoundList,
-        IntArrayList,
-        LongArrayList
+        ByteListTag,
+        ShortListTag,
+        IntListTag,
+        LongListTag,
+        FloatListTag,
+        DoubleListTag,
+        ByteArrayListTag,
+        StringListTag,
+        ListListTag,
+        CompoundListTag,
+        IntArrayListTag,
+        LongArrayListTag
     > {
         using variant::variant;
     };

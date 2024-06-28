@@ -80,7 +80,7 @@ namespace Amulet {
     }
 
     template <typename tagT, typename indexT>
-    void ListTag_set(const Amulet::ListTag& self, indexT index, tagT tag){
+    void ListTag_set(Amulet::ListTag& self, indexT index, tagT tag){
         // Get the unsigned index. Also do bounds checking.
         size_t abs_index = ListTag_bounds_check<indexT>(ListTag_size(self), index);
         if (self.index() == variant_index<Amulet::ListTag, std::vector<tagT>>()){
@@ -89,7 +89,7 @@ namespace Amulet {
             list_tag[abs_index] = tag;
         } else if (ListTag_size(self) == 1 && abs_index == 0){
             // Overwriting the only value
-            self.emplace<tagT>({tag});
+            self.emplace<std::vector<tagT>>({tag});
         } else {
             throw std::invalid_argument("NBT ListTag item mismatch.");
         }

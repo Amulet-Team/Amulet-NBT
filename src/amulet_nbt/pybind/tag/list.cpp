@@ -198,20 +198,20 @@ void init_list(py::module& m) {
         );
         ListTag.def(
             "__getitem__",
-            [](const Amulet::ListTagWrapper& self, std::ptrdiff_t item){
-                return Amulet::wrap_node(Amulet::ListTag_get_node<std::ptrdiff_t>(*self.tag, item));
+            [](const Amulet::ListTagWrapper& self, Py_ssize_t item){
+                return Amulet::wrap_node(Amulet::ListTag_get_node<Py_ssize_t>(*self.tag, item));
             }
         );
         ListTag.def(
             "__getitem__",
             [](const Amulet::ListTagWrapper& self, const py::slice& slice) {
                 py::list out;
-                size_t start = 0, stop = 0, step = 0, slicelength = 0;
-                if (!slice.compute(ListTag_size(*self.tag), &start, &stop, &step, &slicelength)) {
+                Py_ssize_t start = 0, stop = 0, step = 0, slice_length = 0;
+                if (!slice.compute(ListTag_size(*self.tag), &start, &stop, &step, &slice_length)) {
                     throw py::error_already_set();
                 }
-                for (size_t i = 0; i < slicelength; ++i) {
-                    out.append(Amulet::wrap_node(Amulet::ListTag_get_node<size_t>(*self.tag, i)));
+                for (Py_ssize_t i = 0; i < slice_length; ++i) {
+                    out.append(Amulet::wrap_node(Amulet::ListTag_get_node<Py_ssize_t>(*self.tag, start)));
                     start += step;
                 }
                 return out;
@@ -259,17 +259,17 @@ void init_list(py::module& m) {
         );
         ListTag.def(
             "index",
-            [](const Amulet::ListTagWrapper& self, Amulet::WrapperNode tag, std::ptrdiff_t start, std::ptrdiff_t stop) -> size_t {
+            [](const Amulet::ListTagWrapper& self, Amulet::WrapperNode tag, Py_ssize_t start, Py_ssize_t stop) -> size_t {
                 switch(tag.index()){
                     #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
                     case ID:\
-                        return Amulet::ListTag_index<TAG_STORAGE, std::ptrdiff_t>(*self.tag, get<Amulet::TagWrapper<TAG_STORAGE>>(tag).tag, start, stop);
+                        return Amulet::ListTag_index<TAG_STORAGE, Py_ssize_t>(*self.tag, get<Amulet::TagWrapper<TAG_STORAGE>>(tag).tag, start, stop);
                     FOR_EACH_LIST_TAG(CASE)
                     #undef CASE
                 }
                 throw std::invalid_argument("item is not in the ListTag");
             },
-            py::arg("tag"), py::arg("start") = 0, py::arg("stop") = std::numeric_limits<std::ptrdiff_t>::max()
+            py::arg("tag"), py::arg("start") = 0, py::arg("stop") = std::numeric_limits<Py_ssize_t>::max()
         );
         ListTag.def(
             "count",
@@ -286,11 +286,11 @@ void init_list(py::module& m) {
         );
         ListTag.def(
             "__setitem__",
-            [](const Amulet::ListTagWrapper& self, std::ptrdiff_t index, Amulet::WrapperNode tag){
+            [](const Amulet::ListTagWrapper& self, Py_ssize_t index, Amulet::WrapperNode tag){
                 switch(tag.index()){
                     #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
                     case ID:\
-                        Amulet::ListTag_set<TAG_STORAGE, std::ptrdiff_t>(*self.tag, index, get<Amulet::TagWrapper<TAG_STORAGE>>(tag).tag);\
+                        Amulet::ListTag_set<TAG_STORAGE, Py_ssize_t>(*self.tag, index, get<Amulet::TagWrapper<TAG_STORAGE>>(tag).tag);\
                         break;
                     FOR_EACH_LIST_TAG(CASE)
                     #undef CASE
@@ -313,11 +313,11 @@ void init_list(py::module& m) {
 //        );
         ListTag.def(
             "insert",
-            [](const Amulet::ListTagWrapper& self, std::ptrdiff_t index, Amulet::WrapperNode tag){
+            [](const Amulet::ListTagWrapper& self, Py_ssize_t index, Amulet::WrapperNode tag){
                 switch(tag.index()){
                     #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
                     case ID:\
-                        Amulet::ListTag_insert<TAG_STORAGE, std::ptrdiff_t>(*self.tag, index, get<Amulet::TagWrapper<TAG_STORAGE>>(tag).tag);\
+                        Amulet::ListTag_insert<TAG_STORAGE, Py_ssize_t>(*self.tag, index, get<Amulet::TagWrapper<TAG_STORAGE>>(tag).tag);\
                         break;
                     case 0:
                         throw std::invalid_argument("Cannot append null TagNode");
@@ -366,14 +366,14 @@ void init_list(py::module& m) {
         );
         ListTag.def(
             "pop",
-            [](const Amulet::ListTagWrapper& self, std::ptrdiff_t item){
-                return Amulet::wrap_node(ListTag_pop<std::ptrdiff_t>(*self.tag, item));
+            [](const Amulet::ListTagWrapper& self, Py_ssize_t item){
+                return Amulet::wrap_node(ListTag_pop<Py_ssize_t>(*self.tag, item));
             }
         );
         ListTag.def(
             "remove",
-            [](const Amulet::ListTagWrapper& self, std::ptrdiff_t item){
-                ListTag_remove<std::ptrdiff_t>(*self.tag, item);
+            [](const Amulet::ListTagWrapper& self, Py_ssize_t item){
+                ListTag_remove<Py_ssize_t>(*self.tag, item);
             }
         );
         ListTag.def(
@@ -394,11 +394,11 @@ void init_list(py::module& m) {
         #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
         ListTag.def(\
             "get_"TAG_NAME,\
-            [](const Amulet::ListTagWrapper& self, std::ptrdiff_t index){\
+            [](const Amulet::ListTagWrapper& self, Py_ssize_t index){\
                 if (self.tag->index() != variant_index<Amulet::ListTag, std::vector<TAG_STORAGE>>()){\
                     throw pybind11::type_error("ListTag elements are not "#TAG);\
                 }\
-                return Amulet::wrap_node(Amulet::ListTag_get<TAG_STORAGE, std::ptrdiff_t>(*self.tag, index));\
+                return Amulet::wrap_node(Amulet::ListTag_get<TAG_STORAGE, Py_ssize_t>(*self.tag, index));\
             },\
             py::doc(\
                 "Get the tag at index if it is a "#TAG".\n"\

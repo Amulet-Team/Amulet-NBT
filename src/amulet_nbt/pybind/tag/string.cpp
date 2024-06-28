@@ -10,6 +10,7 @@ void init_string(py::module& m) {
     py::class_<Amulet::StringTagWrapper, Amulet::AbstractBaseImmutableTag> StringTag(m, "StringTag",
         "A class that behaves like a string."
     );
+        StringTag.def_property_readonly_static("tag_id", [](py::object) {return 8;});
         StringTag.def(
             py::init([](py::object value) {
                 return Amulet::StringTagWrapper(value.cast<Amulet::StringTag>());

@@ -13,6 +13,7 @@ namespace py = pybind11;
         "\n"\
         "Can Store numbers between -(2^"#BITPOW") and (2^"#BITPOW" - 1)"\
     );\
+    CLSNAME.def_property_readonly_static("tag_id", [](py::object) {return TAGID;});\
     CLSNAME.def(\
         py::init([](py::object value) {\
             return Amulet::CLSNAME##Wrapper(value.cast<Amulet::CLSNAME>());\

@@ -140,6 +140,7 @@ void init_list(py::module& m) {
         "\n"
         "All contained data must be of the same NBT data type."
     );
+        ListTag.def_property_readonly_static("tag_id", [](py::object) {return 9;});
         ListTag.def(
             py::init([](py::object value, std::uint8_t element_tag_id) {
                 Amulet::ListTagPtr tag = std::make_shared<Amulet::ListTag>();

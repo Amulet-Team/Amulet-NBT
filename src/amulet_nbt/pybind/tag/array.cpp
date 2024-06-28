@@ -13,6 +13,7 @@ namespace py = pybind11;
     py::class_<Amulet::CLSNAME##Wrapper, Amulet::AbstractBaseArrayTag> CLSNAME(m, #CLSNAME, py::buffer_protocol(),\
         "This class stores a fixed size signed "#BITCOUNT" bit vector."\
     );\
+    CLSNAME.def_property_readonly_static("tag_id", [](py::object) {return TAGID;});\
     CLSNAME.def(\
         py::init([](py::object value) {\
             /* Is there a better way to do this? */\

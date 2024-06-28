@@ -17,6 +17,10 @@ void init_abc(py::module& m) {
     py::class_<Amulet::AbstractBaseTag> AbstractBaseTag(m, "AbstractBaseTag",
         "Abstract Base Class for all tag classes"
     );
+        AbstractBaseTag.def_property_readonly_static(
+            "tag_id",
+            abstract_method<py::object>
+        );
         AbstractBaseTag.def_property_readonly(
             "py_data",
             abstract_method<const Amulet::AbstractBaseTag&>,

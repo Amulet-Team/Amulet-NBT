@@ -11,6 +11,7 @@ namespace py = pybind11;
     py::class_<Amulet::CLSNAME##Wrapper, Amulet::AbstractBaseFloatTag> CLSNAME(m, #CLSNAME,\
         "A "#PRECISION" precision float class."\
     );\
+    CLSNAME.def_property_readonly_static("tag_id", [](py::object) {return TAGID;});\
     CLSNAME.def(\
         py::init([](py::object value) {\
             return Amulet::CLSNAME##Wrapper(value.cast<Amulet::CLSNAME>());\

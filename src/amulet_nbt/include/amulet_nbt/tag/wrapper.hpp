@@ -49,4 +49,21 @@ namespace Amulet {
     typedef TagWrapper<IntArrayTagPtr> IntArrayTagWrapper;
     typedef TagWrapper<LongArrayTagPtr> LongArrayTagWrapper;
 
+    typedef std::variant<
+        std::monostate,
+        ByteTagWrapper,
+        ShortTagWrapper,
+        IntTagWrapper,
+        LongTagWrapper,
+        FloatTagWrapper,
+        DoubleTagWrapper,
+        ByteArrayTagWrapper,
+        StringTagWrapper,
+        ListTagWrapper,
+        CompoundTagWrapper,
+        IntArrayTagWrapper,
+        LongArrayTagWrapper
+    > WrapperNode;
+
+    WrapperNode wrap_node(Amulet::TagNode node);
 }

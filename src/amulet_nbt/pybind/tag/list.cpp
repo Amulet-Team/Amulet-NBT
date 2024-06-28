@@ -128,9 +128,9 @@ void init_list(py::module& m) {
                     case ID:\
                         {\
                             LIST_TAG& list_tag = get<LIST_TAG>(*self.tag);\
-                            for (auto& tag: list_tag){\
-                                out += py::repr(py::cast(Amulet::TagWrapper<TAG_STORAGE>(tag)));\
-                                out += ", ";\
+                            for (size_t i = 0; i < list_tag.size(); i++){\
+                                if (i != 0){out += ", ";}\
+                                out += py::repr(py::cast(Amulet::TagWrapper<TAG_STORAGE>(list_tag[i])));\
                             }\
                         };\
                         break;

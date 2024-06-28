@@ -89,4 +89,23 @@ namespace Amulet {
 
             NamedTag(const std::string& name, const TagNode& tag_node): name(name), tag_node(tag_node) {}
     };
+
+    #define FOR_EACH_LIST_TAG(MACRO)\
+        MACRO(1,   "byte",        ByteTag,       Amulet::ByteTag,          Amulet::ByteListTag)\
+        MACRO(2,   "short",       ShortTag,      Amulet::ShortTag,         Amulet::ShortListTag)\
+        MACRO(3,   "int",         IntTag,        Amulet::IntTag,           Amulet::IntListTag)\
+        MACRO(4,   "long",        LongTag,       Amulet::LongTag,          Amulet::LongListTag)\
+        MACRO(5,   "float",       FloatTag,      Amulet::FloatTag,         Amulet::FloatListTag)\
+        MACRO(6,   "double",      DoubleTag,     Amulet::DoubleTag,        Amulet::DoubleListTag)\
+        MACRO(7,   "string",      ByteArrayTag,  Amulet::ByteArrayTagPtr,  Amulet::ByteArrayListTag)\
+        MACRO(8,   "list",        StringTag,     Amulet::StringTag,        Amulet::StringListTag)\
+        MACRO(9,   "compound",    ListTag,       Amulet::ListTagPtr,       Amulet::ListListTag)\
+        MACRO(10,  "byte_array",  CompoundTag,   Amulet::CompoundTagPtr,   Amulet::CompoundListTag)\
+        MACRO(11,  "int_array",   IntArrayTag,   Amulet::IntArrayTagPtr,   Amulet::IntArrayListTag)\
+        MACRO(12,  "long_array",  LongArrayTag,  Amulet::LongArrayTagPtr,  Amulet::LongArrayListTag)
+
+    #define FOR_EACH_LIST_TAG2(MACRO)\
+        MACRO(0, "end", std::monostate, std::monostate, std::monostate)\
+        FOR_EACH_LIST_TAG(MACRO)
+}
 }

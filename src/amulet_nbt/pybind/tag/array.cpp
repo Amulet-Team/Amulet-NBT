@@ -1,6 +1,12 @@
 #include <stdexcept>
-#include <amulet_nbt/common.hpp>
 #include <amulet_nbt/tag/wrapper.hpp>
+
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <pybind11/operators.h>
+#include <pybind11/numpy.h>
+
+namespace py = pybind11;
 
 
 #define PyArray(CLSNAME, ELEMENTCLS, BITCOUNT, TAGID)\

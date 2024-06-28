@@ -1,5 +1,10 @@
-#include <amulet_nbt/common.hpp>
 #include <amulet_nbt/tag/wrapper.hpp>
+
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <pybind11/operators.h>
+
+namespace py = pybind11;
 
 
 #define PyFloat(CLSNAME, PRECISION, TAGID)\

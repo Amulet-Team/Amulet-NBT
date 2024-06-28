@@ -21,15 +21,20 @@ if sys.platform == "darwin":
 setup(
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
-    include_dirs=["src/amulet_nbt/include", numpy.get_include(), pybind11.get_include()],
+    libraries=[
+        (
+            "amulet_nbt", dict(
+            sources=glob.glob("src/amulet_nbt/cpp/**/*.cpp", recursive=True),
+            include_dirs=["src/amulet_nbt/include"],
+            cflags=CompileArgs,
+        ))
+    ],
     ext_modules=[
         Extension(
             name="amulet_nbt._nbt",
-            sources=[
-                *glob.glob("src/amulet_nbt/py/**/*.cpp", recursive=True),
-                # TODO: The following should be moved to a dynamic library.
-                *glob.glob("src/amulet_nbt/cpp/**/*.cpp", recursive=True)
-            ],
+            sources=glob.glob("src/amulet_nbt/pybind/**/*.cpp", recursive=True),
+            include_dirs=["src/amulet_nbt/include", numpy.get_include(), pybind11.get_include()],
+            libraries=["amulet_nbt"],
             extra_compile_args=CompileArgs
         )
     ]

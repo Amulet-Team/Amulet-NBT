@@ -94,7 +94,7 @@ void init_list(py::module& m) {
         };
         ListTag.def_property_readonly(
             "py_list",
-            &py_getter,
+            py_getter,
             py::doc(
                 "A python list representation of the class.\n"
                 "\n"
@@ -104,7 +104,7 @@ void init_list(py::module& m) {
         );
         ListTag.def_property_readonly(
             "py_data",
-            &py_getter,
+            py_getter,
             py::doc(
                 "A python representation of the class. Note that the return type is undefined and may change in the future.\n"
                 "\n"

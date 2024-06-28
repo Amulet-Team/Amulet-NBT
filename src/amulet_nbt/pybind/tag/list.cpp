@@ -155,7 +155,7 @@ void init_list(py::module& m) {
                 return Amulet::ListTagWrapper(tag);
             }),
             py::arg("value") = py::tuple(), py::arg("element_tag_id") = 1,
-            py::doc("__init__(self: amulet_nbt.ListTag, value: typing.Iterable[amulet_nbt.ByteTag] | typing.Iterable[amulet_nbt.ShortTag] | typing.Iterable[amulet_nbt.IntTag] | typing.Iterable[amulet_nbt.LongTag] | typing.Iterable[amulet_nbt.FloatTag] | typing.Iterable[amulet_nbt.DoubleTag] | typing.Iterable[amulet_nbt.ByteArrayTag] | typing.Iterable[amulet_nbt.StringTag] | typing.Iterable[amulet_nbt.ListTag] | typing.Iterable[amulet_nbt.CompoundTag] | typing.Iterable[amulet_nbt.IntArrayTag] | typing.Iterable[amulet_nbt.LongArrayTag] = (), element_tag_id=1) -> None")
+            py::doc("__init__(self: amulet_nbt.ListTag, value: typing.Iterable[amulet_nbt.ByteTag] | typing.Iterable[amulet_nbt.ShortTag] | typing.Iterable[amulet_nbt.IntTag] | typing.Iterable[amulet_nbt.LongTag] | typing.Iterable[amulet_nbt.FloatTag] | typing.Iterable[amulet_nbt.DoubleTag] | typing.Iterable[amulet_nbt.ByteArrayTag] | typing.Iterable[amulet_nbt.StringTag] | typing.Iterable[amulet_nbt.ListTag] | typing.Iterable[amulet_nbt.CompoundTag] | typing.Iterable[amulet_nbt.IntArrayTag] | typing.Iterable[amulet_nbt.LongArrayTag] = (), element_tag_id = 1) -> None")
         );
         ListTag.attr("__class_getitem__") = PyClassMethod_New(
             py::cpp_function([](const py::type &cls, const py::args &args){return cls;}).ptr()

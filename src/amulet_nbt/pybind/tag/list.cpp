@@ -33,6 +33,89 @@ void ListTag_extend(Amulet::ListTagPtr tag, py::object value){
     }
 }
 
+template <typename tagT>
+void ListTag_set_slice(Amulet::ListTagPtr self, const py::slice &slice, std::vector<tagT>& vec){
+    if (self->index() == variant_index<Amulet::ListTag, std::vector<tagT>>()){
+        // Tag type matches
+        std::vector<tagT>& list_tag = get<std::vector<tagT>>(*self);
+        Py_ssize_t start = 0, stop = 0, step = 0, slice_length = 0;
+        if (!slice.compute(list_tag.size(), &start, &stop, &step, &slice_length)) {
+            throw py::error_already_set();
+        }
+        if (vec.size() == slice_length){
+            // Size matches. Overwrite.
+            for (auto& tag: vec){
+                list_tag[start] = tag;
+                start += step;
+            }
+        } else if (step == 1) {
+            // Erase the region and insert the new region
+            list_tag.erase(
+                list_tag.begin() + start,
+                list_tag.begin() + stop
+            );
+            list_tag.insert(
+                list_tag.begin() + start,
+                vec.begin(),
+                vec.end()
+            );
+        } else {
+            throw std::invalid_argument(
+                "attempt to assign sequence of size " +
+                std::to_string(vec.size()) +
+                " to extended slice of size " +
+                std::to_string(slice_length)
+            );
+        }
+    } else {
+        // Tag type does not match
+        size_t size = ListTag_size(*self);
+        Py_ssize_t start = 0, stop = 0, step = 0, slice_length = 0;
+        if (!slice.compute(size, &start, &stop, &step, &slice_length)) {
+            throw py::error_already_set();
+        }
+        if (size == slice_length){
+            // Overwriting all values
+            if (step == -1){
+                // Reverse the element order
+                std::reverse(vec.begin(), vec.end());
+            } else if (step != 1){
+                throw std::invalid_argument(
+                    "When overwriting values in a ListTag the types must match or all tags must be overwritten."
+                );
+            }
+            self->emplace<std::vector<tagT>>(vec);
+        } else {
+            throw std::invalid_argument("NBT ListTag item mismatch.");
+        }
+    }
+}
+
+template <typename tagT>
+void ListTag_del_slice(std::vector<tagT>& self, const py::slice &slice){
+    Py_ssize_t start = 0, stop = 0, step = 0, slice_length = 0;
+    if (!slice.compute(self.size(), &start, &stop, &step, &slice_length)) {
+        throw py::error_already_set();
+    }
+    if (step == 1){
+        self.erase(
+            self.begin() + start,
+            self.begin() + stop
+        );
+    } else if (step < 0) {
+        for (Py_ssize_t i = 0; i < slice_length; i++){
+            self.erase(self.begin() + (start + step * i));
+        }
+    } else if (step > 0) {
+        // erase values back to front
+        for (Py_ssize_t i = 0; i < slice_length; i++){
+            self.erase(self.begin() + (start + step * (slice_length - 1 - i)));
+        }
+    } else {
+        throw std::invalid_argument("slice step cannot be zero");
+    }
+}
+
 
 void init_list(py::module& m) {
     py::class_<Amulet::ListTagIterator, std::shared_ptr<Amulet::ListTagIterator>> ListTagIterator(m, "ListTagIterator");
@@ -299,18 +382,64 @@ void init_list(py::module& m) {
                 }
             }
         );
-//        ListTag.def(
-//            "__setitem__",
-//            [](const Amulet::ListTagWrapper& self, const py::slice &slice, py::object values){
-//                py::list
-//            }
-//        );
-//        ListTag.def(
-//            "__delitem__",
-//            [](const Amulet::ListTagWrapper& self, std::ptrdiff_t item){
-//
-//            }
-//        );
+        ListTag.def(
+            "__setitem__",
+            [](const Amulet::ListTagWrapper& self, const py::slice &slice, py::object values){
+                // Cast values to a list to get a consistent format
+                auto list = py::list(values);
+                if (list){
+                    // If the value has items in it
+                    // Switch based on the type of the first element
+                    Amulet::WrapperNode first = list[0].cast<Amulet::WrapperNode>();
+                    switch(first.index()){
+                        #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
+                        case ID:{\
+                            /* Cast to C++ objects. Also validate that they are all the same type. */\
+                            std::vector<TAG_STORAGE> vec = list.cast<std::vector<TAG_STORAGE>>();\
+                            ListTag_set_slice<TAG_STORAGE>(self.tag, slice, vec);\
+                            break;\
+                        }
+                        FOR_EACH_LIST_TAG(CASE)
+                        #undef CASE
+                        default:
+                            throw std::invalid_argument("Values must all be the same NBT tag.");
+                    }
+                } else {
+                    // The value is empty
+                    // empty the slice
+                    switch(self.tag->index()){
+                        #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
+                        case ID:{\
+                            auto vec = std::vector<TAG_STORAGE>();\
+                            ListTag_set_slice<TAG_STORAGE>(self.tag, slice, vec);\
+                            break;\
+                        }
+                        FOR_EACH_LIST_TAG(CASE)
+                        #undef CASE
+                    }
+                }
+            }
+        );
+        ListTag.def(
+            "__delitem__",
+            [](const Amulet::ListTagWrapper& self, Py_ssize_t item){
+                Amulet::ListTag_remove<Py_ssize_t>(*self.tag, item);
+            }
+        );
+        ListTag.def(
+            "__delitem__",
+            [](const Amulet::ListTagWrapper& self, const py::slice &slice){
+                switch(self.tag->index()){
+                    #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
+                    case ID:{\
+                        ListTag_del_slice<TAG_STORAGE>(get<std::vector<TAG_STORAGE>>(*self.tag), slice);\
+                        break;\
+                    }
+                    FOR_EACH_LIST_TAG(CASE)
+                    #undef CASE
+                }
+            }
+        );
         ListTag.def(
             "insert",
             [](const Amulet::ListTagWrapper& self, Py_ssize_t index, Amulet::WrapperNode tag){

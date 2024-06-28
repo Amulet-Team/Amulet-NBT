@@ -21,8 +21,8 @@ namespace py = pybind11;
             std::shared_ptr<Amulet::CLSNAME> tag_ptr = std::make_shared<Amulet::CLSNAME>(tag);\
             return Amulet::CLSNAME##Wrapper(tag_ptr);\
         }),\
-        py::arg("value"),\
-        py::doc("__init__(self: amulet_nbt."#CLSNAME", value: collections.abc.Iterable[typing.SupportsInt]) -> None")\
+        py::arg("value") = py::tuple(),\
+        py::doc("__init__(self: amulet_nbt."#CLSNAME", value: collections.abc.Iterable[typing.SupportsInt] = ()) -> None")\
     );\
     CLSNAME.def_buffer(\
         [](Amulet::CLSNAME##Wrapper& self) -> py::buffer_info {\

@@ -108,4 +108,8 @@ namespace Amulet {
         MACRO(0, "end", std::monostate, std::monostate, std::monostate)\
         FOR_EACH_LIST_TAG(MACRO)
 }
+
+namespace std {
+    template <> struct variant_size<Amulet::ListTag>: std::variant_size<Amulet::ListTag::variant> {};
+    template <std::size_t I> struct variant_alternative<I, Amulet::ListTag> : variant_alternative<I, Amulet::ListTag::variant> {};
 }

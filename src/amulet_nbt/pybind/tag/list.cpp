@@ -20,7 +20,10 @@ void ListTag_extend(Amulet::ListTagPtr tag, py::object value){
         Amulet::WrapperNode node = py::cast<Amulet::WrapperNode>(*it);
 
         switch(node.index()){
-            #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG) case ID: Amulet::ListTag_append<TAG_STORAGE>(*tag, get<Amulet::TagWrapper<TAG_STORAGE>>(node).tag); break;
+            #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
+            case ID:\
+                Amulet::ListTag_append<TAG_STORAGE>(*tag, get<Amulet::TagWrapper<TAG_STORAGE>>(node).tag);\
+                break;
             case 0:
                 throw std::invalid_argument("Cannot append null TagNode");
             FOR_EACH_LIST_TAG(CASE)

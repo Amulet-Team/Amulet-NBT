@@ -5,11 +5,12 @@
 #include <string>
 #include <vector>
 #include <stdexcept>
-#include "utf8.hpp"
+#include <amulet_nbt/string_encoding.hpp>
 
+typedef std::vector<size_t> CodePointVector;
 
-std::vector<size_t> read_mutf8(const std::string &src) {
-    std::vector<size_t> dst;
+CodePointVector read_mutf8(const std::string &src) {
+    CodePointVector dst;
 
     for (size_t index = 0; index < src.size(); index++) {
         uint8_t b1 = src[index];
@@ -98,7 +99,7 @@ std::vector<size_t> read_mutf8(const std::string &src) {
 }
 
 
-void write_mutf8(std::string& dst, const std::vector<size_t>& src) {
+void write_mutf8(std::string& dst, const CodePointVector& src) {
     for (size_t index = 0; index < src.size(); index++) {
         const size_t& c = src[index];
         if (c == 0) {
@@ -135,17 +136,23 @@ void write_mutf8(std::string& dst, const std::vector<size_t>& src) {
 }
 
 
-// Decode a modified utf-8 byte sequence to a regular utf-8 byte sequence
-std::string mutf8_to_utf8(const std::string& src) {
-    std::string dst;
-    write_utf8(dst, read_mutf8(src));
-    return dst;
-}
+CodePointVector read_utf8(const std::string& src);
+void write_utf8(std::string &dst, const CodePointVector& src);
 
 
-// Encode a regular utf-8 byte sequence to a modified utf-8 byte sequence
-std::string utf8_to_mutf8(const std::string& src) {
-    std::string dst;
-    write_mutf8(dst, read_utf8(src));
-    return dst;
+namespace Amulet {
+    // Decode a modified utf-8 byte sequence to a regular utf-8 byte sequence
+    std::string mutf8_to_utf8(const std::string& src) {
+        std::string dst;
+        write_utf8(dst, read_mutf8(src));
+        return dst;
+    }
+
+
+    // Encode a regular utf-8 byte sequence to a modified utf-8 byte sequence
+    std::string utf8_to_mutf8(const std::string& src) {
+        std::string dst;
+        write_mutf8(dst, read_utf8(src));
+        return dst;
+    }
 }

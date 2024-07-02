@@ -68,13 +68,13 @@ from ._nbt import (
     # NumberType,
     # ArrayType,
     # AnyNBT,
-    # StringEncoding,
-    # mutf8_encoding,
-    # utf8_encoding,
-    # utf8_escape_encoding,
-    # EncodingPreset,
-    # java_encoding,
-    # bedrock_encoding,
+    StringEncoding,
+    mutf8_encoding,
+    utf8_encoding,
+    utf8_escape_encoding,
+    EncodingPreset,
+    java_encoding,
+    bedrock_encoding,
 )
 
 SNBTType: TypeAlias = str

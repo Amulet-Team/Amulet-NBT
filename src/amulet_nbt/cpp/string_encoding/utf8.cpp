@@ -5,8 +5,9 @@
 #include <string>
 #include <vector>
 #include <stdexcept>
-#include "utf8.hpp"
+#include <amulet_nbt/string_encoding.hpp>
 
+typedef std::vector<size_t> CodePointVector;
 
 const size_t HexChars[16] = {48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102};
 
@@ -233,35 +234,37 @@ void write_utf8(std::string &dst, const CodePointVector& src) {
 }
 
 
-// Validate a utf-8 byte sequence and convert to itself.
-std::string utf8_to_utf8(const std::string& src) {
-    std::string dst;
-    write_utf8(dst, read_utf8(src));
-    return dst;
-}
+namespace Amulet{
+    // Validate a utf-8 byte sequence and convert to itself.
+    std::string utf8_to_utf8(const std::string& src) {
+        std::string dst;
+        write_utf8(dst, read_utf8(src));
+        return dst;
+    }
 
 
-CodePointVector read_utf8_escape(const std::string& src) {
-    return _read_utf8<true>(src);
-}
+    CodePointVector read_utf8_escape(const std::string& src) {
+        return _read_utf8<true>(src);
+    }
 
 
-void write_utf8_escape(std::string &dst, const CodePointVector& src) {
-    return _write_utf8<true>(dst, src);
-}
+    void write_utf8_escape(std::string &dst, const CodePointVector& src) {
+        return _write_utf8<true>(dst, src);
+    }
 
 
-// Decode a utf-8 escape byte sequence to a regular utf-8 byte sequence
-std::string utf8_escape_to_utf8(const std::string& src) {
-    std::string dst;
-    write_utf8(dst, read_utf8_escape(src));
-    return dst;
-}
+    // Decode a utf-8 escape byte sequence to a regular utf-8 byte sequence
+    std::string utf8_escape_to_utf8(const std::string& src) {
+        std::string dst;
+        write_utf8(dst, read_utf8_escape(src));
+        return dst;
+    }
 
 
-// Encode a regular utf-8 byte sequence to a utf-8 escape byte sequence
-std::string utf8_to_utf8_escape(const std::string& src) {
-    std::string dst;
-    write_utf8_escape(dst, read_utf8(src));
-    return dst;
+    // Encode a regular utf-8 byte sequence to a utf-8 escape byte sequence
+    std::string utf8_to_utf8_escape(const std::string& src) {
+        std::string dst;
+        write_utf8_escape(dst, read_utf8(src));
+        return dst;
+    }
 }

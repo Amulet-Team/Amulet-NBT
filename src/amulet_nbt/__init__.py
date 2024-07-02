@@ -1,3 +1,14 @@
+import re
+from typing import TypeAlias
+from . import _version
+
+__version__ = _version.get_versions()["version"]
+__major__ = int(re.match(r"\d+", __version__)[0])  # type: ignore
+
+del re
+del _version
+
+
 def get_include() -> str:
     import os
     return os.path.join(__path__[0], "include")
@@ -66,7 +77,18 @@ from ._nbt import (
     # bedrock_encoding,
 )
 
+SNBTType: TypeAlias = str
+IntType: TypeAlias = ByteTag | ShortTag | IntTag | LongTag
+FloatType: TypeAlias = FloatTag | DoubleTag
+NumberType: TypeAlias = ByteTag | ShortTag | IntTag | LongTag | FloatTag | DoubleTag
+ArrayType: TypeAlias = ByteArrayTag | IntArrayTag | LongArrayTag
+AnyNBT: TypeAlias = ByteTag | ShortTag | IntTag | LongTag | FloatTag | DoubleTag | ByteArrayTag | StringTag | ListTag | CompoundTag | IntArrayTag | LongArrayTag
+
+
 __all__ = [
+    "__version__",
+    "__major__",
+    "get_include",
     "AbstractBaseTag",
     "AbstractBaseImmutableTag",
     "AbstractBaseMutableTag",

@@ -130,7 +130,7 @@ namespace py = pybind11;
 
 
 void init_array(py::module& m) {
-    py::object asarray = py::module_::import("numpy").attr("asarray");
+    py::object asarray = py::module::import("numpy").attr("asarray");
     PyArray(ByteArrayTag, ByteTag, 8, 7)
     PyArray(IntArrayTag, IntTag, 32, 11)
     PyArray(LongArrayTag, LongTag, 64, 12)

@@ -66,4 +66,5 @@ namespace Amulet {
     > WrapperNode;
 
     WrapperNode wrap_node(Amulet::TagNode node);
+    Amulet::TagNode unwrap_node(WrapperNode node);
 }

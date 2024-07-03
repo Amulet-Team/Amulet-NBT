@@ -97,10 +97,10 @@ namespace Amulet {
         MACRO(4,   "long",        LongTag,       Amulet::LongTag,          Amulet::LongListTag)\
         MACRO(5,   "float",       FloatTag,      Amulet::FloatTag,         Amulet::FloatListTag)\
         MACRO(6,   "double",      DoubleTag,     Amulet::DoubleTag,        Amulet::DoubleListTag)\
-        MACRO(7,   "string",      ByteArrayTag,  Amulet::ByteArrayTagPtr,  Amulet::ByteArrayListTag)\
-        MACRO(8,   "list",        StringTag,     Amulet::StringTag,        Amulet::StringListTag)\
-        MACRO(9,   "compound",    ListTag,       Amulet::ListTagPtr,       Amulet::ListListTag)\
-        MACRO(10,  "byte_array",  CompoundTag,   Amulet::CompoundTagPtr,   Amulet::CompoundListTag)\
+        MACRO(7,   "byte_array",  ByteArrayTag,  Amulet::ByteArrayTagPtr,  Amulet::ByteArrayListTag)\
+        MACRO(8,   "string",      StringTag,     Amulet::StringTag,        Amulet::StringListTag)\
+        MACRO(9,   "list",        ListTag,       Amulet::ListTagPtr,       Amulet::ListListTag)\
+        MACRO(10,  "compound",    CompoundTag,   Amulet::CompoundTagPtr,   Amulet::CompoundListTag)\
         MACRO(11,  "int_array",   IntArrayTag,   Amulet::IntArrayTagPtr,   Amulet::IntArrayListTag)\
         MACRO(12,  "long_array",  LongArrayTag,  Amulet::LongArrayTagPtr,  Amulet::LongArrayListTag)
 

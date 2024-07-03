@@ -1,14 +1,10 @@
 #include <memory>
 #include <type_traits>
 
+#include <amulet_nbt/common.hpp>
 #include <amulet_nbt/tag/list.hpp>
 #include <amulet_nbt/tag/eq.hpp>
 
-template<class T>
-struct is_shared_ptr : std::false_type {};
-
-template<class T>
-struct is_shared_ptr<std::shared_ptr<T>> : std::true_type {};
 
 namespace Amulet{
     bool NBTTag_eq(const Amulet::ByteTag a, const Amulet::ByteTag b){return a == b;};

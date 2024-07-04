@@ -1,6 +1,8 @@
 #include <pybind11/pybind11.h>
 namespace py = pybind11;
 
+void init_encoding(py::module&);
+
 void init_abc(py::module&);
 void init_int(py::module&);
 void init_float(py::module&);
@@ -15,6 +17,7 @@ void init_bnbt(py::module& m);
 
 
 PYBIND11_MODULE(_nbt, m) {
+    init_encoding(m);
     init_abc(m);
     init_int(m);
     init_float(m);

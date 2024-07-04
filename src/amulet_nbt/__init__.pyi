@@ -1595,10 +1595,25 @@ class NamedTag(tuple[str | bytes, AnyNBT]):
 class ReadOffset:
     offset: int
 
+@overload
 def load(
     filepath_or_buffer: str | bytes | BinaryIO | memoryview | None,
     *,
     preset: EncodingPreset | None = None,
+    read_offset: ReadOffset | None = None,
+) -> NamedTag:
+    """Load one binary NBT object.
+
+    :param filepath_or_buffer: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.
+    :param preset: The encoding preset. If this is defined little_endian and string_encoding have no effect.
+    :param read_offset: Optional ReadOffset object to get read end offset.
+    :raises: NBTLoadError if an error occurred when loading the data.
+    """
+
+@overload
+def load(
+    filepath_or_buffer: str | bytes | BinaryIO | memoryview | None,
+    *,
     compressed: bool = True,
     little_endian: bool = False,
     string_encoding: StringEncoding = mutf8_encoding,
@@ -1607,7 +1622,6 @@ def load(
     """Load one binary NBT object.
 
     :param filepath_or_buffer: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.
-    :param preset: The encoding preset. If this is defined little_endian and string_encoding have no effect.
     :param compressed: Is the binary data gzip compressed.
     :param little_endian: Are the numerical values stored as little endian. True for Bedrock, False for Java.
     :param string_encoding: The bytes decoder function to parse strings. mutf8_encoding for Java, utf8_escape_encoding for Bedrock.
@@ -1615,11 +1629,28 @@ def load(
     :raises: NBTLoadError if an error occurred when loading the data.
     """
 
+@overload
 def load_array(
     filepath_or_buffer: str | bytes | BinaryIO | memoryview | None,
     *,
     count: int = 1,
     preset: EncodingPreset | None = None,
+    read_offset: ReadOffset | None = None,
+) -> list[NamedTag]:
+    """Load an array of binary NBT objects from a contiguous buffer.
+
+    :param filepath_or_buffer: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.
+    :param count: The number of binary NBT objects to read. Use -1 to exhaust the buffer.
+    :param preset: The encoding preset. If this is defined little_endian and string_encoding have no effect.
+    :param read_offset: Optional ReadOffset object to get read end offset.
+    :raises: NBTLoadError if an error occurred when loading the data.
+    """
+
+@overload
+def load_array(
+    filepath_or_buffer: str | bytes | BinaryIO | memoryview | None,
+    *,
+    count: int = 1,
     compressed: bool = True,
     little_endian: bool = False,
     string_encoding: StringEncoding = mutf8_encoding,
@@ -1629,7 +1660,6 @@ def load_array(
 
     :param filepath_or_buffer: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.
     :param count: The number of binary NBT objects to read. Use -1 to exhaust the buffer.
-    :param preset: The encoding preset. If this is defined little_endian and string_encoding have no effect.
     :param compressed: Is the binary data gzip compressed. This only supports the whole buffer compressed as one.
     :param little_endian: Are the numerical values stored as little endian. True for Bedrock, False for Java.
     :param string_encoding: The bytes decoder function to parse strings. mutf8.decode_modified_utf8 for Java, amulet_nbt.utf8_escape_decoder for Bedrock.

@@ -52,7 +52,7 @@ from ._nbt import (
     IntArrayTag as TAG_Int_Array,
     LongArrayTag as TAG_Long_Array,
 
-    # NamedTag,
+    NamedTag,
 
     # load,
     # load_array,

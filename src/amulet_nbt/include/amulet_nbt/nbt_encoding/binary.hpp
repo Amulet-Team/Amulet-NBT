@@ -13,4 +13,9 @@ namespace Amulet {
     Amulet::NamedTag read_named_tag(const std::string&, std::endian, Amulet::StringDecode, size_t& offset);
     std::vector<Amulet::NamedTag> read_named_tags(const std::string&, std::endian, Amulet::StringDecode, size_t& offset);
     std::vector<Amulet::NamedTag> read_named_tags(const std::string&, std::endian, Amulet::StringDecode, size_t& offset, size_t count);
+
+    template <typename T>
+    std::string write_named_tag(const std::string&, const T&, std::endian, Amulet::StringEncode);
+
+    std::string write_named_tag(const Amulet::NamedTag&, std::endian, Amulet::StringEncode);
 }

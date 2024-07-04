@@ -1,8 +1,9 @@
-#include <amulet_nbt/tag/wrapper.hpp>
-
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/operators.h>
+
+#include <amulet_nbt/tag/wrapper.hpp>
+#include <amulet_nbt/pybind/encoding.hpp>
 
 namespace py = pybind11;
 
@@ -14,6 +15,10 @@ void abstract_method(T self){
 
 
 void init_abc(py::module& m) {
+    py::object mutf8_encoding = m.attr("mutf8_encoding");
+    py::object java_encoding = m.attr("java_encoding");
+    py::object compress = py::module::import("gzip").attr("compress");
+
     py::class_<Amulet::AbstractBaseTag> AbstractBaseTag(m, "AbstractBaseTag",
         "Abstract Base Class for all tag classes"
     );
@@ -29,9 +34,60 @@ void init_abc(py::module& m) {
             "You would be better off using the py_{type} or np_array properties if you require a fixed type.\n"\
             "This is here for convenience to get a python representation under the same property name."\
         );
+        auto to_nbt = [compress](
+            const Amulet::AbstractBaseTag& self,
+            std::string name,
+            bool compressed,
+            std::endian endianness,
+            Amulet::StringEncode string_encoder
+        ) -> py::bytes {
+            py::bytes data = self.write_bnbt(name, endianness, string_encoder);
+            if (compressed){
+                return compress(data);
+            }
+            return data;
+        };
         AbstractBaseTag.def(
             "to_nbt",
-            abstract_method<const Amulet::AbstractBaseTag&>
+            [to_nbt](
+                const Amulet::AbstractBaseTag& self,
+                Amulet::EncodingPreset preset,
+                std::string name
+            ){
+                return to_nbt(
+                    self,
+                    name,
+                    preset.compressed,
+                    preset.endianness,
+                    preset.string_encoding.encode
+                );
+            },
+            py::kw_only(),
+            py::arg("preset") = java_encoding,
+            py::arg("name") = ""
+        );
+        AbstractBaseTag.def(
+            "to_nbt",
+            [to_nbt](
+                const Amulet::AbstractBaseTag& self,
+                bool compressed,
+                bool little_endian,
+                Amulet::StringEncoding string_encoding,
+                std::string name
+            ){
+                return to_nbt(
+                    self,
+                    name,
+                    compressed,
+                    little_endian ? std::endian::little : std::endian::big,
+                    string_encoding.encode
+                );
+            },
+            py::kw_only(),
+            py::arg("compressed") = true,
+            py::arg("little_endian") = false,
+            py::arg("string_encoding") = mutf8_encoding,
+            py::arg("name") = ""
         );
         AbstractBaseTag.def(
             "save_to",

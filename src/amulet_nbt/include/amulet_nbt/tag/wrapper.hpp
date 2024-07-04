@@ -1,10 +1,17 @@
 #pragma once
 
-#include "nbt.hpp"
+#include <string>
+#include <bit>
+
+#include <amulet_nbt/tag/nbt.hpp>
+#include <amulet_nbt/nbt_encoding/binary.hpp>
+#include <amulet_nbt/io/binary_writer.hpp>
 
 namespace Amulet {
 
     class AbstractBaseTag {
+        public:
+            virtual std::string write_bnbt(std::string, std::endian, Amulet::StringEncode) const = 0;
     };
 
     class AbstractBaseImmutableTag: public AbstractBaseTag {};
@@ -35,6 +42,9 @@ namespace Amulet {
         public:
             T tag;
             TagWrapper(T tag): tag(tag) {};
+            virtual std::string write_bnbt(std::string name, std::endian endianness, Amulet::StringEncode string_encode) const {
+                return Amulet::write_named_tag<T>(name, tag, endianness, string_encode);
+            }
     };
     typedef TagWrapper<ByteTag> ByteTagWrapper;
     typedef TagWrapper<ShortTag> ShortTagWrapper;

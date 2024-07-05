@@ -8,7 +8,6 @@ from typing import (
     Iterable,
     overload,
     TypeVar,
-    BinaryIO,
     Self,
     Type,
     Mapping,
@@ -16,6 +15,7 @@ from typing import (
     Literal,
     TypeAlias,
     ClassVar,
+    Protocol,
 )
 from collections.abc import MutableSequence, MutableMapping
 import numpy
@@ -81,6 +81,14 @@ __all__ = [
     "bedrock_encoding",
 ]
 
+class _Readable(Protocol):
+    def read(self) -> bytes:
+        ...
+
+class _Writeable(Protocol):
+    def write(self, s: bytes) -> Any:
+        ...
+
 class NBTError(Exception):
     """Some error in the NBT library."""
 
@@ -144,7 +152,7 @@ class AbstractBaseTag:
 
     def save_to(
         self,
-        filepath_or_buffer: str | BinaryIO | None = None,
+        filepath_or_buffer: str | _Writeable | None = None,
         *,
         preset: EncodingPreset | None = None,
         compressed: bool = True,
@@ -1536,7 +1544,7 @@ class NamedTag(tuple[str | bytes, AnyNBT]):
 
     def save_to(
         self,
-        filepath_or_buffer: str | BinaryIO | None = None,
+        filepath_or_buffer: str | _Writeable | None = None,
         *,
         preset: EncodingPreset | None = None,
         compressed: bool = True,
@@ -1597,7 +1605,7 @@ class ReadOffset:
 
 @overload
 def load(
-    filepath_or_buffer: str | bytes | BinaryIO | memoryview | None,
+    filepath_or_buffer: str | bytes | memoryview | _Readable | None,
     *,
     preset: EncodingPreset | None = None,
     read_offset: ReadOffset | None = None,
@@ -1612,7 +1620,7 @@ def load(
 
 @overload
 def load(
-    filepath_or_buffer: str | bytes | BinaryIO | memoryview | None,
+    filepath_or_buffer: str | bytes | memoryview | _Readable | None,
     *,
     compressed: bool = True,
     little_endian: bool = False,
@@ -1631,7 +1639,7 @@ def load(
 
 @overload
 def load_array(
-    filepath_or_buffer: str | bytes | BinaryIO | memoryview | None,
+    filepath_or_buffer: str | bytes | memoryview | _Readable | None,
     *,
     count: int = 1,
     preset: EncodingPreset | None = None,
@@ -1648,7 +1656,7 @@ def load_array(
 
 @overload
 def load_array(
-    filepath_or_buffer: str | bytes | BinaryIO | memoryview | None,
+    filepath_or_buffer: str | bytes | memoryview | _Readable | None,
     *,
     count: int = 1,
     compressed: bool = True,

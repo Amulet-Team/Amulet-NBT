@@ -3,15 +3,19 @@
 #include <string>
 #include <bit>
 
+#include <amulet_nbt/common.hpp>
 #include <amulet_nbt/tag/nbt.hpp>
 #include <amulet_nbt/nbt_encoding/binary.hpp>
+#include <amulet_nbt/nbt_encoding/string.hpp>
 #include <amulet_nbt/io/binary_writer.hpp>
 
 namespace Amulet {
 
     class AbstractBaseTag {
         public:
-            virtual std::string write_bnbt(std::string, std::endian, Amulet::StringEncode) const = 0;
+            virtual std::string to_nbt(std::string, std::endian, Amulet::StringEncode) const = 0;
+            virtual std::string to_snbt() const = 0;
+            virtual std::string to_snbt(const std::string& indent) const = 0;
     };
 
     class AbstractBaseImmutableTag: public AbstractBaseTag {};
@@ -42,8 +46,22 @@ namespace Amulet {
         public:
             T tag;
             TagWrapper(T tag): tag(tag) {};
-            virtual std::string write_bnbt(std::string name, std::endian endianness, Amulet::StringEncode string_encode) const {
+            virtual std::string to_nbt(std::string name, std::endian endianness, Amulet::StringEncode string_encode) const {
                 return Amulet::write_named_tag(name, tag, endianness, string_encode);
+            }
+            virtual std::string to_snbt() const {
+                if constexpr (is_shared_ptr<T>::value){
+                    return Amulet::write_snbt(*tag);
+                } else {
+                    return Amulet::write_snbt(tag);
+                }
+            }
+            virtual std::string to_snbt(const std::string& indent) const {
+                if constexpr (is_shared_ptr<T>::value){
+                    return Amulet::write_formatted_snbt(*tag, indent);
+                } else {
+                    return Amulet::write_formatted_snbt(tag, indent);
+                }
             }
     };
     typedef TagWrapper<ByteTag> ByteTagWrapper;

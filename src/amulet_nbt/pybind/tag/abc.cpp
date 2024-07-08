@@ -1,4 +1,5 @@
 #include <fstream>
+#include <stdexcept>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -43,7 +44,7 @@ void init_abc(py::module& m) {
             std::endian endianness,
             Amulet::StringEncode string_encoder
         ) -> py::bytes {
-            py::bytes data = self.write_bnbt(name, endianness, string_encoder);
+            py::bytes data = self.to_nbt(name, endianness, string_encoder);
             if (compressed){
                 return compress(data);
             }
@@ -163,7 +164,21 @@ void init_abc(py::module& m) {
         );
         AbstractBaseTag.def(
             "to_snbt",
-            abstract_method<const Amulet::AbstractBaseTag&>
+            [](
+                const Amulet::AbstractBaseTag& self,
+                py::object indent
+            ){
+                if (indent.is(py::none())){
+                    return self.to_snbt();
+                } else if (py::isinstance<py::int_>(indent)){
+                    return self.to_snbt(std::string(indent.cast<size_t>(), ' '));
+                } else if (py::isinstance<py::str>(indent)){
+                    return self.to_snbt(indent.cast<std::string>());
+                } else {
+                    throw std::invalid_argument("indent must be None, int or str");
+                }
+            },
+            py::arg("indent") = py::none()
         );
         AbstractBaseTag.def(
             "__eq__",

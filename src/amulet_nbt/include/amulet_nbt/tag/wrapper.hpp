@@ -43,7 +43,7 @@ namespace Amulet {
             T tag;
             TagWrapper(T tag): tag(tag) {};
             virtual std::string write_bnbt(std::string name, std::endian endianness, Amulet::StringEncode string_encode) const {
-                return Amulet::write_named_tag<T>(name, tag, endianness, string_encode);
+                return Amulet::write_named_tag(name, tag, endianness, string_encode);
             }
     };
     typedef TagWrapper<ByteTag> ByteTagWrapper;

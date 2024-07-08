@@ -18,16 +18,16 @@ namespace Amulet {
         const std::string& data;
         size_t& position;
         std::endian endianness;
-        StringDecode stringDecode;
+        StringDecode string_decode;
 
     public:
         BinaryReader(
             const std::string& input,
             size_t& position,
             std::endian endianness,
-            StringDecode stringDecode
+            StringDecode string_decode
         )
-            : data(input), position(position), endianness(endianness), stringDecode(stringDecode) {}
+            : data(input), position(position), endianness(endianness), string_decode(string_decode) {}
 
         /**
          * Read a numeric type from the buffer into the given value and fix its endianness.
@@ -76,7 +76,7 @@ namespace Amulet {
 
             std::string value = data.substr(position, length);
             position += length;
-            return stringDecode(value);
+            return string_decode(value);
         }
 
         size_t getPosition(){

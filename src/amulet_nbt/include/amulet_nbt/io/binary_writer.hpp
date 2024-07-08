@@ -17,13 +17,13 @@ namespace Amulet {
     private:
         std::string data;
         std::endian endianness;
-        StringEncode stringEncode;
+        StringEncode string_encode;
 
     public:
         BinaryWriter(
             std::endian endianness,
-            StringEncode stringEncode
-        ) : endianness(endianness), stringEncode(stringEncode) {}
+            StringEncode string_encode
+        ) : endianness(endianness), string_encode(string_encode) {}
 
         /**
          * Fix the endianness of the numeric value and write it to the buffer.
@@ -43,7 +43,7 @@ namespace Amulet {
         }
 
         std::string encodeString(const std::string& value) {
-            return stringEncode(value);
+            return string_encode(value);
         }
 
         void writeString(const std::string& value) {

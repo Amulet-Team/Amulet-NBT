@@ -96,12 +96,10 @@ void init_bnbt(py::module& m) {
                 read_offset.offset
             );
         } else if (read_offset_py.is(py::none())){
-            size_t offset = 0;
             return Amulet::read_named_tag(
                 buffer,
                 endianness,
-                string_decoder,
-                offset
+                string_decoder
             );
         } else {
             throw std::invalid_argument("read_offset must be ReadOffset or None");

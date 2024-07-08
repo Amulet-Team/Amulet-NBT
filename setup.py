@@ -35,6 +35,7 @@ setup(
             sources=glob.glob("src/amulet_nbt/pybind/**/*.cpp", recursive=True),
             include_dirs=["src/amulet_nbt/include", numpy.get_include(), pybind11.get_include()],
             libraries=["amulet_nbt"],
+            define_macros=[("PYBIND11_DETAILED_ERROR_MESSAGES", None)],
             extra_compile_args=CompileArgs
         )
     ]

@@ -1,8 +1,8 @@
-#include <amulet_nbt/tag/wrapper.hpp>
-
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/operators.h>
+
+#include <amulet_nbt/tag/wrapper.hpp>
 
 namespace py = pybind11;
 
@@ -49,6 +49,19 @@ namespace py = pybind11;
         [](const Amulet::CLSNAME##Wrapper& self){\
             return std::to_string(self.tag);\
         }\
+    );\
+    CLSNAME.def(\
+        "__copy__",\
+        [](const Amulet::CLSNAME##Wrapper& self){\
+            return self;\
+        }\
+    );\
+    CLSNAME.def(\
+        "__deepcopy__",\
+        [](const Amulet::CLSNAME##Wrapper& self, py::dict){\
+            return self;\
+        },\
+        py::arg("memo")\
     );\
     CLSNAME.def(\
         "__hash__",\

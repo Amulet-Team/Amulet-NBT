@@ -2,14 +2,15 @@
 #include <limits>
 #include <array>
 
-#include <amulet_nbt/tag/wrapper.hpp>
-#include <amulet_nbt/tag/list.hpp>
-#include <amulet_nbt/tag/eq.hpp>
-
 #include <pybind11/pybind11.h>
 #include <pybind11/pytypes.h>
 #include <pybind11/stl.h>
 #include <pybind11/operators.h>
+
+#include <amulet_nbt/tag/wrapper.hpp>
+#include <amulet_nbt/tag/list.hpp>
+#include <amulet_nbt/tag/eq.hpp>
+#include <amulet_nbt/tag/copy.hpp>
 
 namespace py = pybind11;
 
@@ -233,6 +234,19 @@ void init_list(py::module& m) {
             [](const Amulet::ListTagWrapper& self){
                 return py::str(py::list(py::cast(self)));
             }
+        );
+        ListTag.def(
+            "__copy__",
+            [](const Amulet::ListTagWrapper& self){
+                return Amulet::ListTagWrapper(NBTTag_copy<Amulet::ListTag>(*self.tag));
+            }
+        );
+        ListTag.def(
+            "__deepcopy__",
+            [](const Amulet::ListTagWrapper& self, py::dict){
+                return Amulet::ListTagWrapper(Amulet::NBTTag_deep_copy_list(*self.tag));
+            },
+            py::arg("memo")
         );
         ListTag.def(
             "__eq__",

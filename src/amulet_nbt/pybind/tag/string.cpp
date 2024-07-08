@@ -71,6 +71,19 @@ void init_string(py::module& m) {
             }
         );
         StringTag.def(
+            "__copy__",
+            [](const Amulet::StringTagWrapper& self){
+                return self;
+            }
+        );
+        StringTag.def(
+            "__deepcopy__",
+            [](const Amulet::StringTagWrapper& self, py::dict){
+                return self;
+            },
+            py::arg("memo")
+        );
+        StringTag.def(
             "__hash__",
             [](const Amulet::StringTagWrapper& self){
                 return py::hash(py::make_tuple(8, py::bytes(self.tag)));

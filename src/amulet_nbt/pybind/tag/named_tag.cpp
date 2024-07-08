@@ -5,6 +5,7 @@
 #include <amulet_nbt/tag/nbt.hpp>
 #include <amulet_nbt/tag/wrapper.hpp>
 #include <amulet_nbt/tag/eq.hpp>
+#include <amulet_nbt/tag/copy.hpp>
 
 namespace py = pybind11;
 
@@ -96,6 +97,19 @@ void init_named_tag(py::module& m) {
                 out += ")";
                 return out;
             }
+        );
+        NamedTag.def(
+            "__copy__",
+            [](const Amulet::NamedTag& self){
+                return self;
+            }
+        );
+        NamedTag.def(
+            "__deepcopy__",
+            [](const Amulet::NamedTag& self, py::dict){
+                return Amulet::NamedTag(self.name, Amulet::NBTTag_deep_copy_node(self.tag_node));
+            },
+            py::arg("memo")
         );
         NamedTag.def(
             "__eq__",

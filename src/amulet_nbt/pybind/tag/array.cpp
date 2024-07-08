@@ -1,10 +1,12 @@
 #include <stdexcept>
-#include <amulet_nbt/tag/wrapper.hpp>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/operators.h>
 #include <pybind11/numpy.h>
+
+#include <amulet_nbt/tag/wrapper.hpp>
+#include <amulet_nbt/tag/copy.hpp>
 
 namespace py = pybind11;
 
@@ -87,6 +89,19 @@ namespace py = pybind11;
             out += "]";\
             return out;\
         }\
+    );\
+    CLSNAME.def(\
+        "__copy__",\
+        [](const Amulet::CLSNAME##Wrapper& self){\
+            return Amulet::CLSNAME##Wrapper(NBTTag_copy<Amulet::CLSNAME>(*self.tag));\
+        }\
+    );\
+    CLSNAME.def(\
+        "__deepcopy__",\
+        [](const Amulet::CLSNAME##Wrapper& self, py::dict){\
+            return Amulet::CLSNAME##Wrapper(Amulet::NBTTag_copy<Amulet::CLSNAME>(*self.tag));\
+        },\
+        py::arg("memo")\
     );\
     CLSNAME.def(\
         "__eq__",\

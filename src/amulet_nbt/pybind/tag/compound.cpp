@@ -8,6 +8,7 @@
 #include <amulet_nbt/tag/wrapper.hpp>
 #include <amulet_nbt/tag/compound.hpp>
 #include <amulet_nbt/tag/eq.hpp>
+#include <amulet_nbt/tag/copy.hpp>
 
 namespace py = pybind11;
 
@@ -110,6 +111,19 @@ void init_compound(py::module& m) {
                 out += "})";
                 return out;
             }
+        );
+        CompoundTag.def(
+            "__copy__",
+            [](const Amulet::CompoundTagWrapper& self){
+                return Amulet::CompoundTagWrapper(NBTTag_copy<Amulet::CompoundTag>(*self.tag));
+            }
+        );
+        CompoundTag.def(
+            "__deepcopy__",
+            [](const Amulet::CompoundTagWrapper& self, py::dict){
+                return Amulet::CompoundTagWrapper(Amulet::NBTTag_deep_copy_compound(*self.tag));
+            },
+            py::arg("memo")
         );
         CompoundTag.def(
             "__str__",

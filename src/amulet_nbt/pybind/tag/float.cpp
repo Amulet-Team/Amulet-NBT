@@ -51,6 +51,16 @@ namespace py = pybind11;
         }\
     );\
     CLSNAME.def(\
+        py::pickle(\
+            [](const Amulet::CLSNAME##Wrapper& self){\
+                return self.tag;\
+            },\
+            [](Amulet::CLSNAME state){\
+                return Amulet::CLSNAME##Wrapper(state);\
+            }\
+        )\
+    );\
+    CLSNAME.def(\
         "__copy__",\
         [](const Amulet::CLSNAME##Wrapper& self){\
             return self;\

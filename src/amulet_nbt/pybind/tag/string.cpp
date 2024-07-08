@@ -71,6 +71,16 @@ void init_string(py::module& m) {
             }
         );
         StringTag.def(
+            py::pickle(
+                [](const Amulet::StringTagWrapper& self){
+                    return py::bytes(self.tag);
+                },
+                [](py::bytes state){
+                    return Amulet::StringTagWrapper(state);
+                }
+            )
+        );
+        StringTag.def(
             "__copy__",
             [](const Amulet::StringTagWrapper& self){
                 return self;

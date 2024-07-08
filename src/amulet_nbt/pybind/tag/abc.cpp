@@ -10,7 +10,7 @@
 namespace py = pybind11;
 
 template <typename T>
-void abstract_method(T self){
+void abstract_method(T self, py::args, const py::kwargs&){
     PyErr_SetString(PyExc_NotImplementedError, "");
     throw py::error_already_set();
 }
@@ -179,11 +179,6 @@ void init_abc(py::module& m) {
         );
         AbstractBaseTag.def(
             "__str__",
-            abstract_method<const Amulet::AbstractBaseTag&>,
-            "A string representation of the object."
-        );
-        AbstractBaseTag.def(
-            "__reduce__",
             abstract_method<const Amulet::AbstractBaseTag&>,
             "A string representation of the object."
         );

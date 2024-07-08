@@ -99,6 +99,16 @@ void init_named_tag(py::module& m) {
             }
         );
         NamedTag.def(
+            py::pickle(
+                [](const Amulet::NamedTag& self){
+                    return py::bytes(Amulet::write_named_tag(self, std::endian::big, Amulet::utf8_to_mutf8));
+                },
+                [](py::bytes state){
+                    return Amulet::read_named_tag(state, std::endian::big, Amulet::mutf8_to_utf8);
+                }
+            )
+        );
+        NamedTag.def(
             "__copy__",
             [](const Amulet::NamedTag& self){
                 return self;

@@ -7,12 +7,10 @@
 #include <stdexcept>
 #include <amulet_nbt/string_encoding.hpp>
 
-typedef std::vector<size_t> CodePointVector;
-
 const size_t HexChars[16] = {48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102};
 
 
-inline void push_escape(CodePointVector& dst, const uint8_t& b){
+inline void push_escape(Amulet::CodePointVector& dst, const uint8_t& b){
     dst.push_back(9243); // ␛
     dst.push_back(120); // x
     dst.push_back(HexChars[b >> 4]);
@@ -21,8 +19,8 @@ inline void push_escape(CodePointVector& dst, const uint8_t& b){
 
 
 template <bool escapeErrors>
-CodePointVector _read_utf8(const std::string& src) {
-    CodePointVector dst;
+Amulet::CodePointVector _read_utf8(const std::string& src) {
+    Amulet::CodePointVector dst;
 
     for (size_t index = 0; index < src.size(); index++) {
         uint8_t b1 = src[index];
@@ -51,7 +49,7 @@ CodePointVector _read_utf8(const std::string& src) {
                 }
             }
             size_t value = (0b00011111 & b1) << 6 | (0b00111111 & b2);
-            if (0 < value && value < 0x80) {
+            if (value < 0x80) {
                 if constexpr (escapeErrors){
                     push_escape(dst, b1);
                     continue;
@@ -73,8 +71,6 @@ CodePointVector _read_utf8(const std::string& src) {
                 }
             }
             uint8_t b2 = src[index + 1];
-            uint8_t b3 = src[index + 2];
-
             if ((b2 & 0b11000000) != 0b10000000) {
                 if constexpr (escapeErrors){
                     push_escape(dst, b1);
@@ -83,6 +79,7 @@ CodePointVector _read_utf8(const std::string& src) {
                     throw std::invalid_argument("3-byte codepoint started at index " + std::to_string(index) + ", but format bits of byte 2 are incorrect.");
                 }
             }
+            uint8_t b3 = src[index + 2];
             if ((b3 & 0b11000000) != 0b10000000) {
                 if constexpr (escapeErrors){
                     push_escape(dst, b1);
@@ -114,9 +111,6 @@ CodePointVector _read_utf8(const std::string& src) {
                 }
             }
             uint8_t b2 = src[index + 1];
-            uint8_t b3 = src[index + 2];
-            uint8_t b4 = src[index + 3];
-
             if ((b2 & 0b11000000) != 0b10000000) {
                 if constexpr (escapeErrors){
                     push_escape(dst, b1);
@@ -125,6 +119,7 @@ CodePointVector _read_utf8(const std::string& src) {
                     throw std::invalid_argument("4-byte codepoint started at index " + std::to_string(index) + ", but format bits of byte 2 are incorrect.");
                 }
             }
+            uint8_t b3 = src[index + 2];
             if ((b3 & 0b11000000) != 0b10000000) {
                 if constexpr (escapeErrors){
                     push_escape(dst, b1);
@@ -133,6 +128,7 @@ CodePointVector _read_utf8(const std::string& src) {
                     throw std::invalid_argument("4-byte codepoint started at index " + std::to_string(index) + ", but format bits of byte 3 are incorrect.");
                 }
             }
+            uint8_t b4 = src[index + 3];
             if ((b4 & 0b11000000) != 0b10000000) {
                 if constexpr (escapeErrors){
                     push_escape(dst, b1);
@@ -178,7 +174,7 @@ inline char char_to_hex(const size_t& c){
 
 
 template <bool escapeErrors>
-constexpr void _write_utf8(std::string &dst, const CodePointVector& src) {
+constexpr void _write_utf8(std::string &dst, const Amulet::CodePointVector& src) {
     for (size_t index = 0; index < src.size(); index++) {
         const size_t& c = src[index];
         if (c <= 127) {
@@ -224,17 +220,23 @@ constexpr void _write_utf8(std::string &dst, const CodePointVector& src) {
 }
 
 
-CodePointVector read_utf8(const std::string& src) {
-    return _read_utf8<false>(src);
-}
-
-
-void write_utf8(std::string &dst, const CodePointVector& src) {
-    return _write_utf8<false>(dst, src);
-}
-
-
 namespace Amulet{
+    CodePointVector read_utf8(const std::string& src) {
+        return _read_utf8<false>(src);
+    }
+
+    void write_utf8(std::string &dst, const CodePointVector& src) {
+        return _write_utf8<false>(dst, src);
+    }
+
+    CodePointVector read_utf8_escape(const std::string& src) {
+        return _read_utf8<true>(src);
+    }
+
+    void write_utf8_escape(std::string &dst, const CodePointVector& src) {
+        return _write_utf8<true>(dst, src);
+    }
+
     // Validate a utf-8 byte sequence and convert to itself.
     std::string utf8_to_utf8(const std::string& src) {
         std::string dst;
@@ -242,24 +244,12 @@ namespace Amulet{
         return dst;
     }
 
-
-    CodePointVector read_utf8_escape(const std::string& src) {
-        return _read_utf8<true>(src);
-    }
-
-
-    void write_utf8_escape(std::string &dst, const CodePointVector& src) {
-        return _write_utf8<true>(dst, src);
-    }
-
-
     // Decode a utf-8 escape byte sequence to a regular utf-8 byte sequence
     std::string utf8_escape_to_utf8(const std::string& src) {
         std::string dst;
         write_utf8(dst, read_utf8_escape(src));
         return dst;
     }
-
 
     // Encode a regular utf-8 byte sequence to a utf-8 escape byte sequence
     std::string utf8_to_utf8_escape(const std::string& src) {

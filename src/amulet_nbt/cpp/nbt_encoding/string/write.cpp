@@ -428,28 +428,28 @@ namespace Amulet {
         return snbt;
     }
     std::string write_formatted_snbt(const ByteTag& tag, const std::string& indent){
-        return write_formatted_snbt(tag, indent);
+        return write_snbt(tag);
     }
     std::string write_formatted_snbt(const ShortTag& tag, const std::string& indent){
-        return write_formatted_snbt(tag, indent);
+        return write_snbt(tag);
     }
     std::string write_formatted_snbt(const IntTag& tag, const std::string& indent){
-        return write_formatted_snbt(tag, indent);
+        return write_snbt(tag);
     }
     std::string write_formatted_snbt(const LongTag& tag, const std::string& indent){
-        return write_formatted_snbt(tag, indent);
+        return write_snbt(tag);
     }
     std::string write_formatted_snbt(const FloatTag& tag, const std::string& indent){
-        return write_formatted_snbt(tag, indent);
+        return write_snbt(tag);
     }
     std::string write_formatted_snbt(const DoubleTag& tag, const std::string& indent){
-        return write_formatted_snbt(tag, indent);
+        return write_snbt(tag);
     }
     std::string write_formatted_snbt(const ByteArrayTag& tag, const std::string& indent){
-        return write_formatted_snbt(tag, indent);
+        return write_snbt(tag);
     }
     std::string write_formatted_snbt(const StringTag& tag, const std::string& indent){
-        return write_formatted_snbt(tag, indent);
+        return write_snbt(tag);
     }
     std::string write_formatted_snbt(const ListTag& tag, const std::string& indent){
         std::string snbt;
@@ -462,9 +462,9 @@ namespace Amulet {
         return snbt;
     }
     std::string write_formatted_snbt(const IntArrayTag& tag, const std::string& indent){
-        return write_formatted_snbt(tag, indent);
+        return write_snbt(tag);
     }
     std::string write_formatted_snbt(const LongArrayTag& tag, const std::string& indent){
-        return write_formatted_snbt(tag, indent);
+        return write_snbt(tag);
     }
 }

@@ -135,6 +135,12 @@ namespace Amulet {
         }
     }
 
+    std::string write_mutf8(const CodePointVector& src) {
+        std::string dst;
+        write_mutf8(dst, src);
+        return dst;
+    }
+
 
     // Decode a modified utf-8 byte sequence to a regular utf-8 byte sequence
     std::string mutf8_to_utf8(const std::string& src) {

@@ -226,7 +226,13 @@ namespace Amulet{
     }
 
     void write_utf8(std::string &dst, const CodePointVector& src) {
-        return _write_utf8<false>(dst, src);
+        _write_utf8<false>(dst, src);
+    }
+
+    std::string write_utf8(const CodePointVector& src) {
+        std::string dst;
+        _write_utf8<false>(dst, src);
+        return dst;
     }
 
     CodePointVector read_utf8_escape(const std::string& src) {
@@ -234,7 +240,13 @@ namespace Amulet{
     }
 
     void write_utf8_escape(std::string &dst, const CodePointVector& src) {
-        return _write_utf8<true>(dst, src);
+        _write_utf8<true>(dst, src);
+    }
+
+    std::string write_utf8_escape(const CodePointVector& src) {
+        std::string dst;
+        _write_utf8<true>(dst, src);
+        return dst;
     }
 
     // Validate a utf-8 byte sequence and convert to itself.

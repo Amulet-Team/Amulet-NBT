@@ -1,6 +1,7 @@
 #include <string>
 
 #include <amulet_nbt/tag/nbt.hpp>
+#include <amulet_nbt/string_encoding.hpp>
 
 namespace Amulet {
     void write_snbt(std::string&, const Amulet::TagNode&);
@@ -59,4 +60,7 @@ namespace Amulet {
     std::string write_formatted_snbt(const Amulet::CompoundTag&, const std::string& indent);
     std::string write_formatted_snbt(const Amulet::IntArrayTag&, const std::string& indent);
     std::string write_formatted_snbt(const Amulet::LongArrayTag&, const std::string& indent);
+
+    Amulet::TagNode read_snbt(const Amulet::CodePointVector& snbt);
+    Amulet::TagNode read_snbt(const std::string& snbt);
 }

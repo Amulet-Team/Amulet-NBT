@@ -14,6 +14,7 @@ void init_compound(py::module&);
 void init_named_tag(py::module&);
 
 void init_bnbt(py::module& m);
+void init_snbt(py::module& m);
 
 
 PYBIND11_MODULE(_nbt, m) {
@@ -29,4 +30,5 @@ PYBIND11_MODULE(_nbt, m) {
     init_named_tag(m);
 
     init_bnbt(m);
+    init_snbt(m);
 }

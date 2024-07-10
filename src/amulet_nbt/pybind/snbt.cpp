@@ -1,0 +1,26 @@
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <pybind11/operators.h>
+
+#include <amulet_nbt/tag/wrapper.hpp>
+#include <amulet_nbt/nbt_encoding/string.hpp>
+
+namespace py = pybind11;
+
+void init_snbt(py::module& m) {
+    m.def(
+        "from_snbt",
+        [](std::string snbt){
+            return Amulet::wrap_node(Amulet::read_snbt(snbt));
+        },
+        py::arg("snbt"),
+        py::doc(
+            "Parse Stringified NBT.\n"
+            "\n"
+            ":param snbt: The SNBT string to parse.\n"
+            ":return: The tag\n"
+            ":raises: ValueError if the SNBT format is invalid.\n"
+            ":raises: IndexError if the data overflows the given string.\n"
+        )
+    );
+}

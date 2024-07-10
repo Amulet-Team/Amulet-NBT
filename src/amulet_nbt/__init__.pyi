@@ -58,10 +58,10 @@ __all__ = [
     "CompoundTag",
     "TAG_Compound",
     "NamedTag",
-    "load",
-    "load_array",
+    "read_nbt",
+    "read_nbt_array",
     "ReadOffset",
-    "from_snbt",
+    "read_snbt",
     "NBTError",
     "NBTLoadError",
     "NBTFormatError",
@@ -1604,7 +1604,7 @@ class ReadOffset:
     offset: int
 
 @overload
-def load(
+def read_nbt(
     filepath_or_buffer: str | bytes | memoryview | _Readable | None,
     *,
     preset: EncodingPreset | None = None,
@@ -1619,7 +1619,7 @@ def load(
     """
 
 @overload
-def load(
+def read_nbt(
     filepath_or_buffer: str | bytes | memoryview | _Readable | None,
     *,
     compressed: bool = True,
@@ -1638,7 +1638,7 @@ def load(
     """
 
 @overload
-def load_array(
+def read_nbt_array(
     filepath_or_buffer: str | bytes | memoryview | _Readable | None,
     *,
     count: int = 1,
@@ -1655,7 +1655,7 @@ def load_array(
     """
 
 @overload
-def load_array(
+def read_nbt_array(
     filepath_or_buffer: str | bytes | memoryview | _Readable | None,
     *,
     count: int = 1,
@@ -1675,7 +1675,7 @@ def load_array(
     :raises: NBTLoadError if an error occurred when loading the data.
     """
 
-def from_snbt(snbt: str) -> AnyNBT:
+def read_snbt(snbt: str) -> AnyNBT:
     """
     Load Stringified NBT into a tag.
     """

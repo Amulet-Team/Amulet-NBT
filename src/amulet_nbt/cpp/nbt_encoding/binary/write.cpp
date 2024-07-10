@@ -182,53 +182,53 @@ void write_compound_payload(Amulet::BinaryWriter& writer, const Amulet::Compound
 
 
 template <typename T>
-    std::string _write_named_tag(const std::string& name, const T& tag, std::endian endianness, Amulet::StringEncode string_encode){
+    std::string _write_nbt(const std::string& name, const T& tag, std::endian endianness, Amulet::StringEncode string_encode){
         Amulet::BinaryWriter writer(endianness, string_encode);
         write_name_and_tag<T>(writer, name, tag);
         return writer.getBuffer();
     }
 
 namespace Amulet {
-    std::string write_named_tag(const std::string& name, const Amulet::ByteTag& tag, std::endian endianness, Amulet::StringEncode string_encode){
-        return _write_named_tag(name, tag, endianness, string_encode);
+    std::string write_nbt(const std::string& name, const Amulet::ByteTag& tag, std::endian endianness, Amulet::StringEncode string_encode){
+        return _write_nbt(name, tag, endianness, string_encode);
     };
-    std::string write_named_tag(const std::string& name, const Amulet::ShortTag& tag, std::endian endianness, Amulet::StringEncode string_encode){
-        return _write_named_tag(name, tag, endianness, string_encode);
+    std::string write_nbt(const std::string& name, const Amulet::ShortTag& tag, std::endian endianness, Amulet::StringEncode string_encode){
+        return _write_nbt(name, tag, endianness, string_encode);
     };
-    std::string write_named_tag(const std::string& name, const Amulet::IntTag& tag, std::endian endianness, Amulet::StringEncode string_encode){
-        return _write_named_tag(name, tag, endianness, string_encode);
+    std::string write_nbt(const std::string& name, const Amulet::IntTag& tag, std::endian endianness, Amulet::StringEncode string_encode){
+        return _write_nbt(name, tag, endianness, string_encode);
     };
-    std::string write_named_tag(const std::string& name, const Amulet::LongTag& tag, std::endian endianness, Amulet::StringEncode string_encode){
-        return _write_named_tag(name, tag, endianness, string_encode);
+    std::string write_nbt(const std::string& name, const Amulet::LongTag& tag, std::endian endianness, Amulet::StringEncode string_encode){
+        return _write_nbt(name, tag, endianness, string_encode);
     };
-    std::string write_named_tag(const std::string& name, const Amulet::FloatTag& tag, std::endian endianness, Amulet::StringEncode string_encode){
-        return _write_named_tag(name, tag, endianness, string_encode);
+    std::string write_nbt(const std::string& name, const Amulet::FloatTag& tag, std::endian endianness, Amulet::StringEncode string_encode){
+        return _write_nbt(name, tag, endianness, string_encode);
     };
-    std::string write_named_tag(const std::string& name, const Amulet::DoubleTag& tag, std::endian endianness, Amulet::StringEncode string_encode){
-        return _write_named_tag(name, tag, endianness, string_encode);
+    std::string write_nbt(const std::string& name, const Amulet::DoubleTag& tag, std::endian endianness, Amulet::StringEncode string_encode){
+        return _write_nbt(name, tag, endianness, string_encode);
     };
-    std::string write_named_tag(const std::string& name, const Amulet::ByteArrayTagPtr& tag, std::endian endianness, Amulet::StringEncode string_encode){
-        return _write_named_tag(name, tag, endianness, string_encode);
+    std::string write_nbt(const std::string& name, const Amulet::ByteArrayTagPtr& tag, std::endian endianness, Amulet::StringEncode string_encode){
+        return _write_nbt(name, tag, endianness, string_encode);
     };
-    std::string write_named_tag(const std::string& name, const Amulet::StringTag& tag, std::endian endianness, Amulet::StringEncode string_encode){
-        return _write_named_tag(name, tag, endianness, string_encode);
+    std::string write_nbt(const std::string& name, const Amulet::StringTag& tag, std::endian endianness, Amulet::StringEncode string_encode){
+        return _write_nbt(name, tag, endianness, string_encode);
     };
-    std::string write_named_tag(const std::string& name, const Amulet::ListTagPtr& tag, std::endian endianness, Amulet::StringEncode string_encode){
-        return _write_named_tag(name, tag, endianness, string_encode);
+    std::string write_nbt(const std::string& name, const Amulet::ListTagPtr& tag, std::endian endianness, Amulet::StringEncode string_encode){
+        return _write_nbt(name, tag, endianness, string_encode);
     };
-    std::string write_named_tag(const std::string& name, const Amulet::CompoundTagPtr& tag, std::endian endianness, Amulet::StringEncode string_encode){
-        return _write_named_tag(name, tag, endianness, string_encode);
+    std::string write_nbt(const std::string& name, const Amulet::CompoundTagPtr& tag, std::endian endianness, Amulet::StringEncode string_encode){
+        return _write_nbt(name, tag, endianness, string_encode);
     };
-    std::string write_named_tag(const std::string& name, const Amulet::IntArrayTagPtr& tag, std::endian endianness, Amulet::StringEncode string_encode){
-        return _write_named_tag(name, tag, endianness, string_encode);
+    std::string write_nbt(const std::string& name, const Amulet::IntArrayTagPtr& tag, std::endian endianness, Amulet::StringEncode string_encode){
+        return _write_nbt(name, tag, endianness, string_encode);
     };
-    std::string write_named_tag(const std::string& name, const Amulet::LongArrayTagPtr& tag, std::endian endianness, Amulet::StringEncode string_encode){
-        return _write_named_tag(name, tag, endianness, string_encode);
+    std::string write_nbt(const std::string& name, const Amulet::LongArrayTagPtr& tag, std::endian endianness, Amulet::StringEncode string_encode){
+        return _write_nbt(name, tag, endianness, string_encode);
     };
-    std::string write_named_tag(const std::string& name, const Amulet::TagNode& tag, std::endian endianness, Amulet::StringEncode string_encode){
-        return _write_named_tag(name, tag, endianness, string_encode);
+    std::string write_nbt(const std::string& name, const Amulet::TagNode& tag, std::endian endianness, Amulet::StringEncode string_encode){
+        return _write_nbt(name, tag, endianness, string_encode);
     };
-    std::string write_named_tag(const Amulet::NamedTag& named_tag, std::endian endianness, Amulet::StringEncode string_encode){
-        return write_named_tag(named_tag.name, named_tag.tag_node, endianness, string_encode);
+    std::string write_nbt(const Amulet::NamedTag& named_tag, std::endian endianness, Amulet::StringEncode string_encode){
+        return write_nbt(named_tag.name, named_tag.tag_node, endianness, string_encode);
     }
 }

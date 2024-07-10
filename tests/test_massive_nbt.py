@@ -15,7 +15,7 @@ from amulet_nbt import (
     ListTag,
     CompoundTag,
     NamedTag,
-    load,
+    read_nbt,
 )
 
 
@@ -146,11 +146,11 @@ class MassiveNBTTests(unittest.TestCase):
             little_endian=True,
         )
 
-        test_be = load(os.path.join("temp", "massive_nbt_test_big_endian.nbt"))
-        test_be_compressed = load(
+        test_be = read_nbt(os.path.join("temp", "massive_nbt_test_big_endian.nbt"))
+        test_be_compressed = read_nbt(
             os.path.join("temp", "massive_nbt_test_big_endian_compressed.nbt")
         )
-        test_le = load(
+        test_le = read_nbt(
             os.path.join("temp", "massive_nbt_test_little_endian.nbt"),
             little_endian=True,
         )

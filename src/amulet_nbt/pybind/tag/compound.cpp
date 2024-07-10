@@ -115,12 +115,12 @@ void init_compound(py::module& m) {
         CompoundTag.def(
             py::pickle(
                 [](const Amulet::CompoundTagWrapper& self){
-                    return py::bytes(Amulet::write_named_tag("", self.tag, std::endian::big, Amulet::utf8_to_mutf8));
+                    return py::bytes(Amulet::write_nbt("", self.tag, std::endian::big, Amulet::utf8_to_mutf8));
                 },
                 [](py::bytes state){
                     return Amulet::CompoundTagWrapper(
                         std::get<Amulet::CompoundTagPtr>(
-                            Amulet::read_named_tag(state, std::endian::big, Amulet::mutf8_to_utf8).tag_node
+                            Amulet::read_nbt(state, std::endian::big, Amulet::mutf8_to_utf8).tag_node
                         )
                     );
                 }

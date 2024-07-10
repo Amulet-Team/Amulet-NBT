@@ -15,8 +15,8 @@ from amulet_nbt import (
     AbstractBaseFloatTag,
     FloatTag,
     DoubleTag,
-    load as load_nbt,
-    from_snbt,
+    read_nbt,
+    read_snbt,
     StringTag,
 )
 
@@ -288,21 +288,21 @@ class FloatTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
     def test_from_nbt(self) -> None:
         self.assertEqual(
             FloatTag(5),
-            load_nbt(b"\x05\x00\x00\x40\xa0\x00\x00", little_endian=False).float,
+            read_nbt(b"\x05\x00\x00\x40\xa0\x00\x00", little_endian=False).float,
         )
         self.assertEqual(
             FloatTag(5),
-            load_nbt(b"\x05\x00\x00\x00\x00\xa0\x40", little_endian=True).float,
+            read_nbt(b"\x05\x00\x00\x00\x00\xa0\x40", little_endian=True).float,
         )
         self.assertEqual(
             DoubleTag(5),
-            load_nbt(
+            read_nbt(
                 b"\x06\x00\x00\x40\x14\x00\x00\x00\x00\x00\x00", little_endian=False
             ).double,
         )
         self.assertEqual(
             DoubleTag(5),
-            load_nbt(
+            read_nbt(
                 b"\x06\x00\x00\x00\x00\x00\x00\x00\x00\x14\x40", little_endian=True
             ).double,
         )
@@ -647,7 +647,7 @@ class FloatTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
 
         for tag, snbt in float_data:
             with self.subTest(snbt):
-                self.assertEqual(tag, from_snbt(snbt))
+                self.assertEqual(tag, read_snbt(snbt))
 
 
 if __name__ == "__main__":

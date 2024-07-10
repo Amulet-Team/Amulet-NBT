@@ -93,12 +93,12 @@ namespace py = pybind11;
     CLSNAME.def(\
         py::pickle(\
             [](const Amulet::CLSNAME##Wrapper& self){\
-                return py::bytes(Amulet::write_named_tag("", self.tag, std::endian::big, Amulet::utf8_to_mutf8));\
+                return py::bytes(Amulet::write_nbt("", self.tag, std::endian::big, Amulet::utf8_to_mutf8));\
             },\
             [](py::bytes state){\
                 return Amulet::CLSNAME##Wrapper(\
                     std::get<Amulet::CLSNAME##Ptr>(\
-                        Amulet::read_named_tag(state, std::endian::big, Amulet::mutf8_to_utf8).tag_node\
+                        Amulet::read_nbt(state, std::endian::big, Amulet::mutf8_to_utf8).tag_node\
                     )\
                 );\
             }\

@@ -186,11 +186,11 @@
 
 These are functions to load the binary and stringified NBT formats.
 
-.. autofunction:: amulet_nbt.load
-.. autofunction:: amulet_nbt.load_array
+.. autofunction:: amulet_nbt.read_nbt
+.. autofunction:: amulet_nbt.read_nbt_array
 .. autoclass:: amulet_nbt.ReadOffset
    :members:
-.. autofunction:: amulet_nbt.from_snbt
+.. autofunction:: amulet_nbt.read_snbt
 
 
 ############
@@ -217,7 +217,7 @@ These are instances of a class storing C++ functions to encode and decode string
    :inherited-members:
    :undoc-members:
 
-They can be passed to the string_encoding argument in to_nbt, save_to, load and load_array to control the string encoding behaviour.
+They can be passed to the string_encoding argument in to_nbt, save_to, read_nbt and read_nbt_array to control the string encoding behaviour.
 
 The usual string encoding scheme is called UTF-8.
 
@@ -237,7 +237,7 @@ Java Edition uses a modified version of UTF-8 implemented by the Java programmin
  Encoding Presets
 ##################
 
-The string encoding and endianness can be defined separatly but for simplicity the following presets have been defined.
+The string encoding and endianness can be defined separately but for simplicity the following presets have been defined.
 
 .. autodata:: amulet_nbt.java_encoding
 .. autodata:: amulet_nbt.bedrock_encoding

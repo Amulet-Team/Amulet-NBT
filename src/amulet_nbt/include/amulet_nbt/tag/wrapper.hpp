@@ -47,7 +47,7 @@ namespace Amulet {
             T tag;
             TagWrapper(T tag): tag(tag) {};
             virtual std::string to_nbt(std::string name, std::endian endianness, Amulet::StringEncode string_encode) const {
-                return Amulet::write_named_tag(name, tag, endianness, string_encode);
+                return Amulet::write_nbt(name, tag, endianness, string_encode);
             }
             virtual std::string to_snbt() const {
                 if constexpr (is_shared_ptr<T>::value){

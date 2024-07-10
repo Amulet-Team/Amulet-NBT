@@ -79,7 +79,7 @@ void init_bnbt(py::module& m) {
         return data;
     };
 
-    auto load = [get_buffer](
+    auto read_nbt = [get_buffer](
         py::object filepath_or_buffer,
         bool compressed,
         std::endian endianness,
@@ -89,14 +89,14 @@ void init_bnbt(py::module& m) {
         std::string buffer = get_buffer(filepath_or_buffer, compressed);
         if (py::isinstance<Amulet::ReadOffset>(read_offset_py)){
             Amulet::ReadOffset& read_offset = read_offset_py.cast<Amulet::ReadOffset&>();
-            return Amulet::read_named_tag(
+            return Amulet::read_nbt(
                 buffer,
                 endianness,
                 string_decoder,
                 read_offset.offset
             );
         } else if (read_offset_py.is(py::none())){
-            return Amulet::read_named_tag(
+            return Amulet::read_nbt(
                 buffer,
                 endianness,
                 string_decoder
@@ -107,13 +107,13 @@ void init_bnbt(py::module& m) {
     };
 
     m.def(
-        "load",
-        [load](
+        "read_nbt",
+        [read_nbt](
             py::object filepath_or_buffer,
             Amulet::EncodingPreset preset,
             py::object read_offset
         ){
-            return load(
+            return read_nbt(
                 filepath_or_buffer,
                 preset.compressed,
                 preset.endianness,
@@ -135,15 +135,15 @@ void init_bnbt(py::module& m) {
         )
     );
     m.def(
-        "load",
-        [load](
+        "read_nbt",
+        [read_nbt](
             py::object filepath_or_buffer,
             bool compressed,
             bool little_endian,
             Amulet::StringEncoding string_encoding,
             py::object read_offset
         ){
-            return load(
+            return read_nbt(
                 filepath_or_buffer,
                 compressed,
                 little_endian ? std::endian::little : std::endian::big,
@@ -169,7 +169,7 @@ void init_bnbt(py::module& m) {
         )
     );
 
-    auto load_array = [get_buffer](
+    auto read_nbt_array = [get_buffer](
         py::object filepath_or_buffer,
         Py_ssize_t count,
         bool compressed,
@@ -184,14 +184,14 @@ void init_bnbt(py::module& m) {
         if (py::isinstance<Amulet::ReadOffset>(read_offset_py)){
             Amulet::ReadOffset& read_offset = read_offset_py.cast<Amulet::ReadOffset&>();
             if (count == -1){
-                return Amulet::read_named_tags(
+                return Amulet::read_nbt_array(
                     buffer,
                     endianness,
                     string_decoder,
                     read_offset.offset
                 );
             } else {
-                return Amulet::read_named_tags(
+                return Amulet::read_nbt_array(
                     buffer,
                     endianness,
                     string_decoder,
@@ -202,14 +202,14 @@ void init_bnbt(py::module& m) {
         } else if (read_offset_py.is(py::none())){
             size_t offset = 0;
             if (count == -1){
-                return Amulet::read_named_tags(
+                return Amulet::read_nbt_array(
                     buffer,
                     endianness,
                     string_decoder,
                     offset
                 );
             } else {
-                return Amulet::read_named_tags(
+                return Amulet::read_nbt_array(
                     buffer,
                     endianness,
                     string_decoder,
@@ -222,14 +222,14 @@ void init_bnbt(py::module& m) {
         }
     };
     m.def(
-        "load_array",
-        [load_array](
+        "read_nbt_array",
+        [read_nbt_array](
             py::object filepath_or_buffer,
             Py_ssize_t count,
             Amulet::EncodingPreset preset,
             py::object read_offset
         ){
-            return load_array(
+            return read_nbt_array(
                 filepath_or_buffer,
                 count,
                 preset.compressed,
@@ -255,8 +255,8 @@ void init_bnbt(py::module& m) {
     );
 
     m.def(
-        "load_array",
-        [load_array](
+        "read_nbt_array",
+        [read_nbt_array](
             py::object filepath_or_buffer,
             Py_ssize_t count,
             bool compressed,
@@ -264,7 +264,7 @@ void init_bnbt(py::module& m) {
             Amulet::StringEncoding string_encoding,
             py::object read_offset
         ){
-            return load_array(
+            return read_nbt_array(
                 filepath_or_buffer,
                 count,
                 compressed,

@@ -9,7 +9,7 @@ namespace py = pybind11;
 
 void init_snbt(py::module& m) {
     m.def(
-        "from_snbt",
+        "read_snbt",
         [](std::string snbt){
             return Amulet::wrap_node(Amulet::read_snbt(snbt));
         },

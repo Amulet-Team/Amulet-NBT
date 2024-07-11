@@ -77,6 +77,7 @@ void init_compound(py::module& m) {
                     out[key] = value;
                 }
             }
+            return out;
         };
         CompoundTag.def_property_readonly(
             "py_dict",

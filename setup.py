@@ -1,6 +1,5 @@
 from setuptools import setup, Extension
 import versioneer
-import numpy
 import sysconfig
 from distutils import ccompiler
 import sys
@@ -33,7 +32,7 @@ setup(
         Extension(
             name="amulet_nbt._nbt",
             sources=glob.glob("src/amulet_nbt/pybind/**/*.cpp", recursive=True),
-            include_dirs=["src/amulet_nbt/include", numpy.get_include(), pybind11.get_include()],
+            include_dirs=["src/amulet_nbt/include", pybind11.get_include()],
             libraries=["amulet_nbt"],
             define_macros=[("PYBIND11_DETAILED_ERROR_MESSAGES", None)],
             extra_compile_args=CompileArgs

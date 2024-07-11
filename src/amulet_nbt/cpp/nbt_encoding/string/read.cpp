@@ -9,9 +9,7 @@
 
 const std::set<size_t> Whitespace{' ', '\t', '\r', '\n'};
 const std::set<size_t> AlphaNumPlus{'+', '-', '.', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '_', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
-const Amulet::CodePointVector false_text{'f', 'a', 'l', 's', 'e'};
 const Amulet::ByteTag byte_false = 0;
-const Amulet::CodePointVector true_text{'t', 'r', 'u', 'e'};
 const Amulet::ByteTag byte_true = 1;
 
 
@@ -87,7 +85,7 @@ inline std::pair<Amulet::CodePointVector, bool> read_string(const Amulet::CodePo
         }
         return std::make_pair(
             Amulet::CodePointVector(snbt.begin() + start, snbt.begin() + index),
-            true
+            false
         );
     }
 }
@@ -143,7 +141,7 @@ inline T read_int(const Amulet::CodePointVector& snbt, size_t start, size_t stop
 }
 
 
-inline std::pair<size_t, size_t> find_float(const Amulet::CodePointVector& snbt, const size_t& index){
+inline std::tuple<size_t, size_t, bool> find_float(const Amulet::CodePointVector& snbt, const size_t& index){
     // Find a float at position index.
     // If an float is found, the return value will be the start and end position of the float
     // If a valid float was not found, the values will be equal.
@@ -160,7 +158,9 @@ inline std::pair<size_t, size_t> find_float(const Amulet::CodePointVector& snbt,
     }
     size_t whole_end = temp_index;
     // read decimal
+    bool needs_code = true;
     if (in_range(snbt, temp_index) && snbt[temp_index] == '.'){
+        needs_code = false;
         temp_index++;
         size_t decimal_start = temp_index;
         while (in_range(snbt, temp_index) && '0' <= snbt[temp_index] && snbt[temp_index] <= '9'){
@@ -168,14 +168,14 @@ inline std::pair<size_t, size_t> find_float(const Amulet::CodePointVector& snbt,
         }
         if (decimal_start == temp_index && whole_start == whole_end){
             // no whole or decimal numbers
-            return std::make_pair(start, temp_index);
+            return std::make_tuple(start, start, false);
         }
     } else if (whole_start == whole_end){
         // no decimal so there must be at least one whole number
-        return std::make_pair(start, start);
+        return std::make_tuple(start, start, false);
     }
     // read optional exponent
-    if (in_range(snbt, temp_index) && (snbt[temp_index] & ~32) == 'E'){
+    if (in_range(snbt, temp_index) && (snbt[temp_index] | 32) == 'e'){
         temp_index++;
         // read optional sign
         if (in_range(snbt, temp_index) && (snbt[temp_index] == '+' || snbt[temp_index] == '-')){
@@ -187,10 +187,10 @@ inline std::pair<size_t, size_t> find_float(const Amulet::CodePointVector& snbt,
         }
         if (exp_start == temp_index){
             // if exponent is defined there must be a number.
-            return std::make_pair(start, start);
+            return std::make_tuple(start, start, false);
         }
     }
-    return std::make_pair(start, temp_index);
+    return std::make_tuple(start, temp_index, needs_code);
 }
 
 
@@ -221,12 +221,12 @@ inline Amulet::TagNode read_array(const Amulet::CodePointVector& snbt, size_t& i
             throw std::invalid_argument("Expected a ] or int at position " + std::to_string(index) + " but got ->" + read_error(snbt, index) + " instead");
         }
         if constexpr (std::is_same_v<T, Amulet::ByteTag>){
-            if ((read_code_point(snbt, stop) & ~32) != 'B'){
+            if ((read_code_point(snbt, stop) | 32) != 'b'){
                 throw std::invalid_argument("Expected 'B' position " + std::to_string(stop) + " but got ->" + read_error(snbt, stop) + " instead");
             }
             index = stop + 1;
         } else if constexpr (std::is_same_v<T, Amulet::LongTag>){
-            if ((read_code_point(snbt, stop) & ~32) != 'L'){
+            if ((read_code_point(snbt, stop) | 32) != 'l'){
                 throw std::invalid_argument("Expected 'L' position " + std::to_string(stop) + " but got ->" + read_error(snbt, stop) + " instead");
             }
             index = stop + 1;
@@ -300,10 +300,23 @@ Amulet::TagNode _read_snbt(const Amulet::CodePointVector& snbt, size_t& index){
                 if (string.empty()) {
                     throw std::invalid_argument("Expected data matching [A-Za-z0-9._+-]+ at position " + std::to_string(index) + " but got ->" + read_error(snbt, index) + " instead");
                 }
-                if (string == true_text) {
+                if (
+                    string.size() == 4 &&
+                    (string[0] | 32) == 't' &&
+                    (string[1] | 32) == 'r' &&
+                    (string[2] | 32) == 'u' &&
+                    (string[3] | 32) == 'e'
+                ) {
                     return byte_true;
                 }
-                if (string == false_text) {
+                if (
+                    string.size() == 5 &&
+                    (string[0] | 32) == 'f' &&
+                    (string[1] | 32) == 'a' &&
+                    (string[2] | 32) == 'l' &&
+                    (string[3] | 32) == 's' &&
+                    (string[4] | 32) == 'e'
+                ) {
                     return byte_false;
                 }
 
@@ -312,28 +325,30 @@ Amulet::TagNode _read_snbt(const Amulet::CodePointVector& snbt, size_t& index){
                 if (int_stop == string.size()){
                     // found an int that takes the whole string
                     return read_int<Amulet::IntTag>(string, int_start, int_stop);
-                } else if (int_stop == string.size() - 1) {
-                    switch (string[string.size() - 1] & ~32){
-                        case 'B':
-                            return read_int<Amulet::ByteTag>(string, int_start, int_stop - 1);
-                        case 'S':
-                            return read_int<Amulet::ShortTag>(string, int_start, int_stop - 1);
-                        case 'L':
-                            return read_int<Amulet::LongTag>(string, int_start, int_stop - 1);
+                } else if (int_start != int_stop && int_stop == string.size() - 1) {
+                    switch (string[string.size() - 1] | 32){
+                        case 'b':
+                            return read_int<Amulet::ByteTag>(string, int_start, int_stop);
+                        case 's':
+                            return read_int<Amulet::ShortTag>(string, int_start, int_stop);
+                        case 'l':
+                            return read_int<Amulet::LongTag>(string, int_start, int_stop);
                     }
                 }
 
                 // if not an int, try matching a float
-                auto [float_start, float_stop] = find_float(string, 0);
+                auto [float_start, float_stop, needs_code] = find_float(string, 0);
                 if (float_stop == string.size()){
-                    // found an int that takes the whole string
-                    return read_float<Amulet::DoubleTag>(string, float_start, float_stop);
-                } else if (float_stop == string.size() - 1) {
-                    switch (string[string.size() - 1] & ~32){
-                        case 'F':
-                            return read_float<Amulet::FloatTag>(string, float_start, float_stop - 1);
-                        case 'D':
-                            return read_float<Amulet::DoubleTag>(string, float_start, float_stop - 1);
+                    // found a float that takes the whole string
+                    if (!needs_code){
+                        return read_float<Amulet::DoubleTag>(string, float_start, float_stop);
+                    }
+                } else if (float_start != float_stop && float_stop == string.size() - 1) {
+                    switch (string[string.size() - 1] | 32){
+                        case 'f':
+                            return read_float<Amulet::FloatTag>(string, float_start, float_stop);
+                        case 'd':
+                            return read_float<Amulet::DoubleTag>(string, float_start, float_stop);
                     }
                 }
 

@@ -11,6 +11,7 @@
 #include <iomanip>
 #include <stdexcept>
 
+#include <amulet_nbt/common.hpp>
 #include <amulet_nbt/tag/nbt.hpp>
 #include <amulet_nbt/tag/array.hpp>
 #include <amulet_nbt/nbt_encoding/string.hpp>
@@ -18,6 +19,9 @@
 
 namespace Amulet {
     // Forward declarations
+    void write_formatted_snbt(std::string&, const Amulet::TagNode&, const std::string&, size_t);
+    void write_formatted_snbt(std::string&, const Amulet::ListTag&, const std::string&, size_t);
+    void write_formatted_snbt(std::string&, const Amulet::CompoundTag&, const std::string&, size_t);
 
     inline void write_indent(std::string& snbt, const std::string& indent, size_t indent_count){
         for (size_t i = 0; i < indent_count; i++){
@@ -33,12 +37,12 @@ namespace Amulet {
             case 4: write_snbt(snbt, std::get<LongTag>(tag)); break;
             case 5: write_snbt(snbt, std::get<FloatTag>(tag)); break;
             case 6: write_snbt(snbt, std::get<DoubleTag>(tag)); break;
-            case 7: write_snbt(snbt, std::get<ByteArrayTagPtr>(tag)); break;
+            case 7: write_snbt(snbt, *std::get<ByteArrayTagPtr>(tag)); break;
             case 8: write_snbt(snbt, std::get<StringTag>(tag)); break;
-            case 9: write_snbt(snbt, std::get<ListTagPtr>(tag)); break;
-            case 10: write_snbt(snbt, std::get<CompoundTagPtr>(tag)); break;
-            case 11: write_snbt(snbt, std::get<IntArrayTagPtr>(tag)); break;
-            case 12: write_snbt(snbt, std::get<LongArrayTagPtr>(tag)); break;
+            case 9: write_snbt(snbt, *std::get<ListTagPtr>(tag)); break;
+            case 10: write_snbt(snbt, *std::get<CompoundTagPtr>(tag)); break;
+            case 11: write_snbt(snbt, *std::get<IntArrayTagPtr>(tag)); break;
+            case 12: write_snbt(snbt, *std::get<LongArrayTagPtr>(tag)); break;
             default: throw std::runtime_error("TagNode cannot be in null state when writing.");
         }
     }
@@ -51,12 +55,12 @@ namespace Amulet {
             case 4: write_snbt(snbt, std::get<LongTag>(tag)); break;
             case 5: write_snbt(snbt, std::get<FloatTag>(tag)); break;
             case 6: write_snbt(snbt, std::get<DoubleTag>(tag)); break;
-            case 7: write_snbt(snbt, std::get<ByteArrayTagPtr>(tag)); break;
+            case 7: write_snbt(snbt, *std::get<ByteArrayTagPtr>(tag)); break;
             case 8: write_snbt(snbt, std::get<StringTag>(tag)); break;
-            case 9: write_formatted_snbt(snbt, std::get<ListTagPtr>(tag), indent, indent_count); break;
-            case 10: write_formatted_snbt(snbt, std::get<CompoundTagPtr>(tag), indent, indent_count); break;
-            case 11: write_snbt(snbt, std::get<IntArrayTagPtr>(tag)); break;
-            case 12: write_snbt(snbt, std::get<LongArrayTagPtr>(tag)); break;
+            case 9: write_formatted_snbt(snbt, *std::get<ListTagPtr>(tag), indent, indent_count); break;
+            case 10: write_formatted_snbt(snbt, *std::get<CompoundTagPtr>(tag), indent, indent_count); break;
+            case 11: write_snbt(snbt, *std::get<IntArrayTagPtr>(tag)); break;
+            case 12: write_snbt(snbt, *std::get<LongArrayTagPtr>(tag)); break;
             default: throw std::runtime_error("TagNode cannot be in null state when writing.");
         }
     }
@@ -143,7 +147,11 @@ namespace Amulet {
             if (i != 0){
                 snbt.append(", ");
             }
-            write_snbt(snbt, list[i]);
+            if constexpr (is_shared_ptr<T>::value){
+                write_snbt(snbt, *list[i]);
+            } else {
+                write_snbt(snbt, list[i]);
+            }
         }
         snbt.append("]");
     }
@@ -243,13 +251,13 @@ namespace Amulet {
     void write_snbt(std::string& snbt, const CompoundTag& tag){
         auto sorted = sort_compound(tag);
         snbt.append("{");
-        for (auto it = sorted.begin(); it != sorted.end(); it++){
-            write_key(snbt, it->first);
-            snbt.append(": ");
-            write_snbt(snbt, it->second);
-            if (std::next(it) != sorted.end()){
+        for (size_t i = 0; i < sorted.size(); i++){
+            if (i != 0){
                 snbt.append(", ");
             }
+            write_key(snbt, sorted[i].first);
+            snbt.append(": ");
+            write_snbt(snbt, sorted[i].second);
         }
         snbt.append("}");
     }

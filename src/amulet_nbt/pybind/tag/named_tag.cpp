@@ -87,13 +87,13 @@ void init_named_tag(py::module& m) {
             [](const Amulet::NamedTag& self){
                 std::string out;
                 out += "NamedTag(";
+                out += py::repr(py::cast(Amulet::wrap_node(self.tag_node)));
+                out += ", ";
                 try {
                     out += py::repr(py::str(self.name));
                 } catch (py::error_already_set&){
                     out += py::repr(py::bytes(self.name));
                 }
-                out += ", ";
-                out += py::repr(py::cast(Amulet::wrap_node(self.tag_node)));
                 out += ")";
                 return out;
             }

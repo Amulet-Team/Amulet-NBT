@@ -6,7 +6,6 @@ from amulet_nbt import (
     IntTag,
     read_nbt,
     read_nbt_array,
-    NBTLoadError,
     NamedTag,
 )
 
@@ -20,9 +19,9 @@ class LoadTests(unittest.TestCase):
     def test_load(self) -> None:
         read_nbt_array(OnePath)
 
-        with self.assertRaises(NBTLoadError):
+        with self.assertRaises(IndexError):
             read_nbt(EmptyPath)
-        with self.assertRaises(NBTLoadError):
+        with self.assertRaises(IndexError):
             read_nbt_array(EmptyPath, count=1)
         self.assertEqual([], read_nbt_array(EmptyPath, count=0))
         self.assertEqual([], read_nbt_array(EmptyPath, count=-1))
@@ -43,7 +42,7 @@ class LoadTests(unittest.TestCase):
             [NamedTag(ListTag([IntTag(1), IntTag(2), IntTag(3), IntTag(4)]))],
             read_nbt_array(OnePath, count=-1),
         )
-        with self.assertRaises(NBTLoadError):
+        with self.assertRaises(IndexError):
             read_nbt_array(OnePath, count=2)
 
         self.assertEqual(
@@ -85,7 +84,7 @@ class LoadTests(unittest.TestCase):
             ],
             read_nbt_array(ArrayPath, count=-1),
         )
-        with self.assertRaises(NBTLoadError):
+        with self.assertRaises(IndexError):
             read_nbt_array(ArrayPath, count=6)
 
 

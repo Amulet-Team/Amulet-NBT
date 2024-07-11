@@ -17,8 +17,6 @@ from amulet_nbt import (
     IntArrayTag,
     LongArrayTag,
     read_nbt,
-    NBTFormatError,
-    SNBTParseError,
     read_snbt,
 )
 
@@ -234,23 +232,23 @@ class ArrayTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 little_endian=True,
             ).byte_array,
         )
-        with self.assertRaises(NBTFormatError):
+        with self.assertRaises(IndexError):
             read_nbt(
                 b"\x07",
             )
-        with self.assertRaises(NBTFormatError):
+        with self.assertRaises(IndexError):
             read_nbt(
                 b"\x07\x00\x00",
             )
-        with self.assertRaises(NBTFormatError):
+        with self.assertRaises(IndexError):
             read_nbt(
                 b"\x07\x00\x00\x00\x00\x00",
             )
-        with self.assertRaises(NBTFormatError):
+        with self.assertRaises(IndexError):
             read_nbt(
                 b"\x07\x00\x00\x00\x00\x00\x01",
             )
-        with self.assertRaises(NBTFormatError):
+        with self.assertRaises(IndexError):
             read_nbt(
                 b"\x07\x00\x00\x00\x00\x00\x02\x00",
             )
@@ -279,23 +277,23 @@ class ArrayTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 little_endian=True,
             ).int_array,
         )
-        with self.assertRaises(NBTFormatError):
+        with self.assertRaises(IndexError):
             read_nbt(
                 b"\x0B",
             )
-        with self.assertRaises(NBTFormatError):
+        with self.assertRaises(IndexError):
             read_nbt(
                 b"\x0B\x00\x00",
             )
-        with self.assertRaises(NBTFormatError):
+        with self.assertRaises(IndexError):
             read_nbt(
                 b"\x0B\x00\x00\x00\x00\x00",
             )
-        with self.assertRaises(NBTFormatError):
+        with self.assertRaises(IndexError):
             read_nbt(
                 b"\x0B\x00\x00\x00\x00\x00\x01",
             )
-        with self.assertRaises(NBTFormatError):
+        with self.assertRaises(IndexError):
             read_nbt(
                 b"\x0B\x00\x00\x00\x00\x00\x02\x00",
             )
@@ -324,23 +322,23 @@ class ArrayTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 little_endian=True,
             ).long_array,
         )
-        with self.assertRaises(NBTFormatError):
+        with self.assertRaises(IndexError):
             read_nbt(
                 b"\x0C",
             )
-        with self.assertRaises(NBTFormatError):
+        with self.assertRaises(IndexError):
             read_nbt(
                 b"\x0C\x00\x00",
             )
-        with self.assertRaises(NBTFormatError):
+        with self.assertRaises(IndexError):
             read_nbt(
                 b"\x0C\x00\x00\x00\x00\x00",
             )
-        with self.assertRaises(NBTFormatError):
+        with self.assertRaises(IndexError):
             read_nbt(
                 b"\x0C\x00\x00\x00\x00\x00\x01",
             )
-        with self.assertRaises(NBTFormatError):
+        with self.assertRaises(IndexError):
             read_nbt(
                 b"\x0C\x00\x00\x00\x00\x00\x02\x00",
             )
@@ -376,11 +374,11 @@ class ArrayTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 ByteArrayTag([-3, -2, -1, 0, 1, 2, 3]),
                 read_snbt("[B;-3B, -2B, -1B, 0B, 1B, 2B, 3B]"),
             )
-            with self.assertRaises(SNBTParseError):
+            with self.assertRaises(ValueError):
                 read_snbt(
                     "[B;-5, 5]",
                 )
-            with self.assertRaises(SNBTParseError):
+            with self.assertRaises(ValueError):
                 read_snbt(
                     "[B;-5.0B, 5.0B]",
                 )
@@ -391,7 +389,7 @@ class ArrayTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 IntArrayTag([-3, -2, -1, 0, 1, 2, 3]),
                 read_snbt("[I;-3, -2, -1, 0, 1, 2, 3]"),
             )
-            with self.assertRaises(SNBTParseError):
+            with self.assertRaises(ValueError):
                 read_snbt(
                     "[I;-5.0, 5.0]",
                 )
@@ -406,11 +404,11 @@ class ArrayTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 LongArrayTag([-3, -2, -1, 0, 1, 2, 3]),
                 read_snbt("[L;-3L, -2L, -1L, 0L, 1L, 2L, 3L]"),
             )
-            with self.assertRaises(SNBTParseError):
+            with self.assertRaises(ValueError):
                 read_snbt(
                     "[L;-5, 5]",
                 )
-            with self.assertRaises(SNBTParseError):
+            with self.assertRaises(ValueError):
                 read_snbt(
                     "[L;-5.0L, 5.0L]",
                 )

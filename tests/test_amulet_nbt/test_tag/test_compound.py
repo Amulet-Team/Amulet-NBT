@@ -25,8 +25,6 @@ from amulet_nbt import (
     IntArrayTag,
     LongArrayTag,
     read_snbt,
-    SNBTParseError,
-    NBTFormatError,
     read_nbt,
 )
 
@@ -822,9 +820,9 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
             ).compound,
         )
 
-        with self.assertRaises(NBTFormatError):
+        with self.assertRaises(IndexError):
             read_nbt(b"\x0A")
-        with self.assertRaises(NBTFormatError):
+        with self.assertRaises(IndexError):
             read_nbt(b"\x0A\x00\x00")
 
     def test_to_snbt(self) -> None:
@@ -930,17 +928,17 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 CompoundTag({"1": IntTag(5)}), read_snbt("\n{ \n '1' \n : \n 5 \n }\n")
             )
 
-        with self.assertRaises(SNBTParseError):
+        with self.assertRaises(ValueError):
             read_snbt("{")
-        with self.assertRaises(SNBTParseError):
+        with self.assertRaises(ValueError):
             read_snbt("}")
-        with self.assertRaises(SNBTParseError):
+        with self.assertRaises(ValueError):
             read_snbt("{a:}")
-        with self.assertRaises(SNBTParseError):
+        with self.assertRaises(ValueError):
             read_snbt("{a 5}")
-        with self.assertRaises(SNBTParseError):
+        with self.assertRaises(ValueError):
             read_snbt("{a:5, b:}")
-        with self.assertRaises(SNBTParseError):
+        with self.assertRaises(ValueError):
             read_snbt("{a:5 b:6}")
 
 

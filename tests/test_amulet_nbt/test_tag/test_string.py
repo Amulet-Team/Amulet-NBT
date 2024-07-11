@@ -14,9 +14,7 @@ from amulet_nbt import (
     AbstractBaseImmutableTag,
     utf8_escape_encoding,
     read_nbt,
-    NBTFormatError,
     read_snbt,
-    SNBTParseError,
 )
 
 
@@ -212,7 +210,7 @@ class StringTagTestCase(AbstractBaseImmutableTagTestCase, unittest.TestCase):
             ).string,
         )
 
-        with self.assertRaises(NBTFormatError):
+        with self.assertRaises(IndexError):
             read_nbt(b"\x08\x00\x00\x00\x05abcd")
 
     def test_to_snbt(self) -> None:
@@ -276,7 +274,7 @@ class StringTagTestCase(AbstractBaseImmutableTagTestCase, unittest.TestCase):
             read_snbt(f'"{ascii_uppercase + ascii_lowercase + digits + "._+-"}"'),
         )
 
-        with self.assertRaises(SNBTParseError):
+        with self.assertRaises(ValueError):
             read_snbt("")
 
 

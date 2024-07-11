@@ -24,9 +24,7 @@ from amulet_nbt import (
     IntArrayTag,
     LongArrayTag,
     read_nbt,
-    NBTFormatError,
     read_snbt,
-    SNBTParseError,
 )
 
 
@@ -843,17 +841,17 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
             ListTag([], 1), read_nbt(b"\x09\x00\x00\x01\xFF\xFF\xFF\xFF").list
         )
 
-        with self.assertRaises(NBTFormatError):
+        with self.assertRaises(IndexError):
             read_nbt(b"\x09")
-        with self.assertRaises(NBTFormatError):
+        with self.assertRaises(IndexError):
             read_nbt(b"\x09\x00\x00")
-        with self.assertRaises(NBTFormatError):
+        with self.assertRaises(IndexError):
             read_nbt(b"\x09\x00\x00\x00")
-        with self.assertRaises(NBTFormatError):
+        with self.assertRaises(IndexError):
             read_nbt(b"\x09\x00\x00\x00\x00")
-        with self.assertRaises(NBTFormatError):
+        with self.assertRaises(IndexError):
             read_nbt(b"\x09\x00\x00\x00\x00\x00")
-        with self.assertRaises(NBTFormatError):
+        with self.assertRaises(IndexError):
             read_nbt(b"\x09\x00\x00\x00\x00\x00\x00")
 
     def test_to_snbt(self) -> None:
@@ -895,15 +893,15 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                     read_snbt(f"[{tag.to_snbt()}, {tag.to_snbt()}]"),
                 )
 
-        with self.assertRaises(SNBTParseError):
+        with self.assertRaises(ValueError):
             read_snbt("[")
-        with self.assertRaises(SNBTParseError):
+        with self.assertRaises(ValueError):
             read_snbt("]")
-        with self.assertRaises(SNBTParseError):
+        with self.assertRaises(ValueError):
             read_snbt("[,]")
-        with self.assertRaises(SNBTParseError):
+        with self.assertRaises(ValueError):
             read_snbt("[,1]")
-        with self.assertRaises(SNBTParseError):
+        with self.assertRaises(ValueError):
             read_snbt("[1 1]")
 
 

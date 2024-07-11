@@ -1,3 +1,6 @@
+#include <fstream>
+#include <stdexcept>
+
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/operators.h>
@@ -6,6 +9,9 @@
 #include <amulet_nbt/tag/wrapper.hpp>
 #include <amulet_nbt/tag/eq.hpp>
 #include <amulet_nbt/tag/copy.hpp>
+#include <amulet_nbt/nbt_encoding/binary.hpp>
+#include <amulet_nbt/nbt_encoding/string.hpp>
+#include <amulet_nbt/pybind/encoding.hpp>
 
 namespace py = pybind11;
 
@@ -34,6 +40,10 @@ namespace AmuletPy {
 
 
 void init_named_tag(py::module& m) {
+    py::object mutf8_encoding = m.attr("mutf8_encoding");
+    py::object java_encoding = m.attr("java_encoding");
+    py::object compress = py::module::import("gzip").attr("compress");
+
     py::class_<AmuletPy::NamedTagIterator> NamedTagIterator(m, "NamedTagIterator");
         NamedTagIterator.def(
             "__next__",
@@ -81,6 +91,135 @@ void init_named_tag(py::module& m) {
                 }
                 self.tag_node = Amulet::unwrap_node(tag);
             }
+        );
+        auto to_nbt = [compress](
+            const Amulet::NamedTag& self,
+            bool compressed,
+            std::endian endianness,
+            Amulet::StringEncode string_encoder
+        ) -> py::bytes {
+            py::bytes data = Amulet::write_nbt(self.name, self.tag_node, endianness, string_encoder);
+            if (compressed){
+                return compress(data);
+            }
+            return data;
+        };
+        NamedTag.def(
+            "to_nbt",
+            [to_nbt](
+                const Amulet::NamedTag& self,
+                Amulet::EncodingPreset preset
+            ){
+                return to_nbt(
+                    self,
+                    preset.compressed,
+                    preset.endianness,
+                    preset.string_encoding.encode
+                );
+            },
+            py::kw_only(),
+            py::arg("preset") = java_encoding
+        );
+        NamedTag.def(
+            "to_nbt",
+            [to_nbt](
+                const Amulet::NamedTag& self,
+                bool compressed,
+                bool little_endian,
+                Amulet::StringEncoding string_encoding
+            ){
+                return to_nbt(
+                    self,
+                    compressed,
+                    little_endian ? std::endian::little : std::endian::big,
+                    string_encoding.encode
+                );
+            },
+            py::kw_only(),
+            py::arg("compressed") = true,
+            py::arg("little_endian") = false,
+            py::arg("string_encoding") = mutf8_encoding
+        );
+        auto save_to = [to_nbt](
+            const Amulet::NamedTag& self,
+            py::object filepath_or_writable,
+            bool compressed,
+            std::endian endianness,
+            Amulet::StringEncode string_encoder
+        ){
+            py::bytes py_data = to_nbt(self, compressed, endianness, string_encoder);
+            if (!filepath_or_writable.is(py::none())){
+                if (py::isinstance<py::str>(filepath_or_writable)){
+                    std::string data = py_data.cast<std::string>();
+                    std::ofstream file(filepath_or_writable.cast<std::string>(), std::ios::out | std::ios::binary | std::ios::trunc);
+                    file.write(data.c_str(), data.size());
+                } else {
+                    filepath_or_writable.attr("write")(py_data);
+                }
+            }
+            return py_data;
+        };
+        NamedTag.def(
+            "save_to",
+            [save_to](
+                const Amulet::NamedTag& self,
+                py::object filepath_or_writable,
+                Amulet::EncodingPreset preset
+            ){
+                return save_to(
+                    self,
+                    filepath_or_writable,
+                    preset.compressed,
+                    preset.endianness,
+                    preset.string_encoding.encode
+                );
+            },
+            py::arg("filepath_or_writable"),
+            py::pos_only(),
+            py::kw_only(),
+            py::arg("preset") = java_encoding
+        );
+        NamedTag.def(
+            "save_to",
+            [save_to](
+                const Amulet::NamedTag& self,
+                py::object filepath_or_writable,
+                bool compressed,
+                bool little_endian,
+                Amulet::StringEncoding string_encoding
+            ){
+                return save_to(
+                    self,
+                    filepath_or_writable,
+                    compressed,
+                    little_endian ? std::endian::little : std::endian::big,
+                    string_encoding.encode
+                );
+            },
+            py::arg("filepath_or_writable"),
+            py::pos_only(),
+            py::kw_only(),
+            py::arg("compressed") = true,
+            py::arg("little_endian") = false,
+            py::arg("string_encoding") = mutf8_encoding
+        );
+        NamedTag.def(
+            "to_snbt",
+            [](
+                const Amulet::NamedTag& self,
+                py::object indent
+            ){
+                if (indent.is(py::none())){
+                    return Amulet::write_snbt(self.tag_node);
+                } else if (py::isinstance<py::int_>(indent)){
+                    return Amulet::write_formatted_snbt(self.tag_node, std::string(indent.cast<size_t>(), ' '));
+                } else if (py::isinstance<py::str>(indent)){
+                    return Amulet::write_formatted_snbt(self.tag_node, indent.cast<std::string>());
+                } else {
+                    throw std::invalid_argument("indent must be None, int or str");
+                }
+            },
+            py::arg("indent") = py::none()
         );
         NamedTag.def(
             "__repr__",

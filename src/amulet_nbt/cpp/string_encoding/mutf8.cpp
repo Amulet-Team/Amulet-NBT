@@ -32,7 +32,7 @@ namespace Amulet {
                     throw std::invalid_argument("2-byte codepoint started at index " + std::to_string(index) + ", but format bits of byte 2 are incorrect.");
                 }
                 size_t value = (0b00011111 & b1) << 6 | (0b00111111 & b2);
-                if (value < 0x80){
+                if (0 < value && value < 0x80){
                     throw std::invalid_argument("2-byte codepoint at index " + std::to_string(index) + " has invalid value.");
                 }
                 dst.push_back(value);

@@ -371,6 +371,7 @@ Amulet::TagNode _read_snbt(const Amulet::CodePointVector& snbt, size_t& index){
                 return Amulet::write_utf8(string);
             }
     }
+    throw std::runtime_error("Should have returned before now.");
 }
 
 

@@ -13,7 +13,13 @@ void init_string(py::module& m) {
         StringTag.def_property_readonly_static("tag_id", [](py::object) {return 8;});
         StringTag.def(
             py::init([](py::object value) {
-                return Amulet::StringTagWrapper(value.cast<Amulet::StringTag>());
+                if (py::isinstance<Amulet::StringTagWrapper>(value)){
+                    return value.cast<Amulet::StringTagWrapper>();
+                } else if (py::isinstance<py::bytes>(value) || py::isinstance<py::str>(value)){
+                    return Amulet::StringTagWrapper(value.cast<Amulet::StringTag>());
+                } else {
+                    return Amulet::StringTagWrapper(py::str(value).cast<Amulet::StringTag>());
+                }
             }),
             py::arg("value") = "",
             py::doc("__init__(self: amulet_nbt.StringTag, value: str | bytes) -> None")

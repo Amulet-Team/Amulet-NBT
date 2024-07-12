@@ -381,8 +381,9 @@ void init_list(py::module& m) {
                         return Amulet::ListTag_index<TAG_STORAGE, Py_ssize_t>(*self.tag, get<Amulet::TagWrapper<TAG_STORAGE>>(tag).tag, start, stop);
                     FOR_EACH_LIST_TAG(CASE)
                     #undef CASE
+                    default:
+                        throw py::type_error("tag cannot be None");
                 }
-                throw std::invalid_argument("item is not in the ListTag");
             },
             py::arg("tag"), py::arg("start") = 0, py::arg("stop") = std::numeric_limits<Py_ssize_t>::max()
         );
@@ -456,7 +457,7 @@ void init_list(py::module& m) {
         ListTag.def(
             "__delitem__",
             [](const Amulet::ListTagWrapper& self, Py_ssize_t item){
-                Amulet::ListTag_remove<Py_ssize_t>(*self.tag, item);
+                Amulet::ListTag_del<Py_ssize_t>(*self.tag, item);
             }
         );
         ListTag.def(
@@ -530,12 +531,26 @@ void init_list(py::module& m) {
             "pop",
             [](const Amulet::ListTagWrapper& self, Py_ssize_t item){
                 return Amulet::wrap_node(ListTag_pop<Py_ssize_t>(*self.tag, item));
-            }
+            },
+            py::arg("item") = -1
         );
         ListTag.def(
             "remove",
-            [](const Amulet::ListTagWrapper& self, Py_ssize_t item){
-                ListTag_remove<Py_ssize_t>(*self.tag, item);
+            [](const Amulet::ListTagWrapper& self, Amulet::WrapperNode tag){
+                switch(tag.index()){
+                    #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
+                    case ID:\
+                        {\
+                        size_t index = Amulet::ListTag_index<TAG_STORAGE, Py_ssize_t>(*self.tag, std::get<Amulet::TagWrapper<TAG_STORAGE>>(tag).tag);\
+                        std::vector<TAG_STORAGE>& list_tag = std::get<std::vector<TAG_STORAGE>>(*self.tag);\
+                        list_tag.erase(list_tag.begin() + index);\
+                        break;\
+                        }
+                    FOR_EACH_LIST_TAG(CASE)
+                    #undef CASE
+                    default:
+                        throw py::type_error("tag cannot be None");
+                }
             }
         );
         ListTag.def(

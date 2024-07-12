@@ -96,7 +96,7 @@ namespace Amulet {
     }
 
     template <typename indexT>
-    void ListTag_remove(Amulet::ListTag& self, indexT index){
+    void ListTag_del(Amulet::ListTag& self, indexT index){
         switch(self.index()){
             #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
             case ID:\

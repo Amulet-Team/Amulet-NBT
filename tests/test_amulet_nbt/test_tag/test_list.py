@@ -236,11 +236,11 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
 
         # string tag list
         self.assertEqual(
-            'ListTag([StringTag("value")], 8)',
+            "ListTag([StringTag('value')], 8)",
             repr(ListTag([StringTag("value")])),
         )
         self.assertEqual(
-            'ListTag([StringTag("value"), StringTag("value")], 8)',
+            "ListTag([StringTag('value'), StringTag('value')], 8)",
             repr(ListTag([StringTag("value"), StringTag("value")])),
         )
 
@@ -574,7 +574,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 tag.insert(1, obj)
 
     def test_contains(self) -> None:
-        tag = ListTag([StringTag("val1"), StringTag("val2"), StringTag("val3")])
+        tag: ListTag = ListTag([StringTag("val1"), StringTag("val2"), StringTag("val3")])
         self.assertIn(StringTag("val1"), tag)
         self.assertNotIn(StringTag("val4"), tag)
         for not_nbt in self.not_nbt:
@@ -638,13 +638,13 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
             str_list_tag.index(StringTag("val3"))
 
         for obj in self.not_nbt:
-            with self.subTest(val=obj), self.assertRaises(ValueError):
+            with self.subTest(val=obj), self.assertRaises(TypeError):
                 str_list_tag.index(obj)
 
         byte_list_tag = ListTag([ByteTag(1), ByteTag(2), ByteTag(3)])
         with self.assertRaises(ValueError):
             byte_list_tag.index(ShortTag(2))
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             byte_list_tag.index(True)
 
     def test_count(self) -> None:
@@ -720,7 +720,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         self.assertEqual(tag, ListTag([StringTag("val2")]))
 
         for obj in self.not_nbt:
-            with self.subTest(val=obj), self.assertRaises(ValueError):
+            with self.subTest(val=obj), self.assertRaises(TypeError):
                 tag.remove(obj)
 
     def test_iadd(self) -> None:
@@ -894,7 +894,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                     read_snbt(f"[{tag.to_snbt()}, {tag.to_snbt()}]"),
                 )
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(IndexError):
             read_snbt("[")
         with self.assertRaises(ValueError):
             read_snbt("]")

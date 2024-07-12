@@ -42,10 +42,10 @@ class StringTagTestCase(AbstractBaseImmutableTagTestCase, unittest.TestCase):
         self.assertEqual(b"value", StringTag("value").py_bytes)
 
     def test_repr(self) -> None:
-        self.assertEqual('StringTag("")', repr(StringTag()))
-        self.assertEqual('StringTag("value")', repr(StringTag("value")))
-        self.assertEqual('StringTag("quote\\"value")', repr(StringTag('quote"value')))
-        self.assertEqual('StringTag("quote\'value")', repr(StringTag("quote'value")))
+        self.assertEqual("StringTag('')", repr(StringTag()))
+        self.assertEqual("StringTag('value')", repr(StringTag("value")))
+        self.assertEqual("StringTag('quote\"value')", repr(StringTag('quote"value')))
+        self.assertEqual("StringTag(\"quote'value\")", repr(StringTag("quote'value")))
 
     def test_str(self) -> None:
         self.assertEqual("hello world", str(StringTag("hello world")))
@@ -274,7 +274,7 @@ class StringTagTestCase(AbstractBaseImmutableTagTestCase, unittest.TestCase):
             read_snbt(f'"{ascii_uppercase + ascii_lowercase + digits + "._+-"}"'),
         )
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(IndexError):
             read_snbt("")
 
 

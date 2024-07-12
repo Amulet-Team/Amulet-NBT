@@ -141,7 +141,7 @@ namespace py = pybind11;
     CLSNAME.def(\
         "__getitem__",\
         [asarray](const Amulet::CLSNAME##Wrapper& self, py::object item){\
-            return asarray(self)[item];\
+            return asarray(self).attr("__getitem__")(item);\
         }\
     );\
     CLSNAME.def(\

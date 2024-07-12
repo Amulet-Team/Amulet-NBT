@@ -17,7 +17,7 @@ void CompoundTag_update(Amulet::CompoundTag& self, py::dict other){
     auto map = other.cast<std::unordered_map<std::string, Amulet::WrapperNode>>();
     for (auto it = map.begin(); it != map.end(); it++){
         if (it->second.index() == 0){
-            throw std::invalid_argument("Value cannot be None");
+            throw py::type_error("Value cannot be None");
         }
         self[it->first] = unwrap_node(it->second);
     }
@@ -239,7 +239,7 @@ void init_compound(py::module& m) {
             "__setitem__",
             [](const Amulet::CompoundTagWrapper& self, std::string key, Amulet::WrapperNode value){
                 if (value.index() == 0){
-                    throw std::invalid_argument("Value cannot be None");
+                    throw py::type_error("Value cannot be None");
                 }
                 (*self.tag)[key] = Amulet::unwrap_node(value);
             }
@@ -310,7 +310,7 @@ void init_compound(py::module& m) {
             [isinstance](const Amulet::CompoundTagWrapper& self, std::string key, Amulet::WrapperNode tag, py::object cls) -> py::object {
                 auto set_value = [self, key, tag](){
                     if (tag.index() == 0){
-                        throw std::invalid_argument("Cannot setdefault a value of None.");
+                        throw py::type_error("Cannot setdefault a value of None.");
                     }
                     (*self.tag)[key] = Amulet::unwrap_node(tag);
                     return py::cast(tag);
@@ -332,7 +332,7 @@ void init_compound(py::module& m) {
             "fromkeys",
             [](py::object keys, Amulet::WrapperNode value){
                 if (value.index() == 0){
-                    throw std::invalid_argument("Value cannot be None");
+                    throw py::type_error("Value cannot be None");
                 }
                 Amulet::TagNode node = Amulet::unwrap_node(value);
                 Amulet::CompoundTagPtr tag = std::make_shared<Amulet::CompoundTag>();

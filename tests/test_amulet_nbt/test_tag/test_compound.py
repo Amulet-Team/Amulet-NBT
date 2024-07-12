@@ -928,7 +928,7 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 CompoundTag({"1": IntTag(5)}), read_snbt("\n{ \n '1' \n : \n 5 \n }\n")
             )
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(IndexError):
             read_snbt("{")
         with self.assertRaises(ValueError):
             read_snbt("}")

@@ -337,7 +337,7 @@ void init_list(py::module& m) {
         ListTag.def(
             "__reversed__",
             [](const Amulet::ListTagWrapper& self) {
-                return Amulet::ListTagIterator(self.tag, ListTag_size(*self.tag), -1);
+                return Amulet::ListTagIterator(self.tag, ListTag_size(*self.tag) - 1, -1);
             }
         );
         ListTag.def(

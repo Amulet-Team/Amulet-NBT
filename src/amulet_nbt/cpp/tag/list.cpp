@@ -29,7 +29,9 @@ namespace Amulet {
 
     ListTagIterator::ListTagIterator(Amulet::ListTagPtr tag, size_t start, std::ptrdiff_t step): tag(tag), index(start), step(step) {};
     Amulet::TagNode ListTagIterator::next() {
-        return Amulet::ListTag_get_node<size_t>(*tag, index++);
+        auto node = Amulet::ListTag_get_node<size_t>(*tag, index);
+        index += step;
+        return node;
     }
     bool ListTagIterator::has_next(){
         return index >= 0 && index < ListTag_size(*tag);

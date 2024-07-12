@@ -16,7 +16,11 @@ namespace py = pybind11;
     CLSNAME.def_property_readonly_static("tag_id", [](py::object) {return TAGID;});\
     CLSNAME.def(\
         py::init([](py::object value) {\
-            return Amulet::CLSNAME##Wrapper(py::int_(value).cast<Amulet::CLSNAME>());\
+            try {\
+                return Amulet::CLSNAME##Wrapper(static_cast<Amulet::CLSNAME>(py::int_(value).cast<int64_t>()));\
+            } catch (const py::cast_error&){\
+                throw py::type_error("value must be int or int-like");\
+            }\
         }),\
         py::arg("value") = 0,\
         py::doc("__init__(self: amulet_nbt."#CLSNAME", value: typing.SupportsInt) -> None")\

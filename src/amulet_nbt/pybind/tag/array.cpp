@@ -17,11 +17,11 @@ namespace py = pybind11;
     );\
     CLSNAME.def_property_readonly_static("tag_id", [](py::object) {return TAGID;});\
     CLSNAME.def(\
-        py::init([](py::object value) {\
+        py::init([asarray, dtype](py::object value) {\
             /* Is there a better way to do this? */\
-            auto v = value.cast<std::vector<Amulet::ELEMENTCLS>> ();\
-            Amulet::CLSNAME tag(v.begin(), v.end());\
-            std::shared_ptr<Amulet::CLSNAME> tag_ptr = std::make_shared<Amulet::CLSNAME>(tag);\
+            py::array arr = asarray(value, dtype("int"#BITCOUNT)).attr("ravel")().cast<py::array>();\
+            std::vector<Amulet::ELEMENTCLS> v = arr.cast<std::vector<Amulet::ELEMENTCLS>> ();\
+            std::shared_ptr<Amulet::CLSNAME> tag_ptr = std::make_shared<Amulet::CLSNAME>(v.begin(), v.end());\
             return Amulet::CLSNAME##Wrapper(tag_ptr);\
         }),\
         py::arg("value") = py::tuple(),\
@@ -160,6 +160,7 @@ namespace py = pybind11;
 
 void init_array(py::module& m) {
     py::object asarray = py::module::import("numpy").attr("asarray");
+    py::object dtype = py::module::import("numpy").attr("dtype");
     PyArray(ByteArrayTag, ByteTag, 8, 7)
     PyArray(IntArrayTag, IntTag, 32, 11)
     PyArray(LongArrayTag, LongTag, 64, 12)

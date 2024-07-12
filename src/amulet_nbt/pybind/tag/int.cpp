@@ -7,7 +7,7 @@
 namespace py = pybind11;
 
 
-#define PyInt(CLSNAME, BYTEWIDTH, BITPOW, TAGID)\
+#define PyInt(CLSNAME, BYTEWIDTH, BITPOW, SIGNBIT, MAGBITS, TAGID)\
     py::class_<Amulet::CLSNAME##Wrapper, Amulet::AbstractBaseIntTag> CLSNAME(m, #CLSNAME,\
         "A "#BYTEWIDTH" byte integer class.\n"\
         "\n"\
@@ -15,12 +15,14 @@ namespace py = pybind11;
     );\
     CLSNAME.def_property_readonly_static("tag_id", [](py::object) {return TAGID;});\
     CLSNAME.def(\
-        py::init([](py::object value) {\
-            try {\
-                return Amulet::CLSNAME##Wrapper(static_cast<Amulet::CLSNAME>(py::int_(value).cast<int64_t>()));\
-            } catch (const py::cast_error&){\
-                throw py::type_error("value must be int or int-like");\
-            }\
+        py::init([PyIntCls](py::object py_value) {\
+            /* cast to a python int */\
+            py::object py_int = PyIntCls(py_value);\
+            /* get the magnitude bits */\
+            Amulet::CLSNAME value = py_int.attr("__and__")(py::cast(MAGBITS)).cast<Amulet::CLSNAME>();\
+            /* get the sign bits */\
+            if (py_int.attr("__and__")(py::cast(SIGNBIT)).cast<bool>()){value -= SIGNBIT;}\
+            return Amulet::CLSNAME##Wrapper(value);\
         }),\
         py::arg("value") = 0,\
         py::doc("__init__(self: amulet_nbt."#CLSNAME", value: typing.SupportsInt) -> None")\
@@ -141,8 +143,9 @@ namespace py = pybind11;
 
 
 void init_int(py::module& m) {
-    PyInt(ByteTag, 1, 7, 1)
-    PyInt(ShortTag, 2, 15, 2)
-    PyInt(IntTag, 4, 31, 3)
-    PyInt(LongTag, 8, 63, 4)
+    py::object PyIntCls = py::module::import("builtins").attr("int");
+    PyInt(ByteTag, 1, 7, 0x80, 0x7F, 1)
+    PyInt(ShortTag, 2, 15, 0x8000, 0x7FFF, 2)
+    PyInt(IntTag, 4, 31, 0x80000000, 0x7FFFFFFF, 3)
+    PyInt(LongTag, 8, 63, 0x8000000000000000, 0x7FFFFFFFFFFFFFFF, 4)
 };

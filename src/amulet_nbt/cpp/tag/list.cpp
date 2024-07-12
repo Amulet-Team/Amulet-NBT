@@ -15,7 +15,7 @@ namespace Amulet {
     };
 
     void ListTag_append(Amulet::ListTag& self, Amulet::TagNode tag){
-        switch(self.index()){
+        switch(tag.index()){
             #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
             case ID:\
                 ListTag_append<TAG_STORAGE>(self, get<TAG_STORAGE>(tag));\

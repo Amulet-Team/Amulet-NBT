@@ -241,6 +241,7 @@ inline Amulet::TagNode read_array(const Amulet::CodePointVector& snbt, size_t& i
         // Read past the comma
         read_comma(snbt, index, ']');
     }
+    index++;  // seek past ']'
     return std::make_shared<Amulet::ArrayTag<T>>(arr.begin(), arr.end());
 }
 
@@ -267,7 +268,7 @@ Amulet::TagNode _read_snbt(const Amulet::CodePointVector& snbt, size_t& index){
                     // Read past the comma
                     read_comma(snbt, index, '}');
                 }
-                index++;  // seek past '{'
+                index++;  // seek past '}'
                 return tag;
             }
         case '[':
@@ -299,6 +300,7 @@ Amulet::TagNode _read_snbt(const Amulet::CodePointVector& snbt, size_t& index){
                         // Read past the comma
                         read_comma(snbt, index, ']');
                     }
+                    index++;  // seek past ']'
                     return tag;
                 }
             } else if (read_code_point(snbt, index) == ']'){

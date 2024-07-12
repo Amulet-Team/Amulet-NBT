@@ -45,13 +45,13 @@ namespace py = pybind11;
     CLSNAME.def(\
         "__repr__",\
         [](const Amulet::CLSNAME##Wrapper& self){\
-            return #CLSNAME "(" + std::to_string(self.tag) + ")";\
+            return #CLSNAME "(" + py::repr(py::cast(self.tag)).cast<std::string>() + ")";\
         }\
     );\
     CLSNAME.def(\
         "__str__",\
         [](const Amulet::CLSNAME##Wrapper& self){\
-            return std::to_string(self.tag);\
+            return py::repr(py::cast(self.tag));\
         }\
     );\
     CLSNAME.def(\

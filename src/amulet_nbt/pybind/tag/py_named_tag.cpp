@@ -174,7 +174,7 @@ void init_named_tag(py::module& m) {
                     preset.string_encoding.encode
                 );
             },
-            py::arg("filepath_or_writable"),
+            py::arg("filepath_or_writable") = py::none(),
             py::pos_only(),
             py::kw_only(),
             py::arg("preset") = java_encoding
@@ -196,7 +196,7 @@ void init_named_tag(py::module& m) {
                     string_encoding.encode
                 );
             },
-            py::arg("filepath_or_writable"),
+            py::arg("filepath_or_writable") = py::none(),
             py::pos_only(),
             py::kw_only(),
             py::arg("compressed") = true,

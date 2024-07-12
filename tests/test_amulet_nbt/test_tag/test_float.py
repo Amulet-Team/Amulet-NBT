@@ -18,6 +18,7 @@ from amulet_nbt import (
     read_nbt,
     read_snbt,
     StringTag,
+    IntTag,
 )
 
 

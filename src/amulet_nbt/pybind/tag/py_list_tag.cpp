@@ -87,7 +87,7 @@ void ListTag_set_slice(Amulet::ListTagPtr self, const py::slice &slice, std::vec
             }
             self->emplace<std::vector<tagT>>(vec);
         } else {
-            throw std::invalid_argument("NBT ListTag item mismatch.");
+            throw py::type_error("NBT ListTag item mismatch.");
         }
     }
 }

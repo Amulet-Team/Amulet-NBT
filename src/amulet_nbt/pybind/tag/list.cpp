@@ -26,7 +26,7 @@ void ListTag_extend(Amulet::ListTagPtr tag, py::object value){
                 Amulet::ListTag_append<TAG_STORAGE>(*tag, get<Amulet::TagWrapper<TAG_STORAGE>>(node).tag);\
                 break;
             case 0:
-                throw std::invalid_argument("Cannot append null TagNode");
+                throw py::type_error("Cannot append null TagNode");
             FOR_EACH_LIST_TAG(CASE)
             #undef CASE
         }
@@ -407,7 +407,7 @@ void init_list(py::module& m) {
                     FOR_EACH_LIST_TAG(CASE)
                     #undef CASE
                     default:
-                        throw std::invalid_argument("Invalid tag to set.");
+                        throw py::type_error("Invalid tag to set.");
                 }
             }
         );
@@ -431,7 +431,7 @@ void init_list(py::module& m) {
                         FOR_EACH_LIST_TAG(CASE)
                         #undef CASE
                         default:
-                            throw std::invalid_argument("Values must all be the same NBT tag.");
+                            throw py::type_error("Values must all be the same NBT tag.");
                     }
                 } else {
                     // The value is empty
@@ -478,7 +478,7 @@ void init_list(py::module& m) {
                         Amulet::ListTag_insert<TAG_STORAGE, Py_ssize_t>(*self.tag, index, get<Amulet::TagWrapper<TAG_STORAGE>>(tag).tag);\
                         break;
                     case 0:
-                        throw std::invalid_argument("Cannot append null TagNode");
+                        throw py::type_error("Cannot insert null TagNode");
                     FOR_EACH_LIST_TAG(CASE)
                     #undef CASE
                 }
@@ -490,7 +490,7 @@ void init_list(py::module& m) {
                 switch(tag.index()){
                     #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG) case ID: Amulet::ListTag_append<TAG_STORAGE>(*self.tag, get<Amulet::TagWrapper<TAG_STORAGE>>(tag).tag); break;
                     case 0:
-                        throw std::invalid_argument("Cannot append null TagNode");
+                        throw py::type_error("Cannot append null TagNode");
                     FOR_EACH_LIST_TAG(CASE)
                     #undef CASE
                 }

@@ -1,4 +1,7 @@
 #include <pybind11/pybind11.h>
+
+#include <amulet_nbt/common.hpp>
+
 namespace py = pybind11;
 
 void init_encoding(py::module&);
@@ -25,6 +28,16 @@ PYBIND11_MODULE(_nbt, m) {
                 std::rethrow_exception(p);
             }
         } catch (const py::cast_error& e) {
+            py::set_error(PyExc_TypeError, e.what());
+        }
+    });
+
+    py::register_exception_translator([](std::exception_ptr p) {
+        try {
+            if (p) {
+                std::rethrow_exception(p);
+            }
+        } catch (const AmuletNBT::type_error& e) {
             py::set_error(PyExc_TypeError, e.what());
         }
     });

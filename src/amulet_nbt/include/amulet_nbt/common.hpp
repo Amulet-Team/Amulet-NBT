@@ -3,6 +3,7 @@
 #include <type_traits>
 #include <variant>
 #include <memory>
+#include <stdexcept>
 
 template<typename V, typename T, size_t I = 0>
 constexpr size_t variant_index() {
@@ -19,3 +20,10 @@ struct is_shared_ptr : std::false_type {};
 
 template<class T>
 struct is_shared_ptr<std::shared_ptr<T>> : std::true_type {};
+
+namespace AmuletNBT {
+    class type_error : public std::runtime_error {
+    public:
+        using std::runtime_error::runtime_error;
+    };
+}

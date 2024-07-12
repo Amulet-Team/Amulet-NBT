@@ -21,7 +21,7 @@ namespace Amulet {
                 ListTag_append<TAG_STORAGE>(self, get<TAG_STORAGE>(tag));\
                 break;
             case 0:
-                throw std::invalid_argument("Cannot append null TagNode");
+                throw AmuletNBT::type_error("Cannot append null TagNode");
             FOR_EACH_LIST_TAG(CASE)
             #undef CASE
         }

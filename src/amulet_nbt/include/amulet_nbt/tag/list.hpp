@@ -20,7 +20,7 @@ namespace Amulet {
         } else if (ListTag_size(self) == 0){
             self.emplace<std::vector<tagT>>().push_back(tag);
         } else {
-            throw std::invalid_argument(
+            throw AmuletNBT::type_error(
                 "ListTag has element type " +
                 std::to_string(self.index()) +
                 " but the tag has type " +
@@ -74,7 +74,7 @@ namespace Amulet {
                 return Amulet::TagNode(ListTag_get<TAG_STORAGE, indexT>(self, index));
             FOR_EACH_LIST_TAG(CASE)
             default:
-                throw std::invalid_argument("Cannot get from null ListTag.");
+                throw AmuletNBT::type_error("Cannot get from null ListTag.");
             #undef CASE
         }
     }
@@ -91,7 +91,7 @@ namespace Amulet {
             // Overwriting the only value
             self.emplace<std::vector<tagT>>({tag});
         } else {
-            throw std::invalid_argument("NBT ListTag item mismatch.");
+            throw AmuletNBT::type_error("NBT ListTag item mismatch.");
         }
     }
 
@@ -135,7 +135,7 @@ namespace Amulet {
             if (ListTag_size(self) == 0) {
                 self.emplace<std::vector<tagT>>();
             } else {
-                throw std::invalid_argument(
+                throw AmuletNBT::type_error(
                     "ListTag has element type " +
                     std::to_string(self.index()) +
                     " but the tag has type " +

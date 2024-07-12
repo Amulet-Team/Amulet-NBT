@@ -578,7 +578,8 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         self.assertIn(StringTag("val1"), tag)
         self.assertNotIn(StringTag("val4"), tag)
         for not_nbt in self.not_nbt:
-            self.assertNotIn(not_nbt, tag)
+            with self.assertRaises(TypeError):
+                self.assertNotIn(not_nbt, tag)
         for tag_cls1 in self.nbt_types:
             tag = ListTag([tag_cls1()])
             for tag_cls2 in self.nbt_types:
@@ -651,7 +652,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         self.assertEqual(1, tag.count(StringTag("val1")))
         self.assertEqual(2, tag.count(StringTag("val2")))
         for obj in self.not_nbt:
-            with self.subTest(val=obj):
+            with self.subTest(val=obj), self.assertRaises(TypeError):
                 self.assertEqual(0, tag.count(obj))
 
     def test_append(self) -> None:

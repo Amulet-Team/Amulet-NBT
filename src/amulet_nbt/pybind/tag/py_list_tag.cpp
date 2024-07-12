@@ -343,12 +343,15 @@ void init_list(py::module& m) {
         ListTag.def(
             "__contains__",
             [](const Amulet::ListTagWrapper& self, Amulet::WrapperNode item){
+                if (item.index() == 0) {
+                    throw py::type_error("item cannot be None.");
+                }
                 if (item.index() != self.tag->index()){
                     return false;
                 }
                 switch(item.index()){
                     case 0:
-                        return false;
+                        throw py::type_error("item cannot be None.");
                     #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
                     case ID:\
                         {\

@@ -392,8 +392,9 @@ void init_list(py::module& m) {
                         return Amulet::ListTag_count<TAG_STORAGE>(*self.tag, get<Amulet::TagWrapper<TAG_STORAGE>>(tag).tag);
                     FOR_EACH_LIST_TAG(CASE)
                     #undef CASE
+                    default:
+                        throw py::type_error("Null TagNode is invalid.");
                 }
-                return 0;
             }
         );
         ListTag.def(

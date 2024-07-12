@@ -5,6 +5,7 @@
 #include <type_traits>
 
 #include <amulet_nbt/nbt_encoding/string.hpp>
+#include <amulet_nbt/tag/list.hpp>
 
 
 const std::set<size_t> Whitespace{' ', '\t', '\r', '\n'};
@@ -284,7 +285,21 @@ Amulet::TagNode _read_snbt(const Amulet::CodePointVector& snbt, size_t& index){
                     return read_array<Amulet::LongTag>(snbt, index);
                 } else {
                     // list
-                    throw std::exception("not implemented");
+                    auto tag = std::make_shared<Amulet::ListTag>();
+                    while (read_code_point(snbt, index) != ']'){
+                        // read the value
+                        auto value = _read_snbt(snbt, index);
+
+                        if (tag->index() != 0 && tag->index() != value.index()){
+                            throw std::invalid_argument("All elements of a list tag must have the same type.");
+                        }
+
+                        Amulet::ListTag_append(*tag, value);
+
+                        // Read past the comma
+                        read_comma(snbt, index, ']');
+                    }
+                    return tag;
                 }
             } else if (read_code_point(snbt, index) == ']'){
                 // empty list

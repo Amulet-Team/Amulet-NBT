@@ -18,6 +18,17 @@ void init_snbt(py::module& m);
 
 
 PYBIND11_MODULE(_nbt, m) {
+    // Convert cast_error to type_error
+    py::register_local_exception_translator([](std::exception_ptr p) {
+        try {
+            if (p) {
+                std::rethrow_exception(p);
+            }
+        } catch (const py::cast_error& e) {
+            py::set_error(PyExc_TypeError, e.what());
+        }
+    });
+
     init_encoding(m);
     init_abc(m);
     init_int(m);

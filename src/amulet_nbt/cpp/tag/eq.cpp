@@ -20,11 +20,11 @@ namespace Amulet{
 
     template <typename SelfT>
     inline bool ListTag_eq(const Amulet::ListTagPtr a, const Amulet::ListTagPtr b){
-        const std::vector<SelfT>& a_vec = get<std::vector<SelfT>>(*a);
+        const std::vector<SelfT>& a_vec = std::get<std::vector<SelfT>>(*a);
         if (b->index() != variant_index<Amulet::ListTag, std::vector<SelfT>>()){
             return a_vec.size() == 0 && ListTag_size(*b) == 0;
         }
-        const std::vector<SelfT>& b_vec = get<std::vector<SelfT>>(*b);
+        const std::vector<SelfT>& b_vec = std::get<std::vector<SelfT>>(*b);
 
         if constexpr (is_shared_ptr<SelfT>::value){
             // Values are shared pointers
@@ -72,7 +72,7 @@ namespace Amulet{
     };
     bool NBTTag_eq(const Amulet::TagNode a, const Amulet::TagNode b){
         switch(a.index()){
-            #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG) case ID: return b.index() == ID && NBTTag_eq(get<TAG_STORAGE>(a), get<TAG_STORAGE>(b));
+            #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG) case ID: return b.index() == ID && NBTTag_eq(std::get<TAG_STORAGE>(a), std::get<TAG_STORAGE>(b));
             case 0:
                 return b.index() == 0;
             FOR_EACH_LIST_TAG(CASE)

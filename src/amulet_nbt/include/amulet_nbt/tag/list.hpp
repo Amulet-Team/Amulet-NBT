@@ -16,7 +16,7 @@ namespace Amulet {
     template <typename tagT>
     void ListTag_append(Amulet::ListTag& self, tagT tag){
         if (self.index() == variant_index<Amulet::ListTag, std::vector<tagT>>()){
-            get<std::vector<tagT>>(self).push_back(tag);
+            std::get<std::vector<tagT>>(self).push_back(tag);
         } else if (ListTag_size(self) == 0){
             self.emplace<std::vector<tagT>>().push_back(tag);
         } else {
@@ -62,7 +62,7 @@ namespace Amulet {
 
     template <typename tagT, typename indexT>
     tagT ListTag_get(const Amulet::ListTag& self, indexT index){
-        auto& list_tag = get<std::vector<tagT>>(self);
+        auto& list_tag = std::get<std::vector<tagT>>(self);
         return list_tag[Amulet::ListTag_bounds_check<indexT>(list_tag.size(), index)];
     }
 
@@ -85,7 +85,7 @@ namespace Amulet {
         size_t abs_index = ListTag_bounds_check<indexT>(ListTag_size(self), index);
         if (self.index() == variant_index<Amulet::ListTag, std::vector<tagT>>()){
             // If the list type is the same as the tag
-            auto& list_tag = get<std::vector<tagT>>(self);
+            auto& list_tag = std::get<std::vector<tagT>>(self);
             list_tag[abs_index] = tag;
         } else if (ListTag_size(self) == 1 && abs_index == 0){
             // Overwriting the only value
@@ -101,7 +101,7 @@ namespace Amulet {
             #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
             case ID:\
                 {\
-                    LIST_TAG& list_tag = get<LIST_TAG>(self);\
+                    LIST_TAG& list_tag = std::get<LIST_TAG>(self);\
                     size_t abs_index = Amulet::ListTag_bounds_check<indexT>(list_tag.size(), index);\
                     list_tag.erase(list_tag.begin() + abs_index);\
                     break;\
@@ -117,7 +117,7 @@ namespace Amulet {
             #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
             case ID:\
                 {\
-                    LIST_TAG& list_tag = get<LIST_TAG>(self);\
+                    LIST_TAG& list_tag = std::get<LIST_TAG>(self);\
                     size_t abs_index = Amulet::ListTag_bounds_check<indexT>(list_tag.size(), index);\
                     TAG_STORAGE tag = list_tag[abs_index];\
                     list_tag.erase(list_tag.begin() + abs_index);\
@@ -143,7 +143,7 @@ namespace Amulet {
                 );
             }
         }
-        auto& list_tag = get<std::vector<tagT>>(self);
+        auto& list_tag = std::get<std::vector<tagT>>(self);
         size_t abs_index = ListTag_bounds_check<indexT, true>(list_tag.size(), index);
         list_tag.insert(list_tag.begin() + abs_index, tag);
     }
@@ -153,7 +153,7 @@ namespace Amulet {
         switch(self.index()){
             #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
             case ID:\
-                ListTag_insert<TAG_STORAGE, indexT>(self, index, get<TAG_STORAGE>(node));\
+                ListTag_insert<TAG_STORAGE, indexT>(self, index, std::get<TAG_STORAGE>(node));\
                 break;
             FOR_EACH_LIST_TAG(CASE)
             #undef CASE
@@ -165,7 +165,7 @@ namespace Amulet {
         if (self.index() != variant_index<Amulet::ListTag, std::vector<tagT>>()){
             throw std::invalid_argument("item is not in the ListTag");
         }
-        auto& list_tag = get<std::vector<tagT>>(self);
+        auto& list_tag = std::get<std::vector<tagT>>(self);
         size_t abs_start = ListTag_bounds_check<indexT, true>(list_tag.size(), start);
         size_t abs_stop = ListTag_bounds_check<indexT, true>(list_tag.size(), stop);
         for (size_t i = abs_start; i < abs_stop; i++){
@@ -182,7 +182,7 @@ namespace Amulet {
         if (self.index() != variant_index<Amulet::ListTag, std::vector<tagT>>()){
             return 0;
         }
-        auto& list_tag = get<std::vector<tagT>>(self);
+        auto& list_tag = std::get<std::vector<tagT>>(self);
         size_t count = 0;
         for (tagT tag_i: list_tag){
             if (NBTTag_eq(tag, tag_i)){

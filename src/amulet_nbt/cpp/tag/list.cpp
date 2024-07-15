@@ -7,7 +7,7 @@
 namespace Amulet {
     size_t ListTag_size(const Amulet::ListTag& self){
         switch(self.index()){
-            #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG) case ID: return get<LIST_TAG>(self).size();
+            #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG) case ID: return std::get<LIST_TAG>(self).size();
             FOR_EACH_LIST_TAG(CASE)
             #undef CASE
         }
@@ -18,7 +18,7 @@ namespace Amulet {
         switch(tag.index()){
             #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
             case ID:\
-                ListTag_append<TAG_STORAGE>(self, get<TAG_STORAGE>(tag));\
+                ListTag_append<TAG_STORAGE>(self, std::get<TAG_STORAGE>(tag));\
                 break;
             case 0:
                 throw AmuletNBT::type_error("Cannot append null TagNode");

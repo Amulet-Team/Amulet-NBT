@@ -23,7 +23,7 @@ void ListTag_extend(Amulet::ListTagPtr tag, py::object value){
         switch(node.index()){
             #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
             case ID:\
-                Amulet::ListTag_append<TAG_STORAGE>(*tag, get<Amulet::TagWrapper<TAG_STORAGE>>(node).tag);\
+                Amulet::ListTag_append<TAG_STORAGE>(*tag, std::get<Amulet::TagWrapper<TAG_STORAGE>>(node).tag);\
                 break;
             case 0:
                 throw py::type_error("Cannot append null TagNode");
@@ -38,7 +38,7 @@ template <typename tagT>
 void ListTag_set_slice(Amulet::ListTagPtr self, const py::slice &slice, std::vector<tagT>& vec){
     if (self->index() == variant_index<Amulet::ListTag, std::vector<tagT>>()){
         // Tag type matches
-        std::vector<tagT>& list_tag = get<std::vector<tagT>>(*self);
+        std::vector<tagT>& list_tag = std::get<std::vector<tagT>>(*self);
         Py_ssize_t start = 0, stop = 0, step = 0, slice_length = 0;
         if (!slice.compute(list_tag.size(), &start, &stop, &step, &slice_length)) {
             throw py::error_already_set();
@@ -167,7 +167,7 @@ void init_list(py::module& m) {
                 #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
                     case ID:\
                         {\
-                            LIST_TAG& tag = get<LIST_TAG>(*self.tag);\
+                            LIST_TAG& tag = std::get<LIST_TAG>(*self.tag);\
                             for (size_t i = 0; i < tag.size(); i++){\
                                 list.append(\
                                     Amulet::TagWrapper<TAG_STORAGE>(tag[i])\
@@ -212,7 +212,7 @@ void init_list(py::module& m) {
                     #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
                     case ID:\
                         {\
-                            LIST_TAG& list_tag = get<LIST_TAG>(*self.tag);\
+                            LIST_TAG& list_tag = std::get<LIST_TAG>(*self.tag);\
                             for (size_t i = 0; i < list_tag.size(); i++){\
                                 if (i != 0){out += ", ";}\
                                 out += py::repr(py::cast(Amulet::TagWrapper<TAG_STORAGE>(list_tag[i])));\
@@ -355,8 +355,8 @@ void init_list(py::module& m) {
                     #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
                     case ID:\
                         {\
-                            TAG_STORAGE item_tag = get<Amulet::TagWrapper<TAG_STORAGE>>(item).tag;\
-                            LIST_TAG& list_tag = get<LIST_TAG>(*self.tag);\
+                            TAG_STORAGE item_tag = std::get<Amulet::TagWrapper<TAG_STORAGE>>(item).tag;\
+                            LIST_TAG& list_tag = std::get<LIST_TAG>(*self.tag);\
                             for (TAG_STORAGE tag: list_tag){\
                                 if (Amulet::NBTTag_eq(tag, item_tag)){\
                                     return true;\
@@ -378,7 +378,7 @@ void init_list(py::module& m) {
                 switch(tag.index()){
                     #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
                     case ID:\
-                        return Amulet::ListTag_index<TAG_STORAGE, Py_ssize_t>(*self.tag, get<Amulet::TagWrapper<TAG_STORAGE>>(tag).tag, start, stop);
+                        return Amulet::ListTag_index<TAG_STORAGE, Py_ssize_t>(*self.tag, std::get<Amulet::TagWrapper<TAG_STORAGE>>(tag).tag, start, stop);
                     FOR_EACH_LIST_TAG(CASE)
                     #undef CASE
                     default:
@@ -393,7 +393,7 @@ void init_list(py::module& m) {
                 switch(tag.index()){
                     #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
                     case ID:\
-                        return Amulet::ListTag_count<TAG_STORAGE>(*self.tag, get<Amulet::TagWrapper<TAG_STORAGE>>(tag).tag);
+                        return Amulet::ListTag_count<TAG_STORAGE>(*self.tag, std::get<Amulet::TagWrapper<TAG_STORAGE>>(tag).tag);
                     FOR_EACH_LIST_TAG(CASE)
                     #undef CASE
                     default:
@@ -407,7 +407,7 @@ void init_list(py::module& m) {
                 switch(tag.index()){
                     #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
                     case ID:\
-                        Amulet::ListTag_set<TAG_STORAGE, Py_ssize_t>(*self.tag, index, get<Amulet::TagWrapper<TAG_STORAGE>>(tag).tag);\
+                        Amulet::ListTag_set<TAG_STORAGE, Py_ssize_t>(*self.tag, index, std::get<Amulet::TagWrapper<TAG_STORAGE>>(tag).tag);\
                         break;
                     FOR_EACH_LIST_TAG(CASE)
                     #undef CASE
@@ -471,7 +471,7 @@ void init_list(py::module& m) {
                 switch(self.tag->index()){
                     #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
                     case ID:{\
-                        ListTag_del_slice<TAG_STORAGE>(get<std::vector<TAG_STORAGE>>(*self.tag), slice);\
+                        ListTag_del_slice<TAG_STORAGE>(std::get<std::vector<TAG_STORAGE>>(*self.tag), slice);\
                         break;\
                     }
                     FOR_EACH_LIST_TAG(CASE)
@@ -485,7 +485,7 @@ void init_list(py::module& m) {
                 switch(tag.index()){
                     #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
                     case ID:\
-                        Amulet::ListTag_insert<TAG_STORAGE, Py_ssize_t>(*self.tag, index, get<Amulet::TagWrapper<TAG_STORAGE>>(tag).tag);\
+                        Amulet::ListTag_insert<TAG_STORAGE, Py_ssize_t>(*self.tag, index, std::get<Amulet::TagWrapper<TAG_STORAGE>>(tag).tag);\
                         break;
                     case 0:
                         throw py::type_error("Cannot insert null TagNode");
@@ -498,7 +498,7 @@ void init_list(py::module& m) {
             "append",
             [](const Amulet::ListTagWrapper& self, Amulet::WrapperNode tag){
                 switch(tag.index()){
-                    #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG) case ID: Amulet::ListTag_append<TAG_STORAGE>(*self.tag, get<Amulet::TagWrapper<TAG_STORAGE>>(tag).tag); break;
+                    #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG) case ID: Amulet::ListTag_append<TAG_STORAGE>(*self.tag, std::get<Amulet::TagWrapper<TAG_STORAGE>>(tag).tag); break;
                     case 0:
                         throw py::type_error("Cannot append null TagNode");
                     FOR_EACH_LIST_TAG(CASE)
@@ -510,7 +510,7 @@ void init_list(py::module& m) {
             "clear",
             [](const Amulet::ListTagWrapper& self){
                 switch(self.tag->index()){
-                    #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG) case ID: get<LIST_TAG>(*self.tag).clear(); break;
+                    #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG) case ID: std::get<LIST_TAG>(*self.tag).clear(); break;
                     FOR_EACH_LIST_TAG(CASE)
                     #undef CASE
                 }
@@ -520,7 +520,7 @@ void init_list(py::module& m) {
             "reverse",
             [](const Amulet::ListTagWrapper& self){
                 switch(self.tag->index()){
-                    #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG) case ID: {LIST_TAG& tag = get<LIST_TAG>(*self.tag); std::reverse(tag.begin(), tag.end());}; break;
+                    #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG) case ID: {LIST_TAG& tag = std::get<LIST_TAG>(*self.tag); std::reverse(tag.begin(), tag.end());}; break;
                     FOR_EACH_LIST_TAG(CASE)
                     #undef CASE
                 }

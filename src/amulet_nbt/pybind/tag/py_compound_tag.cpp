@@ -29,6 +29,22 @@ void CompoundTag_update(Amulet::CompoundTag& self, py::dict other){
     }
 }
 
+template <
+    typename T,
+    std::enable_if_t<!is_shared_ptr<T>::value, bool> = true
+>
+T new_tag(){
+    return T();
+}
+
+template <
+    typename T,
+    std::enable_if_t<is_shared_ptr<T>::value, bool> = true
+>
+T new_tag(){
+    return std::make_shared<typename T::element_type>();
+}
+
 
 void init_compound(py::module& m) {
     py::class_<Amulet::CompoundTagIterator> CompoundTagIterator(m, "CompoundTagIterator");
@@ -401,11 +417,7 @@ void init_compound(py::module& m) {
                 };\
                 auto create_set_return = [set_and_return, default_](){\
                     if (default_.index() == 0){\
-                        if constexpr (is_shared_ptr<TAG_STORAGE>::value){\
-                            return set_and_return(std::make_shared<TAG_STORAGE::element_type>());\
-                        } else {\
-                            return set_and_return(TAG_STORAGE());\
-                        }\
+                        return set_and_return(new_tag<TAG_STORAGE>());\
                     } else {\
                         return set_and_return(std::get<Amulet::TagWrapper<TAG_STORAGE>>(default_).tag);\
                     }\

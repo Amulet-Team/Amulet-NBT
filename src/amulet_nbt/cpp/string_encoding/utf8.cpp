@@ -1,7 +1,7 @@
 // Partially based on the mutf8 python library by Tyler Kennedy <tk@tkte.ch> MIT
 // Rewritten to stay within C++
 
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 #include <vector>
 #include <stdexcept>

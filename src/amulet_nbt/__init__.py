@@ -11,6 +11,7 @@ del _version
 
 def get_include() -> str:
     import os
+
     return os.path.join(__path__[0], "include")
 
 
@@ -23,7 +24,6 @@ from ._nbt import (
     AbstractBaseIntTag,
     AbstractBaseFloatTag,
     AbstractBaseArrayTag,
-
     # Tag classes
     ByteTag,
     ShortTag,
@@ -37,7 +37,6 @@ from ._nbt import (
     CompoundTag,
     IntArrayTag,
     LongArrayTag,
-
     # Tag class aliases
     ByteTag as TAG_Byte,
     ShortTag as TAG_Short,
@@ -51,9 +50,7 @@ from ._nbt import (
     CompoundTag as TAG_Compound,
     IntArrayTag as TAG_Int_Array,
     LongArrayTag as TAG_Long_Array,
-
     NamedTag,
-
     read_nbt,
     read_nbt_array,
     ReadOffset,
@@ -72,7 +69,20 @@ IntType: TypeAlias = ByteTag | ShortTag | IntTag | LongTag
 FloatType: TypeAlias = FloatTag | DoubleTag
 NumberType: TypeAlias = ByteTag | ShortTag | IntTag | LongTag | FloatTag | DoubleTag
 ArrayType: TypeAlias = ByteArrayTag | IntArrayTag | LongArrayTag
-AnyNBT: TypeAlias = ByteTag | ShortTag | IntTag | LongTag | FloatTag | DoubleTag | ByteArrayTag | StringTag | ListTag | CompoundTag | IntArrayTag | LongArrayTag
+AnyNBT: TypeAlias = (
+    ByteTag
+    | ShortTag
+    | IntTag
+    | LongTag
+    | FloatTag
+    | DoubleTag
+    | ByteArrayTag
+    | StringTag
+    | ListTag
+    | CompoundTag
+    | IntArrayTag
+    | LongArrayTag
+)
 
 
 __all__ = [

@@ -22,11 +22,13 @@ setup(
     cmdclass=versioneer.get_cmdclass(),
     libraries=[
         (
-            "amulet_nbt", dict(
-            sources=glob.glob("src/amulet_nbt/cpp/**/*.cpp", recursive=True),
-            include_dirs=["src/amulet_nbt/include"],
-            cflags=CompileArgs,
-        ))
+            "amulet_nbt",
+            dict(
+                sources=glob.glob("src/amulet_nbt/cpp/**/*.cpp", recursive=True),
+                include_dirs=["src/amulet_nbt/include"],
+                cflags=CompileArgs,
+            ),
+        )
     ],
     ext_modules=[
         Extension(
@@ -35,7 +37,7 @@ setup(
             include_dirs=["src/amulet_nbt/include", pybind11.get_include()],
             libraries=["amulet_nbt"],
             define_macros=[("PYBIND11_DETAILED_ERROR_MESSAGES", None)],
-            extra_compile_args=CompileArgs
+            extra_compile_args=CompileArgs,
         )
-    ]
+    ],
 )

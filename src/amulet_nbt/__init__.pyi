@@ -78,13 +78,10 @@ __all__ = [
 ]
 
 class _Readable(Protocol):
-    def read(self) -> bytes:
-        ...
+    def read(self) -> bytes: ...
 
 class _Writeable(Protocol):
-    def write(self, s: bytes) -> Any:
-        ...
-
+    def write(self, s: bytes) -> Any: ...
 
 class StringEncoding:
     def encode(self, data: bytes) -> bytes: ...
@@ -99,7 +96,6 @@ class EncodingPreset:
 
 java_encoding: EncodingPreset
 bedrock_encoding: EncodingPreset
-
 
 class AbstractBaseTag:
     """Abstract Base Class for all Tag classes"""

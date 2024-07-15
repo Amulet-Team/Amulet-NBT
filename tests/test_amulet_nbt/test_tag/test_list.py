@@ -574,7 +574,9 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 tag.insert(1, obj)
 
     def test_contains(self) -> None:
-        tag: ListTag = ListTag([StringTag("val1"), StringTag("val2"), StringTag("val3")])
+        tag: ListTag = ListTag(
+            [StringTag("val1"), StringTag("val2"), StringTag("val3")]
+        )
         self.assertIn(StringTag("val1"), tag)
         self.assertNotIn(StringTag("val4"), tag)
         for not_nbt in self.not_nbt:

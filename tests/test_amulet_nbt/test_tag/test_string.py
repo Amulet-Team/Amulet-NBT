@@ -45,7 +45,7 @@ class StringTagTestCase(AbstractBaseImmutableTagTestCase, unittest.TestCase):
         self.assertEqual("StringTag('')", repr(StringTag()))
         self.assertEqual("StringTag('value')", repr(StringTag("value")))
         self.assertEqual("StringTag('quote\"value')", repr(StringTag('quote"value')))
-        self.assertEqual("StringTag(\"quote'value\")", repr(StringTag("quote'value")))
+        self.assertEqual('StringTag("quote\'value")', repr(StringTag("quote'value")))
 
     def test_str(self) -> None:
         self.assertEqual("hello world", str(StringTag("hello world")))

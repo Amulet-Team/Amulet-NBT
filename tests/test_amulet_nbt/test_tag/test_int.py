@@ -35,25 +35,25 @@ class IntTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
                 with self.assertRaises(TypeError):
                     int_cls(None)  # type: ignore
 
-                RangeByte = 2 ** 8
-                RangeShort = 2 ** 16
-                RangeInt = 2 ** 32
-                RangeLong = 2 ** 64
+                RangeByte = 2**8
+                RangeShort = 2**16
+                RangeInt = 2**32
+                RangeLong = 2**64
 
-                MinByte = -(2 ** 7)
-                MinShort = -(2 ** 15)
-                MinInt = -(2 ** 31)
-                MinLong = -(2 ** 63)
+                MinByte = -(2**7)
+                MinShort = -(2**15)
+                MinInt = -(2**31)
+                MinLong = -(2**63)
 
                 UnderflowByte = MinByte - 1
                 UnderflowShort = MinShort - 1
                 UnderflowInt = MinInt - 1
                 UnderflowLong = MinLong - 1
 
-                MaxByte = 2 ** 7 - 1
-                MaxShort = 2 ** 15 - 1
-                MaxInt = 2 ** 31 - 1
-                MaxLong = 2 ** 63 - 1
+                MaxByte = 2**7 - 1
+                MaxShort = 2**15 - 1
+                MaxInt = 2**31 - 1
+                MaxLong = 2**63 - 1
 
                 OverflowByte = MaxByte + 1
                 OverflowShort = MaxShort + 1
@@ -83,10 +83,18 @@ class IntTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
                 self.assertEqual(MinByte, int(ByteTag(OverflowByte + 2 * RangeByte)))
                 self.assertEqual(MinByte, int(ByteTag(OverflowByte + 3 * RangeByte)))
                 self.assertEqual(MinByte, int(ByteTag(OverflowByte + 4 * RangeByte)))
-                self.assertEqual(MinShort, int(ShortTag(OverflowShort + 1 * RangeShort)))
-                self.assertEqual(MinShort, int(ShortTag(OverflowShort + 2 * RangeShort)))
-                self.assertEqual(MinShort, int(ShortTag(OverflowShort + 3 * RangeShort)))
-                self.assertEqual(MinShort, int(ShortTag(OverflowShort + 4 * RangeShort)))
+                self.assertEqual(
+                    MinShort, int(ShortTag(OverflowShort + 1 * RangeShort))
+                )
+                self.assertEqual(
+                    MinShort, int(ShortTag(OverflowShort + 2 * RangeShort))
+                )
+                self.assertEqual(
+                    MinShort, int(ShortTag(OverflowShort + 3 * RangeShort))
+                )
+                self.assertEqual(
+                    MinShort, int(ShortTag(OverflowShort + 4 * RangeShort))
+                )
                 self.assertEqual(MinInt, int(IntTag(OverflowInt + 1 * RangeInt)))
                 self.assertEqual(MinInt, int(IntTag(OverflowInt + 2 * RangeInt)))
                 self.assertEqual(MinInt, int(IntTag(OverflowInt + 3 * RangeInt)))
@@ -119,10 +127,18 @@ class IntTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
                 self.assertEqual(MaxByte, int(ByteTag(UnderflowByte - 2 * RangeByte)))
                 self.assertEqual(MaxByte, int(ByteTag(UnderflowByte - 3 * RangeByte)))
                 self.assertEqual(MaxByte, int(ByteTag(UnderflowByte - 4 * RangeByte)))
-                self.assertEqual(MaxShort, int(ShortTag(UnderflowShort - 1 * RangeShort)))
-                self.assertEqual(MaxShort, int(ShortTag(UnderflowShort - 2 * RangeShort)))
-                self.assertEqual(MaxShort, int(ShortTag(UnderflowShort - 3 * RangeShort)))
-                self.assertEqual(MaxShort, int(ShortTag(UnderflowShort - 4 * RangeShort)))
+                self.assertEqual(
+                    MaxShort, int(ShortTag(UnderflowShort - 1 * RangeShort))
+                )
+                self.assertEqual(
+                    MaxShort, int(ShortTag(UnderflowShort - 2 * RangeShort))
+                )
+                self.assertEqual(
+                    MaxShort, int(ShortTag(UnderflowShort - 3 * RangeShort))
+                )
+                self.assertEqual(
+                    MaxShort, int(ShortTag(UnderflowShort - 4 * RangeShort))
+                )
                 self.assertEqual(MaxInt, int(IntTag(UnderflowInt - 1 * RangeInt)))
                 self.assertEqual(MaxInt, int(IntTag(UnderflowInt - 2 * RangeInt)))
                 self.assertEqual(MaxInt, int(IntTag(UnderflowInt - 3 * RangeInt)))

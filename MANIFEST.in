@@ -1,1 +1,2 @@
+prune tests
 recursive-include src *.pyi py.typed *.py *.cpp *.hpp

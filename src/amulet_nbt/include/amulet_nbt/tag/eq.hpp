@@ -1,6 +1,6 @@
-// All of the NBT equal functions
-
 #pragma once
+
+// All of the NBT equal functions
 
 #include <amulet_nbt/tag/eq.hpp>
 

@@ -1,6 +1,6 @@
-// Utility functions for the ListTag
-
 #pragma once
+
+// Utility functions for the ListTag
 
 #include <stdexcept>
 #include <iostream>

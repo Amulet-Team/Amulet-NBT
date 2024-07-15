@@ -1,6 +1,6 @@
-// Utility functions for the CompoundTag
-
 #pragma once
+
+// Utility functions for the CompoundTag
 
 #include <amulet_nbt/tag/nbt.hpp>
 

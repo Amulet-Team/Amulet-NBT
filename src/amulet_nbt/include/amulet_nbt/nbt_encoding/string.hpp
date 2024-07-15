@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string>
 
 #include <amulet_nbt/tag/nbt.hpp>

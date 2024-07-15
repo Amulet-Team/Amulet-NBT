@@ -351,7 +351,7 @@ void init_compound(py::module& m) {
 
         #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
         CompoundTag.def(\
-            "get_"TAG_NAME,\
+            "get_" TAG_NAME,\
             [](\
                 const Amulet::CompoundTagWrapper& self,\
                 std::string key,\
@@ -388,7 +388,7 @@ void init_compound(py::module& m) {
             )\
         );\
         CompoundTag.def(\
-            "setdefault_"TAG_NAME,\
+            "setdefault_" TAG_NAME,\
             [isinstance](\
                 const Amulet::CompoundTagWrapper& self,\
                 std::string key,\
@@ -434,7 +434,7 @@ void init_compound(py::module& m) {
             )\
         );\
         CompoundTag.def(\
-            "pop_"TAG_NAME,\
+            "pop_" TAG_NAME,\
             [marker](\
                 const Amulet::CompoundTagWrapper& self,\
                 std::string key,\

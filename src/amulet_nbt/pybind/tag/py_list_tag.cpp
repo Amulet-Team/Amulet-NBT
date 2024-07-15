@@ -582,7 +582,7 @@ void init_list(py::module& m) {
         );
         #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
         ListTag.def(\
-            "get_"TAG_NAME,\
+            "get_" TAG_NAME,\
             [](const Amulet::ListTagWrapper& self, Py_ssize_t index){\
                 if (self.tag->index() != variant_index<Amulet::ListTag, std::vector<TAG_STORAGE>>()){\
                     throw pybind11::type_error("ListTag elements are not "#TAG);\

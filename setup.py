@@ -1,10 +1,10 @@
-from setuptools import setup
-from Cython.Build import cythonize
+from setuptools import setup, Extension
 import versioneer
-import numpy
 import sysconfig
 from distutils import ccompiler
 import sys
+import pybind11
+import glob
 
 if (sysconfig.get_config_var("CXX") or ccompiler.get_default_compiler()).split()[
     0
@@ -20,8 +20,24 @@ if sys.platform == "darwin":
 setup(
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
-    include_dirs=[numpy.get_include()],
-    ext_modules=cythonize(
-        f"src/**/*.pyx", language_level=3, aliases={"CPPCARGS": CompileArgs}
-    ),
+    libraries=[
+        (
+            "amulet_nbt",
+            dict(
+                sources=glob.glob("src/amulet_nbt/cpp/**/*.cpp", recursive=True),
+                include_dirs=["src/amulet_nbt/include"],
+                cflags=CompileArgs,
+            ),
+        )
+    ],
+    ext_modules=[
+        Extension(
+            name="amulet_nbt._nbt",
+            sources=glob.glob("src/amulet_nbt/pybind/**/*.cpp", recursive=True),
+            include_dirs=["src/amulet_nbt/include", pybind11.get_include()],
+            libraries=["amulet_nbt"],
+            define_macros=[("PYBIND11_DETAILED_ERROR_MESSAGES", None)],
+            extra_compile_args=CompileArgs,
+        )
+    ],
 )

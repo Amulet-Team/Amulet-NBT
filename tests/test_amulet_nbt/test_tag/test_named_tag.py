@@ -23,7 +23,7 @@ from amulet_nbt import (
     mutf8_encoding,
     utf8_encoding,
     utf8_escape_encoding,
-    load as load_nbt,
+    read_nbt,
 )
 
 from .test_abc import AbstractBaseTestCase, TagNameMap
@@ -70,11 +70,11 @@ class NamedTagTestCase(AbstractBaseTestCase, unittest.TestCase):
             self.assertNotEqual(NamedTag(cls1(), "name"), NamedTag(cls1(), "name2"))
 
     def test_repr(self) -> None:
-        self.assertEqual('NamedTag(CompoundTag({}), "")', repr(NamedTag()))
+        self.assertEqual("NamedTag(CompoundTag({}), '')", repr(NamedTag()))
         self.assertEqual(
-            'NamedTag(CompoundTag({}), "name")', repr(NamedTag(name="name"))
+            "NamedTag(CompoundTag({}), 'name')", repr(NamedTag(name="name"))
         )
-        self.assertEqual('NamedTag(ByteTag(0), "")', repr(NamedTag(ByteTag())))
+        self.assertEqual("NamedTag(ByteTag(0), '')", repr(NamedTag(ByteTag())))
 
     def test_str(self) -> None:
         # undefined
@@ -245,14 +245,14 @@ class NamedTagTestCase(AbstractBaseTestCase, unittest.TestCase):
             (b"\x0C\x00\x00\x00\x00\x00\x00", NamedTag(LongArrayTag())),
         ):
             with self.subTest(str(bnbt)):
-                named_tag = load_nbt(bnbt, compressed=False)
+                named_tag = read_nbt(bnbt, compressed=False)
                 self.assertIsInstance(named_tag, NamedTag)
                 self.assertEqual(correct_named_tag, named_tag)
                 self.assertEqual(correct_named_tag.tag, named_tag.tag)
 
         self.assertEqual(
             "hello world",
-            load_nbt(b"\x01\x00\x0Bhello world\x01", compressed=False).name,
+            read_nbt(b"\x01\x00\x0Bhello world\x01", compressed=False).name,
         )
 
     def test_to_snbt(self) -> None:

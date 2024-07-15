@@ -24,10 +24,8 @@ from amulet_nbt import (
     ByteArrayTag,
     IntArrayTag,
     LongArrayTag,
-    from_snbt,
-    SNBTParseError,
-    NBTFormatError,
-    load as load_nbt,
+    read_snbt,
+    read_nbt,
 )
 
 
@@ -780,52 +778,52 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
     def test_from_nbt(self) -> None:
         self.assertEqual(
             CompoundTag(byte=ByteTag(5)),
-            load_nbt(b"\x0A\x00\x00\x01\x00\x04byte\x05\x00").compound,
+            read_nbt(b"\x0A\x00\x00\x01\x00\x04byte\x05\x00").compound,
         )
         self.assertEqual(
             CompoundTag(byte=ByteTag(5)),
-            load_nbt(
+            read_nbt(
                 b"\x0A\x00\x00\x01\x04\x00byte\x05\x00", little_endian=True
             ).compound,
         )
         self.assertEqual(
             CompoundTag(short=ShortTag(5)),
-            load_nbt(b"\x0A\x00\x00\x02\x00\x05short\x00\x05\x00").compound,
+            read_nbt(b"\x0A\x00\x00\x02\x00\x05short\x00\x05\x00").compound,
         )
         self.assertEqual(
             CompoundTag(short=ShortTag(5)),
-            load_nbt(
+            read_nbt(
                 b"\x0A\x00\x00\x02\x05\x00short\x05\x00\x00", little_endian=True
             ).compound,
         )
         self.assertEqual(
             CompoundTag(int=IntTag(5)),
-            load_nbt(b"\x0A\x00\x00\x03\x00\x03int\x00\x00\x00\x05\x00").compound,
+            read_nbt(b"\x0A\x00\x00\x03\x00\x03int\x00\x00\x00\x05\x00").compound,
         )
         self.assertEqual(
             CompoundTag(int=IntTag(5)),
-            load_nbt(
+            read_nbt(
                 b"\x0A\x00\x00\x03\x03\x00int\x05\x00\x00\x00\x00", little_endian=True
             ).compound,
         )
         self.assertEqual(
             CompoundTag(long=LongTag(5)),
-            load_nbt(
+            read_nbt(
                 b"\x0A\x00\x00\x04\x00\x04long\x00\x00\x00\x00\x00\x00\x00\x05\x00"
             ).compound,
         )
         self.assertEqual(
             CompoundTag(long=LongTag(5)),
-            load_nbt(
+            read_nbt(
                 b"\x0A\x00\x00\x04\x04\x00long\x05\x00\x00\x00\x00\x00\x00\x00\x00",
                 little_endian=True,
             ).compound,
         )
 
-        with self.assertRaises(NBTFormatError):
-            load_nbt(b"\x0A")
-        with self.assertRaises(NBTFormatError):
-            load_nbt(b"\x0A\x00\x00")
+        with self.assertRaises(IndexError):
+            read_nbt(b"\x0A")
+        with self.assertRaises(IndexError):
+            read_nbt(b"\x0A\x00\x00")
 
     def test_to_snbt(self) -> None:
         full_compound = CompoundTag(
@@ -917,31 +915,31 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         )
 
     def test_from_snbt(self) -> None:
-        self.assertEqual(CompoundTag(), from_snbt("{}"))
+        self.assertEqual(CompoundTag(), read_snbt("{}"))
 
         with self.subTest("Formatting"):
-            self.assertEqual(CompoundTag({"1": IntTag(5)}), from_snbt("{1: 5}"))
-            self.assertEqual(CompoundTag({"1": IntTag(5)}), from_snbt('{"1": 5}'))
-            self.assertEqual(CompoundTag({"1": IntTag(5)}), from_snbt("{'1': 5}"))
+            self.assertEqual(CompoundTag({"1": IntTag(5)}), read_snbt("{1: 5}"))
+            self.assertEqual(CompoundTag({"1": IntTag(5)}), read_snbt('{"1": 5}'))
+            self.assertEqual(CompoundTag({"1": IntTag(5)}), read_snbt("{'1': 5}"))
             self.assertEqual(
-                CompoundTag({"1": IntTag(5)}), from_snbt("{  '1'  :  5  }")
+                CompoundTag({"1": IntTag(5)}), read_snbt("{  '1'  :  5  }")
             )
             self.assertEqual(
-                CompoundTag({"1": IntTag(5)}), from_snbt("\n{ \n '1' \n : \n 5 \n }\n")
+                CompoundTag({"1": IntTag(5)}), read_snbt("\n{ \n '1' \n : \n 5 \n }\n")
             )
 
-        with self.assertRaises(SNBTParseError):
-            from_snbt("{")
-        with self.assertRaises(SNBTParseError):
-            from_snbt("}")
-        with self.assertRaises(SNBTParseError):
-            from_snbt("{a:}")
-        with self.assertRaises(SNBTParseError):
-            from_snbt("{a 5}")
-        with self.assertRaises(SNBTParseError):
-            from_snbt("{a:5, b:}")
-        with self.assertRaises(SNBTParseError):
-            from_snbt("{a:5 b:6}")
+        with self.assertRaises(IndexError):
+            read_snbt("{")
+        with self.assertRaises(ValueError):
+            read_snbt("}")
+        with self.assertRaises(ValueError):
+            read_snbt("{a:}")
+        with self.assertRaises(ValueError):
+            read_snbt("{a 5}")
+        with self.assertRaises(ValueError):
+            read_snbt("{a:5, b:}")
+        with self.assertRaises(ValueError):
+            read_snbt("{a:5 b:6}")
 
 
 if __name__ == "__main__":

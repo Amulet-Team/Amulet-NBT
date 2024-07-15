@@ -1,7 +1,7 @@
 import os
 from typing import Callable, TypeVar, Sequence, TypeAlias
 import unittest
-from amulet_nbt import CompoundTag, load, from_snbt, NamedTag, AbstractBaseTag
+from amulet_nbt import CompoundTag, read_nbt, read_snbt, NamedTag, AbstractBaseTag
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "src")
 
@@ -22,22 +22,22 @@ class FileNBTTests(unittest.TestCase):
                     snbt = f_.read()
             else:
                 snbt = path_
-            return NamedTag(from_snbt(snbt))
+            return NamedTag(read_snbt(snbt))
 
         self._groups: Sequence[GroupType] = (
             (
                 "big_endian_compressed_nbt",
-                lambda path_: load(path_, compressed=True, little_endian=False),
+                lambda path_: read_nbt(path_, compressed=True, little_endian=False),
                 lambda obj_: obj_.save_to(compressed=True, little_endian=False),
             ),
             (
                 "big_endian_nbt",
-                lambda path_: load(path_, compressed=False, little_endian=False),
+                lambda path_: read_nbt(path_, compressed=False, little_endian=False),
                 lambda obj_: obj_.save_to(compressed=False, little_endian=False),
             ),
             (
                 "little_endian_nbt",
-                lambda path_: load(path_, compressed=False, little_endian=True),
+                lambda path_: read_nbt(path_, compressed=False, little_endian=True),
                 lambda obj_: obj_.save_to(compressed=False, little_endian=True),
             ),
             (

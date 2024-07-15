@@ -23,10 +23,8 @@ from amulet_nbt import (
     CompoundTag,
     IntArrayTag,
     LongArrayTag,
-    load as load_nbt,
-    NBTFormatError,
-    from_snbt,
-    SNBTParseError,
+    read_nbt,
+    read_snbt,
 )
 
 
@@ -238,11 +236,11 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
 
         # string tag list
         self.assertEqual(
-            'ListTag([StringTag("value")], 8)',
+            "ListTag([StringTag('value')], 8)",
             repr(ListTag([StringTag("value")])),
         )
         self.assertEqual(
-            'ListTag([StringTag("value"), StringTag("value")], 8)',
+            "ListTag([StringTag('value'), StringTag('value')], 8)",
             repr(ListTag([StringTag("value"), StringTag("value")])),
         )
 
@@ -576,11 +574,14 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 tag.insert(1, obj)
 
     def test_contains(self) -> None:
-        tag = ListTag([StringTag("val1"), StringTag("val2"), StringTag("val3")])
+        tag: ListTag = ListTag(
+            [StringTag("val1"), StringTag("val2"), StringTag("val3")]
+        )
         self.assertIn(StringTag("val1"), tag)
         self.assertNotIn(StringTag("val4"), tag)
         for not_nbt in self.not_nbt:
-            self.assertNotIn(not_nbt, tag)
+            with self.assertRaises(TypeError):
+                self.assertNotIn(not_nbt, tag)
         for tag_cls1 in self.nbt_types:
             tag = ListTag([tag_cls1()])
             for tag_cls2 in self.nbt_types:
@@ -639,13 +640,13 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
             str_list_tag.index(StringTag("val3"))
 
         for obj in self.not_nbt:
-            with self.subTest(val=obj), self.assertRaises(ValueError):
+            with self.subTest(val=obj), self.assertRaises(TypeError):
                 str_list_tag.index(obj)
 
         byte_list_tag = ListTag([ByteTag(1), ByteTag(2), ByteTag(3)])
         with self.assertRaises(ValueError):
             byte_list_tag.index(ShortTag(2))
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             byte_list_tag.index(True)
 
     def test_count(self) -> None:
@@ -653,7 +654,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         self.assertEqual(1, tag.count(StringTag("val1")))
         self.assertEqual(2, tag.count(StringTag("val2")))
         for obj in self.not_nbt:
-            with self.subTest(val=obj):
+            with self.subTest(val=obj), self.assertRaises(TypeError):
                 self.assertEqual(0, tag.count(obj))
 
     def test_append(self) -> None:
@@ -721,7 +722,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         self.assertEqual(tag, ListTag([StringTag("val2")]))
 
         for obj in self.not_nbt:
-            with self.subTest(val=obj), self.assertRaises(ValueError):
+            with self.subTest(val=obj), self.assertRaises(TypeError):
                 tag.remove(obj)
 
     def test_iadd(self) -> None:
@@ -840,21 +841,21 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
 
     def test_from_nbt(self) -> None:
         self.assertEqual(
-            ListTag([], 1), load_nbt(b"\x09\x00\x00\x01\xFF\xFF\xFF\xFF").list
+            ListTag([], 1), read_nbt(b"\x09\x00\x00\x01\xFF\xFF\xFF\xFF").list
         )
 
-        with self.assertRaises(NBTFormatError):
-            load_nbt(b"\x09")
-        with self.assertRaises(NBTFormatError):
-            load_nbt(b"\x09\x00\x00")
-        with self.assertRaises(NBTFormatError):
-            load_nbt(b"\x09\x00\x00\x00")
-        with self.assertRaises(NBTFormatError):
-            load_nbt(b"\x09\x00\x00\x00\x00")
-        with self.assertRaises(NBTFormatError):
-            load_nbt(b"\x09\x00\x00\x00\x00\x00")
-        with self.assertRaises(NBTFormatError):
-            load_nbt(b"\x09\x00\x00\x00\x00\x00\x00")
+        with self.assertRaises(IndexError):
+            read_nbt(b"\x09")
+        with self.assertRaises(IndexError):
+            read_nbt(b"\x09\x00\x00")
+        with self.assertRaises(IndexError):
+            read_nbt(b"\x09\x00\x00\x00")
+        with self.assertRaises(IndexError):
+            read_nbt(b"\x09\x00\x00\x00\x00")
+        with self.assertRaises(IndexError):
+            read_nbt(b"\x09\x00\x00\x00\x00\x00")
+        with self.assertRaises(IndexError):
+            read_nbt(b"\x09\x00\x00\x00\x00\x00\x00")
 
     def test_to_snbt(self) -> None:
         self.assertEqual("[]", ListTag().to_snbt())
@@ -869,42 +870,42 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
 
     def test_from_snbt(self) -> None:
         with self.subTest("Formatting"):
-            self.assertEqual(ListTag(), from_snbt("[]"))
-            self.assertEqual(ListTag([IntTag(5)]), from_snbt("[5]"))
-            self.assertEqual(ListTag([IntTag(5)]), from_snbt("[5,]"))
-            self.assertEqual(ListTag([IntTag(5)]), from_snbt("[  5  ]"))
-            self.assertEqual(ListTag([IntTag(5)]), from_snbt("[  5  ,  ]"))
+            self.assertEqual(ListTag(), read_snbt("[]"))
+            self.assertEqual(ListTag([IntTag(5)]), read_snbt("[5]"))
+            self.assertEqual(ListTag([IntTag(5)]), read_snbt("[5,]"))
+            self.assertEqual(ListTag([IntTag(5)]), read_snbt("[  5  ]"))
+            self.assertEqual(ListTag([IntTag(5)]), read_snbt("[  5  ,  ]"))
 
-            self.assertEqual(ListTag([IntTag(5), IntTag(-5)]), from_snbt("[5, -5]"))
-            self.assertEqual(ListTag([IntTag(5), IntTag(-5)]), from_snbt("[5, -5, ]"))
-            self.assertEqual(ListTag([IntTag(5), IntTag(-5)]), from_snbt("[5,-5]"))
-            self.assertEqual(ListTag([IntTag(5), IntTag(-5)]), from_snbt("[5,-5,]"))
+            self.assertEqual(ListTag([IntTag(5), IntTag(-5)]), read_snbt("[5, -5]"))
+            self.assertEqual(ListTag([IntTag(5), IntTag(-5)]), read_snbt("[5, -5, ]"))
+            self.assertEqual(ListTag([IntTag(5), IntTag(-5)]), read_snbt("[5,-5]"))
+            self.assertEqual(ListTag([IntTag(5), IntTag(-5)]), read_snbt("[5,-5,]"))
             self.assertEqual(
-                ListTag([IntTag(5), IntTag(-5)]), from_snbt("[  5  ,  -5  ]")
+                ListTag([IntTag(5), IntTag(-5)]), read_snbt("[  5  ,  -5  ]")
             )
             self.assertEqual(
-                ListTag([IntTag(5), IntTag(-5)]), from_snbt("[  5  ,  -5  ,  ]")
+                ListTag([IntTag(5), IntTag(-5)]), read_snbt("[  5  ,  -5  ,  ]")
             )
 
         for cls in self.nbt_types:
             with self.subTest(cls=cls):
                 tag = cls()
-                self.assertEqual(ListTag([tag]), from_snbt(f"[{tag.to_snbt()}]"))
+                self.assertEqual(ListTag([tag]), read_snbt(f"[{tag.to_snbt()}]"))
                 self.assertEqual(
                     ListTag([tag, tag]),
-                    from_snbt(f"[{tag.to_snbt()}, {tag.to_snbt()}]"),
+                    read_snbt(f"[{tag.to_snbt()}, {tag.to_snbt()}]"),
                 )
 
-        with self.assertRaises(SNBTParseError):
-            from_snbt("[")
-        with self.assertRaises(SNBTParseError):
-            from_snbt("]")
-        with self.assertRaises(SNBTParseError):
-            from_snbt("[,]")
-        with self.assertRaises(SNBTParseError):
-            from_snbt("[,1]")
-        with self.assertRaises(SNBTParseError):
-            from_snbt("[1 1]")
+        with self.assertRaises(IndexError):
+            read_snbt("[")
+        with self.assertRaises(ValueError):
+            read_snbt("]")
+        with self.assertRaises(ValueError):
+            read_snbt("[,]")
+        with self.assertRaises(ValueError):
+            read_snbt("[,1]")
+        with self.assertRaises(ValueError):
+            read_snbt("[1 1]")
 
 
 if __name__ == "__main__":

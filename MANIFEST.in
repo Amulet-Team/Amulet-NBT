@@ -1,1 +1,2 @@
-recursive-include src *.pyi py.typed *.py *.pyx *.pxd *.cpp *.hpp
+prune tests
+recursive-include src *.pyi py.typed *.py *.cpp *.hpp

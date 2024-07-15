@@ -17,9 +17,9 @@ from amulet_nbt import (
     ShortTag,
     IntTag,
     LongTag,
-    load as load_nbt,
+    read_nbt,
     StringTag,
-    from_snbt,
+    read_snbt,
 )
 
 
@@ -35,17 +35,186 @@ class IntTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
                 with self.assertRaises(TypeError):
                     int_cls(None)  # type: ignore
 
+                RangeByte = 2**8
+                RangeShort = 2**16
+                RangeInt = 2**32
+                RangeLong = 2**64
+
+                MinByte = -(2**7)
+                MinShort = -(2**15)
+                MinInt = -(2**31)
+                MinLong = -(2**63)
+
+                UnderflowByte = MinByte - 1
+                UnderflowShort = MinShort - 1
+                UnderflowInt = MinInt - 1
+                UnderflowLong = MinLong - 1
+
+                MaxByte = 2**7 - 1
+                MaxShort = 2**15 - 1
+                MaxInt = 2**31 - 1
+                MaxLong = 2**63 - 1
+
+                OverflowByte = MaxByte + 1
+                OverflowShort = MaxShort + 1
+                OverflowInt = MaxInt + 1
+                OverflowLong = MaxLong + 1
+
+                # upper bound
+                self.assertEqual(MaxByte, int(ByteTag(MaxByte + 0 * RangeByte)))
+                self.assertEqual(MaxByte, int(ByteTag(MaxByte + 1 * RangeByte)))
+                self.assertEqual(MaxByte, int(ByteTag(MaxByte + 2 * RangeByte)))
+                self.assertEqual(MaxByte, int(ByteTag(MaxByte + 3 * RangeByte)))
+                self.assertEqual(MaxShort, int(ShortTag(MaxShort + 0 * RangeShort)))
+                self.assertEqual(MaxShort, int(ShortTag(MaxShort + 1 * RangeShort)))
+                self.assertEqual(MaxShort, int(ShortTag(MaxShort + 2 * RangeShort)))
+                self.assertEqual(MaxShort, int(ShortTag(MaxShort + 3 * RangeShort)))
+                self.assertEqual(MaxInt, int(IntTag(MaxInt + 0 * RangeInt)))
+                self.assertEqual(MaxInt, int(IntTag(MaxInt + 1 * RangeInt)))
+                self.assertEqual(MaxInt, int(IntTag(MaxInt + 2 * RangeInt)))
+                self.assertEqual(MaxInt, int(IntTag(MaxInt + 3 * RangeInt)))
+                self.assertEqual(MaxLong, int(LongTag(MaxLong + 0 * RangeLong)))
+                self.assertEqual(MaxLong, int(LongTag(MaxLong + 1 * RangeLong)))
+                self.assertEqual(MaxLong, int(LongTag(MaxLong + 2 * RangeLong)))
+                self.assertEqual(MaxLong, int(LongTag(MaxLong + 3 * RangeLong)))
+
                 # overflow
-                self.assertEqual(ByteTag(-(2**7)), ByteTag(2**7))
-                self.assertEqual(ShortTag(-(2**15)), ShortTag(2**15))
-                self.assertEqual(IntTag(-(2**31)), IntTag(2**31))
-                self.assertEqual(LongTag(-(2**63)), LongTag(2**63))
+                self.assertEqual(MinByte, int(ByteTag(OverflowByte + 1 * RangeByte)))
+                self.assertEqual(MinByte, int(ByteTag(OverflowByte + 2 * RangeByte)))
+                self.assertEqual(MinByte, int(ByteTag(OverflowByte + 3 * RangeByte)))
+                self.assertEqual(MinByte, int(ByteTag(OverflowByte + 4 * RangeByte)))
+                self.assertEqual(
+                    MinShort, int(ShortTag(OverflowShort + 1 * RangeShort))
+                )
+                self.assertEqual(
+                    MinShort, int(ShortTag(OverflowShort + 2 * RangeShort))
+                )
+                self.assertEqual(
+                    MinShort, int(ShortTag(OverflowShort + 3 * RangeShort))
+                )
+                self.assertEqual(
+                    MinShort, int(ShortTag(OverflowShort + 4 * RangeShort))
+                )
+                self.assertEqual(MinInt, int(IntTag(OverflowInt + 1 * RangeInt)))
+                self.assertEqual(MinInt, int(IntTag(OverflowInt + 2 * RangeInt)))
+                self.assertEqual(MinInt, int(IntTag(OverflowInt + 3 * RangeInt)))
+                self.assertEqual(MinInt, int(IntTag(OverflowInt + 4 * RangeInt)))
+                self.assertEqual(MinLong, int(LongTag(OverflowLong + 1 * RangeLong)))
+                self.assertEqual(MinLong, int(LongTag(OverflowLong + 2 * RangeLong)))
+                self.assertEqual(MinLong, int(LongTag(OverflowLong + 3 * RangeLong)))
+                self.assertEqual(MinLong, int(LongTag(OverflowLong + 4 * RangeLong)))
+
+                # lower bound
+                self.assertEqual(MinByte, int(ByteTag(MinByte - 1 * RangeByte)))
+                self.assertEqual(MinByte, int(ByteTag(MinByte - 2 * RangeByte)))
+                self.assertEqual(MinByte, int(ByteTag(MinByte - 3 * RangeByte)))
+                self.assertEqual(MinByte, int(ByteTag(MinByte - 4 * RangeByte)))
+                self.assertEqual(MinShort, int(ShortTag(MinShort - 1 * RangeShort)))
+                self.assertEqual(MinShort, int(ShortTag(MinShort - 2 * RangeShort)))
+                self.assertEqual(MinShort, int(ShortTag(MinShort - 3 * RangeShort)))
+                self.assertEqual(MinShort, int(ShortTag(MinShort - 4 * RangeShort)))
+                self.assertEqual(MinInt, int(IntTag(MinInt - 1 * RangeInt)))
+                self.assertEqual(MinInt, int(IntTag(MinInt - 2 * RangeInt)))
+                self.assertEqual(MinInt, int(IntTag(MinInt - 3 * RangeInt)))
+                self.assertEqual(MinInt, int(IntTag(MinInt - 4 * RangeInt)))
+                self.assertEqual(MinLong, int(LongTag(MinLong - 1 * RangeLong)))
+                self.assertEqual(MinLong, int(LongTag(MinLong - 2 * RangeLong)))
+                self.assertEqual(MinLong, int(LongTag(MinLong - 3 * RangeLong)))
+                self.assertEqual(MinLong, int(LongTag(MinLong - 4 * RangeLong)))
 
                 # underflow
-                self.assertEqual(ByteTag(2**7 - 1), ByteTag(-(2**7) - 1))
-                self.assertEqual(ShortTag(2**15 - 1), ShortTag(-(2**15) - 1))
-                self.assertEqual(IntTag(2**31 - 1), IntTag(-(2**31) - 1))
-                self.assertEqual(LongTag(2**63 - 1), LongTag(-(2**63) - 1))
+                self.assertEqual(MaxByte, int(ByteTag(UnderflowByte - 1 * RangeByte)))
+                self.assertEqual(MaxByte, int(ByteTag(UnderflowByte - 2 * RangeByte)))
+                self.assertEqual(MaxByte, int(ByteTag(UnderflowByte - 3 * RangeByte)))
+                self.assertEqual(MaxByte, int(ByteTag(UnderflowByte - 4 * RangeByte)))
+                self.assertEqual(
+                    MaxShort, int(ShortTag(UnderflowShort - 1 * RangeShort))
+                )
+                self.assertEqual(
+                    MaxShort, int(ShortTag(UnderflowShort - 2 * RangeShort))
+                )
+                self.assertEqual(
+                    MaxShort, int(ShortTag(UnderflowShort - 3 * RangeShort))
+                )
+                self.assertEqual(
+                    MaxShort, int(ShortTag(UnderflowShort - 4 * RangeShort))
+                )
+                self.assertEqual(MaxInt, int(IntTag(UnderflowInt - 1 * RangeInt)))
+                self.assertEqual(MaxInt, int(IntTag(UnderflowInt - 2 * RangeInt)))
+                self.assertEqual(MaxInt, int(IntTag(UnderflowInt - 3 * RangeInt)))
+                self.assertEqual(MaxInt, int(IntTag(UnderflowInt - 4 * RangeInt)))
+                self.assertEqual(MaxLong, int(LongTag(UnderflowLong - 1 * RangeLong)))
+                self.assertEqual(MaxLong, int(LongTag(UnderflowLong - 2 * RangeLong)))
+                self.assertEqual(MaxLong, int(LongTag(UnderflowLong - 3 * RangeLong)))
+                self.assertEqual(MaxLong, int(LongTag(UnderflowLong - 4 * RangeLong)))
+
+                # 0
+                self.assertEqual(0, int(ByteTag(0 + 1 * RangeByte)))
+                self.assertEqual(0, int(ByteTag(0 - 1 * RangeByte)))
+                self.assertEqual(0, int(ByteTag(0 + 2 * RangeByte)))
+                self.assertEqual(0, int(ByteTag(0 - 2 * RangeByte)))
+                self.assertEqual(0, int(ByteTag(0 + 3 * RangeByte)))
+                self.assertEqual(0, int(ByteTag(0 - 3 * RangeByte)))
+                self.assertEqual(0, int(ByteTag(0 + 4 * RangeByte)))
+                self.assertEqual(0, int(ByteTag(0 - 4 * RangeByte)))
+                self.assertEqual(0, int(ShortTag(0 + 1 * RangeShort)))
+                self.assertEqual(0, int(ShortTag(0 - 1 * RangeShort)))
+                self.assertEqual(0, int(ShortTag(0 + 2 * RangeShort)))
+                self.assertEqual(0, int(ShortTag(0 - 2 * RangeShort)))
+                self.assertEqual(0, int(ShortTag(0 + 3 * RangeShort)))
+                self.assertEqual(0, int(ShortTag(0 - 3 * RangeShort)))
+                self.assertEqual(0, int(ShortTag(0 + 4 * RangeShort)))
+                self.assertEqual(0, int(ShortTag(0 - 4 * RangeShort)))
+                self.assertEqual(0, int(IntTag(0 + 1 * RangeInt)))
+                self.assertEqual(0, int(IntTag(0 - 1 * RangeInt)))
+                self.assertEqual(0, int(IntTag(0 + 2 * RangeInt)))
+                self.assertEqual(0, int(IntTag(0 - 2 * RangeInt)))
+                self.assertEqual(0, int(IntTag(0 + 3 * RangeInt)))
+                self.assertEqual(0, int(IntTag(0 - 3 * RangeInt)))
+                self.assertEqual(0, int(IntTag(0 + 4 * RangeInt)))
+                self.assertEqual(0, int(IntTag(0 - 4 * RangeInt)))
+                self.assertEqual(0, int(LongTag(0 + 1 * RangeLong)))
+                self.assertEqual(0, int(LongTag(0 - 1 * RangeLong)))
+                self.assertEqual(0, int(LongTag(0 + 2 * RangeLong)))
+                self.assertEqual(0, int(LongTag(0 - 2 * RangeLong)))
+                self.assertEqual(0, int(LongTag(0 + 3 * RangeLong)))
+                self.assertEqual(0, int(LongTag(0 - 3 * RangeLong)))
+                self.assertEqual(0, int(LongTag(0 + 4 * RangeLong)))
+                self.assertEqual(0, int(LongTag(0 - 4 * RangeLong)))
+
+                # -1
+                self.assertEqual(-1, int(ByteTag(-1 + 1 * RangeByte)))
+                self.assertEqual(-1, int(ByteTag(-1 - 1 * RangeByte)))
+                self.assertEqual(-1, int(ByteTag(-1 + 2 * RangeByte)))
+                self.assertEqual(-1, int(ByteTag(-1 - 2 * RangeByte)))
+                self.assertEqual(-1, int(ByteTag(-1 + 3 * RangeByte)))
+                self.assertEqual(-1, int(ByteTag(-1 - 3 * RangeByte)))
+                self.assertEqual(-1, int(ByteTag(-1 + 4 * RangeByte)))
+                self.assertEqual(-1, int(ByteTag(-1 - 4 * RangeByte)))
+                self.assertEqual(-1, int(ShortTag(-1 + 1 * RangeShort)))
+                self.assertEqual(-1, int(ShortTag(-1 - 1 * RangeShort)))
+                self.assertEqual(-1, int(ShortTag(-1 + 2 * RangeShort)))
+                self.assertEqual(-1, int(ShortTag(-1 - 2 * RangeShort)))
+                self.assertEqual(-1, int(ShortTag(-1 + 3 * RangeShort)))
+                self.assertEqual(-1, int(ShortTag(-1 - 3 * RangeShort)))
+                self.assertEqual(-1, int(ShortTag(-1 + 4 * RangeShort)))
+                self.assertEqual(-1, int(ShortTag(-1 - 4 * RangeShort)))
+                self.assertEqual(-1, int(IntTag(-1 + 1 * RangeInt)))
+                self.assertEqual(-1, int(IntTag(-1 - 1 * RangeInt)))
+                self.assertEqual(-1, int(IntTag(-1 + 2 * RangeInt)))
+                self.assertEqual(-1, int(IntTag(-1 - 2 * RangeInt)))
+                self.assertEqual(-1, int(IntTag(-1 + 3 * RangeInt)))
+                self.assertEqual(-1, int(IntTag(-1 - 3 * RangeInt)))
+                self.assertEqual(-1, int(IntTag(-1 + 4 * RangeInt)))
+                self.assertEqual(-1, int(IntTag(-1 - 4 * RangeInt)))
+                self.assertEqual(-1, int(LongTag(-1 + 1 * RangeLong)))
+                self.assertEqual(-1, int(LongTag(-1 - 1 * RangeLong)))
+                self.assertEqual(-1, int(LongTag(-1 + 2 * RangeLong)))
+                self.assertEqual(-1, int(LongTag(-1 - 2 * RangeLong)))
+                self.assertEqual(-1, int(LongTag(-1 + 3 * RangeLong)))
+                self.assertEqual(-1, int(LongTag(-1 - 3 * RangeLong)))
+                self.assertEqual(-1, int(LongTag(-1 + 4 * RangeLong)))
+                self.assertEqual(-1, int(LongTag(-1 - 4 * RangeLong)))
 
         for cls in self.nbt_types:
             tag = cls()
@@ -293,37 +462,37 @@ class IntTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
     def test_from_nbt(self) -> None:
         self.assertEqual(
             ByteTag(5),
-            load_nbt(b"\x01\x00\x00\x05", little_endian=False).byte,
+            read_nbt(b"\x01\x00\x00\x05", little_endian=False).byte,
         )
         self.assertEqual(
             ByteTag(5),
-            load_nbt(b"\x01\x00\x00\x05", little_endian=True).byte,
+            read_nbt(b"\x01\x00\x00\x05", little_endian=True).byte,
         )
         self.assertEqual(
             ShortTag(5),
-            load_nbt(b"\x02\x00\x00\x00\x05", little_endian=False).short,
+            read_nbt(b"\x02\x00\x00\x00\x05", little_endian=False).short,
         )
         self.assertEqual(
             ShortTag(5),
-            load_nbt(b"\x02\x00\x00\x05\x00", little_endian=True).short,
+            read_nbt(b"\x02\x00\x00\x05\x00", little_endian=True).short,
         )
         self.assertEqual(
             IntTag(5),
-            load_nbt(b"\x03\x00\x00\x00\x00\x00\x05", little_endian=False).int,
+            read_nbt(b"\x03\x00\x00\x00\x00\x00\x05", little_endian=False).int,
         )
         self.assertEqual(
             IntTag(5),
-            load_nbt(b"\x03\x00\x00\x05\x00\x00\x00", little_endian=True).int,
+            read_nbt(b"\x03\x00\x00\x05\x00\x00\x00", little_endian=True).int,
         )
         self.assertEqual(
             LongTag(5),
-            load_nbt(
+            read_nbt(
                 b"\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x05", little_endian=False
             ).long,
         )
         self.assertEqual(
             LongTag(5),
-            load_nbt(
+            read_nbt(
                 b"\x04\x00\x00\x05\x00\x00\x00\x00\x00\x00\x00", little_endian=True
             ).long,
         )
@@ -351,58 +520,58 @@ class IntTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
 
     def test_from_snbt(self) -> None:
         with self.subTest():
-            self.assertEqual(ByteTag(-5), from_snbt("-5b"))
-            self.assertEqual(ByteTag(-5), from_snbt("-5B"))
-            self.assertEqual(ByteTag(0), from_snbt("0b"))
-            self.assertEqual(ByteTag(0), from_snbt("0B"))
-            self.assertEqual(ByteTag(0), from_snbt("+0b"))
-            self.assertEqual(ByteTag(0), from_snbt("+0B"))
-            self.assertEqual(ByteTag(0), from_snbt("false"))
-            self.assertEqual(ByteTag(0), from_snbt("False"))
-            self.assertEqual(ByteTag(1), from_snbt("true"))
-            self.assertEqual(ByteTag(1), from_snbt("True"))
-            self.assertEqual(ByteTag(5), from_snbt("5b"))
-            self.assertEqual(ByteTag(5), from_snbt("5B"))
-            self.assertEqual(ByteTag(5), from_snbt("+5b"))
-            self.assertEqual(ByteTag(5), from_snbt("+5B"))
+            self.assertEqual(ByteTag(-5), read_snbt("-5b"))
+            self.assertEqual(ByteTag(-5), read_snbt("-5B"))
+            self.assertEqual(ByteTag(0), read_snbt("0b"))
+            self.assertEqual(ByteTag(0), read_snbt("0B"))
+            self.assertEqual(ByteTag(0), read_snbt("+0b"))
+            self.assertEqual(ByteTag(0), read_snbt("+0B"))
+            self.assertEqual(ByteTag(0), read_snbt("false"))
+            self.assertEqual(ByteTag(0), read_snbt("False"))
+            self.assertEqual(ByteTag(1), read_snbt("true"))
+            self.assertEqual(ByteTag(1), read_snbt("True"))
+            self.assertEqual(ByteTag(5), read_snbt("5b"))
+            self.assertEqual(ByteTag(5), read_snbt("5B"))
+            self.assertEqual(ByteTag(5), read_snbt("+5b"))
+            self.assertEqual(ByteTag(5), read_snbt("+5B"))
 
         with self.subTest():
-            self.assertEqual(ShortTag(-5), from_snbt("-5s"))
-            self.assertEqual(ShortTag(-5), from_snbt("-5S"))
-            self.assertEqual(ShortTag(0), from_snbt("0s"))
-            self.assertEqual(ShortTag(0), from_snbt("0S"))
-            self.assertEqual(ShortTag(0), from_snbt("+0s"))
-            self.assertEqual(ShortTag(0), from_snbt("+0S"))
-            self.assertEqual(ShortTag(5), from_snbt("5s"))
-            self.assertEqual(ShortTag(5), from_snbt("5S"))
-            self.assertEqual(ShortTag(5), from_snbt("+5s"))
-            self.assertEqual(ShortTag(5), from_snbt("+5S"))
+            self.assertEqual(ShortTag(-5), read_snbt("-5s"))
+            self.assertEqual(ShortTag(-5), read_snbt("-5S"))
+            self.assertEqual(ShortTag(0), read_snbt("0s"))
+            self.assertEqual(ShortTag(0), read_snbt("0S"))
+            self.assertEqual(ShortTag(0), read_snbt("+0s"))
+            self.assertEqual(ShortTag(0), read_snbt("+0S"))
+            self.assertEqual(ShortTag(5), read_snbt("5s"))
+            self.assertEqual(ShortTag(5), read_snbt("5S"))
+            self.assertEqual(ShortTag(5), read_snbt("+5s"))
+            self.assertEqual(ShortTag(5), read_snbt("+5S"))
 
         with self.subTest():
-            self.assertEqual(IntTag(-5), from_snbt("-5"))
-            self.assertEqual(IntTag(0), from_snbt("0"))
-            self.assertEqual(IntTag(0), from_snbt("+0"))
-            self.assertEqual(IntTag(5), from_snbt("5"))
-            self.assertEqual(IntTag(5), from_snbt("+5"))
+            self.assertEqual(IntTag(-5), read_snbt("-5"))
+            self.assertEqual(IntTag(0), read_snbt("0"))
+            self.assertEqual(IntTag(0), read_snbt("+0"))
+            self.assertEqual(IntTag(5), read_snbt("5"))
+            self.assertEqual(IntTag(5), read_snbt("+5"))
 
-            self.assertEqual(StringTag("-5i"), from_snbt("-5i"))
-            self.assertEqual(StringTag("-5I"), from_snbt("-5I"))
-            self.assertEqual(StringTag("5i"), from_snbt("5i"))
-            self.assertEqual(StringTag("5I"), from_snbt("5I"))
-            self.assertEqual(StringTag("+5i"), from_snbt("+5i"))
-            self.assertEqual(StringTag("+5I"), from_snbt("+5I"))
+            self.assertEqual(StringTag("-5i"), read_snbt("-5i"))
+            self.assertEqual(StringTag("-5I"), read_snbt("-5I"))
+            self.assertEqual(StringTag("5i"), read_snbt("5i"))
+            self.assertEqual(StringTag("5I"), read_snbt("5I"))
+            self.assertEqual(StringTag("+5i"), read_snbt("+5i"))
+            self.assertEqual(StringTag("+5I"), read_snbt("+5I"))
 
         with self.subTest():
-            self.assertEqual(LongTag(-5), from_snbt("-5l"))
-            self.assertEqual(LongTag(-5), from_snbt("-5L"))
-            self.assertEqual(LongTag(0), from_snbt("0l"))
-            self.assertEqual(LongTag(0), from_snbt("0L"))
-            self.assertEqual(LongTag(0), from_snbt("+0l"))
-            self.assertEqual(LongTag(0), from_snbt("+0L"))
-            self.assertEqual(LongTag(5), from_snbt("5l"))
-            self.assertEqual(LongTag(5), from_snbt("5L"))
-            self.assertEqual(LongTag(5), from_snbt("+5l"))
-            self.assertEqual(LongTag(5), from_snbt("+5L"))
+            self.assertEqual(LongTag(-5), read_snbt("-5l"))
+            self.assertEqual(LongTag(-5), read_snbt("-5L"))
+            self.assertEqual(LongTag(0), read_snbt("0l"))
+            self.assertEqual(LongTag(0), read_snbt("0L"))
+            self.assertEqual(LongTag(0), read_snbt("+0l"))
+            self.assertEqual(LongTag(0), read_snbt("+0L"))
+            self.assertEqual(LongTag(5), read_snbt("5l"))
+            self.assertEqual(LongTag(5), read_snbt("5L"))
+            self.assertEqual(LongTag(5), read_snbt("+5l"))
+            self.assertEqual(LongTag(5), read_snbt("+5L"))
 
 
 if __name__ == "__main__":

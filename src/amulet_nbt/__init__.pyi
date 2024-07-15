@@ -8,7 +8,6 @@ from typing import (
     Iterable,
     overload,
     TypeVar,
-    BinaryIO,
     Self,
     Type,
     Mapping,
@@ -16,6 +15,7 @@ from typing import (
     Literal,
     TypeAlias,
     ClassVar,
+    Protocol,
 )
 from collections.abc import MutableSequence, MutableMapping
 import numpy
@@ -58,14 +58,10 @@ __all__ = [
     "CompoundTag",
     "TAG_Compound",
     "NamedTag",
-    "load",
-    "load_array",
+    "read_nbt",
+    "read_nbt_array",
     "ReadOffset",
-    "from_snbt",
-    "NBTError",
-    "NBTLoadError",
-    "NBTFormatError",
-    "SNBTParseError",
+    "read_snbt",
     "SNBTType",
     "IntType",
     "FloatType",
@@ -81,23 +77,11 @@ __all__ = [
     "bedrock_encoding",
 ]
 
-class NBTError(Exception):
-    """Some error in the NBT library."""
+class _Readable(Protocol):
+    def read(self) -> bytes: ...
 
-class NBTLoadError(NBTError):
-    """The NBT data failed to load for some reason."""
-
-    pass
-
-class NBTFormatError(NBTLoadError):
-    """Indicates the NBT format is invalid."""
-
-    pass
-
-class SNBTParseError(NBTError):
-    """Indicates the SNBT format is invalid."""
-
-    index: Optional[int]  # The index at which the error occurred
+class _Writeable(Protocol):
+    def write(self, s: bytes) -> Any: ...
 
 class StringEncoding:
     def encode(self, data: bytes) -> bytes: ...
@@ -113,10 +97,7 @@ class EncodingPreset:
 java_encoding: EncodingPreset
 bedrock_encoding: EncodingPreset
 
-class AbstractBase:
-    """Abstract Base class for all Tags and the NamedTag"""
-
-class AbstractBaseTag(AbstractBase):
+class AbstractBaseTag:
     """Abstract Base Class for all Tag classes"""
 
     tag_id: ClassVar[int]
@@ -150,7 +131,7 @@ class AbstractBaseTag(AbstractBase):
 
     def save_to(
         self,
-        filepath_or_buffer: str | BinaryIO | None = None,
+        filepath_or_buffer: str | _Writeable | None = None,
         *,
         preset: EncodingPreset | None = None,
         compressed: bool = True,
@@ -1511,7 +1492,7 @@ TAG_Compound: TypeAlias = CompoundTag
 TAG_Int_Array: TypeAlias = IntArrayTag
 TAG_Long_Array: TypeAlias = LongArrayTag
 
-class NamedTag(AbstractBase, tuple[str | bytes, AnyNBT]):
+class NamedTag(tuple[str | bytes, AnyNBT]):
     def __init__(
         self, tag: AbstractBaseTag | AnyNBT | None = None, name: str | bytes = ""
     ) -> None: ...
@@ -1542,7 +1523,7 @@ class NamedTag(AbstractBase, tuple[str | bytes, AnyNBT]):
 
     def save_to(
         self,
-        filepath_or_buffer: str | BinaryIO | None = None,
+        filepath_or_buffer: str | _Writeable | None = None,
         *,
         preset: EncodingPreset | None = None,
         compressed: bool = True,
@@ -1601,10 +1582,25 @@ class NamedTag(AbstractBase, tuple[str | bytes, AnyNBT]):
 class ReadOffset:
     offset: int
 
-def load(
-    filepath_or_buffer: str | bytes | BinaryIO | memoryview | None,
+@overload
+def read_nbt(
+    filepath_or_buffer: str | bytes | memoryview | _Readable | None,
     *,
     preset: EncodingPreset | None = None,
+    read_offset: ReadOffset | None = None,
+) -> NamedTag:
+    """Load one binary NBT object.
+
+    :param filepath_or_buffer: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.
+    :param preset: The encoding preset. If this is defined little_endian and string_encoding have no effect.
+    :param read_offset: Optional ReadOffset object to get read end offset.
+    :raises: IndexError if the data is not long enough.
+    """
+
+@overload
+def read_nbt(
+    filepath_or_buffer: str | bytes | memoryview | _Readable | None,
+    *,
     compressed: bool = True,
     little_endian: bool = False,
     string_encoding: StringEncoding = mutf8_encoding,
@@ -1613,19 +1609,35 @@ def load(
     """Load one binary NBT object.
 
     :param filepath_or_buffer: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.
-    :param preset: The encoding preset. If this is defined little_endian and string_encoding have no effect.
     :param compressed: Is the binary data gzip compressed.
     :param little_endian: Are the numerical values stored as little endian. True for Bedrock, False for Java.
     :param string_encoding: The bytes decoder function to parse strings. mutf8_encoding for Java, utf8_escape_encoding for Bedrock.
     :param read_offset: Optional ReadOffset object to get read end offset.
-    :raises: NBTLoadError if an error occurred when loading the data.
+    :raises: IndexError if the data is not long enough.
     """
 
-def load_array(
-    filepath_or_buffer: str | bytes | BinaryIO | memoryview | None,
+@overload
+def read_nbt_array(
+    filepath_or_buffer: str | bytes | memoryview | _Readable | None,
     *,
     count: int = 1,
     preset: EncodingPreset | None = None,
+    read_offset: ReadOffset | None = None,
+) -> list[NamedTag]:
+    """Load an array of binary NBT objects from a contiguous buffer.
+
+    :param filepath_or_buffer: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.
+    :param count: The number of binary NBT objects to read. Use -1 to exhaust the buffer.
+    :param preset: The encoding preset. If this is defined little_endian and string_encoding have no effect.
+    :param read_offset: Optional ReadOffset object to get read end offset.
+    :raises: IndexError if the data is not long enough.
+    """
+
+@overload
+def read_nbt_array(
+    filepath_or_buffer: str | bytes | memoryview | _Readable | None,
+    *,
+    count: int = 1,
     compressed: bool = True,
     little_endian: bool = False,
     string_encoding: StringEncoding = mutf8_encoding,
@@ -1635,15 +1647,14 @@ def load_array(
 
     :param filepath_or_buffer: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.
     :param count: The number of binary NBT objects to read. Use -1 to exhaust the buffer.
-    :param preset: The encoding preset. If this is defined little_endian and string_encoding have no effect.
     :param compressed: Is the binary data gzip compressed. This only supports the whole buffer compressed as one.
     :param little_endian: Are the numerical values stored as little endian. True for Bedrock, False for Java.
     :param string_encoding: The bytes decoder function to parse strings. mutf8.decode_modified_utf8 for Java, amulet_nbt.utf8_escape_decoder for Bedrock.
     :param read_offset: Optional ReadOffset object to get read end offset.
-    :raises: NBTLoadError if an error occurred when loading the data.
+    :raises: IndexError if the data is not long enough.
     """
 
-def from_snbt(snbt: str) -> AnyNBT:
+def read_snbt(snbt: str) -> AnyNBT:
     """
     Load Stringified NBT into a tag.
     """

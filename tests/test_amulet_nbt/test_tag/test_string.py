@@ -13,10 +13,8 @@ from amulet_nbt import (
     AbstractBaseTag,
     AbstractBaseImmutableTag,
     utf8_escape_encoding,
-    load as load_nbt,
-    NBTFormatError,
-    from_snbt,
-    SNBTParseError,
+    read_nbt,
+    read_snbt,
 )
 
 
@@ -44,9 +42,9 @@ class StringTagTestCase(AbstractBaseImmutableTagTestCase, unittest.TestCase):
         self.assertEqual(b"value", StringTag("value").py_bytes)
 
     def test_repr(self) -> None:
-        self.assertEqual('StringTag("")', repr(StringTag()))
-        self.assertEqual('StringTag("value")', repr(StringTag("value")))
-        self.assertEqual('StringTag("quote\\"value")', repr(StringTag('quote"value')))
+        self.assertEqual("StringTag('')", repr(StringTag()))
+        self.assertEqual("StringTag('value')", repr(StringTag("value")))
+        self.assertEqual("StringTag('quote\"value')", repr(StringTag('quote"value')))
         self.assertEqual('StringTag("quote\'value")', repr(StringTag("quote'value")))
 
     def test_str(self) -> None:
@@ -162,31 +160,31 @@ class StringTagTestCase(AbstractBaseImmutableTagTestCase, unittest.TestCase):
     def test_from_nbt(self) -> None:
         self.assertEqual(
             StringTag(),
-            load_nbt(
+            read_nbt(
                 b"\x08\x00\x00\x00\x00", compressed=False, little_endian=False
             ).string,
         )
         self.assertEqual(
             StringTag(),
-            load_nbt(
+            read_nbt(
                 b"\x08\x00\x00\x00\x00", compressed=False, little_endian=True
             ).string,
         )
         self.assertEqual(
             StringTag("test"),
-            load_nbt(
+            read_nbt(
                 b"\x08\x00\x00\x00\x04test", compressed=False, little_endian=False
             ).string,
         )
         self.assertEqual(
             StringTag("test"),
-            load_nbt(
+            read_nbt(
                 b"\x08\x00\x00\x04\x00test", compressed=False, little_endian=True
             ).string,
         )
         self.assertEqual(
             StringTag("🏹"),
-            load_nbt(
+            read_nbt(
                 b"\x08\x00\x00\x00\x06\xed\xa0\xbc\xed\xbf\xb9",
                 compressed=False,
                 little_endian=False,
@@ -194,7 +192,7 @@ class StringTagTestCase(AbstractBaseImmutableTagTestCase, unittest.TestCase):
         )
         self.assertEqual(
             StringTag("🏹"),
-            load_nbt(
+            read_nbt(
                 b"\x08\x00\x00\x04\x00\xf0\x9f\x8f\xb9",
                 compressed=False,
                 little_endian=True,
@@ -204,7 +202,7 @@ class StringTagTestCase(AbstractBaseImmutableTagTestCase, unittest.TestCase):
         # test invalid utf-8 string
         self.assertEqual(
             StringTag("␛xff␛xfe␛xfd␛xfc"),
-            load_nbt(
+            read_nbt(
                 b"\x08\x00\x00\x04\x00\xff\xfe\xfd\xfc",
                 compressed=False,
                 little_endian=True,
@@ -212,8 +210,8 @@ class StringTagTestCase(AbstractBaseImmutableTagTestCase, unittest.TestCase):
             ).string,
         )
 
-        with self.assertRaises(NBTFormatError):
-            load_nbt(b"\x08\x00\x00\x00\x05abcd")
+        with self.assertRaises(IndexError):
+            read_nbt(b"\x08\x00\x00\x00\x05abcd")
 
     def test_to_snbt(self) -> None:
         self.assertEqual('""', StringTag().to_snbt())
@@ -222,62 +220,62 @@ class StringTagTestCase(AbstractBaseImmutableTagTestCase, unittest.TestCase):
         self.assertEqual('"quote\'value"', StringTag("quote'value").to_snbt())
 
     def test_from_snbt(self) -> None:
-        self.assertEqual(StringTag(), from_snbt("''"))
-        self.assertEqual(StringTag(), from_snbt('""'))
+        self.assertEqual(StringTag(), read_snbt("''"))
+        self.assertEqual(StringTag(), read_snbt('""'))
 
-        self.assertEqual(StringTag('a"b'), from_snbt('"a\\"b"'))
-        self.assertEqual(StringTag('a"b'), from_snbt("'a\"b'"))
+        self.assertEqual(StringTag('a"b'), read_snbt('"a\\"b"'))
+        self.assertEqual(StringTag('a"b'), read_snbt("'a\"b'"))
 
-        self.assertEqual(StringTag(ascii_lowercase), from_snbt(ascii_lowercase))
-        self.assertEqual(StringTag(ascii_lowercase), from_snbt(f"'{ascii_lowercase}'"))
-        self.assertEqual(StringTag(ascii_lowercase), from_snbt(f'"{ascii_lowercase}"'))
+        self.assertEqual(StringTag(ascii_lowercase), read_snbt(ascii_lowercase))
+        self.assertEqual(StringTag(ascii_lowercase), read_snbt(f"'{ascii_lowercase}'"))
+        self.assertEqual(StringTag(ascii_lowercase), read_snbt(f'"{ascii_lowercase}"'))
 
-        self.assertEqual(StringTag(ascii_uppercase), from_snbt(ascii_uppercase))
-        self.assertEqual(StringTag(ascii_uppercase), from_snbt(f"'{ascii_uppercase}'"))
-        self.assertEqual(StringTag(ascii_uppercase), from_snbt(f'"{ascii_uppercase}"'))
+        self.assertEqual(StringTag(ascii_uppercase), read_snbt(ascii_uppercase))
+        self.assertEqual(StringTag(ascii_uppercase), read_snbt(f"'{ascii_uppercase}'"))
+        self.assertEqual(StringTag(ascii_uppercase), read_snbt(f'"{ascii_uppercase}"'))
 
-        self.assertEqual(StringTag(digits), from_snbt(f"'{digits}'"))
-        self.assertEqual(StringTag(digits), from_snbt(f'"{digits}"'))
+        self.assertEqual(StringTag(digits), read_snbt(f"'{digits}'"))
+        self.assertEqual(StringTag(digits), read_snbt(f'"{digits}"'))
 
         self.assertEqual(
-            StringTag(digits + ascii_lowercase), from_snbt(digits + ascii_lowercase)
+            StringTag(digits + ascii_lowercase), read_snbt(digits + ascii_lowercase)
         )
         self.assertEqual(
             StringTag(digits + ascii_lowercase),
-            from_snbt(f"'{digits + ascii_lowercase}'"),
+            read_snbt(f"'{digits + ascii_lowercase}'"),
         )
         self.assertEqual(
             StringTag(digits + ascii_lowercase),
-            from_snbt(f'"{digits + ascii_lowercase}"'),
+            read_snbt(f'"{digits + ascii_lowercase}"'),
         )
 
         self.assertEqual(
-            StringTag(ascii_lowercase + digits), from_snbt(ascii_lowercase + digits)
+            StringTag(ascii_lowercase + digits), read_snbt(ascii_lowercase + digits)
         )
         self.assertEqual(
             StringTag(ascii_lowercase + digits),
-            from_snbt(f"'{ascii_lowercase + digits}'"),
+            read_snbt(f"'{ascii_lowercase + digits}'"),
         )
         self.assertEqual(
             StringTag(ascii_lowercase + digits),
-            from_snbt(f'"{ascii_lowercase + digits}"'),
+            read_snbt(f'"{ascii_lowercase + digits}"'),
         )
 
         self.assertEqual(
             StringTag(ascii_uppercase + ascii_lowercase + digits + "._+-"),
-            from_snbt(ascii_uppercase + ascii_lowercase + digits + "._+-"),
+            read_snbt(ascii_uppercase + ascii_lowercase + digits + "._+-"),
         )
         self.assertEqual(
             StringTag(ascii_uppercase + ascii_lowercase + digits + "._+-"),
-            from_snbt(f"'{ascii_uppercase + ascii_lowercase + digits + '._+-'}'"),
+            read_snbt(f"'{ascii_uppercase + ascii_lowercase + digits + '._+-'}'"),
         )
         self.assertEqual(
             StringTag(ascii_uppercase + ascii_lowercase + digits + "._+-"),
-            from_snbt(f'"{ascii_uppercase + ascii_lowercase + digits + "._+-"}"'),
+            read_snbt(f'"{ascii_uppercase + ascii_lowercase + digits + "._+-"}"'),
         )
 
-        with self.assertRaises(SNBTParseError):
-            from_snbt("")
+        with self.assertRaises(IndexError):
+            read_snbt("")
 
 
 if __name__ == "__main__":

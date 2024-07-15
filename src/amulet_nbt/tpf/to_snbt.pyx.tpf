@@ -1,4 +1,0 @@
-    def to_snbt(self, object indent: None | str | int = None) -> str:
-        cdef string snbt
-        write_{{tag}}_snbt(snbt, self.cpp)
-        return snbt

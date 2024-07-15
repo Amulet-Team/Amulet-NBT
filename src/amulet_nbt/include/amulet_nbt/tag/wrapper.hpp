@@ -2,6 +2,8 @@
 
 #include <string>
 #include <bit>
+#include <type_traits>
+#include <variant>
 
 #include <amulet_nbt/common.hpp>
 #include <amulet_nbt/tag/nbt.hpp>

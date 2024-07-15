@@ -1,4 +1,10 @@
 #include <memory>
+#include <unordered_map>
+#include <string>
+#include <bit>
+#include <variant>
+#include <utility>
+#include <vector>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>

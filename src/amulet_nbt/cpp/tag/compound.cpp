@@ -1,3 +1,7 @@
+#include <exception>
+#include <string>
+#include <stdexcept>
+
 #include <amulet_nbt/tag/compound.hpp>
 
 namespace Amulet {

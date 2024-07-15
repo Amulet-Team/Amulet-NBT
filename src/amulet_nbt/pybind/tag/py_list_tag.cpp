@@ -1,6 +1,13 @@
 #include <stdexcept>
 #include <limits>
 #include <array>
+#include <variant>
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <memory>
+#include <cstdint>
+#include <bit>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/pytypes.h>

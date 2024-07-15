@@ -6,6 +6,12 @@
 #include <iostream>
 #include <algorithm>
 #include <limits>
+#include <vector>
+#include <variant>
+#include <string>
+#include <type_traits>
+#include <cstddef>
+
 #include <amulet_nbt/tag/nbt.hpp>
 #include <amulet_nbt/common.hpp>
 #include <amulet_nbt/tag/eq.hpp>

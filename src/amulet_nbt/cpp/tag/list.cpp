@@ -1,4 +1,7 @@
 #include <type_traits>
+#include <variant>
+#include <cstddef>
+
 #include <amulet_nbt/common.hpp>
 #include <amulet_nbt/tag/wrapper.hpp>
 #include <amulet_nbt/tag/list.hpp>

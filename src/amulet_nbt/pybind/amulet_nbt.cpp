@@ -1,3 +1,5 @@
+#include <exception>
+
 #include <pybind11/pybind11.h>
 
 #include <amulet_nbt/common.hpp>

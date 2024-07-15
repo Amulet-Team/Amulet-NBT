@@ -3,6 +3,10 @@
 #include <algorithm>
 #include <utility>
 #include <type_traits>
+#include <string>
+#include <tuple>
+#include <vector>
+#include <memory>
 
 #include <amulet_nbt/nbt_encoding/string.hpp>
 #include <amulet_nbt/tag/list.hpp>

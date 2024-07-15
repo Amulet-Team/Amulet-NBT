@@ -1,3 +1,11 @@
+#include <cstdint>
+#include <memory>
+#include <vector>
+#include <variant>
+#include <stdexcept>
+#include <string>
+#include <bit>
+
 #include <amulet_nbt/nbt_encoding/binary.hpp>
 
 Amulet::StringTag read_string_tag(Amulet::BinaryReader& reader){

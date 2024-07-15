@@ -1,3 +1,5 @@
+#include <variant>
+
 #include <amulet_nbt/tag/wrapper.hpp>
 
 namespace Amulet {

@@ -1,5 +1,7 @@
 #include <memory>
 #include <type_traits>
+#include <vector>
+#include <variant>
 
 #include <amulet_nbt/common.hpp>
 #include <amulet_nbt/tag/list.hpp>

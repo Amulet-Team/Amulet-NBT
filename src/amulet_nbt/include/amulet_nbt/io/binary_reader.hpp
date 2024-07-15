@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <bit>
 #include <functional>
+#include <stdexcept>
 
 
 namespace Amulet {

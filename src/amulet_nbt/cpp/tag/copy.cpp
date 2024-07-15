@@ -1,3 +1,10 @@
+#include <vector>
+#include <memory>
+#include <utility>
+#include <variant>
+#include <type_traits>
+#include <stdexcept>
+
 #include <amulet_nbt/tag/copy.hpp>
 
 namespace Amulet {

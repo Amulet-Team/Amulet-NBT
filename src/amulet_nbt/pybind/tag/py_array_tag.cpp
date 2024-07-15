@@ -1,4 +1,9 @@
 #include <stdexcept>
+#include <vector>
+#include <memory>
+#include <string>
+#include <bit>
+#include <variant>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>

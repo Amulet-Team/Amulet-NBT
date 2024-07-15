@@ -8,6 +8,11 @@
 #include <sstream>
 #include <iomanip>
 #include <stdexcept>
+#include <ios>
+#include <vector>
+#include <cctype>
+#include <utility>
+#include <iterator>
 
 #include <amulet_nbt/common.hpp>
 #include <amulet_nbt/tag/nbt.hpp>

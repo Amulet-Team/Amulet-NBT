@@ -1,4 +1,8 @@
 #include <fstream>
+#include <stdexcept>
+#include <string>
+#include <ios>
+#include <bit>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>

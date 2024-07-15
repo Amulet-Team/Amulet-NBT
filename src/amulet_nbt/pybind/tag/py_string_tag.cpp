@@ -1,8 +1,10 @@
-#include <amulet_nbt/tag/wrapper.hpp>
+#include <string>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/operators.h>
+
+#include <amulet_nbt/tag/wrapper.hpp>
 
 namespace py = pybind11;
 

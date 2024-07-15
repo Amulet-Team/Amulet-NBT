@@ -4,6 +4,9 @@
 #include <stdexcept>
 #include <type_traits>
 #include <limits>
+#include <cstdint>
+#include <memory>
+#include <vector>
 
 #include <amulet_nbt/common.hpp>
 #include <amulet_nbt/tag/nbt.hpp>

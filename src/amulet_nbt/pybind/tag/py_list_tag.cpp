@@ -429,14 +429,19 @@ void init_list(py::module& m) {
                         #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
                         case ID:{\
                             /* Cast to C++ objects. Also validate that they are all the same type. */\
-                            std::vector<TAG_STORAGE> vec = list.cast<std::vector<TAG_STORAGE>>();\
+                            std::vector<TAG_STORAGE> vec;\
+                            vec.push_back(std::get<Amulet::TagWrapper<TAG_STORAGE>>(first).tag);\
+                            for (size_t i = 1; i < list.size(); i++){\
+                                Amulet::WrapperNode tag = list[i].cast<Amulet::WrapperNode>();\
+                                vec.push_back(std::get<Amulet::TagWrapper<TAG_STORAGE>>(tag).tag);\
+                            }\
                             ListTag_set_slice<TAG_STORAGE>(self.tag, slice, vec);\
                             break;\
                         }
                         FOR_EACH_LIST_TAG(CASE)
                         #undef CASE
                         default:
-                            throw py::type_error("Values must all be the same NBT tag.");
+                            throw py::type_error("Cannot set a null tag.");
                     }
                 } else {
                     // The value is empty

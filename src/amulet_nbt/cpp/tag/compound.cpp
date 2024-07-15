@@ -11,7 +11,7 @@ namespace Amulet {
 
     std::string CompoundTagIterator::next(){
         if (!is_valid()){
-            throw std::exception("CompoundTag changed size during iteration.");
+            throw std::runtime_error("CompoundTag changed size during iteration.");
         }
         return (pos++)->first;
     };

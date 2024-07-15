@@ -1,5 +1,3 @@
-#pragma once
-
 #include <variant>
 #include <type_traits>
 #include <cmath>

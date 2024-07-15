@@ -110,24 +110,24 @@ namespace Amulet {
                 dst.push_back(c & 0b01111111);
             }
             else if (c <= 2047) {
-                dst.push_back(0b11000000 | 0b00011111 & (c >> 6));
-                dst.push_back(0b10000000 | 0b00111111 & c);
+                dst.push_back(0b11000000 | (0b00011111 & (c >> 6)));
+                dst.push_back(0b10000000 | (0b00111111 & c));
             }
             else if (c <= 65535) {
                 if ((c >= 0xD800) && (c <= 0xDFFF)) {
                     throw std::invalid_argument("code point at index " + std::to_string(index) + " cannot be encoded.");
                 }
-                dst.push_back(0b11100000 | 0b00001111 & (c >> 12));
-                dst.push_back(0b10000000 | 0b00111111 & (c >> 6));
-                dst.push_back(0b10000000 | 0b00111111 & c);
+                dst.push_back(0b11100000 | (0b00001111 & (c >> 12)));
+                dst.push_back(0b10000000 | (0b00111111 & (c >> 6)));
+                dst.push_back(0b10000000 | (0b00111111 & c));
             }
             else if (c <= 1114111) {
                 dst.push_back(0b11101101);
-                dst.push_back(0b10100000 | 0b00001111 & ((c >> 16) - 1));
-                dst.push_back(0b10000000 | 0b00111111 & (c >> 10));
+                dst.push_back(0b10100000 | (0b00001111 & ((c >> 16) - 1)));
+                dst.push_back(0b10000000 | (0b00111111 & (c >> 10)));
                 dst.push_back(0b11101101);
-                dst.push_back(0b10110000 | 0b00001111 & (c >> 6));
-                dst.push_back(0b10000000 | 0b00111111 & c);
+                dst.push_back(0b10110000 | (0b00001111 & (c >> 6)));
+                dst.push_back(0b10000000 | (0b00111111 & c));
             }
             else {
                 throw std::invalid_argument("Invalid code point at index " + std::to_string(index));

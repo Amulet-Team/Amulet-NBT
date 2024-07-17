@@ -10,9 +10,17 @@ del _version
 
 
 def get_include() -> str:
+    """C++ include directory"""
     import os
 
     return os.path.join(__path__[0], "include")
+
+
+def get_source() -> str:
+    """C++ source directory"""
+    import os
+
+    return os.path.join(__path__[0], "cpp")
 
 
 from ._nbt import (

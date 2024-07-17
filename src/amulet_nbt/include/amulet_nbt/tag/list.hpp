@@ -16,12 +16,12 @@
 #include <amulet_nbt/common.hpp>
 #include <amulet_nbt/tag/eq.hpp>
 
-namespace Amulet {
-    size_t ListTag_size(const Amulet::ListTag&);
+namespace AmuletNBT {
+    size_t ListTag_size(const AmuletNBT::ListTag&);
 
     template <typename tagT>
-    void ListTag_append(Amulet::ListTag& self, tagT tag){
-        if (self.index() == variant_index<Amulet::ListTag, std::vector<tagT>>()){
+    void ListTag_append(AmuletNBT::ListTag& self, tagT tag){
+        if (self.index() == variant_index<AmuletNBT::ListTag, std::vector<tagT>>()){
             std::get<std::vector<tagT>>(self).push_back(tag);
         } else if (ListTag_size(self) == 0){
             self.emplace<std::vector<tagT>>().push_back(tag);
@@ -30,12 +30,12 @@ namespace Amulet {
                 "ListTag has element type " +
                 std::to_string(self.index()) +
                 " but the tag has type " +
-                std::to_string(variant_index<Amulet::ListTag, std::vector<tagT>>())
+                std::to_string(variant_index<AmuletNBT::ListTag, std::vector<tagT>>())
             );
         }
     };
 
-    void ListTag_append(Amulet::ListTag& self, Amulet::TagNode tag);
+    void ListTag_append(AmuletNBT::ListTag& self, AmuletNBT::TagNode tag);
 
     template <typename indexT, bool clamp = false>
     size_t ListTag_bounds_check(size_t size, indexT index){
@@ -67,17 +67,17 @@ namespace Amulet {
     };
 
     template <typename tagT, typename indexT>
-    tagT ListTag_get(const Amulet::ListTag& self, indexT index){
+    tagT ListTag_get(const AmuletNBT::ListTag& self, indexT index){
         auto& list_tag = std::get<std::vector<tagT>>(self);
-        return list_tag[Amulet::ListTag_bounds_check<indexT>(list_tag.size(), index)];
+        return list_tag[AmuletNBT::ListTag_bounds_check<indexT>(list_tag.size(), index)];
     }
 
     template <typename indexT>
-    Amulet::TagNode ListTag_get_node(const Amulet::ListTag& self, indexT index){
+    AmuletNBT::TagNode ListTag_get_node(const AmuletNBT::ListTag& self, indexT index){
         switch(self.index()){
             #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
             case ID:\
-                return Amulet::TagNode(ListTag_get<TAG_STORAGE, indexT>(self, index));
+                return AmuletNBT::TagNode(ListTag_get<TAG_STORAGE, indexT>(self, index));
             FOR_EACH_LIST_TAG(CASE)
             default:
                 throw AmuletNBT::type_error("Cannot get from null ListTag.");
@@ -86,10 +86,10 @@ namespace Amulet {
     }
 
     template <typename tagT, typename indexT>
-    void ListTag_set(Amulet::ListTag& self, indexT index, tagT tag){
+    void ListTag_set(AmuletNBT::ListTag& self, indexT index, tagT tag){
         // Get the unsigned index. Also do bounds checking.
         size_t abs_index = ListTag_bounds_check<indexT>(ListTag_size(self), index);
-        if (self.index() == variant_index<Amulet::ListTag, std::vector<tagT>>()){
+        if (self.index() == variant_index<AmuletNBT::ListTag, std::vector<tagT>>()){
             // If the list type is the same as the tag
             auto& list_tag = std::get<std::vector<tagT>>(self);
             list_tag[abs_index] = tag;
@@ -102,13 +102,13 @@ namespace Amulet {
     }
 
     template <typename indexT>
-    void ListTag_del(Amulet::ListTag& self, indexT index){
+    void ListTag_del(AmuletNBT::ListTag& self, indexT index){
         switch(self.index()){
             #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
             case ID:\
                 {\
                     LIST_TAG& list_tag = std::get<LIST_TAG>(self);\
-                    size_t abs_index = Amulet::ListTag_bounds_check<indexT>(list_tag.size(), index);\
+                    size_t abs_index = AmuletNBT::ListTag_bounds_check<indexT>(list_tag.size(), index);\
                     list_tag.erase(list_tag.begin() + abs_index);\
                     break;\
                 }
@@ -118,13 +118,13 @@ namespace Amulet {
     }
 
     template <typename indexT>
-    Amulet::TagNode ListTag_pop(Amulet::ListTag& self, indexT index){
+    AmuletNBT::TagNode ListTag_pop(AmuletNBT::ListTag& self, indexT index){
         switch(self.index()){
             #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
             case ID:\
                 {\
                     LIST_TAG& list_tag = std::get<LIST_TAG>(self);\
-                    size_t abs_index = Amulet::ListTag_bounds_check<indexT>(list_tag.size(), index);\
+                    size_t abs_index = AmuletNBT::ListTag_bounds_check<indexT>(list_tag.size(), index);\
                     TAG_STORAGE tag = list_tag[abs_index];\
                     list_tag.erase(list_tag.begin() + abs_index);\
                     return tag;\
@@ -136,8 +136,8 @@ namespace Amulet {
     }
 
     template <typename tagT, typename indexT>
-    void ListTag_insert(Amulet::ListTag& self, indexT index, tagT tag){
-        if (self.index() != variant_index<Amulet::ListTag, std::vector<tagT>>()){
+    void ListTag_insert(AmuletNBT::ListTag& self, indexT index, tagT tag){
+        if (self.index() != variant_index<AmuletNBT::ListTag, std::vector<tagT>>()){
             if (ListTag_size(self) == 0) {
                 self.emplace<std::vector<tagT>>();
             } else {
@@ -145,7 +145,7 @@ namespace Amulet {
                     "ListTag has element type " +
                     std::to_string(self.index()) +
                     " but the tag has type " +
-                    std::to_string(variant_index<Amulet::ListTag, std::vector<tagT>>())
+                    std::to_string(variant_index<AmuletNBT::ListTag, std::vector<tagT>>())
                 );
             }
         }
@@ -155,7 +155,7 @@ namespace Amulet {
     }
 
     template <typename indexT>
-    void ListTag_insert(Amulet::ListTag& self, indexT index, Amulet::TagNode node){
+    void ListTag_insert(AmuletNBT::ListTag& self, indexT index, AmuletNBT::TagNode node){
         switch(self.index()){
             #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
             case ID:\
@@ -167,8 +167,8 @@ namespace Amulet {
     }
 
     template <typename tagT, typename indexT>
-    size_t ListTag_index(Amulet::ListTag& self, tagT tag, indexT start=0, indexT stop=std::numeric_limits<indexT>::max()){
-        if (self.index() != variant_index<Amulet::ListTag, std::vector<tagT>>()){
+    size_t ListTag_index(AmuletNBT::ListTag& self, tagT tag, indexT start=0, indexT stop=std::numeric_limits<indexT>::max()){
+        if (self.index() != variant_index<AmuletNBT::ListTag, std::vector<tagT>>()){
             throw std::invalid_argument("item is not in the ListTag");
         }
         auto& list_tag = std::get<std::vector<tagT>>(self);
@@ -184,8 +184,8 @@ namespace Amulet {
     }
 
     template <typename tagT>
-    size_t ListTag_count(Amulet::ListTag& self, tagT tag){
-        if (self.index() != variant_index<Amulet::ListTag, std::vector<tagT>>()){
+    size_t ListTag_count(AmuletNBT::ListTag& self, tagT tag){
+        if (self.index() != variant_index<AmuletNBT::ListTag, std::vector<tagT>>()){
             return 0;
         }
         auto& list_tag = std::get<std::vector<tagT>>(self);
@@ -201,12 +201,12 @@ namespace Amulet {
     // A class to emulate python's iteration mechanic
     class ListTagIterator {
         private:
-            Amulet::ListTagPtr tag;
+            AmuletNBT::ListTagPtr tag;
             size_t index;
             std::ptrdiff_t step;
         public:
-            ListTagIterator(Amulet::ListTagPtr, size_t start, std::ptrdiff_t step);
-            Amulet::TagNode next();
+            ListTagIterator(AmuletNBT::ListTagPtr, size_t start, std::ptrdiff_t step);
+            AmuletNBT::TagNode next();
             bool has_next();
     };
 }

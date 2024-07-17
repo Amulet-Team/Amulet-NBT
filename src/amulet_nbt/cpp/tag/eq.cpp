@@ -8,22 +8,22 @@
 #include <amulet_nbt/tag/eq.hpp>
 
 
-namespace Amulet{
-    bool NBTTag_eq(const Amulet::ByteTag a, const Amulet::ByteTag b){return a == b;};
-    bool NBTTag_eq(const Amulet::ShortTag a, const Amulet::ShortTag b){return a == b;};
-    bool NBTTag_eq(const Amulet::IntTag a, const Amulet::IntTag b){return a == b;};
-    bool NBTTag_eq(const Amulet::LongTag a, const Amulet::LongTag b){return a == b;};
-    bool NBTTag_eq(const Amulet::FloatTag a, const Amulet::FloatTag b){return a == b;};
-    bool NBTTag_eq(const Amulet::DoubleTag a, const Amulet::DoubleTag b){return a == b;};
-    bool NBTTag_eq(const Amulet::StringTag a, const Amulet::StringTag b){return a == b;};
-    bool NBTTag_eq(const Amulet::ByteArrayTagPtr a, const Amulet::ByteArrayTagPtr b){return *a == *b;};
-    bool NBTTag_eq(const Amulet::IntArrayTagPtr a, const Amulet::IntArrayTagPtr b){return *a == *b;};
-    bool NBTTag_eq(const Amulet::LongArrayTagPtr a, const Amulet::LongArrayTagPtr b){return *a == *b;};
+namespace AmuletNBT{
+    bool NBTTag_eq(const AmuletNBT::ByteTag a, const AmuletNBT::ByteTag b){return a == b;};
+    bool NBTTag_eq(const AmuletNBT::ShortTag a, const AmuletNBT::ShortTag b){return a == b;};
+    bool NBTTag_eq(const AmuletNBT::IntTag a, const AmuletNBT::IntTag b){return a == b;};
+    bool NBTTag_eq(const AmuletNBT::LongTag a, const AmuletNBT::LongTag b){return a == b;};
+    bool NBTTag_eq(const AmuletNBT::FloatTag a, const AmuletNBT::FloatTag b){return a == b;};
+    bool NBTTag_eq(const AmuletNBT::DoubleTag a, const AmuletNBT::DoubleTag b){return a == b;};
+    bool NBTTag_eq(const AmuletNBT::StringTag a, const AmuletNBT::StringTag b){return a == b;};
+    bool NBTTag_eq(const AmuletNBT::ByteArrayTagPtr a, const AmuletNBT::ByteArrayTagPtr b){return *a == *b;};
+    bool NBTTag_eq(const AmuletNBT::IntArrayTagPtr a, const AmuletNBT::IntArrayTagPtr b){return *a == *b;};
+    bool NBTTag_eq(const AmuletNBT::LongArrayTagPtr a, const AmuletNBT::LongArrayTagPtr b){return *a == *b;};
 
     template <typename SelfT>
-    inline bool ListTag_eq(const Amulet::ListTagPtr a, const Amulet::ListTagPtr b){
+    inline bool ListTag_eq(const AmuletNBT::ListTagPtr a, const AmuletNBT::ListTagPtr b){
         const std::vector<SelfT>& a_vec = std::get<std::vector<SelfT>>(*a);
-        if (b->index() != variant_index<Amulet::ListTag, std::vector<SelfT>>()){
+        if (b->index() != variant_index<AmuletNBT::ListTag, std::vector<SelfT>>()){
             return a_vec.size() == 0 && ListTag_size(*b) == 0;
         }
         const std::vector<SelfT>& b_vec = std::get<std::vector<SelfT>>(*b);
@@ -44,7 +44,7 @@ namespace Amulet{
             return a_vec == b_vec;
         }
     }
-    bool NBTTag_eq(const Amulet::ListTagPtr a, const Amulet::ListTagPtr b){
+    bool NBTTag_eq(const AmuletNBT::ListTagPtr a, const AmuletNBT::ListTagPtr b){
         switch(a->index()){
             #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG) case ID: return ListTag_eq<TAG_STORAGE>(a, b);
             case 0:
@@ -54,13 +54,13 @@ namespace Amulet{
         }
         return false;
     };
-    bool NBTTag_eq(const Amulet::CompoundTagPtr a, const Amulet::CompoundTagPtr b){
+    bool NBTTag_eq(const AmuletNBT::CompoundTagPtr a, const AmuletNBT::CompoundTagPtr b){
         if (a->size() != b->size()){
             // Size does not match
             return false;
         }
         for (auto& [key, value]: *a){
-            Amulet::CompoundTag::iterator it = b->find(key);
+            AmuletNBT::CompoundTag::iterator it = b->find(key);
             if (it == b->end()){
                 // Key not in b
                 return false;
@@ -72,7 +72,7 @@ namespace Amulet{
         }
         return true;
     };
-    bool NBTTag_eq(const Amulet::TagNode a, const Amulet::TagNode b){
+    bool NBTTag_eq(const AmuletNBT::TagNode a, const AmuletNBT::TagNode b){
         switch(a.index()){
             #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG) case ID: return b.index() == ID && NBTTag_eq(std::get<TAG_STORAGE>(a), std::get<TAG_STORAGE>(b));
             case 0:

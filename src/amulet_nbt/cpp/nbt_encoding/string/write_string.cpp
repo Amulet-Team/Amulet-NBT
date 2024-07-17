@@ -20,11 +20,11 @@
 #include <amulet_nbt/nbt_encoding/string.hpp>
 
 
-namespace Amulet {
+namespace AmuletNBT {
     // Forward declarations
-    void write_formatted_snbt(std::string&, const Amulet::TagNode&, const std::string&, size_t);
-    void write_formatted_snbt(std::string&, const Amulet::ListTag&, const std::string&, size_t);
-    void write_formatted_snbt(std::string&, const Amulet::CompoundTag&, const std::string&, size_t);
+    void write_formatted_snbt(std::string&, const AmuletNBT::TagNode&, const std::string&, size_t);
+    void write_formatted_snbt(std::string&, const AmuletNBT::ListTag&, const std::string&, size_t);
+    void write_formatted_snbt(std::string&, const AmuletNBT::CompoundTag&, const std::string&, size_t);
 
     inline void write_indent(std::string& snbt, const std::string& indent, size_t indent_count){
         for (size_t i = 0; i < indent_count; i++){

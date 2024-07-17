@@ -19,8 +19,8 @@
 namespace py = pybind11;
 
 
-void CompoundTag_update(Amulet::CompoundTag& self, py::dict other){
-    auto map = other.cast<std::unordered_map<std::string, Amulet::WrapperNode>>();
+void CompoundTag_update(AmuletNBT::CompoundTag& self, py::dict other){
+    auto map = other.cast<std::unordered_map<std::string, AmuletNBT::WrapperNode>>();
     for (auto it = map.begin(); it != map.end(); it++){
         if (it->second.index() == 0){
             throw py::type_error("Value cannot be None");
@@ -47,10 +47,10 @@ T new_tag(){
 
 
 void init_compound(py::module& m) {
-    py::class_<Amulet::CompoundTagIterator> CompoundTagIterator(m, "CompoundTagIterator");
+    py::class_<AmuletNBT::CompoundTagIterator> CompoundTagIterator(m, "CompoundTagIterator");
         CompoundTagIterator.def(
             "__next__",
-            [](Amulet::CompoundTagIterator& self) -> py::object {
+            [](AmuletNBT::CompoundTagIterator& self) -> py::object {
                 if (self.has_next()){
                     std::string key = self.next();
                     try {
@@ -64,7 +64,7 @@ void init_compound(py::module& m) {
         );
         CompoundTagIterator.def(
             "__iter__",
-            [](Amulet::CompoundTagIterator& self){
+            [](AmuletNBT::CompoundTagIterator& self){
                 return self;
             }
         );
@@ -72,7 +72,7 @@ void init_compound(py::module& m) {
     py::object AbstractBaseTag = m.attr("AbstractBaseTag");
     py::object isinstance = py::module::import("builtins").attr("isinstance");
 
-    py::class_<Amulet::CompoundTagWrapper, Amulet::AbstractBaseMutableTag> CompoundTag(m, "CompoundTag",
+    py::class_<AmuletNBT::CompoundTagWrapper, AmuletNBT::AbstractBaseMutableTag> CompoundTag(m, "CompoundTag",
         "A Python wrapper around a C++ unordered map.\n"
         "\n"
         "Note that this class is not thread safe and inherits all the limitations of a C++ unordered_map."
@@ -80,17 +80,17 @@ void init_compound(py::module& m) {
         CompoundTag.def_property_readonly_static("tag_id", [](py::object) {return 10;});
         CompoundTag.def(
             py::init([](py::object value, const py::kwargs& kwargs) {
-                Amulet::CompoundTagPtr tag = std::make_shared<Amulet::CompoundTag>();
+                AmuletNBT::CompoundTagPtr tag = std::make_shared<AmuletNBT::CompoundTag>();
                 CompoundTag_update(*tag, py::dict(value));
                 CompoundTag_update(*tag, kwargs);
-                return Amulet::CompoundTagWrapper(tag);
+                return AmuletNBT::CompoundTagWrapper(tag);
             }),
             py::arg("value") = py::tuple()
         );
-        auto py_getter = [](const Amulet::CompoundTagWrapper& self){
+        auto py_getter = [](const AmuletNBT::CompoundTagWrapper& self){
             py::dict out;
             for (auto it = self.tag->begin(); it != self.tag->end(); it++){
-                py::object value = py::cast(Amulet::wrap_node(it->second));
+                py::object value = py::cast(AmuletNBT::wrap_node(it->second));
                 try {
                     py::str key = py::str(it->first);
                     out[key] = value;
@@ -118,7 +118,7 @@ void init_compound(py::module& m) {
         );
         CompoundTag.def(
             "__repr__",
-            [](const Amulet::CompoundTagWrapper& self){
+            [](const AmuletNBT::CompoundTagWrapper& self){
                 std::string out;
                 out += "CompoundTag({";
                 for (auto it = self.tag->begin(); it != self.tag->end(); it++){
@@ -129,7 +129,7 @@ void init_compound(py::module& m) {
                         out += py::repr(py::bytes(it->first));
                     }
                     out += ": ";
-                    out += py::repr(py::cast(Amulet::wrap_node(it->second)));
+                    out += py::repr(py::cast(AmuletNBT::wrap_node(it->second)));
                 }
                 out += "})";
                 return out;
@@ -137,13 +137,13 @@ void init_compound(py::module& m) {
         );
         CompoundTag.def(
             py::pickle(
-                [](const Amulet::CompoundTagWrapper& self){
-                    return py::bytes(Amulet::write_nbt("", self.tag, std::endian::big, Amulet::utf8_to_mutf8));
+                [](const AmuletNBT::CompoundTagWrapper& self){
+                    return py::bytes(AmuletNBT::write_nbt("", self.tag, std::endian::big, AmuletNBT::utf8_to_mutf8));
                 },
                 [](py::bytes state){
-                    return Amulet::CompoundTagWrapper(
-                        std::get<Amulet::CompoundTagPtr>(
-                            Amulet::read_nbt(state, std::endian::big, Amulet::mutf8_to_utf8).tag_node
+                    return AmuletNBT::CompoundTagWrapper(
+                        std::get<AmuletNBT::CompoundTagPtr>(
+                            AmuletNBT::read_nbt(state, std::endian::big, AmuletNBT::mutf8_to_utf8).tag_node
                         )
                     );
                 }
@@ -151,66 +151,66 @@ void init_compound(py::module& m) {
         );
         CompoundTag.def(
             "__copy__",
-            [](const Amulet::CompoundTagWrapper& self){
-                return Amulet::CompoundTagWrapper(NBTTag_copy<Amulet::CompoundTag>(*self.tag));
+            [](const AmuletNBT::CompoundTagWrapper& self){
+                return AmuletNBT::CompoundTagWrapper(NBTTag_copy<AmuletNBT::CompoundTag>(*self.tag));
             }
         );
         CompoundTag.def(
             "__deepcopy__",
-            [](const Amulet::CompoundTagWrapper& self, py::dict){
-                return Amulet::CompoundTagWrapper(Amulet::NBTTag_deep_copy_compound(*self.tag));
+            [](const AmuletNBT::CompoundTagWrapper& self, py::dict){
+                return AmuletNBT::CompoundTagWrapper(AmuletNBT::NBTTag_deep_copy_compound(*self.tag));
             },
             py::arg("memo")
         );
         CompoundTag.def(
             "__str__",
-            [](const Amulet::CompoundTagWrapper& self){
+            [](const AmuletNBT::CompoundTagWrapper& self){
                 return py::str(py::dict(py::cast(self)));
             }
         );
         CompoundTag.def(
             "__eq__",
-            [](const Amulet::CompoundTagWrapper& self, const Amulet::CompoundTagWrapper& other){
-                return Amulet::NBTTag_eq(self.tag, other.tag);
+            [](const AmuletNBT::CompoundTagWrapper& self, const AmuletNBT::CompoundTagWrapper& other){
+                return AmuletNBT::NBTTag_eq(self.tag, other.tag);
             },
             py::is_operator()
         );
         CompoundTag.def(
             "__len__",
-            [](const Amulet::CompoundTagWrapper& self){
+            [](const AmuletNBT::CompoundTagWrapper& self){
                 return self.tag->size();
             }
         );
         CompoundTag.def(
             "__bool__",
-            [](const Amulet::CompoundTagWrapper& self){
+            [](const AmuletNBT::CompoundTagWrapper& self){
                 return !self.tag->empty();
             }
         );
         CompoundTag.def(
             "__iter__",
-            [](const Amulet::CompoundTagWrapper& self){
-                return Amulet::CompoundTagIterator(self.tag);
+            [](const AmuletNBT::CompoundTagWrapper& self){
+                return AmuletNBT::CompoundTagIterator(self.tag);
             }
         );
         CompoundTag.def(
             "__getitem__",
-            [](const Amulet::CompoundTagWrapper& self, std::string key){
+            [](const AmuletNBT::CompoundTagWrapper& self, std::string key){
                 auto it = self.tag->find(key);
                 if (it == self.tag->end()){
                     throw py::key_error(key);
                 }
-                return Amulet::wrap_node(it->second);
+                return AmuletNBT::wrap_node(it->second);
             }
         );
         CompoundTag.def(
             "get",
-            [isinstance](const Amulet::CompoundTagWrapper& self, std::string key, py::object default_, py::object cls) -> py::object {
+            [isinstance](const AmuletNBT::CompoundTagWrapper& self, std::string key, py::object default_, py::object cls) -> py::object {
                 auto it = self.tag->find(key);
                 if (it == self.tag->end()){
                     return default_;
                 }
-                py::object tag = py::cast(Amulet::wrap_node(it->second));
+                py::object tag = py::cast(AmuletNBT::wrap_node(it->second));
                 if (isinstance(tag, cls)){
                     return tag;
                 } else {
@@ -231,7 +231,7 @@ void init_compound(py::module& m) {
         );
         CompoundTag.def(
             "__contains__",
-            [](const Amulet::CompoundTagWrapper& self, std::string key){
+            [](const AmuletNBT::CompoundTagWrapper& self, std::string key){
                 auto it = self.tag->find(key);
                 return it != self.tag->end();
             }
@@ -239,36 +239,36 @@ void init_compound(py::module& m) {
         py::object KeysView = py::module::import("collections.abc").attr("KeysView");
         CompoundTag.def(
             "keys",
-            [KeysView](const Amulet::CompoundTagWrapper& self){
+            [KeysView](const AmuletNBT::CompoundTagWrapper& self){
                 return KeysView(py::cast(self));
             }
         );
         py::object ItemsView = py::module::import("collections.abc").attr("ItemsView");
         CompoundTag.def(
             "items",
-            [ItemsView](const Amulet::CompoundTagWrapper& self){
+            [ItemsView](const AmuletNBT::CompoundTagWrapper& self){
                 return ItemsView(py::cast(self));
             }
         );
         py::object ValuesView = py::module::import("collections.abc").attr("ValuesView");
         CompoundTag.def(
             "values",
-            [ValuesView](const Amulet::CompoundTagWrapper& self){
+            [ValuesView](const AmuletNBT::CompoundTagWrapper& self){
                 return ValuesView(py::cast(self));
             }
         );
         CompoundTag.def(
             "__setitem__",
-            [](const Amulet::CompoundTagWrapper& self, std::string key, Amulet::WrapperNode value){
+            [](const AmuletNBT::CompoundTagWrapper& self, std::string key, AmuletNBT::WrapperNode value){
                 if (value.index() == 0){
                     throw py::type_error("Value cannot be None");
                 }
-                (*self.tag)[key] = Amulet::unwrap_node(value);
+                (*self.tag)[key] = AmuletNBT::unwrap_node(value);
             }
         );
         CompoundTag.def(
             "__delitem__",
-            [](const Amulet::CompoundTagWrapper& self, std::string key){
+            [](const AmuletNBT::CompoundTagWrapper& self, std::string key){
                 auto it = self.tag->find(key);
                 if (it == self.tag->end()){
                     throw py::key_error(key);
@@ -279,7 +279,7 @@ void init_compound(py::module& m) {
         py::object marker = py::module::import("builtins").attr("object")();
         CompoundTag.def(
             "pop",
-            [marker](const Amulet::CompoundTagWrapper& self, std::string key, py::object default_) -> py::object {
+            [marker](const AmuletNBT::CompoundTagWrapper& self, std::string key, py::object default_) -> py::object {
                 auto it = self.tag->find(key);
                 if (it == self.tag->end()){
                     if (default_.is(marker)){
@@ -288,7 +288,7 @@ void init_compound(py::module& m) {
                         return default_;
                     }
                 }
-                Amulet::WrapperNode tag = Amulet::wrap_node(it->second);
+                AmuletNBT::WrapperNode tag = AmuletNBT::wrap_node(it->second);
                 self.tag->erase(it);
                 return py::cast(tag);
             },
@@ -296,13 +296,13 @@ void init_compound(py::module& m) {
         );
         CompoundTag.def(
             "popitem",
-            [](const Amulet::CompoundTagWrapper& self) -> std::pair<std::variant<py::str, py::bytes>, Amulet::WrapperNode>{
+            [](const AmuletNBT::CompoundTagWrapper& self) -> std::pair<std::variant<py::str, py::bytes>, AmuletNBT::WrapperNode>{
                 auto it = self.tag->begin();
                 if (it == self.tag->end()){
                     throw py::key_error("CompoundTag is empty.");
                 }
                 std::string key = it->first;
-                Amulet::WrapperNode value = Amulet::wrap_node(it->second);
+                AmuletNBT::WrapperNode value = AmuletNBT::wrap_node(it->second);
                 self.tag->erase(it);
                 try {
                     py::str py_key = py::str(key);
@@ -315,13 +315,13 @@ void init_compound(py::module& m) {
         );
         CompoundTag.def(
             "clear",
-            [](const Amulet::CompoundTagWrapper& self){
+            [](const AmuletNBT::CompoundTagWrapper& self){
                 self.tag->clear();
             }
         );
         CompoundTag.def(
             "update",
-            [](const Amulet::CompoundTagWrapper& self, py::object other, const py::kwargs& kwargs){
+            [](const AmuletNBT::CompoundTagWrapper& self, py::object other, const py::kwargs& kwargs){
                 CompoundTag_update(*self.tag, py::dict(other));
                 CompoundTag_update(*self.tag, kwargs);
             },
@@ -329,19 +329,19 @@ void init_compound(py::module& m) {
         );
         CompoundTag.def(
             "setdefault",
-            [isinstance](const Amulet::CompoundTagWrapper& self, std::string key, Amulet::WrapperNode tag, py::object cls) -> py::object {
+            [isinstance](const AmuletNBT::CompoundTagWrapper& self, std::string key, AmuletNBT::WrapperNode tag, py::object cls) -> py::object {
                 auto set_value = [self, key, tag](){
                     if (tag.index() == 0){
                         throw py::type_error("Cannot setdefault a value of None.");
                     }
-                    (*self.tag)[key] = Amulet::unwrap_node(tag);
+                    (*self.tag)[key] = AmuletNBT::unwrap_node(tag);
                     return py::cast(tag);
                 };
                 auto it = self.tag->find(key);
                 if (it == self.tag->end()){
                     return set_value();
                 }
-                py::object existing_tag = py::cast(Amulet::wrap_node(it->second));
+                py::object existing_tag = py::cast(AmuletNBT::wrap_node(it->second));
                 if (!isinstance(existing_tag, cls)){
                     // if the key exists but has the wrong type then set it
                     return set_value();
@@ -352,16 +352,16 @@ void init_compound(py::module& m) {
         );
         CompoundTag.def_static(
             "fromkeys",
-            [](py::object keys, Amulet::WrapperNode value){
+            [](py::object keys, AmuletNBT::WrapperNode value){
                 if (value.index() == 0){
                     throw py::type_error("Value cannot be None");
                 }
-                Amulet::TagNode node = Amulet::unwrap_node(value);
-                Amulet::CompoundTagPtr tag = std::make_shared<Amulet::CompoundTag>();
+                AmuletNBT::TagNode node = AmuletNBT::unwrap_node(value);
+                AmuletNBT::CompoundTagPtr tag = std::make_shared<AmuletNBT::CompoundTag>();
                 for (std::string& key: keys.cast<std::vector<std::string>>()){
                     (*tag)[key] = node;
                 }
-                return Amulet::CompoundTagWrapper(tag);
+                return AmuletNBT::CompoundTagWrapper(tag);
             }
         );
 
@@ -369,11 +369,11 @@ void init_compound(py::module& m) {
         CompoundTag.def(\
             "get_" TAG_NAME,\
             [](\
-                const Amulet::CompoundTagWrapper& self,\
+                const AmuletNBT::CompoundTagWrapper& self,\
                 std::string key,\
-                std::variant<std::monostate, Amulet::TagWrapper<TAG_STORAGE>> default_,\
+                std::variant<std::monostate, AmuletNBT::TagWrapper<TAG_STORAGE>> default_,\
                 bool raise_errors\
-            ) -> std::variant<std::monostate, Amulet::TagWrapper<TAG_STORAGE>> {\
+            ) -> std::variant<std::monostate, AmuletNBT::TagWrapper<TAG_STORAGE>> {\
                 auto it = self.tag->find(key);\
                 if (it == self.tag->end()){\
                     if (raise_errors){\
@@ -382,9 +382,9 @@ void init_compound(py::module& m) {
                         return default_;\
                     }\
                 }\
-                py::object tag = py::cast(Amulet::wrap_node(it->second));\
-                if (py::isinstance<Amulet::TagWrapper<TAG_STORAGE>>(tag)){\
-                    return tag.cast<Amulet::TagWrapper<TAG_STORAGE>>();\
+                py::object tag = py::cast(AmuletNBT::wrap_node(it->second));\
+                if (py::isinstance<AmuletNBT::TagWrapper<TAG_STORAGE>>(tag)){\
+                    return tag.cast<AmuletNBT::TagWrapper<TAG_STORAGE>>();\
                 } else if (raise_errors){\
                     throw pybind11::type_error(key);\
                 } else {\
@@ -406,29 +406,29 @@ void init_compound(py::module& m) {
         CompoundTag.def(\
             "setdefault_" TAG_NAME,\
             [isinstance](\
-                const Amulet::CompoundTagWrapper& self,\
+                const AmuletNBT::CompoundTagWrapper& self,\
                 std::string key,\
-                std::variant<std::monostate, Amulet::TagWrapper<TAG_STORAGE>> default_\
-            ) -> std::variant<std::monostate, Amulet::TagWrapper<TAG_STORAGE>> {\
+                std::variant<std::monostate, AmuletNBT::TagWrapper<TAG_STORAGE>> default_\
+            ) -> std::variant<std::monostate, AmuletNBT::TagWrapper<TAG_STORAGE>> {\
                 auto set_and_return = [self, key](TAG_STORAGE tag){\
-                    Amulet::TagNode node(tag);\
+                    AmuletNBT::TagNode node(tag);\
                     (*self.tag)[key] = node;\
-                    return Amulet::TagWrapper<TAG_STORAGE>(tag);\
+                    return AmuletNBT::TagWrapper<TAG_STORAGE>(tag);\
                 };\
                 auto create_set_return = [set_and_return, default_](){\
                     if (default_.index() == 0){\
                         return set_and_return(new_tag<TAG_STORAGE>());\
                     } else {\
-                        return set_and_return(std::get<Amulet::TagWrapper<TAG_STORAGE>>(default_).tag);\
+                        return set_and_return(std::get<AmuletNBT::TagWrapper<TAG_STORAGE>>(default_).tag);\
                     }\
                 };\
                 auto it = self.tag->find(key);\
                 if (it == self.tag->end()){\
                     return create_set_return();\
                 }\
-                py::object existing_tag = py::cast(Amulet::wrap_node(it->second));\
-                if (py::isinstance<Amulet::TagWrapper<TAG_STORAGE>>(existing_tag)){\
-                    return existing_tag.cast<Amulet::TagWrapper<TAG_STORAGE>>();\
+                py::object existing_tag = py::cast(AmuletNBT::wrap_node(it->second));\
+                if (py::isinstance<AmuletNBT::TagWrapper<TAG_STORAGE>>(existing_tag)){\
+                    return existing_tag.cast<AmuletNBT::TagWrapper<TAG_STORAGE>>();\
                 } else {\
                     /* if the key exists but has the wrong type then set it */\
                     return create_set_return();\
@@ -448,11 +448,11 @@ void init_compound(py::module& m) {
         CompoundTag.def(\
             "pop_" TAG_NAME,\
             [marker](\
-                const Amulet::CompoundTagWrapper& self,\
+                const AmuletNBT::CompoundTagWrapper& self,\
                 std::string key,\
-                std::variant<std::monostate, Amulet::TagWrapper<TAG_STORAGE>> default_,\
+                std::variant<std::monostate, AmuletNBT::TagWrapper<TAG_STORAGE>> default_,\
                 bool raise_errors\
-            ) -> std::variant<std::monostate, Amulet::TagWrapper<TAG_STORAGE>> {\
+            ) -> std::variant<std::monostate, AmuletNBT::TagWrapper<TAG_STORAGE>> {\
                 auto it = self.tag->find(key);\
                 if (it == self.tag->end()){\
                     if (raise_errors){\
@@ -461,10 +461,10 @@ void init_compound(py::module& m) {
                         return default_;\
                     }\
                 }\
-                py::object existing_tag = py::cast(Amulet::wrap_node(it->second));\
-                if (py::isinstance<Amulet::TagWrapper<TAG_STORAGE>>(existing_tag)){\
+                py::object existing_tag = py::cast(AmuletNBT::wrap_node(it->second));\
+                if (py::isinstance<AmuletNBT::TagWrapper<TAG_STORAGE>>(existing_tag)){\
                     self.tag->erase(it);\
-                    return existing_tag.cast<Amulet::TagWrapper<TAG_STORAGE>>();\
+                    return existing_tag.cast<AmuletNBT::TagWrapper<TAG_STORAGE>>();\
                 } else if (raise_errors){\
                     throw pybind11::type_error(key);\
                 } else {\

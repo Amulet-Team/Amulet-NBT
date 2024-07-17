@@ -15,7 +15,7 @@
 namespace py = pybind11;
 
 
-namespace Amulet {
+namespace AmuletNBT {
     class ReadOffset {
         public:
             size_t offset;
@@ -26,12 +26,12 @@ namespace Amulet {
 
 
 void init_bnbt(py::module& m) {
-    py::class_<Amulet::ReadOffset> ReadOffset(m, "ReadOffset");
+    py::class_<AmuletNBT::ReadOffset> ReadOffset(m, "ReadOffset");
         ReadOffset.def(
             py::init<const size_t>(),
             py::arg("offset") = 0
         );
-        ReadOffset.def_readonly("offset", &Amulet::ReadOffset::offset);
+        ReadOffset.def_readonly("offset", &AmuletNBT::ReadOffset::offset);
 
     py::object decompress = py::module::import("gzip").attr("decompress");
     py::object BadGzipFile = py::module::import("gzip").attr("BadGzipFile");
@@ -87,20 +87,20 @@ void init_bnbt(py::module& m) {
         py::object filepath_or_buffer,
         bool compressed,
         std::endian endianness,
-        Amulet::StringDecode string_decoder,
+        AmuletNBT::StringDecode string_decoder,
         py::object read_offset_py
     ){
         std::string buffer = get_buffer(filepath_or_buffer, compressed);
-        if (py::isinstance<Amulet::ReadOffset>(read_offset_py)){
-            Amulet::ReadOffset& read_offset = read_offset_py.cast<Amulet::ReadOffset&>();
-            return Amulet::read_nbt(
+        if (py::isinstance<AmuletNBT::ReadOffset>(read_offset_py)){
+            AmuletNBT::ReadOffset& read_offset = read_offset_py.cast<AmuletNBT::ReadOffset&>();
+            return AmuletNBT::read_nbt(
                 buffer,
                 endianness,
                 string_decoder,
                 read_offset.offset
             );
         } else if (read_offset_py.is(py::none())){
-            return Amulet::read_nbt(
+            return AmuletNBT::read_nbt(
                 buffer,
                 endianness,
                 string_decoder
@@ -114,7 +114,7 @@ void init_bnbt(py::module& m) {
         "read_nbt",
         [read_nbt](
             py::object filepath_or_buffer,
-            Amulet::EncodingPreset preset,
+            AmuletNBT::EncodingPreset preset,
             py::object read_offset
         ){
             return read_nbt(
@@ -144,7 +144,7 @@ void init_bnbt(py::module& m) {
             py::object filepath_or_buffer,
             bool compressed,
             bool little_endian,
-            Amulet::StringEncoding string_encoding,
+            AmuletNBT::StringEncoding string_encoding,
             py::object read_offset
         ){
             return read_nbt(
@@ -178,24 +178,24 @@ void init_bnbt(py::module& m) {
         Py_ssize_t count,
         bool compressed,
         std::endian endianness,
-        Amulet::StringDecode string_decoder,
+        AmuletNBT::StringDecode string_decoder,
         py::object read_offset_py
     ){
         if (count < -1){
             throw std::invalid_argument("count must be -1 or higher");
         }
         std::string buffer = get_buffer(filepath_or_buffer, compressed);
-        if (py::isinstance<Amulet::ReadOffset>(read_offset_py)){
-            Amulet::ReadOffset& read_offset = read_offset_py.cast<Amulet::ReadOffset&>();
+        if (py::isinstance<AmuletNBT::ReadOffset>(read_offset_py)){
+            AmuletNBT::ReadOffset& read_offset = read_offset_py.cast<AmuletNBT::ReadOffset&>();
             if (count == -1){
-                return Amulet::read_nbt_array(
+                return AmuletNBT::read_nbt_array(
                     buffer,
                     endianness,
                     string_decoder,
                     read_offset.offset
                 );
             } else {
-                return Amulet::read_nbt_array(
+                return AmuletNBT::read_nbt_array(
                     buffer,
                     endianness,
                     string_decoder,
@@ -206,14 +206,14 @@ void init_bnbt(py::module& m) {
         } else if (read_offset_py.is(py::none())){
             size_t offset = 0;
             if (count == -1){
-                return Amulet::read_nbt_array(
+                return AmuletNBT::read_nbt_array(
                     buffer,
                     endianness,
                     string_decoder,
                     offset
                 );
             } else {
-                return Amulet::read_nbt_array(
+                return AmuletNBT::read_nbt_array(
                     buffer,
                     endianness,
                     string_decoder,
@@ -230,7 +230,7 @@ void init_bnbt(py::module& m) {
         [read_nbt_array](
             py::object filepath_or_buffer,
             Py_ssize_t count,
-            Amulet::EncodingPreset preset,
+            AmuletNBT::EncodingPreset preset,
             py::object read_offset
         ){
             return read_nbt_array(
@@ -265,7 +265,7 @@ void init_bnbt(py::module& m) {
             Py_ssize_t count,
             bool compressed,
             bool little_endian,
-            Amulet::StringEncoding string_encoding,
+            AmuletNBT::StringEncoding string_encoding,
             py::object read_offset
         ){
             return read_nbt_array(

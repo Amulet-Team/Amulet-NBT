@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-namespace Amulet {
+namespace AmuletNBT {
     typedef std::vector<size_t> CodePointVector;
 
     // Functions to convert between code point vector and encoded formats

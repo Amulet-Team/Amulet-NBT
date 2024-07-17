@@ -2,22 +2,22 @@
 
 #include <amulet_nbt/tag/wrapper.hpp>
 
-namespace Amulet {
-    Amulet::WrapperNode wrap_node(Amulet::TagNode node){
+namespace AmuletNBT {
+    AmuletNBT::WrapperNode wrap_node(AmuletNBT::TagNode node){
         switch(node.index()){
-            #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG) case ID: return Amulet::WrapperNode(TagWrapper<TAG_STORAGE>(std::get<TAG_STORAGE>(node)));
+            #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG) case ID: return AmuletNBT::WrapperNode(TagWrapper<TAG_STORAGE>(std::get<TAG_STORAGE>(node)));
             FOR_EACH_LIST_TAG(CASE)
             default:
-                return Amulet::WrapperNode();
+                return AmuletNBT::WrapperNode();
             #undef CASE
         }
     }
-    Amulet::TagNode unwrap_node(Amulet::WrapperNode node){
+    AmuletNBT::TagNode unwrap_node(AmuletNBT::WrapperNode node){
         switch(node.index()){
-            #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG) case ID: return Amulet::TagNode(std::get<TagWrapper<TAG_STORAGE>>(node).tag);
+            #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG) case ID: return AmuletNBT::TagNode(std::get<TagWrapper<TAG_STORAGE>>(node).tag);
             FOR_EACH_LIST_TAG(CASE)
             default:
-                return Amulet::TagNode();
+                return AmuletNBT::TagNode();
             #undef CASE
         }
     }

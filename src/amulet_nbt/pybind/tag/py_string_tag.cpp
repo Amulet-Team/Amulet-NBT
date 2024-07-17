@@ -9,18 +9,18 @@
 namespace py = pybind11;
 
 void init_string(py::module& m) {
-    py::class_<Amulet::StringTagWrapper, Amulet::AbstractBaseImmutableTag> StringTag(m, "StringTag",
+    py::class_<AmuletNBT::StringTagWrapper, AmuletNBT::AbstractBaseImmutableTag> StringTag(m, "StringTag",
         "A class that behaves like a string."
     );
         StringTag.def_property_readonly_static("tag_id", [](py::object) {return 8;});
         StringTag.def(
             py::init([](py::object value) {
-                if (py::isinstance<Amulet::StringTagWrapper>(value)){
-                    return value.cast<Amulet::StringTagWrapper>();
+                if (py::isinstance<AmuletNBT::StringTagWrapper>(value)){
+                    return value.cast<AmuletNBT::StringTagWrapper>();
                 } else if (py::isinstance<py::bytes>(value) || py::isinstance<py::str>(value)){
-                    return Amulet::StringTagWrapper(value.cast<Amulet::StringTag>());
+                    return AmuletNBT::StringTagWrapper(value.cast<AmuletNBT::StringTag>());
                 } else {
-                    return Amulet::StringTagWrapper(py::str(value).cast<Amulet::StringTag>());
+                    return AmuletNBT::StringTagWrapper(py::str(value).cast<AmuletNBT::StringTag>());
                 }
             }),
             py::arg("value") = "",
@@ -28,7 +28,7 @@ void init_string(py::module& m) {
         );
         StringTag.def_readonly(
             "py_str",
-            &Amulet::StringTagWrapper::tag,
+            &AmuletNBT::StringTagWrapper::tag,
             py::doc(
                 "The data stored in the class as a python string.\n"
                 "\n"
@@ -37,7 +37,7 @@ void init_string(py::module& m) {
         );
         StringTag.def_property_readonly(
             "py_bytes",
-            [](const Amulet::StringTagWrapper& self){
+            [](const AmuletNBT::StringTagWrapper& self){
                 return py::bytes(self.tag);
             },
             py::doc(
@@ -46,7 +46,7 @@ void init_string(py::module& m) {
         );
         StringTag.def_property_readonly(
             "py_data",
-            [](const Amulet::StringTagWrapper& self){
+            [](const AmuletNBT::StringTagWrapper& self){
                 return py::bytes(self.tag);
             },
             py::doc(
@@ -58,7 +58,7 @@ void init_string(py::module& m) {
         );
         StringTag.def(
             "__repr__",
-            [](const Amulet::StringTagWrapper& self){
+            [](const AmuletNBT::StringTagWrapper& self){
                 try {
                     return "StringTag(" + py::repr(py::str(self.tag)).cast<std::string>() + ")";
                 } catch (py::error_already_set&){
@@ -68,82 +68,82 @@ void init_string(py::module& m) {
         );
         StringTag.def(
             "__str__",
-            [](const Amulet::StringTagWrapper& self){
+            [](const AmuletNBT::StringTagWrapper& self){
                 return self.tag;
             }
         );
         StringTag.def(
             "__bytes__",
-            [](const Amulet::StringTagWrapper& self){
+            [](const AmuletNBT::StringTagWrapper& self){
                 return py::bytes(self.tag);
             }
         );
         StringTag.def(
             py::pickle(
-                [](const Amulet::StringTagWrapper& self){
+                [](const AmuletNBT::StringTagWrapper& self){
                     return py::bytes(self.tag);
                 },
                 [](py::bytes state){
-                    return Amulet::StringTagWrapper(state);
+                    return AmuletNBT::StringTagWrapper(state);
                 }
             )
         );
         StringTag.def(
             "__copy__",
-            [](const Amulet::StringTagWrapper& self){
+            [](const AmuletNBT::StringTagWrapper& self){
                 return self;
             }
         );
         StringTag.def(
             "__deepcopy__",
-            [](const Amulet::StringTagWrapper& self, py::dict){
+            [](const AmuletNBT::StringTagWrapper& self, py::dict){
                 return self;
             },
             py::arg("memo")
         );
         StringTag.def(
             "__hash__",
-            [](const Amulet::StringTagWrapper& self){
+            [](const AmuletNBT::StringTagWrapper& self){
                 return py::hash(py::make_tuple(8, py::bytes(self.tag)));
             }
         );
         StringTag.def(
             "__bool__",
-            [](const Amulet::StringTagWrapper& self){
+            [](const AmuletNBT::StringTagWrapper& self){
                 return !self.tag.empty();
             }
         );
         StringTag.def(
             "__eq__",
-            [](const Amulet::StringTagWrapper& self, const Amulet::StringTagWrapper& other){
+            [](const AmuletNBT::StringTagWrapper& self, const AmuletNBT::StringTagWrapper& other){
                 return self.tag == other.tag;
             },
             py::is_operator()
         );
         StringTag.def(
             "__ge__",
-            [](const Amulet::StringTagWrapper& self, const Amulet::StringTagWrapper& other){
+            [](const AmuletNBT::StringTagWrapper& self, const AmuletNBT::StringTagWrapper& other){
                 return self.tag >= other.tag;
             },
             py::is_operator()
         );
         StringTag.def(
             "__gt__",
-            [](const Amulet::StringTagWrapper& self, const Amulet::StringTagWrapper& other){
+            [](const AmuletNBT::StringTagWrapper& self, const AmuletNBT::StringTagWrapper& other){
                 return self.tag > other.tag;
             },
             py::is_operator()
         );
         StringTag.def(
             "__le__",
-            [](const Amulet::StringTagWrapper& self, const Amulet::StringTagWrapper& other){
+            [](const AmuletNBT::StringTagWrapper& self, const AmuletNBT::StringTagWrapper& other){
                 return self.tag <= other.tag;
             },
             py::is_operator()
         );
         StringTag.def(
             "__lt__",
-            [](const Amulet::StringTagWrapper& self, const Amulet::StringTagWrapper& other){
+            [](const AmuletNBT::StringTagWrapper& self, const AmuletNBT::StringTagWrapper& other){
                 return self.tag < other.tag;
             },
             py::is_operator()

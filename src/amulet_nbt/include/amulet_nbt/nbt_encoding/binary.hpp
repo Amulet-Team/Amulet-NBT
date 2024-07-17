@@ -9,24 +9,24 @@
 #include <amulet_nbt/io/binary_writer.hpp>
 #include <amulet_nbt/string_encoding.hpp>
 
-namespace Amulet {
-    Amulet::NamedTag read_nbt(const std::string&, std::endian, Amulet::StringDecode, size_t& offset);
-    Amulet::NamedTag read_nbt(const std::string&, std::endian, Amulet::StringDecode);
-    std::vector<Amulet::NamedTag> read_nbt_array(const std::string&, std::endian, Amulet::StringDecode, size_t& offset);
-    std::vector<Amulet::NamedTag> read_nbt_array(const std::string&, std::endian, Amulet::StringDecode, size_t& offset, size_t count);
+namespace AmuletNBT {
+    AmuletNBT::NamedTag read_nbt(const std::string&, std::endian, AmuletNBT::StringDecode, size_t& offset);
+    AmuletNBT::NamedTag read_nbt(const std::string&, std::endian, AmuletNBT::StringDecode);
+    std::vector<AmuletNBT::NamedTag> read_nbt_array(const std::string&, std::endian, AmuletNBT::StringDecode, size_t& offset);
+    std::vector<AmuletNBT::NamedTag> read_nbt_array(const std::string&, std::endian, AmuletNBT::StringDecode, size_t& offset, size_t count);
 
-    std::string write_nbt(const std::string& name, const Amulet::ByteTag&, std::endian, Amulet::StringEncode);
-    std::string write_nbt(const std::string& name, const Amulet::ShortTag&, std::endian, Amulet::StringEncode);
-    std::string write_nbt(const std::string& name, const Amulet::IntTag&, std::endian, Amulet::StringEncode);
-    std::string write_nbt(const std::string& name, const Amulet::LongTag&, std::endian, Amulet::StringEncode);
-    std::string write_nbt(const std::string& name, const Amulet::FloatTag&, std::endian, Amulet::StringEncode);
-    std::string write_nbt(const std::string& name, const Amulet::DoubleTag&, std::endian, Amulet::StringEncode);
-    std::string write_nbt(const std::string& name, const Amulet::ByteArrayTagPtr&, std::endian, Amulet::StringEncode);
-    std::string write_nbt(const std::string& name, const Amulet::StringTag&, std::endian, Amulet::StringEncode);
-    std::string write_nbt(const std::string& name, const Amulet::ListTagPtr&, std::endian, Amulet::StringEncode);
-    std::string write_nbt(const std::string& name, const Amulet::CompoundTagPtr&, std::endian, Amulet::StringEncode);
-    std::string write_nbt(const std::string& name, const Amulet::IntArrayTagPtr&, std::endian, Amulet::StringEncode);
-    std::string write_nbt(const std::string& name, const Amulet::LongArrayTagPtr&, std::endian, Amulet::StringEncode);
-    std::string write_nbt(const std::string& name, const Amulet::TagNode&, std::endian, Amulet::StringEncode);
-    std::string write_nbt(const Amulet::NamedTag& tag, std::endian, Amulet::StringEncode);
+    std::string write_nbt(const std::string& name, const AmuletNBT::ByteTag&, std::endian, AmuletNBT::StringEncode);
+    std::string write_nbt(const std::string& name, const AmuletNBT::ShortTag&, std::endian, AmuletNBT::StringEncode);
+    std::string write_nbt(const std::string& name, const AmuletNBT::IntTag&, std::endian, AmuletNBT::StringEncode);
+    std::string write_nbt(const std::string& name, const AmuletNBT::LongTag&, std::endian, AmuletNBT::StringEncode);
+    std::string write_nbt(const std::string& name, const AmuletNBT::FloatTag&, std::endian, AmuletNBT::StringEncode);
+    std::string write_nbt(const std::string& name, const AmuletNBT::DoubleTag&, std::endian, AmuletNBT::StringEncode);
+    std::string write_nbt(const std::string& name, const AmuletNBT::ByteArrayTagPtr&, std::endian, AmuletNBT::StringEncode);
+    std::string write_nbt(const std::string& name, const AmuletNBT::StringTag&, std::endian, AmuletNBT::StringEncode);
+    std::string write_nbt(const std::string& name, const AmuletNBT::ListTagPtr&, std::endian, AmuletNBT::StringEncode);
+    std::string write_nbt(const std::string& name, const AmuletNBT::CompoundTagPtr&, std::endian, AmuletNBT::StringEncode);
+    std::string write_nbt(const std::string& name, const AmuletNBT::IntArrayTagPtr&, std::endian, AmuletNBT::StringEncode);
+    std::string write_nbt(const std::string& name, const AmuletNBT::LongArrayTagPtr&, std::endian, AmuletNBT::StringEncode);
+    std::string write_nbt(const std::string& name, const AmuletNBT::TagNode&, std::endian, AmuletNBT::StringEncode);
+    std::string write_nbt(const AmuletNBT::NamedTag& tag, std::endian, AmuletNBT::StringEncode);
 }

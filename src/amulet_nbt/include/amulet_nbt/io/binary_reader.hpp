@@ -10,7 +10,7 @@
 #include <stdexcept>
 
 
-namespace Amulet {
+namespace AmuletNBT {
     typedef std::function<std::string(const std::string&)> StringDecode;
 
 

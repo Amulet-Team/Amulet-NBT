@@ -8,7 +8,7 @@
 #include <amulet_nbt/string_encoding.hpp>
 
 
-namespace Amulet {
+namespace AmuletNBT {
     CodePointVector read_mutf8(const std::string &src) {
         CodePointVector dst;
 

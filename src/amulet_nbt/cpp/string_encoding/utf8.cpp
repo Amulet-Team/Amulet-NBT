@@ -10,7 +10,7 @@
 const size_t HexChars[16] = {48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102};
 
 
-inline void push_escape(Amulet::CodePointVector& dst, const uint8_t& b){
+inline void push_escape(AmuletNBT::CodePointVector& dst, const uint8_t& b){
     dst.push_back(9243); // ␛
     dst.push_back(120); // x
     dst.push_back(HexChars[b >> 4]);
@@ -19,8 +19,8 @@ inline void push_escape(Amulet::CodePointVector& dst, const uint8_t& b){
 
 
 template <bool escapeErrors>
-Amulet::CodePointVector _read_utf8(const std::string& src) {
-    Amulet::CodePointVector dst;
+AmuletNBT::CodePointVector _read_utf8(const std::string& src) {
+    AmuletNBT::CodePointVector dst;
 
     for (size_t index = 0; index < src.size(); index++) {
         uint8_t b1 = src[index];
@@ -174,7 +174,7 @@ inline char char_to_hex(const size_t& c){
 
 
 template <bool escapeErrors>
-constexpr void _write_utf8(std::string &dst, const Amulet::CodePointVector& src) {
+constexpr void _write_utf8(std::string &dst, const AmuletNBT::CodePointVector& src) {
     for (size_t index = 0; index < src.size(); index++) {
         const size_t& c = src[index];
         if (c <= 127) {
@@ -220,7 +220,7 @@ constexpr void _write_utf8(std::string &dst, const Amulet::CodePointVector& src)
 }
 
 
-namespace Amulet{
+namespace AmuletNBT{
     CodePointVector read_utf8(const std::string& src) {
         return _read_utf8<false>(src);
     }

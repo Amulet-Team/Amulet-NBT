@@ -7,8 +7,8 @@
 #include <amulet_nbt/tag/list.hpp>
 #include <amulet_nbt/tag/compound.hpp>
 
-namespace Amulet {
-    size_t ListTag_size(const Amulet::ListTag& self){
+namespace AmuletNBT {
+    size_t ListTag_size(const AmuletNBT::ListTag& self){
         switch(self.index()){
             #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG) case ID: return std::get<LIST_TAG>(self).size();
             FOR_EACH_LIST_TAG(CASE)
@@ -17,7 +17,7 @@ namespace Amulet {
         return 0;
     };
 
-    void ListTag_append(Amulet::ListTag& self, Amulet::TagNode tag){
+    void ListTag_append(AmuletNBT::ListTag& self, AmuletNBT::TagNode tag){
         switch(tag.index()){
             #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
             case ID:\
@@ -30,9 +30,9 @@ namespace Amulet {
         }
     }
 
-    ListTagIterator::ListTagIterator(Amulet::ListTagPtr tag, size_t start, std::ptrdiff_t step): tag(tag), index(start), step(step) {};
-    Amulet::TagNode ListTagIterator::next() {
-        auto node = Amulet::ListTag_get_node<size_t>(*tag, index);
+    ListTagIterator::ListTagIterator(AmuletNBT::ListTagPtr tag, size_t start, std::ptrdiff_t step): tag(tag), index(start), step(step) {};
+    AmuletNBT::TagNode ListTagIterator::next() {
+        auto node = AmuletNBT::ListTag_get_node<size_t>(*tag, index);
         index += step;
         return node;
     }

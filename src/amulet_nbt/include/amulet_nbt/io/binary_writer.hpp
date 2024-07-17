@@ -9,7 +9,7 @@
 #include <functional>
 
 
-namespace Amulet {
+namespace AmuletNBT {
     typedef std::function<std::string(const std::string&)> StringEncode;
 
 

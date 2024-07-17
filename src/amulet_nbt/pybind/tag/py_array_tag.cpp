@@ -17,7 +17,7 @@ namespace py = pybind11;
 
 
 #define PyArray(CLSNAME, ELEMENTCLS, BITCOUNT, TAGID)\
-    py::class_<Amulet::CLSNAME##Wrapper, Amulet::AbstractBaseArrayTag> CLSNAME(m, #CLSNAME, py::buffer_protocol(),\
+    py::class_<AmuletNBT::CLSNAME##Wrapper, AmuletNBT::AbstractBaseArrayTag> CLSNAME(m, #CLSNAME, py::buffer_protocol(),\
         "This class stores a fixed size signed "#BITCOUNT" bit vector."\
     );\
     CLSNAME.def_property_readonly_static("tag_id", [](py::object) {return TAGID;});\
@@ -25,28 +25,28 @@ namespace py = pybind11;
         py::init([asarray, dtype](py::object value) {\
             /* Is there a better way to do this? */\
             py::array arr = asarray(value, dtype("int"#BITCOUNT)).attr("ravel")().cast<py::array>();\
-            std::vector<Amulet::ELEMENTCLS> v = arr.cast<std::vector<Amulet::ELEMENTCLS>> ();\
-            std::shared_ptr<Amulet::CLSNAME> tag_ptr = std::make_shared<Amulet::CLSNAME>(v.begin(), v.end());\
-            return Amulet::CLSNAME##Wrapper(tag_ptr);\
+            std::vector<AmuletNBT::ELEMENTCLS> v = arr.cast<std::vector<AmuletNBT::ELEMENTCLS>> ();\
+            std::shared_ptr<AmuletNBT::CLSNAME> tag_ptr = std::make_shared<AmuletNBT::CLSNAME>(v.begin(), v.end());\
+            return AmuletNBT::CLSNAME##Wrapper(tag_ptr);\
         }),\
         py::arg("value") = py::tuple(),\
         py::doc("__init__(self: amulet_nbt."#CLSNAME", value: collections.abc.Iterable[typing.SupportsInt] = ()) -> None")\
     );\
     CLSNAME.def_buffer(\
-        [](Amulet::CLSNAME##Wrapper& self) -> py::buffer_info {\
+        [](AmuletNBT::CLSNAME##Wrapper& self) -> py::buffer_info {\
             return py::buffer_info(\
                 self.tag->data(),\
-                sizeof(Amulet::ELEMENTCLS),\
-                py::format_descriptor<Amulet::ELEMENTCLS>::format(),\
+                sizeof(AmuletNBT::ELEMENTCLS),\
+                py::format_descriptor<AmuletNBT::ELEMENTCLS>::format(),\
                 1,\
                 {self.tag->size()},\
-                {sizeof(Amulet::ELEMENTCLS)}\
+                {sizeof(AmuletNBT::ELEMENTCLS)}\
             );\
         }\
     );\
     CLSNAME.def_property_readonly(\
         "np_array",\
-        [asarray](const Amulet::CLSNAME##Wrapper& self){\
+        [asarray](const AmuletNBT::CLSNAME##Wrapper& self){\
             return asarray(self);\
         },\
         py::doc(\
@@ -57,7 +57,7 @@ namespace py = pybind11;
     );\
     CLSNAME.def_property_readonly(\
         "py_data",\
-        [asarray](const Amulet::CLSNAME##Wrapper& self){\
+        [asarray](const AmuletNBT::CLSNAME##Wrapper& self){\
             return asarray(self);\
         },\
         py::doc(\
@@ -69,7 +69,7 @@ namespace py = pybind11;
     );\
     CLSNAME.def(\
         "__repr__",\
-        [](const Amulet::CLSNAME##Wrapper& self){\
+        [](const AmuletNBT::CLSNAME##Wrapper& self){\
             std::string out = #CLSNAME "([";\
             for (size_t i = 0; i < self.tag->size(); i++){\
                 if (i){\
@@ -83,7 +83,7 @@ namespace py = pybind11;
     );\
     CLSNAME.def(\
         "__str__",\
-        [](const Amulet::CLSNAME##Wrapper& self){\
+        [](const AmuletNBT::CLSNAME##Wrapper& self){\
             std::string out = "[";\
             for (size_t i = 0; i < self.tag->size(); i++){\
                 if (i){\
@@ -97,13 +97,13 @@ namespace py = pybind11;
     );\
     CLSNAME.def(\
         py::pickle(\
-            [](const Amulet::CLSNAME##Wrapper& self){\
-                return py::bytes(Amulet::write_nbt("", self.tag, std::endian::big, Amulet::utf8_to_mutf8));\
+            [](const AmuletNBT::CLSNAME##Wrapper& self){\
+                return py::bytes(AmuletNBT::write_nbt("", self.tag, std::endian::big, AmuletNBT::utf8_to_mutf8));\
             },\
             [](py::bytes state){\
-                return Amulet::CLSNAME##Wrapper(\
-                    std::get<Amulet::CLSNAME##Ptr>(\
-                        Amulet::read_nbt(state, std::endian::big, Amulet::mutf8_to_utf8).tag_node\
+                return AmuletNBT::CLSNAME##Wrapper(\
+                    std::get<AmuletNBT::CLSNAME##Ptr>(\
+                        AmuletNBT::read_nbt(state, std::endian::big, AmuletNBT::mutf8_to_utf8).tag_node\
                     )\
                 );\
             }\
@@ -111,53 +111,53 @@ namespace py = pybind11;
     );\
     CLSNAME.def(\
         "__copy__",\
-        [](const Amulet::CLSNAME##Wrapper& self){\
-            return Amulet::CLSNAME##Wrapper(NBTTag_copy<Amulet::CLSNAME>(*self.tag));\
+        [](const AmuletNBT::CLSNAME##Wrapper& self){\
+            return AmuletNBT::CLSNAME##Wrapper(NBTTag_copy<AmuletNBT::CLSNAME>(*self.tag));\
         }\
     );\
     CLSNAME.def(\
         "__deepcopy__",\
-        [](const Amulet::CLSNAME##Wrapper& self, py::dict){\
-            return Amulet::CLSNAME##Wrapper(Amulet::NBTTag_copy<Amulet::CLSNAME>(*self.tag));\
+        [](const AmuletNBT::CLSNAME##Wrapper& self, py::dict){\
+            return AmuletNBT::CLSNAME##Wrapper(AmuletNBT::NBTTag_copy<AmuletNBT::CLSNAME>(*self.tag));\
         },\
         py::arg("memo")\
     );\
     CLSNAME.def(\
         "__eq__",\
-        [](const Amulet::CLSNAME##Wrapper& self, const Amulet::CLSNAME##Wrapper& other){\
+        [](const AmuletNBT::CLSNAME##Wrapper& self, const AmuletNBT::CLSNAME##Wrapper& other){\
             return *self.tag == *other.tag;\
         },\
         py::is_operator()\
     );\
     CLSNAME.def(\
         "__len__",\
-        [](const Amulet::CLSNAME##Wrapper& self){\
+        [](const AmuletNBT::CLSNAME##Wrapper& self){\
             return self.tag->size();\
         }\
     );\
     CLSNAME.def(\
         "__iter__",\
-        [](const Amulet::CLSNAME##Wrapper& self) {return py::make_iterator(self.tag->begin(), self.tag->end());},\
+        [](const AmuletNBT::CLSNAME##Wrapper& self) {return py::make_iterator(self.tag->begin(), self.tag->end());},\
         py::keep_alive<0, 1>() /* Essential: keep object alive while iterator exists */);\
     CLSNAME.def(\
         "__reversed__",\
-        [](const Amulet::CLSNAME##Wrapper& self) {return py::make_iterator(self.tag->rbegin(), self.tag->rend());},\
+        [](const AmuletNBT::CLSNAME##Wrapper& self) {return py::make_iterator(self.tag->rbegin(), self.tag->rend());},\
         py::keep_alive<0, 1>() /* Essential: keep object alive while iterator exists */);\
     CLSNAME.def(\
         "__getitem__",\
-        [asarray](const Amulet::CLSNAME##Wrapper& self, py::object item){\
+        [asarray](const AmuletNBT::CLSNAME##Wrapper& self, py::object item){\
             return asarray(self).attr("__getitem__")(item);\
         }\
     );\
     CLSNAME.def(\
         "__setitem__",\
-        [asarray](const Amulet::CLSNAME##Wrapper& self, py::object item, py::object value){\
+        [asarray](const AmuletNBT::CLSNAME##Wrapper& self, py::object item, py::object value){\
             asarray(self)[item] = value;\
         }\
     );\
     CLSNAME.def(\
         "__contains__",\
-        [asarray](const Amulet::CLSNAME##Wrapper& self, py::object value){\
+        [asarray](const AmuletNBT::CLSNAME##Wrapper& self, py::object value){\
             asarray(self).contains(value);\
         }\
     );

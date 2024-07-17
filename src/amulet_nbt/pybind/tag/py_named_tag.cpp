@@ -61,49 +61,49 @@ void init_named_tag(py::module& m) {
             }
         );
 
-    py::class_<Amulet::NamedTag> NamedTag(m, "NamedTag");
+    py::class_<AmuletNBT::NamedTag> NamedTag(m, "NamedTag");
         NamedTag.def(
-            py::init([](Amulet::WrapperNode tag, std::string name) {
+            py::init([](AmuletNBT::WrapperNode tag, std::string name) {
                 if (tag.index() == 0){
-                    return Amulet::NamedTag(name, std::make_shared<Amulet::CompoundTag>());
+                    return AmuletNBT::NamedTag(name, std::make_shared<AmuletNBT::CompoundTag>());
                 } else {
-                    return Amulet::NamedTag(name, Amulet::unwrap_node(tag));
+                    return AmuletNBT::NamedTag(name, AmuletNBT::unwrap_node(tag));
                 }
             }),
             py::arg("tag") = py::none(), py::arg("name") = ""
         );
         NamedTag.def_property(
             "name",
-            [](const Amulet::NamedTag& self) -> py::object {
+            [](const AmuletNBT::NamedTag& self) -> py::object {
                 try {
                     return py::str(self.name);
                 } catch (py::error_already_set&){
                     return py::bytes(self.name);
                 }
             },
-            [](Amulet::NamedTag& self, std::string name){
+            [](AmuletNBT::NamedTag& self, std::string name){
                 self.name = name;
             }
         );
         NamedTag.def_property(
             "tag",
-            [](const Amulet::NamedTag& self){
-                return Amulet::wrap_node(self.tag_node);
+            [](const AmuletNBT::NamedTag& self){
+                return AmuletNBT::wrap_node(self.tag_node);
             },
-            [](Amulet::NamedTag& self, Amulet::WrapperNode tag){
+            [](AmuletNBT::NamedTag& self, AmuletNBT::WrapperNode tag){
                 if (tag.index() == 0){
                     throw std::invalid_argument("tag cannot be None");
                 }
-                self.tag_node = Amulet::unwrap_node(tag);
+                self.tag_node = AmuletNBT::unwrap_node(tag);
             }
         );
         auto to_nbt = [compress](
-            const Amulet::NamedTag& self,
+            const AmuletNBT::NamedTag& self,
             bool compressed,
             std::endian endianness,
-            Amulet::StringEncode string_encoder
+            AmuletNBT::StringEncode string_encoder
         ) -> py::bytes {
-            py::bytes data = Amulet::write_nbt(self.name, self.tag_node, endianness, string_encoder);
+            py::bytes data = AmuletNBT::write_nbt(self.name, self.tag_node, endianness, string_encoder);
             if (compressed){
                 return compress(data);
             }
@@ -112,8 +112,8 @@ void init_named_tag(py::module& m) {
         NamedTag.def(
             "to_nbt",
             [to_nbt](
-                const Amulet::NamedTag& self,
-                Amulet::EncodingPreset preset
+                const AmuletNBT::NamedTag& self,
+                AmuletNBT::EncodingPreset preset
             ){
                 return to_nbt(
                     self,
@@ -128,10 +128,10 @@ void init_named_tag(py::module& m) {
         NamedTag.def(
             "to_nbt",
             [to_nbt](
-                const Amulet::NamedTag& self,
+                const AmuletNBT::NamedTag& self,
                 bool compressed,
                 bool little_endian,
-                Amulet::StringEncoding string_encoding
+                AmuletNBT::StringEncoding string_encoding
             ){
                 return to_nbt(
                     self,
@@ -146,11 +146,11 @@ void init_named_tag(py::module& m) {
             py::arg("string_encoding") = mutf8_encoding
         );
         auto save_to = [to_nbt](
-            const Amulet::NamedTag& self,
+            const AmuletNBT::NamedTag& self,
             py::object filepath_or_writable,
             bool compressed,
             std::endian endianness,
-            Amulet::StringEncode string_encoder
+            AmuletNBT::StringEncode string_encoder
         ){
             py::bytes py_data = to_nbt(self, compressed, endianness, string_encoder);
             if (!filepath_or_writable.is(py::none())){
@@ -167,9 +167,9 @@ void init_named_tag(py::module& m) {
         NamedTag.def(
             "save_to",
             [save_to](
-                const Amulet::NamedTag& self,
+                const AmuletNBT::NamedTag& self,
                 py::object filepath_or_writable,
-                Amulet::EncodingPreset preset
+                AmuletNBT::EncodingPreset preset
             ){
                 return save_to(
                     self,
@@ -187,11 +187,11 @@ void init_named_tag(py::module& m) {
         NamedTag.def(
             "save_to",
             [save_to](
-                const Amulet::NamedTag& self,
+                const AmuletNBT::NamedTag& self,
                 py::object filepath_or_writable,
                 bool compressed,
                 bool little_endian,
-                Amulet::StringEncoding string_encoding
+                AmuletNBT::StringEncoding string_encoding
             ){
                 return save_to(
                     self,
@@ -211,15 +211,15 @@ void init_named_tag(py::module& m) {
         NamedTag.def(
             "to_snbt",
             [](
-                const Amulet::NamedTag& self,
+                const AmuletNBT::NamedTag& self,
                 py::object indent
             ){
                 if (indent.is(py::none())){
-                    return Amulet::write_snbt(self.tag_node);
+                    return AmuletNBT::write_snbt(self.tag_node);
                 } else if (py::isinstance<py::int_>(indent)){
-                    return Amulet::write_formatted_snbt(self.tag_node, std::string(indent.cast<size_t>(), ' '));
+                    return AmuletNBT::write_formatted_snbt(self.tag_node, std::string(indent.cast<size_t>(), ' '));
                 } else if (py::isinstance<py::str>(indent)){
-                    return Amulet::write_formatted_snbt(self.tag_node, indent.cast<std::string>());
+                    return AmuletNBT::write_formatted_snbt(self.tag_node, indent.cast<std::string>());
                 } else {
                     throw std::invalid_argument("indent must be None, int or str");
                 }
@@ -228,10 +228,10 @@ void init_named_tag(py::module& m) {
         );
         NamedTag.def(
             "__repr__",
-            [](const Amulet::NamedTag& self){
+            [](const AmuletNBT::NamedTag& self){
                 std::string out;
                 out += "NamedTag(";
-                out += py::repr(py::cast(Amulet::wrap_node(self.tag_node)));
+                out += py::repr(py::cast(AmuletNBT::wrap_node(self.tag_node)));
                 out += ", ";
                 try {
                     out += py::repr(py::str(self.name));
@@ -244,37 +244,37 @@ void init_named_tag(py::module& m) {
         );
         NamedTag.def(
             py::pickle(
-                [](const Amulet::NamedTag& self){
-                    return py::bytes(Amulet::write_nbt(self, std::endian::big, Amulet::utf8_to_mutf8));
+                [](const AmuletNBT::NamedTag& self){
+                    return py::bytes(AmuletNBT::write_nbt(self, std::endian::big, AmuletNBT::utf8_to_mutf8));
                 },
                 [](py::bytes state){
-                    return Amulet::read_nbt(state, std::endian::big, Amulet::mutf8_to_utf8);
+                    return AmuletNBT::read_nbt(state, std::endian::big, AmuletNBT::mutf8_to_utf8);
                 }
             )
         );
         NamedTag.def(
             "__copy__",
-            [](const Amulet::NamedTag& self){
+            [](const AmuletNBT::NamedTag& self){
                 return self;
             }
         );
         NamedTag.def(
             "__deepcopy__",
-            [](const Amulet::NamedTag& self, py::dict){
-                return Amulet::NamedTag(self.name, Amulet::NBTTag_deep_copy_node(self.tag_node));
+            [](const AmuletNBT::NamedTag& self, py::dict){
+                return AmuletNBT::NamedTag(self.name, AmuletNBT::NBTTag_deep_copy_node(self.tag_node));
             },
             py::arg("memo")
         );
         NamedTag.def(
             "__eq__",
-            [](const Amulet::NamedTag& self, const Amulet::NamedTag& other){
-                return self.name == other.name && Amulet::NBTTag_eq(self.tag_node, other.tag_node);
+            [](const AmuletNBT::NamedTag& self, const AmuletNBT::NamedTag& other){
+                return self.name == other.name && AmuletNBT::NBTTag_eq(self.tag_node, other.tag_node);
             },
             py::is_operator()
         );
         NamedTag.def(
             "__getitem__",
-            [](const Amulet::NamedTag& self, Py_ssize_t item) -> py::object {
+            [](const AmuletNBT::NamedTag& self, Py_ssize_t item) -> py::object {
                 if (item < 0){
                     item += 2;
                 }
@@ -290,7 +290,7 @@ void init_named_tag(py::module& m) {
         );
         NamedTag.def(
             "__iter__",
-            [](const Amulet::NamedTag& self){
+            [](const AmuletNBT::NamedTag& self){
                 return AmuletPy::NamedTagIterator(py::cast(self));
             }
         );
@@ -298,11 +298,11 @@ void init_named_tag(py::module& m) {
         #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
         NamedTag.def_property_readonly(\
             TAG_NAME,\
-            [](const Amulet::NamedTag& self){\
+            [](const AmuletNBT::NamedTag& self){\
                 if (self.tag_node.index() != ID){\
                     throw pybind11::type_error("tag_node is not a "#TAG);\
                 }\
-                return Amulet::TagWrapper<TAG_STORAGE>(std::get<TAG_STORAGE>(self.tag_node));\
+                return AmuletNBT::TagWrapper<TAG_STORAGE>(std::get<TAG_STORAGE>(self.tag_node));\
             },\
             py::doc(\
                 "Get the tag if it is a "#TAG".\n"\

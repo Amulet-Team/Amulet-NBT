@@ -2,7 +2,7 @@
 
 #include <vector>
 
-namespace Amulet {
+namespace AmuletNBT {
     // The standard vector class can be resized.
     // To make wrapping in numpy easier we will make the size fixed at runtime.
     template<class T>

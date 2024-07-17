@@ -11,12 +11,12 @@
 #include <amulet_nbt/nbt_encoding/string.hpp>
 #include <amulet_nbt/io/binary_writer.hpp>
 
-namespace Amulet {
+namespace AmuletNBT {
 
     class AbstractBaseTag {
         public:
             virtual ~AbstractBaseTag(){};
-            virtual std::string to_nbt(std::string, std::endian, Amulet::StringEncode) const = 0;
+            virtual std::string to_nbt(std::string, std::endian, AmuletNBT::StringEncode) const = 0;
             virtual std::string to_snbt() const = 0;
             virtual std::string to_snbt(const std::string& indent) const = 0;
     };
@@ -67,21 +67,21 @@ namespace Amulet {
         public:
             T tag;
             TagWrapper(T tag): tag(tag) {};
-            virtual std::string to_nbt(std::string name, std::endian endianness, Amulet::StringEncode string_encode) const {
-                return Amulet::write_nbt(name, tag, endianness, string_encode);
+            virtual std::string to_nbt(std::string name, std::endian endianness, AmuletNBT::StringEncode string_encode) const {
+                return AmuletNBT::write_nbt(name, tag, endianness, string_encode);
             }
             virtual std::string to_snbt() const {
                 if constexpr (is_shared_ptr<T>::value){
-                    return Amulet::write_snbt(*tag);
+                    return AmuletNBT::write_snbt(*tag);
                 } else {
-                    return Amulet::write_snbt(tag);
+                    return AmuletNBT::write_snbt(tag);
                 }
             }
             virtual std::string to_snbt(const std::string& indent) const {
                 if constexpr (is_shared_ptr<T>::value){
-                    return Amulet::write_formatted_snbt(*tag, indent);
+                    return AmuletNBT::write_formatted_snbt(*tag, indent);
                 } else {
-                    return Amulet::write_formatted_snbt(tag, indent);
+                    return AmuletNBT::write_formatted_snbt(tag, indent);
                 }
             }
     };
@@ -114,6 +114,6 @@ namespace Amulet {
         LongArrayTagWrapper
     > WrapperNode;
 
-    WrapperNode wrap_node(Amulet::TagNode node);
-    Amulet::TagNode unwrap_node(WrapperNode node);
+    WrapperNode wrap_node(AmuletNBT::TagNode node);
+    AmuletNBT::TagNode unwrap_node(WrapperNode node);
 }

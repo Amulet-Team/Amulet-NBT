@@ -7,14 +7,14 @@
 namespace py = pybind11;
 
 
-namespace Amulet {
+namespace AmuletNBT {
     class StringEncoding {
         public:
-            Amulet::StringEncode encode;
-            Amulet::StringDecode decode;
+            AmuletNBT::StringEncode encode;
+            AmuletNBT::StringDecode decode;
             StringEncoding(
-                Amulet::StringEncode encode,
-                Amulet::StringDecode decode
+                AmuletNBT::StringEncode encode,
+                AmuletNBT::StringDecode decode
             ): encode(encode), decode(decode) {};
     };
 
@@ -22,11 +22,11 @@ namespace Amulet {
         public:
             bool compressed;
             std::endian endianness;
-            Amulet::StringEncoding string_encoding;
+            AmuletNBT::StringEncoding string_encoding;
             EncodingPreset(
                 bool compressed,
                 std::endian endianness,
-                Amulet::StringEncoding string_encoding
+                AmuletNBT::StringEncoding string_encoding
             ): compressed(compressed), endianness(endianness), string_encoding(string_encoding) {};
     };
 }

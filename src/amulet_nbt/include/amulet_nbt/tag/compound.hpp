@@ -5,16 +5,16 @@
 
 #include <amulet_nbt/tag/nbt.hpp>
 
-namespace Amulet {
+namespace AmuletNBT {
     class CompoundTagIterator {
         private:
-            Amulet::CompoundTagPtr tag;
-            const Amulet::CompoundTag::iterator begin;
-            const Amulet::CompoundTag::iterator end;
-            Amulet::CompoundTag::iterator pos;
+            AmuletNBT::CompoundTagPtr tag;
+            const AmuletNBT::CompoundTag::iterator begin;
+            const AmuletNBT::CompoundTag::iterator end;
+            AmuletNBT::CompoundTag::iterator pos;
             size_t size;
         public:
-            CompoundTagIterator(Amulet::CompoundTagPtr tag);
+            CompoundTagIterator(AmuletNBT::CompoundTagPtr tag);
             std::string next();
             bool has_next();
             bool is_valid();

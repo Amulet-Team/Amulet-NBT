@@ -4,9 +4,9 @@
 
 #include <amulet_nbt/tag/compound.hpp>
 
-namespace Amulet {
+namespace AmuletNBT {
     CompoundTagIterator::CompoundTagIterator(
-        Amulet::CompoundTagPtr tag
+        AmuletNBT::CompoundTagPtr tag
     ): tag(tag), begin(tag->begin()), end(tag->end()), pos(tag->begin()), size(tag->size()) {};
 
     std::string CompoundTagIterator::next(){

@@ -21,16 +21,16 @@
 
 namespace py = pybind11;
 
-void ListTag_extend(Amulet::ListTagPtr tag, py::object value){
+void ListTag_extend(AmuletNBT::ListTagPtr tag, py::object value){
     // The caller must ensure value is not tag
     auto it = py::iter(value);
     while (it != py::iterator::sentinel()){
-        Amulet::WrapperNode node = py::cast<Amulet::WrapperNode>(*it);
+        AmuletNBT::WrapperNode node = py::cast<AmuletNBT::WrapperNode>(*it);
 
         switch(node.index()){
             #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
             case ID:\
-                Amulet::ListTag_append<TAG_STORAGE>(*tag, std::get<Amulet::TagWrapper<TAG_STORAGE>>(node).tag);\
+                AmuletNBT::ListTag_append<TAG_STORAGE>(*tag, std::get<AmuletNBT::TagWrapper<TAG_STORAGE>>(node).tag);\
                 break;
             case 0:
                 throw py::type_error("Cannot append null TagNode");
@@ -42,8 +42,8 @@ void ListTag_extend(Amulet::ListTagPtr tag, py::object value){
 }
 
 template <typename tagT>
-void ListTag_set_slice(Amulet::ListTagPtr self, const py::slice &slice, std::vector<tagT>& vec){
-    if (self->index() == variant_index<Amulet::ListTag, std::vector<tagT>>()){
+void ListTag_set_slice(AmuletNBT::ListTagPtr self, const py::slice &slice, std::vector<tagT>& vec){
+    if (self->index() == variant_index<AmuletNBT::ListTag, std::vector<tagT>>()){
         // Tag type matches
         std::vector<tagT>& list_tag = std::get<std::vector<tagT>>(*self);
         Py_ssize_t start = 0, stop = 0, step = 0, slice_length = 0;
@@ -126,24 +126,24 @@ void ListTag_del_slice(std::vector<tagT>& self, const py::slice &slice){
 
 
 void init_list(py::module& m) {
-    py::class_<Amulet::ListTagIterator, std::shared_ptr<Amulet::ListTagIterator>> ListTagIterator(m, "ListTagIterator");
+    py::class_<AmuletNBT::ListTagIterator, std::shared_ptr<AmuletNBT::ListTagIterator>> ListTagIterator(m, "ListTagIterator");
         ListTagIterator.def(
             "__next__",
-            [](Amulet::ListTagIterator& self){
+            [](AmuletNBT::ListTagIterator& self){
                 if (self.has_next()){
-                    return Amulet::wrap_node(self.next());
+                    return AmuletNBT::wrap_node(self.next());
                 }
                 throw py::stop_iteration("");
             }
         );
         ListTagIterator.def(
             "__iter__",
-            [](Amulet::ListTagIterator& self){
+            [](AmuletNBT::ListTagIterator& self){
                 return self;
             }
         );
 
-    py::class_<Amulet::ListTagWrapper, Amulet::AbstractBaseMutableTag> ListTag(m, "ListTag",
+    py::class_<AmuletNBT::ListTagWrapper, AmuletNBT::AbstractBaseMutableTag> ListTag(m, "ListTag",
         "A Python wrapper around a C++ vector.\n"
         "\n"
         "All contained data must be of the same NBT data type."
@@ -151,7 +151,7 @@ void init_list(py::module& m) {
         ListTag.def_property_readonly_static("tag_id", [](py::object) {return 9;});
         ListTag.def(
             py::init([](py::object value, std::uint8_t element_tag_id) {
-                Amulet::ListTagPtr tag = std::make_shared<Amulet::ListTag>();
+                AmuletNBT::ListTagPtr tag = std::make_shared<AmuletNBT::ListTag>();
                 switch(element_tag_id){
                     #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG) case ID: tag->emplace<LIST_TAG>(); break;
                     FOR_EACH_LIST_TAG2(CASE)
@@ -160,7 +160,7 @@ void init_list(py::module& m) {
                     #undef CASE
                 }
                 ListTag_extend(tag, value);
-                return Amulet::ListTagWrapper(tag);
+                return AmuletNBT::ListTagWrapper(tag);
             }),
             py::arg("value") = py::tuple(), py::arg("element_tag_id") = 1,
             py::doc("__init__(self: amulet_nbt.ListTag, value: typing.Iterable[amulet_nbt.ByteTag] | typing.Iterable[amulet_nbt.ShortTag] | typing.Iterable[amulet_nbt.IntTag] | typing.Iterable[amulet_nbt.LongTag] | typing.Iterable[amulet_nbt.FloatTag] | typing.Iterable[amulet_nbt.DoubleTag] | typing.Iterable[amulet_nbt.ByteArrayTag] | typing.Iterable[amulet_nbt.StringTag] | typing.Iterable[amulet_nbt.ListTag] | typing.Iterable[amulet_nbt.CompoundTag] | typing.Iterable[amulet_nbt.IntArrayTag] | typing.Iterable[amulet_nbt.LongArrayTag] = (), element_tag_id = 1) -> None")
@@ -168,7 +168,7 @@ void init_list(py::module& m) {
         ListTag.attr("__class_getitem__") = PyClassMethod_New(
             py::cpp_function([](const py::type &cls, const py::args &args){return cls;}).ptr()
         );
-        auto py_getter = [](const Amulet::ListTagWrapper& self){
+        auto py_getter = [](const AmuletNBT::ListTagWrapper& self){
             py::list list;
             switch(self.tag->index()){
                 #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
@@ -177,7 +177,7 @@ void init_list(py::module& m) {
                             LIST_TAG& tag = std::get<LIST_TAG>(*self.tag);\
                             for (size_t i = 0; i < tag.size(); i++){\
                                 list.append(\
-                                    Amulet::TagWrapper<TAG_STORAGE>(tag[i])\
+                                    AmuletNBT::TagWrapper<TAG_STORAGE>(tag[i])\
                                 );\
                             };\
                             break;\
@@ -209,7 +209,7 @@ void init_list(py::module& m) {
         );
         ListTag.def(
             "__repr__",
-            [](const Amulet::ListTagWrapper& self){
+            [](const AmuletNBT::ListTagWrapper& self){
                 std::string out;
                 out += "ListTag([";
 
@@ -222,7 +222,7 @@ void init_list(py::module& m) {
                             LIST_TAG& list_tag = std::get<LIST_TAG>(*self.tag);\
                             for (size_t i = 0; i < list_tag.size(); i++){\
                                 if (i != 0){out += ", ";}\
-                                out += py::repr(py::cast(Amulet::TagWrapper<TAG_STORAGE>(list_tag[i])));\
+                                out += py::repr(py::cast(AmuletNBT::TagWrapper<TAG_STORAGE>(list_tag[i])));\
                             }\
                         };\
                         break;
@@ -238,19 +238,19 @@ void init_list(py::module& m) {
         );
         ListTag.def(
             "__str__",
-            [](const Amulet::ListTagWrapper& self){
+            [](const AmuletNBT::ListTagWrapper& self){
                 return py::str(py::list(py::cast(self)));
             }
         );
         ListTag.def(
             py::pickle(
-                [](const Amulet::ListTagWrapper& self){
-                    return py::bytes(Amulet::write_nbt("", self.tag, std::endian::big, Amulet::utf8_to_mutf8));
+                [](const AmuletNBT::ListTagWrapper& self){
+                    return py::bytes(AmuletNBT::write_nbt("", self.tag, std::endian::big, AmuletNBT::utf8_to_mutf8));
                 },
                 [](py::bytes state){
-                    return Amulet::ListTagWrapper(
-                        std::get<Amulet::ListTagPtr>(
-                            Amulet::read_nbt(state, std::endian::big, Amulet::mutf8_to_utf8).tag_node
+                    return AmuletNBT::ListTagWrapper(
+                        std::get<AmuletNBT::ListTagPtr>(
+                            AmuletNBT::read_nbt(state, std::endian::big, AmuletNBT::mutf8_to_utf8).tag_node
                         )
                     );
                 }
@@ -258,39 +258,39 @@ void init_list(py::module& m) {
         );
         ListTag.def(
             "__copy__",
-            [](const Amulet::ListTagWrapper& self){
-                return Amulet::ListTagWrapper(NBTTag_copy<Amulet::ListTag>(*self.tag));
+            [](const AmuletNBT::ListTagWrapper& self){
+                return AmuletNBT::ListTagWrapper(NBTTag_copy<AmuletNBT::ListTag>(*self.tag));
             }
         );
         ListTag.def(
             "__deepcopy__",
-            [](const Amulet::ListTagWrapper& self, py::dict){
-                return Amulet::ListTagWrapper(Amulet::NBTTag_deep_copy_list(*self.tag));
+            [](const AmuletNBT::ListTagWrapper& self, py::dict){
+                return AmuletNBT::ListTagWrapper(AmuletNBT::NBTTag_deep_copy_list(*self.tag));
             },
             py::arg("memo")
         );
         ListTag.def(
             "__eq__",
-            [](const Amulet::ListTagWrapper& self, const Amulet::ListTagWrapper& other){
-                return Amulet::NBTTag_eq(self.tag, other.tag);
+            [](const AmuletNBT::ListTagWrapper& self, const AmuletNBT::ListTagWrapper& other){
+                return AmuletNBT::NBTTag_eq(self.tag, other.tag);
             },
             py::is_operator()
         );
         ListTag.def(
             "__len__",
-            [](const Amulet::ListTagWrapper& self){
-                return Amulet::ListTag_size(*self.tag);
+            [](const AmuletNBT::ListTagWrapper& self){
+                return AmuletNBT::ListTag_size(*self.tag);
             }
         );
         ListTag.def(
             "__bool__",
-            [](const Amulet::ListTagWrapper& self){
-                return Amulet::ListTag_size(*self.tag) != 0;
+            [](const AmuletNBT::ListTagWrapper& self){
+                return AmuletNBT::ListTag_size(*self.tag) != 0;
             }
         );
         ListTag.def_property_readonly(
             "element_tag_id",
-            [](const Amulet::ListTagWrapper& self){
+            [](const AmuletNBT::ListTagWrapper& self){
                 return self.tag->index();
             }
         );
@@ -311,45 +311,45 @@ void init_list(py::module& m) {
         };
         ListTag.def_property_readonly(
             "element_class",
-            [NBTClasses](const Amulet::ListTagWrapper& self){
+            [NBTClasses](const AmuletNBT::ListTagWrapper& self){
                 return NBTClasses[self.tag->index()];
             }
         );
         ListTag.def(
             "__getitem__",
-            [](const Amulet::ListTagWrapper& self, Py_ssize_t item){
-                return Amulet::wrap_node(Amulet::ListTag_get_node<Py_ssize_t>(*self.tag, item));
+            [](const AmuletNBT::ListTagWrapper& self, Py_ssize_t item){
+                return AmuletNBT::wrap_node(AmuletNBT::ListTag_get_node<Py_ssize_t>(*self.tag, item));
             }
         );
         ListTag.def(
             "__getitem__",
-            [](const Amulet::ListTagWrapper& self, const py::slice& slice) {
+            [](const AmuletNBT::ListTagWrapper& self, const py::slice& slice) {
                 py::list out;
                 Py_ssize_t start = 0, stop = 0, step = 0, slice_length = 0;
                 if (!slice.compute(ListTag_size(*self.tag), &start, &stop, &step, &slice_length)) {
                     throw py::error_already_set();
                 }
                 for (Py_ssize_t i = 0; i < slice_length; ++i) {
-                    out.append(Amulet::wrap_node(Amulet::ListTag_get_node<Py_ssize_t>(*self.tag, start)));
+                    out.append(AmuletNBT::wrap_node(AmuletNBT::ListTag_get_node<Py_ssize_t>(*self.tag, start)));
                     start += step;
                 }
                 return out;
             });
         ListTag.def(
             "__iter__",
-            [](const Amulet::ListTagWrapper& self) {
-                return Amulet::ListTagIterator(self.tag, 0, 1);
+            [](const AmuletNBT::ListTagWrapper& self) {
+                return AmuletNBT::ListTagIterator(self.tag, 0, 1);
             }
         );
         ListTag.def(
             "__reversed__",
-            [](const Amulet::ListTagWrapper& self) {
-                return Amulet::ListTagIterator(self.tag, ListTag_size(*self.tag) - 1, -1);
+            [](const AmuletNBT::ListTagWrapper& self) {
+                return AmuletNBT::ListTagIterator(self.tag, ListTag_size(*self.tag) - 1, -1);
             }
         );
         ListTag.def(
             "__contains__",
-            [](const Amulet::ListTagWrapper& self, Amulet::WrapperNode item){
+            [](const AmuletNBT::ListTagWrapper& self, AmuletNBT::WrapperNode item){
                 if (item.index() == 0) {
                     throw py::type_error("item cannot be None.");
                 }
@@ -362,10 +362,10 @@ void init_list(py::module& m) {
                     #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
                     case ID:\
                         {\
-                            TAG_STORAGE item_tag = std::get<Amulet::TagWrapper<TAG_STORAGE>>(item).tag;\
+                            TAG_STORAGE item_tag = std::get<AmuletNBT::TagWrapper<TAG_STORAGE>>(item).tag;\
                             LIST_TAG& list_tag = std::get<LIST_TAG>(*self.tag);\
                             for (TAG_STORAGE tag: list_tag){\
-                                if (Amulet::NBTTag_eq(tag, item_tag)){\
+                                if (AmuletNBT::NBTTag_eq(tag, item_tag)){\
                                     return true;\
                                 }\
                             }\
@@ -381,11 +381,11 @@ void init_list(py::module& m) {
         );
         ListTag.def(
             "index",
-            [](const Amulet::ListTagWrapper& self, Amulet::WrapperNode tag, Py_ssize_t start, Py_ssize_t stop) -> size_t {
+            [](const AmuletNBT::ListTagWrapper& self, AmuletNBT::WrapperNode tag, Py_ssize_t start, Py_ssize_t stop) -> size_t {
                 switch(tag.index()){
                     #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
                     case ID:\
-                        return Amulet::ListTag_index<TAG_STORAGE, Py_ssize_t>(*self.tag, std::get<Amulet::TagWrapper<TAG_STORAGE>>(tag).tag, start, stop);
+                        return AmuletNBT::ListTag_index<TAG_STORAGE, Py_ssize_t>(*self.tag, std::get<AmuletNBT::TagWrapper<TAG_STORAGE>>(tag).tag, start, stop);
                     FOR_EACH_LIST_TAG(CASE)
                     #undef CASE
                     default:
@@ -396,11 +396,11 @@ void init_list(py::module& m) {
         );
         ListTag.def(
             "count",
-            [](const Amulet::ListTagWrapper& self, Amulet::WrapperNode tag) -> size_t {
+            [](const AmuletNBT::ListTagWrapper& self, AmuletNBT::WrapperNode tag) -> size_t {
                 switch(tag.index()){
                     #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
                     case ID:\
-                        return Amulet::ListTag_count<TAG_STORAGE>(*self.tag, std::get<Amulet::TagWrapper<TAG_STORAGE>>(tag).tag);
+                        return AmuletNBT::ListTag_count<TAG_STORAGE>(*self.tag, std::get<AmuletNBT::TagWrapper<TAG_STORAGE>>(tag).tag);
                     FOR_EACH_LIST_TAG(CASE)
                     #undef CASE
                     default:
@@ -410,11 +410,11 @@ void init_list(py::module& m) {
         );
         ListTag.def(
             "__setitem__",
-            [](const Amulet::ListTagWrapper& self, Py_ssize_t index, Amulet::WrapperNode tag){
+            [](const AmuletNBT::ListTagWrapper& self, Py_ssize_t index, AmuletNBT::WrapperNode tag){
                 switch(tag.index()){
                     #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
                     case ID:\
-                        Amulet::ListTag_set<TAG_STORAGE, Py_ssize_t>(*self.tag, index, std::get<Amulet::TagWrapper<TAG_STORAGE>>(tag).tag);\
+                        AmuletNBT::ListTag_set<TAG_STORAGE, Py_ssize_t>(*self.tag, index, std::get<AmuletNBT::TagWrapper<TAG_STORAGE>>(tag).tag);\
                         break;
                     FOR_EACH_LIST_TAG(CASE)
                     #undef CASE
@@ -425,22 +425,22 @@ void init_list(py::module& m) {
         );
         ListTag.def(
             "__setitem__",
-            [](const Amulet::ListTagWrapper& self, const py::slice &slice, py::object values){
+            [](const AmuletNBT::ListTagWrapper& self, const py::slice &slice, py::object values){
                 // Cast values to a list to get a consistent format
                 auto list = py::list(values);
                 if (list){
                     // If the value has items in it
                     // Switch based on the type of the first element
-                    Amulet::WrapperNode first = list[0].cast<Amulet::WrapperNode>();
+                    AmuletNBT::WrapperNode first = list[0].cast<AmuletNBT::WrapperNode>();
                     switch(first.index()){
                         #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
                         case ID:{\
                             /* Cast to C++ objects. Also validate that they are all the same type. */\
                             std::vector<TAG_STORAGE> vec;\
-                            vec.push_back(std::get<Amulet::TagWrapper<TAG_STORAGE>>(first).tag);\
+                            vec.push_back(std::get<AmuletNBT::TagWrapper<TAG_STORAGE>>(first).tag);\
                             for (size_t i = 1; i < list.size(); i++){\
-                                Amulet::WrapperNode tag = list[i].cast<Amulet::WrapperNode>();\
-                                vec.push_back(std::get<Amulet::TagWrapper<TAG_STORAGE>>(tag).tag);\
+                                AmuletNBT::WrapperNode tag = list[i].cast<AmuletNBT::WrapperNode>();\
+                                vec.push_back(std::get<AmuletNBT::TagWrapper<TAG_STORAGE>>(tag).tag);\
                             }\
                             ListTag_set_slice<TAG_STORAGE>(self.tag, slice, vec);\
                             break;\
@@ -468,13 +468,13 @@ void init_list(py::module& m) {
         );
         ListTag.def(
             "__delitem__",
-            [](const Amulet::ListTagWrapper& self, Py_ssize_t item){
-                Amulet::ListTag_del<Py_ssize_t>(*self.tag, item);
+            [](const AmuletNBT::ListTagWrapper& self, Py_ssize_t item){
+                AmuletNBT::ListTag_del<Py_ssize_t>(*self.tag, item);
             }
         );
         ListTag.def(
             "__delitem__",
-            [](const Amulet::ListTagWrapper& self, const py::slice &slice){
+            [](const AmuletNBT::ListTagWrapper& self, const py::slice &slice){
                 switch(self.tag->index()){
                     #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
                     case ID:{\
@@ -488,11 +488,11 @@ void init_list(py::module& m) {
         );
         ListTag.def(
             "insert",
-            [](const Amulet::ListTagWrapper& self, Py_ssize_t index, Amulet::WrapperNode tag){
+            [](const AmuletNBT::ListTagWrapper& self, Py_ssize_t index, AmuletNBT::WrapperNode tag){
                 switch(tag.index()){
                     #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
                     case ID:\
-                        Amulet::ListTag_insert<TAG_STORAGE, Py_ssize_t>(*self.tag, index, std::get<Amulet::TagWrapper<TAG_STORAGE>>(tag).tag);\
+                        AmuletNBT::ListTag_insert<TAG_STORAGE, Py_ssize_t>(*self.tag, index, std::get<AmuletNBT::TagWrapper<TAG_STORAGE>>(tag).tag);\
                         break;
                     case 0:
                         throw py::type_error("Cannot insert null TagNode");
@@ -503,9 +503,9 @@ void init_list(py::module& m) {
         );
         ListTag.def(
             "append",
-            [](const Amulet::ListTagWrapper& self, Amulet::WrapperNode tag){
+            [](const AmuletNBT::ListTagWrapper& self, AmuletNBT::WrapperNode tag){
                 switch(tag.index()){
-                    #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG) case ID: Amulet::ListTag_append<TAG_STORAGE>(*self.tag, std::get<Amulet::TagWrapper<TAG_STORAGE>>(tag).tag); break;
+                    #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG) case ID: AmuletNBT::ListTag_append<TAG_STORAGE>(*self.tag, std::get<AmuletNBT::TagWrapper<TAG_STORAGE>>(tag).tag); break;
                     case 0:
                         throw py::type_error("Cannot append null TagNode");
                     FOR_EACH_LIST_TAG(CASE)
@@ -515,7 +515,7 @@ void init_list(py::module& m) {
         );
         ListTag.def(
             "clear",
-            [](const Amulet::ListTagWrapper& self){
+            [](const AmuletNBT::ListTagWrapper& self){
                 switch(self.tag->index()){
                     #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG) case ID: std::get<LIST_TAG>(*self.tag).clear(); break;
                     FOR_EACH_LIST_TAG(CASE)
@@ -525,7 +525,7 @@ void init_list(py::module& m) {
         );
         ListTag.def(
             "reverse",
-            [](const Amulet::ListTagWrapper& self){
+            [](const AmuletNBT::ListTagWrapper& self){
                 switch(self.tag->index()){
                     #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG) case ID: {LIST_TAG& tag = std::get<LIST_TAG>(*self.tag); std::reverse(tag.begin(), tag.end());}; break;
                     FOR_EACH_LIST_TAG(CASE)
@@ -535,25 +535,25 @@ void init_list(py::module& m) {
         );
         ListTag.def(
             "extend",
-            [](const Amulet::ListTagWrapper& self, py::object value){
+            [](const AmuletNBT::ListTagWrapper& self, py::object value){
                 ListTag_extend(self.tag, py::list(value));
             }
         );
         ListTag.def(
             "pop",
-            [](const Amulet::ListTagWrapper& self, Py_ssize_t item){
-                return Amulet::wrap_node(ListTag_pop<Py_ssize_t>(*self.tag, item));
+            [](const AmuletNBT::ListTagWrapper& self, Py_ssize_t item){
+                return AmuletNBT::wrap_node(ListTag_pop<Py_ssize_t>(*self.tag, item));
             },
             py::arg("item") = -1
         );
         ListTag.def(
             "remove",
-            [](const Amulet::ListTagWrapper& self, Amulet::WrapperNode tag){
+            [](const AmuletNBT::ListTagWrapper& self, AmuletNBT::WrapperNode tag){
                 switch(tag.index()){
                     #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
                     case ID:\
                         {\
-                        size_t index = Amulet::ListTag_index<TAG_STORAGE, Py_ssize_t>(*self.tag, std::get<Amulet::TagWrapper<TAG_STORAGE>>(tag).tag);\
+                        size_t index = AmuletNBT::ListTag_index<TAG_STORAGE, Py_ssize_t>(*self.tag, std::get<AmuletNBT::TagWrapper<TAG_STORAGE>>(tag).tag);\
                         std::vector<TAG_STORAGE>& list_tag = std::get<std::vector<TAG_STORAGE>>(*self.tag);\
                         list_tag.erase(list_tag.begin() + index);\
                         break;\
@@ -567,27 +567,27 @@ void init_list(py::module& m) {
         );
         ListTag.def(
             "__iadd__",
-            [](const Amulet::ListTagWrapper& self, py::object value){
+            [](const AmuletNBT::ListTagWrapper& self, py::object value){
                 ListTag_extend(self.tag, py::list(value));
                 return self;
             }
         );
         ListTag.def(
             "copy",
-            [](const Amulet::ListTagWrapper& self){
-                Amulet::ListTagPtr tag = std::make_shared<Amulet::ListTag>();
+            [](const AmuletNBT::ListTagWrapper& self){
+                AmuletNBT::ListTagPtr tag = std::make_shared<AmuletNBT::ListTag>();
 
-                return Amulet::ListTagWrapper(tag);
+                return AmuletNBT::ListTagWrapper(tag);
             }
         );
         #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)\
         ListTag.def(\
             "get_" TAG_NAME,\
-            [](const Amulet::ListTagWrapper& self, Py_ssize_t index){\
-                if (self.tag->index() != variant_index<Amulet::ListTag, std::vector<TAG_STORAGE>>()){\
+            [](const AmuletNBT::ListTagWrapper& self, Py_ssize_t index){\
+                if (self.tag->index() != variant_index<AmuletNBT::ListTag, std::vector<TAG_STORAGE>>()){\
                     throw pybind11::type_error("ListTag elements are not "#TAG);\
                 }\
-                return Amulet::wrap_node(Amulet::ListTag_get<TAG_STORAGE, Py_ssize_t>(*self.tag, index));\
+                return AmuletNBT::wrap_node(AmuletNBT::ListTag_get<TAG_STORAGE, Py_ssize_t>(*self.tag, index));\
             },\
             py::doc(\
                 "Get the tag at index if it is a "#TAG".\n"\

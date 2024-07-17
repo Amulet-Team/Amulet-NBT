@@ -4,7 +4,7 @@
 ![Unittests](../../workflows/Unittests/badge.svg?event=push)
 ![Stylecheck](../../workflows/Stylecheck/badge.svg?event=push)
 
-Amulet-NBT is a Python 3 library, written in Cython and C++, for reading and writing both binary NBT and SNBT.
+Amulet-NBT is a Python 3 library, written in C++, for reading and writing both binary NBT and SNBT.
 
 SNBT (or Stringified-NBT) is the JSON like format used in Java commands.
 

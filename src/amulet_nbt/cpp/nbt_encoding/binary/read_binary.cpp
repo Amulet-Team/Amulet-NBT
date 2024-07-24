@@ -6,37 +6,54 @@
 #include <string>
 #include <bit>
 
+#include <amulet_nbt/tag/int.hpp>
+#include <amulet_nbt/tag/float.hpp>
+#include <amulet_nbt/tag/string.hpp>
+#include <amulet_nbt/tag/list.hpp>
+#include <amulet_nbt/tag/compound.hpp>
+#include <amulet_nbt/tag/array.hpp>
+#include <amulet_nbt/tag/named_tag.hpp>
 #include <amulet_nbt/nbt_encoding/binary.hpp>
 
-AmuletNBT::StringTag read_string_tag(AmuletNBT::BinaryReader& reader){
+template <typename T>
+inline T read_numeric_tag(AmuletNBT::BinaryReader& reader) {
+    return T(reader.readNumeric<typename T::native_type>());
+}
+
+inline std::string read_string(AmuletNBT::BinaryReader& reader) {
     std::uint16_t length = reader.readNumeric<std::uint16_t>();
     return reader.readString(length);
 };
 
+inline AmuletNBT::StringTag read_string_tag(AmuletNBT::BinaryReader& reader){
+    return AmuletNBT::StringTag(read_string(reader));
+};
 
-AmuletNBT::TagNode read_node(AmuletNBT::BinaryReader& reader, std::uint8_t tag_id);
+
+inline AmuletNBT::TagNode read_node(AmuletNBT::BinaryReader& reader, std::uint8_t tag_id);
 
 
-AmuletNBT::CompoundTagPtr read_compound_tag(AmuletNBT::BinaryReader& reader){
-    AmuletNBT::CompoundTagPtr tag = std::make_shared<AmuletNBT::CompoundTag>();
+inline AmuletNBT::CompoundTagPtr read_compound_tag(AmuletNBT::BinaryReader& reader){
+    AmuletNBT::CompoundTagPtr tag_ptr = std::make_shared<AmuletNBT::CompoundTag>();
+    AmuletNBT::CompoundTag& tag = *tag_ptr;
     while (true){
         std::uint8_t tag_id = reader.readNumeric<std::uint8_t>();
         if (tag_id == 0){
             break;
         }
-        AmuletNBT::StringTag name = read_string_tag(reader);
+        std::string name = read_string(reader);
         AmuletNBT::TagNode node = read_node(reader, tag_id);
-        (*tag)[name] = node;
+        tag[name] = node;
     }
-    return tag;
+    return tag_ptr;
 };
 
 
 template <typename T>
-std::shared_ptr<AmuletNBT::ArrayTag<T>> read_array_tag(AmuletNBT::BinaryReader& reader){
+inline std::shared_ptr<T> read_array_tag(AmuletNBT::BinaryReader& reader){
     std::int32_t length = reader.readNumeric<std::int32_t>();
     if (length < 0){length = 0;}
-    std::shared_ptr<AmuletNBT::ArrayTag<T>> tag = std::make_shared<AmuletNBT::ArrayTag<T>>(length);
+    std::shared_ptr<T> tag = std::make_shared<T>(length);
     for (std::int32_t i = 0; i < length; i++){
         reader.readNumericInto((*tag)[i]);
     }
@@ -45,7 +62,7 @@ std::shared_ptr<AmuletNBT::ArrayTag<T>> read_array_tag(AmuletNBT::BinaryReader& 
 
 
 template <typename T>
-AmuletNBT::ListTagPtr read_numeric_list_tag(AmuletNBT::BinaryReader& reader){
+inline AmuletNBT::ListTagPtr read_numeric_list_tag(AmuletNBT::BinaryReader& reader){
     std::int32_t length = reader.readNumeric<std::int32_t>();
     if (length < 0){length = 0;}
     AmuletNBT::ListTagPtr tag = std::make_shared<AmuletNBT::ListTag>(std::vector<T>(length));
@@ -58,7 +75,7 @@ AmuletNBT::ListTagPtr read_numeric_list_tag(AmuletNBT::BinaryReader& reader){
 
 
 template <typename T, T (*readTag)(AmuletNBT::BinaryReader&)>
-AmuletNBT::ListTagPtr read_template_list_tag(AmuletNBT::BinaryReader& reader){
+inline AmuletNBT::ListTagPtr read_template_list_tag(AmuletNBT::BinaryReader& reader){
     std::int32_t length = reader.readNumeric<std::int32_t>();
     if (length < 0){length = 0;}
     AmuletNBT::ListTagPtr tag = std::make_shared<AmuletNBT::ListTag>(std::vector<T>(length));
@@ -70,7 +87,7 @@ AmuletNBT::ListTagPtr read_template_list_tag(AmuletNBT::BinaryReader& reader){
 }
 
 
-AmuletNBT::ListTagPtr read_void_list_tag(AmuletNBT::BinaryReader& reader){
+inline AmuletNBT::ListTagPtr read_void_list_tag(AmuletNBT::BinaryReader& reader){
     std::int32_t length = reader.readNumeric<std::int32_t>();
     if (length < 0){length = 0;}
     if (length != 0){throw std::runtime_error("Void list tag must have a length of 0");}
@@ -78,84 +95,70 @@ AmuletNBT::ListTagPtr read_void_list_tag(AmuletNBT::BinaryReader& reader){
 }
 
 
-AmuletNBT::ListTagPtr read_list_tag(AmuletNBT::BinaryReader& reader){
+inline AmuletNBT::ListTagPtr read_list_tag(AmuletNBT::BinaryReader& reader){
     std::uint8_t tag_type = reader.readNumeric<std::uint8_t>();
     switch(tag_type){
         case 0:
             return read_void_list_tag(reader);
-        case 1:
+        case AmuletNBT::tag_id_v<AmuletNBT::ByteTag>:
             return read_numeric_list_tag<AmuletNBT::ByteTag>(reader);
-        case 2:
+        case AmuletNBT::tag_id_v<AmuletNBT::ShortTag>:
             return read_numeric_list_tag<AmuletNBT::ShortTag>(reader);
-        case 3:
+        case AmuletNBT::tag_id_v<AmuletNBT::IntTag>:
             return read_numeric_list_tag<AmuletNBT::IntTag>(reader);
-        case 4:
+        case AmuletNBT::tag_id_v<AmuletNBT::LongTag>:
             return read_numeric_list_tag<AmuletNBT::LongTag>(reader);
-        case 5:
+        case AmuletNBT::tag_id_v<AmuletNBT::FloatTag>:
             return read_numeric_list_tag<AmuletNBT::FloatTag>(reader);
-        case 6:
+        case AmuletNBT::tag_id_v<AmuletNBT::DoubleTag>:
             return read_numeric_list_tag<AmuletNBT::DoubleTag>(reader);
-        case 7:
-            return read_template_list_tag<AmuletNBT::ByteArrayTagPtr, read_array_tag<AmuletNBT::ByteTag>>(reader);
-        case 8:
+        case AmuletNBT::tag_id_v<AmuletNBT::ByteArrayTag>:
+            return read_template_list_tag<AmuletNBT::ByteArrayTagPtr, read_array_tag<AmuletNBT::ByteArrayTag>>(reader);
+        case AmuletNBT::tag_id_v<AmuletNBT::StringTag>:
             return read_template_list_tag<AmuletNBT::StringTag, read_string_tag>(reader);
-        case 9:
+        case AmuletNBT::tag_id_v<AmuletNBT::ListTag>:
             return read_template_list_tag<AmuletNBT::ListTagPtr, read_list_tag>(reader);
-        case 10:
+        case AmuletNBT::tag_id_v<AmuletNBT::CompoundTag>:
             return read_template_list_tag<AmuletNBT::CompoundTagPtr, read_compound_tag>(reader);
-        case 11:
-            return read_template_list_tag<AmuletNBT::IntArrayTagPtr, read_array_tag<AmuletNBT::IntTag>>(reader);
-        case 12:
-            return read_template_list_tag<AmuletNBT::LongArrayTagPtr, read_array_tag<AmuletNBT::LongTag>>(reader);
+        case AmuletNBT::tag_id_v<AmuletNBT::IntArrayTag>:
+            return read_template_list_tag<AmuletNBT::IntArrayTagPtr, read_array_tag<AmuletNBT::IntArrayTag>>(reader);
+        case AmuletNBT::tag_id_v<AmuletNBT::LongArrayTag>:
+            return read_template_list_tag<AmuletNBT::LongArrayTagPtr, read_array_tag<AmuletNBT::LongArrayTag>>(reader);
         default:
             throw std::runtime_error("This shouldn't happen");
     }
 };
 
 
-AmuletNBT::TagNode read_node(AmuletNBT::BinaryReader& reader, std::uint8_t tag_id){
-    AmuletNBT::TagNode node;
+inline AmuletNBT::TagNode read_node(AmuletNBT::BinaryReader& reader, std::uint8_t tag_id){
     switch(tag_id){
-        case 1:
-            node = reader.readNumeric<AmuletNBT::ByteTag>();
-            break;
-        case 2:
-            node = reader.readNumeric<AmuletNBT::ShortTag>();
-            break;
-        case 3:
-            node = reader.readNumeric<AmuletNBT::IntTag>();
-            break;
-        case 4:
-            node = reader.readNumeric<AmuletNBT::LongTag>();
-            break;
-        case 5:
-            node = reader.readNumeric<AmuletNBT::FloatTag>();
-            break;
-        case 6:
-            node = reader.readNumeric<AmuletNBT::DoubleTag>();
-            break;
-        case 8:
-            node = read_string_tag(reader);
-            break;
-        case 9:
-            node = read_list_tag(reader);
-            break;
-        case 10:
-            node = read_compound_tag(reader);
-            break;
-        case 7:
-            node = read_array_tag<AmuletNBT::ByteTag>(reader);
-            break;
-        case 11:
-            node = read_array_tag<AmuletNBT::IntTag>(reader);
-            break;
-        case 12:
-            node = read_array_tag<AmuletNBT::LongTag>(reader);
-            break;
+        case AmuletNBT::tag_id_v<AmuletNBT::ByteTag>:
+            return read_numeric_tag<AmuletNBT::ByteTag>(reader);
+        case AmuletNBT::tag_id_v<AmuletNBT::ShortTag>:
+            return read_numeric_tag<AmuletNBT::ShortTag>(reader);
+        case AmuletNBT::tag_id_v<AmuletNBT::IntTag>:
+            return read_numeric_tag<AmuletNBT::IntTag>(reader);
+        case AmuletNBT::tag_id_v<AmuletNBT::LongTag>:
+            return read_numeric_tag<AmuletNBT::LongTag>(reader);
+        case AmuletNBT::tag_id_v<AmuletNBT::FloatTag>:
+            return read_numeric_tag<AmuletNBT::FloatTag>(reader);
+        case AmuletNBT::tag_id_v<AmuletNBT::DoubleTag>:
+            return read_numeric_tag<AmuletNBT::DoubleTag>(reader);
+        case AmuletNBT::tag_id_v<AmuletNBT::ByteArrayTag>:
+            return read_array_tag<AmuletNBT::ByteArrayTag>(reader);
+        case AmuletNBT::tag_id_v<AmuletNBT::StringTag>:
+            return read_string_tag(reader);
+        case AmuletNBT::tag_id_v<AmuletNBT::ListTag>:
+            return read_list_tag(reader);
+        case AmuletNBT::tag_id_v<AmuletNBT::CompoundTag>:
+            return read_compound_tag(reader);
+        case AmuletNBT::tag_id_v<AmuletNBT::IntArrayTag>:
+            return read_array_tag<AmuletNBT::IntArrayTag>(reader);
+        case AmuletNBT::tag_id_v<AmuletNBT::LongArrayTag>:
+            return read_array_tag<AmuletNBT::LongArrayTag>(reader);
         default:
-            throw std::runtime_error("Unsupported tag type");
+            throw std::runtime_error("Unsupported tag type " + std::to_string(tag_id));
     }
-    return node;
 };
 
 

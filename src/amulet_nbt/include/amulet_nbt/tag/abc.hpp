@@ -1,18 +1,10 @@
 #pragma once
 
-#include <string>
-#include <bit>
-
-#include <amulet_nbt/io/binary_writer.hpp>
-
 namespace AmuletNBT {
 
     class AbstractBaseTag {
         public:
             virtual ~AbstractBaseTag(){};
-            virtual std::string to_nbt(std::string, std::endian, AmuletNBT::StringEncode) const = 0;
-            virtual std::string to_snbt() const = 0;
-            virtual std::string to_snbt(const std::string& indent) const = 0;
     };
 
     class AbstractBaseImmutableTag: public AbstractBaseTag {

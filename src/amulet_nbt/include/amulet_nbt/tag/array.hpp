@@ -1,13 +1,23 @@
 #pragma once
 
+#include <cstdint>
+#include <memory>
 #include <vector>
+#include <type_traits>
+
+#include <amulet_nbt/common.hpp>
+#include <amulet_nbt/tag/abc.hpp>
 
 namespace AmuletNBT {
-    // The standard vector class can be resized.
-    // To make wrapping in numpy easier we will make the size fixed at runtime.
-    template<class T>
-    class ArrayTag : private std::vector<T>
-    {
+    template <typename T>
+    class ArrayTagTemplate: private std::vector<T>, public AbstractBaseArrayTag{
+        static_assert(
+            std::is_same_v<T, std::int8_t> || 
+            std::is_same_v<T, std::int32_t> || 
+            std::is_same_v<T, std::int64_t>, 
+            "T must be int 8, 32 or 64"
+        );
+
         public:
             // only methods that do not change the buffer size should be exposed here
             using std::vector<T>::vector;
@@ -42,9 +52,35 @@ namespace AmuletNBT {
             using std::vector<T>::empty;
             using std::vector<T>::size;
 
-            bool operator==(const ArrayTag<T>& other) const
-            {
+            bool operator==(const ArrayTagTemplate<T>& other) const {
                 return static_cast<const std::vector<T>&>(*this) == static_cast<const std::vector<T>&>(other);
             }
+
+            // Cast
+            explicit operator std::vector<T>() const {
+                return static_cast<const std::vector<T>&>(*this);
+            };
     };
+
+    typedef ArrayTagTemplate<std::int8_t> ByteArrayTag;
+    typedef ArrayTagTemplate<std::int32_t> IntArrayTag;
+    typedef ArrayTagTemplate<std::int64_t> LongArrayTag;
+
+    static_assert(std::is_copy_constructible_v<ByteArrayTag>, "ByteArrayTag is not copy constructible");
+    static_assert(std::is_copy_assignable_v<ByteArrayTag>, "ByteArrayTag is not copy assignable");
+    static_assert(std::is_copy_constructible_v<IntArrayTag>, "IntArrayTag is not copy constructible");
+    static_assert(std::is_copy_assignable_v<IntArrayTag>, "IntArrayTag is not copy assignable");
+    static_assert(std::is_copy_constructible_v<LongArrayTag>, "LongArrayTag is not copy constructible");
+    static_assert(std::is_copy_assignable_v<LongArrayTag>, "LongArrayTag is not copy assignable");
+
+    typedef std::shared_ptr<ByteArrayTag> ByteArrayTagPtr;
+    typedef std::shared_ptr<IntArrayTag> IntArrayTagPtr;
+    typedef std::shared_ptr<LongArrayTag> LongArrayTagPtr;
+
+    template<> struct tag_id<ByteArrayTag> { static constexpr std::uint8_t value = 7; };
+    template<> struct tag_id<ByteArrayTagPtr> { static constexpr std::uint8_t value = 7; };
+    template<> struct tag_id<IntArrayTag> { static constexpr std::uint8_t value = 11; };
+    template<> struct tag_id<IntArrayTagPtr> { static constexpr std::uint8_t value = 11; };
+    template<> struct tag_id<LongArrayTag> { static constexpr std::uint8_t value = 12; };
+    template<> struct tag_id<LongArrayTagPtr> { static constexpr std::uint8_t value = 12; };
 }

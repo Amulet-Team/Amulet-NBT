@@ -195,8 +195,8 @@ template <
 >
 inline void write_name_and_tag(AmuletNBT::BinaryWriter& writer, const std::string& name, const AmuletNBT::TagNode& node){
     std::visit([&writer, &name](auto&& tag) {
-        using T = std::decay_t<decltype(tag)>;
-        write_name_and_tag<T>(writer, name, tag);
+        using tagT = std::decay_t<decltype(tag)>;
+        write_name_and_tag<tagT>(writer, name, tag);
     }, node);
 }
 

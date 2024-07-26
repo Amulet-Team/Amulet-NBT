@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <type_traits>
 #include <variant>
 #include <memory>
@@ -26,4 +27,9 @@ namespace AmuletNBT {
     public:
         using std::runtime_error::runtime_error;
     };
+    template<typename T>
+    struct tag_id;
+
+    template<typename T>
+    inline constexpr std::uint8_t tag_id_v = tag_id<T>::value;
 }

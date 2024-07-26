@@ -4,29 +4,33 @@
 #include <variant>
 
 #include <amulet_nbt/common.hpp>
+#include <amulet_nbt/tag/int.hpp>
+#include <amulet_nbt/tag/float.hpp>
+#include <amulet_nbt/tag/string.hpp>
 #include <amulet_nbt/tag/list.hpp>
+#include <amulet_nbt/tag/compound.hpp>
+#include <amulet_nbt/tag/array.hpp>
 #include <amulet_nbt/tag/eq.hpp>
 
 
 namespace AmuletNBT{
-    bool NBTTag_eq(const AmuletNBT::ByteTag a, const AmuletNBT::ByteTag b){return a == b;};
-    bool NBTTag_eq(const AmuletNBT::ShortTag a, const AmuletNBT::ShortTag b){return a == b;};
-    bool NBTTag_eq(const AmuletNBT::IntTag a, const AmuletNBT::IntTag b){return a == b;};
-    bool NBTTag_eq(const AmuletNBT::LongTag a, const AmuletNBT::LongTag b){return a == b;};
-    bool NBTTag_eq(const AmuletNBT::FloatTag a, const AmuletNBT::FloatTag b){return a == b;};
-    bool NBTTag_eq(const AmuletNBT::DoubleTag a, const AmuletNBT::DoubleTag b){return a == b;};
-    bool NBTTag_eq(const AmuletNBT::StringTag a, const AmuletNBT::StringTag b){return a == b;};
-    bool NBTTag_eq(const AmuletNBT::ByteArrayTagPtr a, const AmuletNBT::ByteArrayTagPtr b){return *a == *b;};
-    bool NBTTag_eq(const AmuletNBT::IntArrayTagPtr a, const AmuletNBT::IntArrayTagPtr b){return *a == *b;};
-    bool NBTTag_eq(const AmuletNBT::LongArrayTagPtr a, const AmuletNBT::LongArrayTagPtr b){return *a == *b;};
+    bool NBTTag_eq(const AmuletNBT::ByteTag& a, const AmuletNBT::ByteTag& b){return a == b;};
+    bool NBTTag_eq(const AmuletNBT::ShortTag& a, const AmuletNBT::ShortTag& b){return a == b;};
+    bool NBTTag_eq(const AmuletNBT::IntTag& a, const AmuletNBT::IntTag& b){return a == b;};
+    bool NBTTag_eq(const AmuletNBT::LongTag& a, const AmuletNBT::LongTag& b){return a == b;};
+    bool NBTTag_eq(const AmuletNBT::FloatTag& a, const AmuletNBT::FloatTag& b){return a == b;};
+    bool NBTTag_eq(const AmuletNBT::DoubleTag& a, const AmuletNBT::DoubleTag& b){return a == b;};
+    bool NBTTag_eq(const AmuletNBT::StringTag& a, const AmuletNBT::StringTag& b){return a == b;};
+    bool NBTTag_eq(const AmuletNBT::ByteArrayTag& a, const AmuletNBT::ByteArrayTag& b){return a == b;};
+    bool NBTTag_eq(const AmuletNBT::IntArrayTag& a, const AmuletNBT::IntArrayTag& b){return a == b;};
+    bool NBTTag_eq(const AmuletNBT::LongArrayTag& a, const AmuletNBT::LongArrayTag& b){return a == b;};
 
     template <typename SelfT>
-    inline bool ListTag_eq(const AmuletNBT::ListTagPtr a, const AmuletNBT::ListTagPtr b){
-        const std::vector<SelfT>& a_vec = std::get<std::vector<SelfT>>(*a);
-        if (b->index() != variant_index<AmuletNBT::ListTag, std::vector<SelfT>>()){
-            return a_vec.size() == 0 && ListTag_size(*b) == 0;
+    inline bool ListTag_eq(const std::vector<SelfT>& a_vec, const AmuletNBT::ListTag& b){
+        if (!std::holds_alternative<std::vector<SelfT>>(b)){
+            return a_vec.size() == 0 && ListTag_size(b) == 0;
         }
-        const std::vector<SelfT>& b_vec = std::get<std::vector<SelfT>>(*b);
+        const std::vector<SelfT>& b_vec = std::get<std::vector<SelfT>>(b);
 
         if constexpr (is_shared_ptr<SelfT>::value){
             // Values are shared pointers
@@ -44,24 +48,25 @@ namespace AmuletNBT{
             return a_vec == b_vec;
         }
     }
-    bool NBTTag_eq(const AmuletNBT::ListTagPtr a, const AmuletNBT::ListTagPtr b){
-        switch(a->index()){
-            #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG) case ID: return ListTag_eq<TAG_STORAGE>(a, b);
-            case 0:
-                return ListTag_size(*b) == 0;
-            FOR_EACH_LIST_TAG(CASE)
-            #undef CASE
-        }
-        return false;
+    bool NBTTag_eq(const AmuletNBT::ListTag& a, const AmuletNBT::ListTag& b){
+        return std::visit([&b](auto&& list) -> bool {
+            using T = std::decay_t<decltype(list)>;
+            if constexpr (std::is_same_v<T, std::monostate>) {
+                return ListTag_size(b) == 0;
+            }
+            else {
+                return ListTag_eq<typename T::value_type>(list, b);
+            }
+        }, a);
     };
-    bool NBTTag_eq(const AmuletNBT::CompoundTagPtr a, const AmuletNBT::CompoundTagPtr b){
-        if (a->size() != b->size()){
+    bool NBTTag_eq(const AmuletNBT::CompoundTag& a, const AmuletNBT::CompoundTag& b){
+        if (a.size() != b.size()){
             // Size does not match
             return false;
         }
-        for (auto& [key, value]: *a){
-            AmuletNBT::CompoundTag::iterator it = b->find(key);
-            if (it == b->end()){
+        for (auto& [key, value]: a){
+            auto it = b.find(key);
+            if (it == b.end()){
                 // Key not in b
                 return false;
             }
@@ -72,14 +77,18 @@ namespace AmuletNBT{
         }
         return true;
     };
-    bool NBTTag_eq(const AmuletNBT::TagNode a, const AmuletNBT::TagNode b){
-        switch(a.index()){
-            #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG) case ID: return b.index() == ID && NBTTag_eq(std::get<TAG_STORAGE>(a), std::get<TAG_STORAGE>(b));
-            case 0:
-                return b.index() == 0;
-            FOR_EACH_LIST_TAG(CASE)
-            #undef CASE
-        }
-        return false;
+    bool NBTTag_eq(const AmuletNBT::TagNode& a, const AmuletNBT::TagNode& b){
+        return std::visit([&b](auto&& tag) -> bool {
+            using T = std::decay_t<decltype(tag)>;
+            if (!std::holds_alternative<T>(b)) {
+                return false;
+            }
+            if constexpr (is_shared_ptr<T>::value) {
+                return NBTTag_eq(*tag, *std::get<T>(b));
+            }
+            else {
+                return NBTTag_eq(tag, std::get<T>(b));
+            }
+        }, a);
     };
 }

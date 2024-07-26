@@ -10,8 +10,8 @@
 #include <pybind11/stl.h>
 #include <pybind11/operators.h>
 
-#include <amulet_nbt/tag/nbt.hpp>
-#include <amulet_nbt/tag/wrapper.hpp>
+#include <amulet_nbt/tag/compound.hpp>
+#include <amulet_nbt/tag/named_tag.hpp>
 #include <amulet_nbt/tag/eq.hpp>
 #include <amulet_nbt/tag/copy.hpp>
 #include <amulet_nbt/nbt_encoding/binary.hpp>
@@ -63,12 +63,16 @@ void init_named_tag(py::module& m) {
 
     py::class_<AmuletNBT::NamedTag> NamedTag(m, "NamedTag");
         NamedTag.def(
-            py::init([](AmuletNBT::WrapperNode tag, std::string name) {
-                if (tag.index() == 0){
-                    return AmuletNBT::NamedTag(name, std::make_shared<AmuletNBT::CompoundTag>());
-                } else {
-                    return AmuletNBT::NamedTag(name, AmuletNBT::unwrap_node(tag));
-                }
+            py::init([](std::variant<std::monostate, AmuletNBT::TagNode> value, std::string name) {
+                return std::visit([&name](auto&& tag) {
+                    using T = std::decay_t<decltype(tag)>;
+                    if constexpr (std::is_same_v<T, std::monostate>) {
+                        return AmuletNBT::NamedTag(name, std::make_shared<AmuletNBT::CompoundTag>());
+                    }
+                    else {
+                        return AmuletNBT::NamedTag(name, tag);
+                    }
+                }, value);
             }),
             py::arg("tag") = py::none(), py::arg("name") = ""
         );
@@ -88,13 +92,10 @@ void init_named_tag(py::module& m) {
         NamedTag.def_property(
             "tag",
             [](const AmuletNBT::NamedTag& self){
-                return AmuletNBT::wrap_node(self.tag_node);
+                return self.tag_node;
             },
-            [](AmuletNBT::NamedTag& self, AmuletNBT::WrapperNode tag){
-                if (tag.index() == 0){
-                    throw std::invalid_argument("tag cannot be None");
-                }
-                self.tag_node = AmuletNBT::unwrap_node(tag);
+            [](AmuletNBT::NamedTag& self, AmuletNBT::TagNode tag){
+                self.tag_node = tag;
             }
         );
         auto to_nbt = [compress](
@@ -231,7 +232,7 @@ void init_named_tag(py::module& m) {
             [](const AmuletNBT::NamedTag& self){
                 std::string out;
                 out += "NamedTag(";
-                out += py::repr(py::cast(AmuletNBT::wrap_node(self.tag_node)));
+                out += py::repr(py::cast(self.tag_node));
                 out += ", ";
                 try {
                     out += py::repr(py::str(self.name));
@@ -299,10 +300,10 @@ void init_named_tag(py::module& m) {
         NamedTag.def_property_readonly(\
             TAG_NAME,\
             [](const AmuletNBT::NamedTag& self){\
-                if (self.tag_node.index() != ID){\
+                if (!std::holds_alternative<TAG_STORAGE>(self.tag_node)){\
                     throw pybind11::type_error("tag_node is not a "#TAG);\
                 }\
-                return AmuletNBT::TagWrapper<TAG_STORAGE>(std::get<TAG_STORAGE>(self.tag_node));\
+                return std::get<TAG_STORAGE>(self.tag_node);\
             },\
             py::doc(\
                 "Get the tag if it is a "#TAG".\n"\

@@ -69,7 +69,7 @@ inline void write_payload(AmuletNBT::BinaryWriter& writer, const T& value){
     }
     std::int32_t length = static_cast<std::int32_t>(value.size());
     writer.writeNumeric<std::int32_t>(length);
-    for (const T::value_type& element: value){
+    for (const typename T::value_type& element: value){
         writer.writeNumeric<typename T::value_type>(element);
     }
 }

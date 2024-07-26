@@ -92,12 +92,13 @@ namespace AmuletNBT {
     }
 
     inline void write_snbt(std::string& snbt, const FloatTag& tag){
-        if (std::isfinite(tag)){
-            snbt.append(encode_float<FloatTagNative>(tag));
+        FloatTagNative native_tag = static_cast<FloatTagNative>(tag);
+        if (std::isfinite(native_tag)){
+            snbt.append(encode_float<FloatTagNative>(native_tag));
             snbt.push_back('f');
-        } else if (tag == std::numeric_limits<FloatTagNative>::infinity()){
+        } else if (native_tag == std::numeric_limits<FloatTagNative>::infinity()){
             snbt.append("Infinityf");
-        } else if (tag == -std::numeric_limits<FloatTagNative>::infinity()){
+        } else if (native_tag == -std::numeric_limits<FloatTagNative>::infinity()){
             snbt.append("-Infinityf");
         } else {
             snbt.append("NaNf");
@@ -105,12 +106,13 @@ namespace AmuletNBT {
     }
 
     inline void write_snbt(std::string& snbt, const DoubleTag& tag){
-        if (std::isfinite(tag)){
-            snbt.append(encode_float<DoubleTagNative>(tag));
+        DoubleTagNative native_tag = static_cast<DoubleTagNative>(tag);
+        if (std::isfinite(native_tag)){
+            snbt.append(encode_float<DoubleTagNative>(native_tag));
             snbt.push_back('d');
-        } else if (tag == std::numeric_limits<DoubleTagNative>::infinity()){
+        } else if (native_tag == std::numeric_limits<DoubleTagNative>::infinity()){
             snbt.append("Infinityd");
-        } else if (tag == -std::numeric_limits<DoubleTagNative>::infinity()){
+        } else if (native_tag == -std::numeric_limits<DoubleTagNative>::infinity()){
             snbt.append("-Infinityd");
         } else {
             snbt.append("NaNd");

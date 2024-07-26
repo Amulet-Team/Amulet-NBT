@@ -13,15 +13,18 @@ namespace AmuletNBT {
             std::is_same_v<T, double>,
             "T must be float or double"
         );
-        private:
-            T value;
         public:
+            T value;
             typedef T native_type;
-            FloatTagTemplate() : value(0.0) {};
+            FloatTagTemplate() : value() {};
             FloatTagTemplate(const T& value) : value(value) {};
-            operator const T&() const {
-                return value;
-            };
+            FloatTagTemplate(const FloatTagTemplate<T>& other) : value(other.value) {};
+            FloatTagTemplate<T>& operator=(const FloatTagTemplate<T>& rhs) { value = rhs.value; return *this; };
+            FloatTagTemplate<T>& operator=(const T& rhs) { value = rhs; return *this; };
+            operator const T&() const { return value; };
+            operator T& () { return value; };
+            bool operator==(const FloatTagTemplate<T>& rhs) { return value == rhs.value; }
+            bool operator<(const FloatTagTemplate<T>& rhs) { return value < rhs.value; }
     };
 
     typedef float FloatTagNative;

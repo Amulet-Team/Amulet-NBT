@@ -16,15 +16,18 @@ namespace AmuletNBT {
             std::is_same_v<T, std::int64_t>, 
             "T must be int 8, 16, 32 or 64"
         );
-        private:
-            T value;
         public:
+            T value;
             typedef T native_type;
-            IntTagTemplate() : value(0) {};
+            IntTagTemplate() : value() {};
             IntTagTemplate(const T& value) : value(value) {};
-            operator const T&() const {
-                return value;
-            };
+            IntTagTemplate(const IntTagTemplate<T>& other) : value(other.value) {};
+            IntTagTemplate<T>& operator=(const IntTagTemplate<T>& rhs) { value = rhs.value; return *this; };
+            IntTagTemplate<T>& operator=(const T& rhs) { value = rhs; return *this; };
+            operator const T&() const { return value; };
+            operator T& () { return value; };
+            bool operator==(const IntTagTemplate<T>& rhs) { return value == rhs.value; }
+            bool operator<(const IntTagTemplate<T>& rhs) { return value < rhs.value; }
     };
 
     typedef std::int8_t ByteTagNative;

@@ -297,7 +297,8 @@ AmuletNBT::TagNode _read_snbt(const AmuletNBT::CodePointVector& snbt, size_t& in
             {
                 index++;
                 read_whitespace(snbt, index);
-                auto tag = std::make_shared<AmuletNBT::CompoundTag>();
+                AmuletNBT::CompoundTagPtr tag_ptr = std::make_shared<AmuletNBT::CompoundTag>();
+                AmuletNBT::CompoundTag& tag = *tag_ptr;
                 while (read_code_point(snbt, index) != '}'){
                     // read the key
                     std::string key = AmuletNBT::write_utf8(read_string(snbt, index).first);
@@ -309,13 +310,13 @@ AmuletNBT::TagNode _read_snbt(const AmuletNBT::CodePointVector& snbt, size_t& in
                     AmuletNBT::TagNode node = _read_snbt(snbt, index);
                     
                     // Write to the map
-                    tag->insert_or_assign(key, node);
+                    tag[key] = node;
 
                     // Read past the comma
                     read_comma(snbt, index, '}');
                 }
                 index++;  // seek past '}'
-                return tag;
+                return tag_ptr;
             }
         case '[':
             index++;
@@ -337,7 +338,7 @@ AmuletNBT::TagNode _read_snbt(const AmuletNBT::CodePointVector& snbt, size_t& in
                         // read the value
                         auto value = _read_snbt(snbt, index);
 
-                        if (tag->index() != 0 && tag->index() != value.index()){
+                        if (tag->index() != 0 && tag->index() != value.index() + 1){
                             throw std::invalid_argument("All elements of a list tag must have the same type.");
                         }
 

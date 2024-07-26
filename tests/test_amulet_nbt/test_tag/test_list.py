@@ -728,14 +728,13 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
     def test_iadd(self) -> None:
         tag_ = tag = ListTag()
         tag += [StringTag("val1")]
-        self.assertEqual(tag_, tag)
         self.assertIsInstance(tag, ListTag)
         self.assertEqual(
             ListTag([StringTag("val1")]),
             tag,
         )
-        tag += ListTag([StringTag("val2"), StringTag("val3")])
         self.assertEqual(tag_, tag)
+        tag += ListTag([StringTag("val2"), StringTag("val3")])
         self.assertIsInstance(tag, ListTag)
         self.assertEqual(
             ListTag(
@@ -747,6 +746,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
             ),
             tag,
         )
+        self.assertEqual(tag_, tag)
 
         for cls1, cls2 in itertools.product(self.nbt_types, repeat=2):
             with self.subTest(cls1=cls1, cls2=cls2):

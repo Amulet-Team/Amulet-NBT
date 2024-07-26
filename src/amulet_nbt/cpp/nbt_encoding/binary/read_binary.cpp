@@ -68,7 +68,7 @@ inline AmuletNBT::ListTagPtr read_numeric_list_tag(AmuletNBT::BinaryReader& read
     AmuletNBT::ListTagPtr tag = std::make_shared<AmuletNBT::ListTag>(std::vector<T>(length));
     std::vector<T>& list = std::get<std::vector<T>>(*tag);
     for (std::int32_t i = 0; i < length; i++){
-        reader.readNumericInto<T>(list[i]);
+        list[i] = T(reader.readNumeric<typename T::native_type>());
     }
     return tag;
 }

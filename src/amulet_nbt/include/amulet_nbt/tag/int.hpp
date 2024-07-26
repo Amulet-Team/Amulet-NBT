@@ -17,13 +17,11 @@ namespace AmuletNBT {
             "T must be int 8, 16, 32 or 64"
         );
         private:
-            const T value;
+            T value;
         public:
             typedef T native_type;
             IntTagTemplate() : value(0) {};
             IntTagTemplate(const T& value) : value(value) {};
-            IntTagTemplate(const IntTagTemplate<T>& other) : value(other.value) {};
-            IntTagTemplate<T> operator=(const IntTagTemplate<T>& other) { return other.value; };
             operator const T&() const {
                 return value;
             };

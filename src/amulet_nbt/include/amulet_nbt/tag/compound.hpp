@@ -10,7 +10,6 @@
 #include <amulet_nbt/tag/int.hpp>
 #include <amulet_nbt/tag/float.hpp>
 #include <amulet_nbt/tag/string.hpp>
-#include <amulet_nbt/tag/list.hpp>
 #include <amulet_nbt/tag/array.hpp>
 
 namespace AmuletNBT {
@@ -34,7 +33,9 @@ namespace AmuletNBT {
         LongArrayTagPtr
     > TagNode;
 
-    class CompoundTag: public std::unordered_map<std::string, TagNode>, public AbstractBaseMutableTag{
+    typedef std::unordered_map<std::string, TagNode> CompoundTagNative;
+
+    class CompoundTag: public CompoundTagNative, public AbstractBaseMutableTag{
         using unordered_map::unordered_map;
     };
 
@@ -43,32 +44,6 @@ namespace AmuletNBT {
 
     template<> struct tag_id<CompoundTag> { static constexpr std::uint8_t value = 10; };
     template<> struct tag_id<CompoundTagPtr> { static constexpr std::uint8_t value = 10; };
-
-    class CompoundTagIterator {
-        private:
-            AmuletNBT::CompoundTagPtr tag;
-            const AmuletNBT::CompoundTag::iterator begin;
-            const AmuletNBT::CompoundTag::iterator end;
-            AmuletNBT::CompoundTag::iterator pos;
-            size_t size;
-        public:
-            CompoundTagIterator(
-                AmuletNBT::CompoundTagPtr tag
-            ) : tag(tag), begin(tag->begin()), end(tag->end()), pos(tag->begin()), size(tag->size()) {};
-            std::string next() {
-                if (!is_valid()) {
-                    throw std::runtime_error("CompoundTag changed size during iteration.");
-                }
-                return (pos++)->first;
-            };
-            bool has_next() {
-                return pos != end;
-            };
-            bool is_valid() {
-                // This is not fool proof.
-                // There are cases where this is true but the iterator is invalid.
-                // The programmer should write good code and this will catch some of the bad cases.
-                return size == tag->size() && begin == tag->begin() && end == tag->end();
-            };
-    };
 }
+
+#include <amulet_nbt/tag/list.hpp>

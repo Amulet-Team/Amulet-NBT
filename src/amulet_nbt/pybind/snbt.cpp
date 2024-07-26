@@ -4,7 +4,6 @@
 #include <pybind11/stl.h>
 #include <pybind11/operators.h>
 
-#include <amulet_nbt/tag/wrapper.hpp>
 #include <amulet_nbt/nbt_encoding/string.hpp>
 
 namespace py = pybind11;
@@ -13,7 +12,7 @@ void init_snbt(py::module& m) {
     m.def(
         "read_snbt",
         [](std::string snbt){
-            return AmuletNBT::wrap_node(AmuletNBT::read_snbt(snbt));
+            return AmuletNBT::read_snbt(snbt);
         },
         py::arg("snbt"),
         py::doc(

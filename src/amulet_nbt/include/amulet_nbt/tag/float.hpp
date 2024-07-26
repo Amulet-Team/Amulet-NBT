@@ -14,13 +14,11 @@ namespace AmuletNBT {
             "T must be float or double"
         );
         private:
-            const T value;
+            T value;
         public:
             typedef T native_type;
             FloatTagTemplate() : value(0.0) {};
             FloatTagTemplate(const T& value) : value(value) {};
-            FloatTagTemplate(const FloatTagTemplate<T>& other) : value(other.value) {};
-            FloatTagTemplate<T> operator=(const FloatTagTemplate<T>& other) { return other.value; };
             operator const T&() const {
                 return value;
             };

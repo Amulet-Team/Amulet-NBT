@@ -21,13 +21,13 @@ namespace AmuletNBT{
     bool NBTTag_eq(const AmuletNBT::FloatTag& a, const AmuletNBT::FloatTag& b){return a == b;};
     bool NBTTag_eq(const AmuletNBT::DoubleTag& a, const AmuletNBT::DoubleTag& b){return a == b;};
     bool NBTTag_eq(const AmuletNBT::StringTag& a, const AmuletNBT::StringTag& b){return a == b;};
-    bool NBTTag_eq(const AmuletNBT::ByteArrayTagPtr a, const AmuletNBT::ByteArrayTagPtr b){return *a == *b;};
-    bool NBTTag_eq(const AmuletNBT::IntArrayTagPtr a, const AmuletNBT::IntArrayTagPtr b){return *a == *b;};
-    bool NBTTag_eq(const AmuletNBT::LongArrayTagPtr a, const AmuletNBT::LongArrayTagPtr b){return *a == *b;};
+    bool NBTTag_eq(const AmuletNBT::ByteArrayTag& a, const AmuletNBT::ByteArrayTag& b){return a == b;};
+    bool NBTTag_eq(const AmuletNBT::IntArrayTag& a, const AmuletNBT::IntArrayTag& b){return a == b;};
+    bool NBTTag_eq(const AmuletNBT::LongArrayTag& a, const AmuletNBT::LongArrayTag& b){return a == b;};
 
     template <typename SelfT>
     inline bool ListTag_eq(const std::vector<SelfT>& a_vec, const AmuletNBT::ListTag& b){
-        if (b.index() != variant_index<AmuletNBT::ListTag, std::vector<SelfT>>()){
+        if (!std::holds_alternative<std::vector<SelfT>>(b)){
             return a_vec.size() == 0 && ListTag_size(b) == 0;
         }
         const std::vector<SelfT>& b_vec = std::get<std::vector<SelfT>>(b);
@@ -48,7 +48,7 @@ namespace AmuletNBT{
             return a_vec == b_vec;
         }
     }
-    bool NBTTag_eq(const AmuletNBT::ListTag& a, const AmuletNBT::ListTag b){
+    bool NBTTag_eq(const AmuletNBT::ListTag& a, const AmuletNBT::ListTag& b){
         return std::visit([&b](auto&& list) -> bool {
             using T = std::decay_t<decltype(list)>;
             if constexpr (std::is_same_v<T, std::monostate>) {
@@ -80,7 +80,15 @@ namespace AmuletNBT{
     bool NBTTag_eq(const AmuletNBT::TagNode& a, const AmuletNBT::TagNode& b){
         return std::visit([&b](auto&& tag) -> bool {
             using T = std::decay_t<decltype(tag)>;
-            return b.index() == variant_index<AmuletNBT::TagNode, T>() && NBTTag_eq(tag, std::get<T>(b));
+            if (!std::holds_alternative<T>(b)) {
+                return false;
+            }
+            if constexpr (is_shared_ptr<T>::value) {
+                return NBTTag_eq(*tag, *std::get<T>(b));
+            }
+            else {
+                return NBTTag_eq(tag, std::get<T>(b));
+            }
         }, a);
     };
 }

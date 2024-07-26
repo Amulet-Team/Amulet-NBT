@@ -40,7 +40,13 @@ namespace AmuletNBT {
 
     inline void write_snbt(std::string& snbt, const TagNode& node){
         std::visit([&snbt](auto&& tag){
-            write_snbt(snbt, tag);
+            using T = std::decay_t<decltype(tag)>;
+            if constexpr (is_shared_ptr<T>()) {
+                write_snbt(snbt, *tag);
+            }
+            else {
+                write_snbt(snbt, tag);
+            }
         }, node);
     }
 
@@ -133,7 +139,24 @@ namespace AmuletNBT {
     }
 
 
-    template <typename T>
+    template <
+        typename T,
+        std::enable_if_t<
+        std::is_same_v<T, AmuletNBT::ByteTag> ||
+        std::is_same_v<T, AmuletNBT::ShortTag> ||
+        std::is_same_v<T, AmuletNBT::IntTag> ||
+        std::is_same_v<T, AmuletNBT::LongTag> ||
+        std::is_same_v<T, AmuletNBT::FloatTag> ||
+        std::is_same_v<T, AmuletNBT::DoubleTag> ||
+        std::is_same_v<T, AmuletNBT::ByteArrayTagPtr> ||
+        std::is_same_v<T, AmuletNBT::StringTag> ||
+        std::is_same_v<T, AmuletNBT::ListTagPtr> ||
+        std::is_same_v<T, AmuletNBT::CompoundTagPtr> ||
+        std::is_same_v<T, AmuletNBT::IntArrayTagPtr> ||
+        std::is_same_v<T, AmuletNBT::LongArrayTagPtr>,
+        bool
+        > = true
+    >
     inline void write_snbt_list(std::string& snbt, const ListTag& tag){
         const std::vector<T>& list = std::get<std::vector<T>>(tag);
         snbt.append("[");
@@ -152,26 +175,19 @@ namespace AmuletNBT {
 
 
     inline void write_snbt(std::string& snbt, const ListTag& tag){
-        switch (tag.index()){
-            case 0: snbt.append("[]"); break;
-            case 1: write_snbt_list<ByteTag>(snbt, tag); break;
-            case 2: write_snbt_list<ShortTag>(snbt, tag); break;
-            case 3: write_snbt_list<IntTag>(snbt, tag); break;
-            case 4: write_snbt_list<LongTag>(snbt, tag); break;
-            case 5: write_snbt_list<FloatTag>(snbt, tag); break;
-            case 6: write_snbt_list<DoubleTag>(snbt, tag); break;
-            case 7: write_snbt_list<ByteArrayTagPtr>(snbt, tag); break;
-            case 8: write_snbt_list<StringTag>(snbt, tag); break;
-            case 9: write_snbt_list<ListTagPtr>(snbt, tag); break;
-            case 10: write_snbt_list<CompoundTagPtr>(snbt, tag); break;
-            case 11: write_snbt_list<IntArrayTagPtr>(snbt, tag); break;
-            case 12: write_snbt_list<LongArrayTagPtr>(snbt, tag); break;
-        }
+        std::visit([&snbt](auto&& list_tag) {
+            using T = std::decay_t<decltype(list_tag)>;
+            if constexpr (std::is_same_v<T, std::monostate>) {
+                snbt.append("[]");
+            }
+            else {
+                write_snbt_list<typename T::value_type>(snbt, list_tag);
+            }
+        }, tag);
     }
 
     template <typename T>
-    inline void write_formatted_snbt_list(std::string& snbt, const ListTag& tag, const std::string& indent, const size_t& indent_count){
-        const std::vector<T>& list = std::get<std::vector<T>>(tag);
+    inline void write_formatted_snbt_list(std::string& snbt, const std::vector<T>& list, const std::string& indent, const size_t& indent_count){
         snbt.append("[");
         for (size_t i = 0; i < list.size(); i++){
             snbt.append("\n");
@@ -195,21 +211,15 @@ namespace AmuletNBT {
     }
 
     inline void write_formatted_snbt(std::string& snbt, const ListTag& tag, const std::string& indent, const size_t& indent_count){
-        switch (tag.index()){
-            case 0: snbt.append("[]"); break;
-            case 1: write_formatted_snbt_list<ByteTag>(snbt, tag, indent, indent_count); break;
-            case 2: write_formatted_snbt_list<ShortTag>(snbt, tag, indent, indent_count); break;
-            case 3: write_formatted_snbt_list<IntTag>(snbt, tag, indent, indent_count); break;
-            case 4: write_formatted_snbt_list<LongTag>(snbt, tag, indent, indent_count); break;
-            case 5: write_formatted_snbt_list<FloatTag>(snbt, tag, indent, indent_count); break;
-            case 6: write_formatted_snbt_list<DoubleTag>(snbt, tag, indent, indent_count); break;
-            case 7: write_formatted_snbt_list<ByteArrayTagPtr>(snbt, tag, indent, indent_count); break;
-            case 8: write_formatted_snbt_list<StringTag>(snbt, tag, indent, indent_count); break;
-            case 9: write_formatted_snbt_list<ListTagPtr>(snbt, tag, indent, indent_count); break;
-            case 10: write_formatted_snbt_list<CompoundTagPtr>(snbt, tag, indent, indent_count); break;
-            case 11: write_formatted_snbt_list<IntArrayTagPtr>(snbt, tag, indent, indent_count); break;
-            case 12: write_formatted_snbt_list<LongArrayTagPtr>(snbt, tag, indent, indent_count); break;
-        }
+        std::visit([&snbt, &indent, &indent_count](auto&& list_tag) {
+            using T = std::decay_t<decltype(list_tag)>;
+            if constexpr (std::is_same_v<T, std::monostate>) {
+                snbt.append("[]");
+            }
+            else {
+                write_formatted_snbt_list<typename T::value_type>(snbt, list_tag, indent, indent_count);
+            }
+        }, tag);
     }
 
 
@@ -315,155 +325,155 @@ namespace AmuletNBT {
     }
 
 
-    inline std::string write_snbt(const TagNode& tag){
+    std::string write_snbt(const TagNode& tag){
         std::string snbt;
         write_snbt(snbt, tag);
         return snbt;
     }
-    inline std::string write_snbt(const ByteTag& tag){
+    std::string write_snbt(const ByteTag& tag){
         std::string snbt;
         write_snbt(snbt, tag);
         return snbt;
     }
-    inline std::string write_snbt(const ShortTag& tag){
+    std::string write_snbt(const ShortTag& tag){
         std::string snbt;
         write_snbt(snbt, tag);
         return snbt;
     }
-    inline std::string write_snbt(const IntTag& tag){
+    std::string write_snbt(const IntTag& tag){
         std::string snbt;
         write_snbt(snbt, tag);
         return snbt;
     }
-    inline std::string write_snbt(const LongTag& tag){
+    std::string write_snbt(const LongTag& tag){
         std::string snbt;
         write_snbt(snbt, tag);
         return snbt;
     }
-    inline std::string write_snbt(const FloatTag& tag){
+    std::string write_snbt(const FloatTag& tag){
         std::string snbt;
         write_snbt(snbt, tag);
         return snbt;
     }
-    inline std::string write_snbt(const DoubleTag& tag){
+    std::string write_snbt(const DoubleTag& tag){
         std::string snbt;
         write_snbt(snbt, tag);
         return snbt;
     }
-    inline std::string write_snbt(const ByteArrayTag& tag){
+    std::string write_snbt(const ByteArrayTag& tag){
         std::string snbt;
         write_snbt(snbt, tag);
         return snbt;
     }
-    inline std::string write_snbt(const StringTag& tag){
+    std::string write_snbt(const StringTag& tag){
         std::string snbt;
         write_snbt(snbt, tag);
         return snbt;
     }
-    inline std::string write_snbt(const ListTag& tag){
+    std::string write_snbt(const ListTag& tag){
         std::string snbt;
         write_snbt(snbt, tag);
         return snbt;
     }
-    inline std::string write_snbt(const CompoundTag& tag){
+    std::string write_snbt(const CompoundTag& tag){
         std::string snbt;
         write_snbt(snbt, tag);
         return snbt;
     }
-    inline std::string write_snbt(const IntArrayTag& tag){
+    std::string write_snbt(const IntArrayTag& tag){
         std::string snbt;
         write_snbt(snbt, tag);
         return snbt;
     }
-    inline std::string write_snbt(const LongArrayTag& tag){
+    std::string write_snbt(const LongArrayTag& tag){
         std::string snbt;
         write_snbt(snbt, tag);
         return snbt;
     }
 
-    inline void write_formatted_snbt(std::string& snbt, const TagNode& tag, const std::string& indent){
+    void write_formatted_snbt(std::string& snbt, const TagNode& tag, const std::string& indent){
         return write_formatted_snbt(snbt, tag, indent, 0);
     }
-    inline void write_formatted_snbt(std::string& snbt, const ByteTag& tag, const std::string& indent){
+    void write_formatted_snbt(std::string& snbt, const ByteTag& tag, const std::string& indent){
         write_snbt(snbt, tag);
     }
-    inline void write_formatted_snbt(std::string& snbt, const ShortTag& tag, const std::string& indent){
+    void write_formatted_snbt(std::string& snbt, const ShortTag& tag, const std::string& indent){
         write_snbt(snbt, tag);
     }
-    inline void write_formatted_snbt(std::string& snbt, const IntTag& tag, const std::string& indent){
+    void write_formatted_snbt(std::string& snbt, const IntTag& tag, const std::string& indent){
         write_snbt(snbt, tag);
     }
-    inline void write_formatted_snbt(std::string& snbt, const LongTag& tag, const std::string& indent){
+    void write_formatted_snbt(std::string& snbt, const LongTag& tag, const std::string& indent){
         write_snbt(snbt, tag);
     }
-    inline void write_formatted_snbt(std::string& snbt, const FloatTag& tag, const std::string& indent){
+    void write_formatted_snbt(std::string& snbt, const FloatTag& tag, const std::string& indent){
         write_snbt(snbt, tag);
     }
-    inline void write_formatted_snbt(std::string& snbt, const DoubleTag& tag, const std::string& indent){
+    void write_formatted_snbt(std::string& snbt, const DoubleTag& tag, const std::string& indent){
         write_snbt(snbt, tag);
     }
-    inline void write_formatted_snbt(std::string& snbt, const ByteArrayTag& tag, const std::string& indent){
+    void write_formatted_snbt(std::string& snbt, const ByteArrayTag& tag, const std::string& indent){
         write_snbt(snbt, tag);
     }
-    inline void write_formatted_snbt(std::string& snbt, const StringTag& tag, const std::string& indent){
+    void write_formatted_snbt(std::string& snbt, const StringTag& tag, const std::string& indent){
         write_snbt(snbt, tag);
     }
-    inline void write_formatted_snbt(std::string& snbt, const ListTag& tag, const std::string& indent){
+    void write_formatted_snbt(std::string& snbt, const ListTag& tag, const std::string& indent){
         return write_formatted_snbt(snbt, tag, indent, 0);
     }
-    inline void write_formatted_snbt(std::string& snbt, const CompoundTag& tag, const std::string& indent){
+    void write_formatted_snbt(std::string& snbt, const CompoundTag& tag, const std::string& indent){
         return write_formatted_snbt(snbt, tag, indent, 0);
     }
-    inline void write_formatted_snbt(std::string& snbt, const IntArrayTag& tag, const std::string& indent){
+    void write_formatted_snbt(std::string& snbt, const IntArrayTag& tag, const std::string& indent){
         write_snbt(snbt, tag);
     }
-    inline void write_formatted_snbt(std::string& snbt, const LongArrayTag& tag, const std::string& indent){
+    void write_formatted_snbt(std::string& snbt, const LongArrayTag& tag, const std::string& indent){
         write_snbt(snbt, tag);
     }
 
-    inline std::string write_formatted_snbt(const TagNode& tag, const std::string& indent){
+    std::string write_formatted_snbt(const TagNode& tag, const std::string& indent){
         std::string snbt;
         write_formatted_snbt(snbt, tag, indent);
         return snbt;
     }
-    inline std::string write_formatted_snbt(const ByteTag& tag, const std::string& indent){
+    std::string write_formatted_snbt(const ByteTag& tag, const std::string& indent){
         return write_snbt(tag);
     }
-    inline std::string write_formatted_snbt(const ShortTag& tag, const std::string& indent){
+    std::string write_formatted_snbt(const ShortTag& tag, const std::string& indent){
         return write_snbt(tag);
     }
-    inline std::string write_formatted_snbt(const IntTag& tag, const std::string& indent){
+    std::string write_formatted_snbt(const IntTag& tag, const std::string& indent){
         return write_snbt(tag);
     }
-    inline std::string write_formatted_snbt(const LongTag& tag, const std::string& indent){
+    std::string write_formatted_snbt(const LongTag& tag, const std::string& indent){
         return write_snbt(tag);
     }
-    inline std::string write_formatted_snbt(const FloatTag& tag, const std::string& indent){
+    std::string write_formatted_snbt(const FloatTag& tag, const std::string& indent){
         return write_snbt(tag);
     }
-    inline std::string write_formatted_snbt(const DoubleTag& tag, const std::string& indent){
+    std::string write_formatted_snbt(const DoubleTag& tag, const std::string& indent){
         return write_snbt(tag);
     }
-    inline std::string write_formatted_snbt(const ByteArrayTag& tag, const std::string& indent){
+    std::string write_formatted_snbt(const ByteArrayTag& tag, const std::string& indent){
         return write_snbt(tag);
     }
-    inline std::string write_formatted_snbt(const StringTag& tag, const std::string& indent){
+    std::string write_formatted_snbt(const StringTag& tag, const std::string& indent){
         return write_snbt(tag);
     }
-    inline std::string write_formatted_snbt(const ListTag& tag, const std::string& indent){
+    std::string write_formatted_snbt(const ListTag& tag, const std::string& indent){
         std::string snbt;
         write_formatted_snbt(snbt, tag, indent);
         return snbt;
     }
-    inline std::string write_formatted_snbt(const CompoundTag& tag, const std::string& indent){
+    std::string write_formatted_snbt(const CompoundTag& tag, const std::string& indent){
         std::string snbt;
         write_formatted_snbt(snbt, tag, indent);
         return snbt;
     }
-    inline std::string write_formatted_snbt(const IntArrayTag& tag, const std::string& indent){
+    std::string write_formatted_snbt(const IntArrayTag& tag, const std::string& indent){
         return write_snbt(tag);
     }
-    inline std::string write_formatted_snbt(const LongArrayTag& tag, const std::string& indent){
+    std::string write_formatted_snbt(const LongArrayTag& tag, const std::string& indent){
         return write_snbt(tag);
     }
 }

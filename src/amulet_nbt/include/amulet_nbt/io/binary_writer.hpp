@@ -14,7 +14,7 @@ namespace AmuletNBT {
 
 
     class BinaryWriter {
-    private:
+    protected:
         std::string data;
         std::endian endianness;
         StringEncode string_encode;
@@ -42,15 +42,17 @@ namespace AmuletNBT {
             }
         }
 
+        // Encode and return a string.
         std::string encodeString(const std::string& value) {
             return string_encode(value);
         }
 
-        void writeString(const std::string& value) {
+        // Write a string without encoding or prefixed size.
+        void writeBytes(const std::string& value) {
             data.append(value);
         }
 
-        std::string getBuffer(){
+        const std::string& getBuffer(){
             return data;
         }
     };

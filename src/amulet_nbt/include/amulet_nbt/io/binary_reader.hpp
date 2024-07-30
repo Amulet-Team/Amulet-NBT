@@ -15,7 +15,7 @@ namespace AmuletNBT {
 
 
     class BinaryReader {
-    private:
+    protected:
         const std::string& data;
         size_t& position;
         std::endian endianness;
@@ -69,6 +69,7 @@ namespace AmuletNBT {
             return value;
         }
 
+        // Read length bytes, decode and return.
         std::string readString(size_t length) {
             // Ensure the buffer is long enough
             if (position + length > data.size()) {
@@ -80,10 +81,12 @@ namespace AmuletNBT {
             return string_decode(value);
         }
 
+        // Get the current read position.
         size_t getPosition(){
             return position;
         }
 
+        // Is there more unread data.
         bool has_more_data(){
             return position < data.size();
         }

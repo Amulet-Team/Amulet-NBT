@@ -41,7 +41,7 @@ inline void write_string(AmuletNBT::BinaryWriter& writer, const std::string& val
         throw std::overflow_error("String of length " + std::to_string(encoded_string.size()) + " is too long.");
     }
     writer.writeNumeric<std::uint16_t>(static_cast<std::uint16_t>(encoded_string.size()));
-    writer.writeString(encoded_string);
+    writer.writeBytes(encoded_string);
 }
 
 template <

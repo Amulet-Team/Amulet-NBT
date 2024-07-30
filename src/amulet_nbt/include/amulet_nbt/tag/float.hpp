@@ -6,32 +6,38 @@
 #include <amulet_nbt/tag/abc.hpp>
 
 namespace AmuletNBT {
-    template <typename T>
-    class FloatTagTemplate: public AbstractBaseFloatTag {
-        static_assert(
-            std::is_same_v<T, float> ||
-            std::is_same_v<T, double>,
-            "T must be float or double"
-        );
-        public:
-            T value;
-            typedef T native_type;
-            FloatTagTemplate() : value() {};
-            FloatTagTemplate(const T& value) : value(value) {};
-            FloatTagTemplate(const FloatTagTemplate<T>& other) : value(other.value) {};
-            FloatTagTemplate<T>& operator=(const FloatTagTemplate<T>& rhs) { value = rhs.value; return *this; };
-            FloatTagTemplate<T>& operator=(const T& rhs) { value = rhs; return *this; };
-            operator const T&() const { return value; };
-            operator T& () { return value; };
-            bool operator==(const FloatTagTemplate<T>& rhs) { return value == rhs.value; }
-            bool operator<(const FloatTagTemplate<T>& rhs) { return value < rhs.value; }
-    };
-
     typedef float FloatTagNative;
     typedef double DoubleTagNative;
 
-    typedef FloatTagTemplate<FloatTagNative> FloatTag;
-    typedef FloatTagTemplate<DoubleTagNative> DoubleTag;
+    class FloatTag: public AbstractBaseFloatTag {
+        public:
+            FloatTagNative value;
+            typedef FloatTagNative native_type;
+            FloatTag() : value() {};
+            FloatTag(const FloatTagNative& value) : value(value) {};
+            FloatTag(const FloatTag& other) : value(other.value) {};
+            FloatTag& operator=(const FloatTag& rhs) { value = rhs.value; return *this; };
+            FloatTag& operator=(const FloatTagNative& rhs) { value = rhs; return *this; };
+            operator const FloatTagNative&() const { return value; };
+            operator FloatTagNative& () { return value; };
+            bool operator==(const FloatTag& rhs) { return value == rhs.value; }
+            bool operator<(const FloatTag& rhs) { return value < rhs.value; }
+    };
+
+    class DoubleTag: public AbstractBaseFloatTag {
+        public:
+            DoubleTagNative value;
+            typedef DoubleTagNative native_type;
+            DoubleTag() : value() {};
+            DoubleTag(const DoubleTagNative& value) : value(value) {};
+            DoubleTag(const DoubleTag& other) : value(other.value) {};
+            DoubleTag& operator=(const DoubleTag& rhs) { value = rhs.value; return *this; };
+            DoubleTag& operator=(const DoubleTagNative& rhs) { value = rhs; return *this; };
+            operator const DoubleTagNative&() const { return value; };
+            operator DoubleTagNative& () { return value; };
+            bool operator==(const DoubleTag& rhs) { return value == rhs.value; }
+            bool operator<(const DoubleTag& rhs) { return value < rhs.value; }
+    };
 
     static_assert(std::is_copy_constructible_v<FloatTag>, "FloatTag is not copy constructible");
     static_assert(std::is_copy_assignable_v<FloatTag>, "FloatTag is not copy assignable");

@@ -7,38 +7,70 @@
 #include <amulet_nbt/tag/abc.hpp>
 
 namespace AmuletNBT {
-    template <typename T>
-    class IntTagTemplate: public AbstractBaseIntTag {
-        static_assert(
-            std::is_same_v<T, std::int8_t> || 
-            std::is_same_v<T, std::int16_t> || 
-            std::is_same_v<T, std::int32_t> || 
-            std::is_same_v<T, std::int64_t>, 
-            "T must be int 8, 16, 32 or 64"
-        );
-        public:
-            T value;
-            typedef T native_type;
-            IntTagTemplate() : value() {};
-            IntTagTemplate(const T& value) : value(value) {};
-            IntTagTemplate(const IntTagTemplate<T>& other) : value(other.value) {};
-            IntTagTemplate<T>& operator=(const IntTagTemplate<T>& rhs) { value = rhs.value; return *this; };
-            IntTagTemplate<T>& operator=(const T& rhs) { value = rhs; return *this; };
-            operator const T&() const { return value; };
-            operator T& () { return value; };
-            bool operator==(const IntTagTemplate<T>& rhs) { return value == rhs.value; }
-            bool operator<(const IntTagTemplate<T>& rhs) { return value < rhs.value; }
-    };
-
     typedef std::int8_t ByteTagNative;
     typedef std::int16_t ShortTagNative;
     typedef std::int32_t IntTagNative;
     typedef std::int64_t LongTagNative;
 
-    typedef IntTagTemplate<ByteTagNative> ByteTag;
-    typedef IntTagTemplate<ShortTagNative> ShortTag;
-    typedef IntTagTemplate<IntTagNative> IntTag;
-    typedef IntTagTemplate<LongTagNative> LongTag;
+    class ByteTag: public AbstractBaseIntTag {
+        public:
+            ByteTagNative value;
+            typedef ByteTagNative native_type;
+            ByteTag() : value() {};
+            ByteTag(const ByteTagNative& value) : value(value) {};
+            ByteTag(const ByteTag& other) : value(other.value) {};
+            ByteTag& operator=(const ByteTag& rhs) { value = rhs.value; return *this; };
+            ByteTag& operator=(const ByteTagNative& rhs) { value = rhs; return *this; };
+            operator const ByteTagNative&() const { return value; };
+            operator ByteTagNative& () { return value; };
+            bool operator==(const ByteTag& rhs) { return value == rhs.value; }
+            bool operator<(const ByteTag& rhs) { return value < rhs.value; }
+    };
+
+    class ShortTag: public AbstractBaseIntTag {
+        public:
+            ShortTagNative value;
+            typedef ShortTagNative native_type;
+            ShortTag() : value() {};
+            ShortTag(const ShortTagNative& value) : value(value) {};
+            ShortTag(const ShortTag& other) : value(other.value) {};
+            ShortTag& operator=(const ShortTag& rhs) { value = rhs.value; return *this; };
+            ShortTag& operator=(const ShortTagNative& rhs) { value = rhs; return *this; };
+            operator const ShortTagNative&() const { return value; };
+            operator ShortTagNative& () { return value; };
+            bool operator==(const ShortTag& rhs) { return value == rhs.value; }
+            bool operator<(const ShortTag& rhs) { return value < rhs.value; }
+    };
+
+    class IntTag: public AbstractBaseIntTag {
+        public:
+            IntTagNative value;
+            typedef IntTagNative native_type;
+            IntTag() : value() {};
+            IntTag(const IntTagNative& value) : value(value) {};
+            IntTag(const IntTag& other) : value(other.value) {};
+            IntTag& operator=(const IntTag& rhs) { value = rhs.value; return *this; };
+            IntTag& operator=(const IntTagNative& rhs) { value = rhs; return *this; };
+            operator const IntTagNative&() const { return value; };
+            operator IntTagNative& () { return value; };
+            bool operator==(const IntTag& rhs) { return value == rhs.value; }
+            bool operator<(const IntTag& rhs) { return value < rhs.value; }
+    };
+
+    class LongTag: public AbstractBaseIntTag {
+        public:
+            LongTagNative value;
+            typedef LongTagNative native_type;
+            LongTag() : value() {};
+            LongTag(const LongTagNative& value) : value(value) {};
+            LongTag(const LongTag& other) : value(other.value) {};
+            LongTag& operator=(const LongTag& rhs) { value = rhs.value; return *this; };
+            LongTag& operator=(const LongTagNative& rhs) { value = rhs; return *this; };
+            operator const LongTagNative&() const { return value; };
+            operator LongTagNative& () { return value; };
+            bool operator==(const LongTag& rhs) { return value == rhs.value; }
+            bool operator<(const LongTag& rhs) { return value < rhs.value; }
+    };
 
     static_assert(std::is_copy_constructible_v<ByteTag>, "ByteTag is not copy constructible");
     static_assert(std::is_copy_assignable_v<ByteTag>, "ByteTag is not copy assignable");

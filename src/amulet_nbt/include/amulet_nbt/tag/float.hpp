@@ -9,7 +9,7 @@ namespace AmuletNBT {
     typedef float FloatTagNative;
     typedef double DoubleTagNative;
 
-    class FloatTag: public AbstractBaseIntTag {
+    class FloatTag: public AbstractBaseFloatTag {
         public:
             FloatTagNative value;
             typedef FloatTagNative native_type;
@@ -24,7 +24,7 @@ namespace AmuletNBT {
             bool operator<(const FloatTag& rhs) { return value < rhs.value; }
     };
 
-    class DoubleTag: public AbstractBaseIntTag {
+    class DoubleTag: public AbstractBaseFloatTag {
         public:
             DoubleTagNative value;
             typedef DoubleTagNative native_type;

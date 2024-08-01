@@ -32,7 +32,7 @@ setup(
     ],
     ext_modules=[
         Extension(
-            name="amulet_nbt._nbt",
+            name="amulet_nbt.__init__",
             sources=glob.glob("src/amulet_nbt/pybind/**/*.cpp", recursive=True),
             include_dirs=["src/amulet_nbt/include", pybind11.get_include()],
             libraries=["amulet_nbt"],

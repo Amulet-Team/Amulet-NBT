@@ -77,14 +77,14 @@ void init_amulet_nbt(py::module& m) {
     m.def(
         "get_include",
         [m, path_join](){
-            return path_join(m.attr("__path__")[0], py::str("include"));
+            return path_join(m.attr("__path__").attr("__getitem__")(0), py::str("include"));
         },
         py::doc("C++ include directory")
     );
     m.def(
         "get_source",
         [m, path_join](){
-            return path_join(m.attr("__path__")[0], py::str("cpp"));
+            return path_join(m.attr("__path__").attr("__getitem__")(0), py::str("cpp"));
         },
         py::doc("C++ source directory")
     );

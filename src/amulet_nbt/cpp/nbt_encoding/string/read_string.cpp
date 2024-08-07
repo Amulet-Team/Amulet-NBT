@@ -10,6 +10,7 @@
 
 #include <amulet_nbt/nbt_encoding/string.hpp>
 #include <amulet_nbt/tag/list.hpp>
+#include <amulet_nbt/tag/list_methods.hpp>
 
 
 const std::unordered_set<size_t> Whitespace{' ', '\t', '\r', '\n'};

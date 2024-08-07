@@ -17,6 +17,7 @@
 
 #include <amulet_nbt/tag/abc.hpp>
 #include <amulet_nbt/tag/list.hpp>
+#include <amulet_nbt/tag/list_methods.hpp>
 #include <amulet_nbt/tag/eq.hpp>
 #include <amulet_nbt/tag/copy.hpp>
 #include <amulet_nbt/nbt_encoding/binary.hpp>

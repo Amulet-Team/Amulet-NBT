@@ -8,6 +8,7 @@
 #include <amulet_nbt/tag/float.hpp>
 #include <amulet_nbt/tag/string.hpp>
 #include <amulet_nbt/tag/list.hpp>
+#include <amulet_nbt/tag/list_methods.hpp>
 #include <amulet_nbt/tag/compound.hpp>
 #include <amulet_nbt/tag/array.hpp>
 #include <amulet_nbt/tag/eq.hpp>

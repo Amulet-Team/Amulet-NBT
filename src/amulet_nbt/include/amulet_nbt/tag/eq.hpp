@@ -8,6 +8,7 @@
 #include <amulet_nbt/tag/list.hpp>
 #include <amulet_nbt/tag/compound.hpp>
 #include <amulet_nbt/tag/array.hpp>
+#include <amulet_nbt/tag/named_tag.hpp>
 
 namespace AmuletNBT {
     bool NBTTag_eq(const AmuletNBT::ByteTag& a, const AmuletNBT::ByteTag& b);
@@ -23,4 +24,5 @@ namespace AmuletNBT {
     bool NBTTag_eq(const AmuletNBT::IntArrayTag& a, const AmuletNBT::IntArrayTag& b);
     bool NBTTag_eq(const AmuletNBT::LongArrayTag& a, const AmuletNBT::LongArrayTag& b);
     bool NBTTag_eq(const AmuletNBT::TagNode& a, const AmuletNBT::TagNode& b);
+    bool NBTTag_eq(const AmuletNBT::NamedTag& a, const AmuletNBT::NamedTag& b);
 }

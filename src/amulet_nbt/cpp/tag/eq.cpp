@@ -11,6 +11,7 @@
 #include <amulet_nbt/tag/list_methods.hpp>
 #include <amulet_nbt/tag/compound.hpp>
 #include <amulet_nbt/tag/array.hpp>
+#include <amulet_nbt/tag/named_tag.hpp>
 #include <amulet_nbt/tag/eq.hpp>
 
 
@@ -91,5 +92,8 @@ namespace AmuletNBT{
                 return NBTTag_eq(tag, std::get<T>(b));
             }
         }, a);
+    };
+    bool NBTTag_eq(const AmuletNBT::NamedTag& a, const AmuletNBT::NamedTag& b) {
+        return a.name == b.name && NBTTag_eq(a.tag_node, b.tag_node);
     };
 }

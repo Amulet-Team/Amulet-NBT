@@ -119,3 +119,8 @@ temp
 *.vs/
 *.vcxproj*
 *.sln
+*.ilk
+*.exp
+*.lib
+*.pdb
+src/x64/

@@ -61,7 +61,7 @@ void init_named_tag(py::module& m) {
             }
         );
 
-    py::class_<AmuletNBT::NamedTag> NamedTag(m, "NamedTag");
+    py::class_<AmuletNBT::NamedTag, std::shared_ptr<AmuletNBT::NamedTag>> NamedTag(m, "NamedTag");
         NamedTag.def(
             py::init([](std::variant<std::monostate, AmuletNBT::TagNode> value, std::string name) {
                 return std::visit([&name](auto&& tag) {

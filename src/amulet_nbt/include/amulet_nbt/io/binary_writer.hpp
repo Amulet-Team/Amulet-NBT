@@ -28,17 +28,18 @@ namespace AmuletNBT {
         /**
          * Fix the endianness of the numeric value and write it to the buffer.
          */
-        template <typename T> inline void writeNumeric(const T& value) {
-            // Create
-            char* src = (char*)&value;
-
-            // Copy
-            if (endianness == std::endian::native){
-                data.append(src, sizeof(T));
-            } else {
-                for (size_t i = 0; i < sizeof(T); i++){
-                    data.push_back(src[sizeof(T) - i - 1]);
+        template <typename T> void writeNumeric(const T& value) {
+            if (endianness == std::endian::native) {
+                data.append((char*)&value, sizeof(T));
+            }
+            else {
+                T value_reverse;
+                char* src = (char*)&value;
+                char* dst = (char*)&value_reverse;
+                for (size_t i = 0; i < sizeof(T); i++) {
+                    dst[i] = src[sizeof(T) - i - 1];
                 }
+                data.append(dst, sizeof(T));
             }
         }
 

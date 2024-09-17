@@ -421,7 +421,11 @@ AmuletNBT::TagNode _read_snbt(const AmuletNBT::CodePointVector& snbt, size_t& in
                 return AmuletNBT::write_utf8(string);
             }
     }
-    throw std::runtime_error("Should have returned before now.");
+#if defined(_MSC_VER) && !defined(__clang__) // MSVC
+    __assume(false);
+#else // GCC, Clang
+    __builtin_unreachable();
+#endif
 }
 
 

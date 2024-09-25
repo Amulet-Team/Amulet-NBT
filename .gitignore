@@ -123,4 +123,4 @@ temp
 *.exp
 *.lib
 *.pdb
-src/x64/
+src/amulet_nbt/x64/

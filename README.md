@@ -25,7 +25,7 @@ To develop the library you will need to download the source and run this command
 `pip install -e .[dev]`
 
 This will build the library in-place and expose it to python.
-Since this code is compiled you will need to run it again each time you change cython or C++ code.
+Since this code is compiled you will need to run it again each time you change the C++ code.
 
 ## Links
 - Documentation - https://amulet-nbt.readthedocs.io

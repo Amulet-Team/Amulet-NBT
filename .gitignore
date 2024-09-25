@@ -110,9 +110,6 @@ venv*
 # mypy
 .mypy_cache/
 
-# Cython Files
-*.html
-
 temp
 
 # visual studio files

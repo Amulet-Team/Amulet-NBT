@@ -44,14 +44,14 @@ void init_abc(py::module& m) {
             [](
                 const AmuletNBT::AbstractBaseTag& self,
                 AmuletNBT::EncodingPreset preset,
-                std::string name
+                std::optional<std::string> name
             ){
                 PyErr_SetString(PyExc_NotImplementedError, "");
                 throw py::error_already_set();
             },
             py::kw_only(),
             py::arg("preset") = java_encoding,
-            py::arg("name") = ""
+            py::arg("name").none(true) = ""
         );
         AbstractBaseTag.def(
             "to_nbt",
@@ -60,7 +60,7 @@ void init_abc(py::module& m) {
                 bool compressed,
                 bool little_endian,
                 AmuletNBT::StringEncoding string_encoding,
-                std::string name
+                std::optional<std::string> name
             ){
                 PyErr_SetString(PyExc_NotImplementedError, "");
                 throw py::error_already_set();
@@ -69,7 +69,7 @@ void init_abc(py::module& m) {
             py::arg("compressed") = true,
             py::arg("little_endian") = false,
             py::arg("string_encoding") = mutf8_encoding,
-            py::arg("name") = ""
+            py::arg("name").none(true) = ""
         );
         AbstractBaseTag.def(
             "save_to",
@@ -77,7 +77,7 @@ void init_abc(py::module& m) {
                 const AmuletNBT::AbstractBaseTag& self,
                 py::object filepath_or_writable,
                 AmuletNBT::EncodingPreset preset,
-                std::string name
+                std::optional<std::string> name
             ){
                 PyErr_SetString(PyExc_NotImplementedError, "");
                 throw py::error_already_set();
@@ -96,7 +96,7 @@ void init_abc(py::module& m) {
                 bool compressed,
                 bool little_endian,
                 AmuletNBT::StringEncoding string_encoding,
-                std::string name
+                std::optional<std::string> name
             ){
                 PyErr_SetString(PyExc_NotImplementedError, "");
                 throw py::error_already_set();

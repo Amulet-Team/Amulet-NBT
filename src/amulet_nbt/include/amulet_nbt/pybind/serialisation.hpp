@@ -1,7 +1,7 @@
 #define SerialiseTag(CLSNAME)\
     auto to_nbt_##CLSNAME = [compress](\
         const AmuletNBT::CLSNAME& self,\
-        std::string name,\
+        std::optional<std::string> name,\
         bool compressed,\
         std::endian endianness,\
         AmuletNBT::StringEncode string_encoder\
@@ -17,7 +17,7 @@
         [to_nbt_##CLSNAME](\
             const AmuletNBT::CLSNAME& self,\
             AmuletNBT::EncodingPreset preset,\
-            std::string name\
+            std::optional<std::string> name\
         ){\
             return to_nbt_##CLSNAME(\
                 self,\
@@ -29,7 +29,7 @@
         },\
         py::kw_only(),\
         py::arg("preset") = java_encoding,\
-        py::arg("name") = ""\
+        py::arg("name").none(true) = ""\
     );\
     CLSNAME.def(\
         "to_nbt",\
@@ -38,7 +38,7 @@
             bool compressed,\
             bool little_endian,\
             AmuletNBT::StringEncoding string_encoding,\
-            std::string name\
+            std::optional<std::string> name\
         ){\
             return to_nbt_##CLSNAME(\
                 self,\
@@ -52,12 +52,12 @@
         py::arg("compressed") = true,\
         py::arg("little_endian") = false,\
         py::arg("string_encoding") = mutf8_encoding,\
-        py::arg("name") = ""\
+        py::arg("name").none(true) = ""\
     );\
     auto save_to_##CLSNAME = [to_nbt_##CLSNAME](\
         const AmuletNBT::CLSNAME& self,\
         py::object filepath_or_writable,\
-        std::string name,\
+        std::optional<std::string> name,\
         bool compressed,\
         std::endian endianness,\
         AmuletNBT::StringEncode string_encoder\
@@ -80,7 +80,7 @@
             const AmuletNBT::CLSNAME& self,\
             py::object filepath_or_writable,\
             AmuletNBT::EncodingPreset preset,\
-            std::string name\
+            std::optional<std::string> name\
         ){\
             return save_to_##CLSNAME(\
                 self,\
@@ -105,7 +105,7 @@
             bool compressed,\
             bool little_endian,\
             AmuletNBT::StringEncoding string_encoding,\
-            std::string name\
+            std::optional<std::string> name\
         ){\
             return save_to_##CLSNAME(\
                 self,\

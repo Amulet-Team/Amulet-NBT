@@ -205,7 +205,7 @@ inline void write_name_and_tag(AmuletNBT::BinaryWriter& writer, const std::optio
 template <>
 inline void write_payload<AmuletNBT::CompoundTag>(AmuletNBT::BinaryWriter& writer, const AmuletNBT::CompoundTag& value){
     for (auto it = value.begin(); it != value.end(); it++){
-        write_name_and_tag<AmuletNBT::TagNode>(writer, std::optional<std::string>(it->first), it->second);
+        write_name_and_tag<AmuletNBT::TagNode>(writer, it->first, it->second);
     }
     writer.writeNumeric<std::uint8_t>(0);
 };
@@ -256,10 +256,10 @@ namespace AmuletNBT {
         write_name_and_tag<LongArrayTag>(writer, name, tag);
     }
     void write_nbt(BinaryWriter& writer, const std::string& name, const TagNode& tag) {
-        write_name_and_tag<TagNode>(writer, std::optional<std::string>(name), tag);
+        write_name_and_tag<TagNode>(writer, name, tag);
     }
     void write_nbt(BinaryWriter& writer, const NamedTag& tag) {
-        write_name_and_tag<TagNode>(writer, std::optional<std::string>(tag.name), tag.tag_node);
+        write_name_and_tag<TagNode>(writer, tag.name, tag.tag_node);
     }
 
     std::string write_nbt(const std::optional<std::string>& name, const AmuletNBT::ByteTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
@@ -299,7 +299,7 @@ namespace AmuletNBT {
         return _write_nbt(name, tag, endianness, string_encode);
     };
     std::string write_nbt(const std::string& name, const AmuletNBT::TagNode& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
-        return _write_nbt(std::optional<std::string>(name), tag, endianness, string_encode);
+        return _write_nbt(name, tag, endianness, string_encode);
     };
     std::string write_nbt(const AmuletNBT::NamedTag& named_tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
         return write_nbt(named_tag.name, named_tag.tag_node, endianness, string_encode);

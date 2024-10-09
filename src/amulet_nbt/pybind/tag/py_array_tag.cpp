@@ -106,7 +106,7 @@ namespace py = pybind11;
     CLSNAME.def(\
         py::pickle(\
             [](const AmuletNBT::CLSNAME& self){\
-                return py::bytes(AmuletNBT::write_nbt(std::optional<std::string>(""), self, std::endian::big, AmuletNBT::utf8_to_mutf8));\
+                return py::bytes(AmuletNBT::write_nbt("", self, std::endian::big, AmuletNBT::utf8_to_mutf8));\
             },\
             [](py::bytes state){\
                 return std::get<AmuletNBT::CLSNAME##Ptr>(\

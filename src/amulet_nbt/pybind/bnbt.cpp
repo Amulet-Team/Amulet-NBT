@@ -149,6 +149,7 @@ void init_bnbt(py::module& m) {
             "\n"
             ":param filepath_or_buffer: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.\n"
             ":param preset: The encoding preset. If this is defined little_endian and string_encoding have no effect.\n"
+            ":param named: If the tag to read is named.\n"
             ":param read_offset: Optional ReadOffset object to get read end offset.\n"
             ":raises: IndexError if the data is not long enough."
         )
@@ -186,6 +187,7 @@ void init_bnbt(py::module& m) {
             ":param compressed: Is the binary data gzip compressed.\n"
             ":param little_endian: Are the numerical values stored as little endian. True for Bedrock, False for Java.\n"
             ":param string_encoding: The bytes decoder function to parse strings. mutf8_encoding for Java, utf8_escape_encoding for Bedrock.\n"
+            ":param named: If the tag to read is named.\n"
             ":param read_offset: Optional ReadOffset object to get read end offset.\n"
             ":raises: IndexError if the data is not long enough."
         )
@@ -297,6 +299,7 @@ void init_bnbt(py::module& m) {
             ":param filepath_or_buffer: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.\n"
             ":param count: The number of binary NBT objects to read. Use -1 to exhaust the buffer.\n"
             ":param preset: The encoding preset. If this is defined little_endian and string_encoding have no effect.\n"
+            ":param named: If the tags to read are named.\n"
             ":param read_offset: Optional ReadOffset object to get read end offset.\n"
             ":raises: IndexError if the data is not long enough."
         )
@@ -339,6 +342,7 @@ void init_bnbt(py::module& m) {
             ":param compressed: Is the binary data gzip compressed. This only supports the whole buffer compressed as one.\n"
             ":param little_endian: Are the numerical values stored as little endian. True for Bedrock, False for Java.\n"
             ":param string_encoding: The bytes decoder function to parse strings. mutf8.decode_modified_utf8 for Java, amulet_nbt.utf8_escape_decoder for Bedrock.\n"
+            ":param named: If the tags to read are named.\n"
             ":param read_offset: Optional ReadOffset object to get read end offset.\n"
             ":raises: IndexError if the data is not long enough."
         )

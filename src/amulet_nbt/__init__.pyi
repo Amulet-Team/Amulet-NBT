@@ -142,7 +142,7 @@ class AbstractBaseTag:
         compressed: bool = True,
         little_endian: bool = False,
         string_encoding: StringEncoding = mutf8_encoding,
-        name: str | bytes = b"",
+        name: str | bytes | None = b"",
     ) -> bytes:
         """Convert the data to the binary NBT format. Optionally write to a file.
 

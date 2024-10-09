@@ -29,7 +29,7 @@
         },\
         py::kw_only(),\
         py::arg("preset") = java_encoding,\
-        py::arg("name").none(true) = ""\
+        py::arg("name") = ""\
     );\
     CLSNAME.def(\
         "to_nbt",\
@@ -52,7 +52,7 @@
         py::arg("compressed") = true,\
         py::arg("little_endian") = false,\
         py::arg("string_encoding") = mutf8_encoding,\
-        py::arg("name").none(true) = ""\
+        py::arg("name") = ""\
     );\
     auto save_to_##CLSNAME = [to_nbt_##CLSNAME](\
         const AmuletNBT::CLSNAME& self,\

@@ -51,7 +51,7 @@ void init_abc(py::module& m) {
             },
             py::kw_only(),
             py::arg("preset") = java_encoding,
-            py::arg("name").none(true) = ""
+            py::arg("name") = ""
         );
         AbstractBaseTag.def(
             "to_nbt",
@@ -69,7 +69,7 @@ void init_abc(py::module& m) {
             py::arg("compressed") = true,
             py::arg("little_endian") = false,
             py::arg("string_encoding") = mutf8_encoding,
-            py::arg("name").none(true) = ""
+            py::arg("name") = ""
         );
         AbstractBaseTag.def(
             "save_to",

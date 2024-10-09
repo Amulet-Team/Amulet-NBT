@@ -6,7 +6,6 @@
 #include <variant>
 #include <cstdint>
 #include <fstream>
-#include <optional>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>

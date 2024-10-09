@@ -82,9 +82,6 @@ void init_bnbt(py::module& m) {
         return data;
     };
 
-    typedef std::variant<AmuletNBT::TagNode, AmuletNBT::NamedTag> NodeOrNamedTag;
-    typedef std::variant<std::vector<AmuletNBT::TagNode>, std::vector<AmuletNBT::NamedTag>> NodeOrNamedTagVector;
-
     auto read_nbt = [get_buffer](
         py::object filepath_or_buffer,
         bool compressed,
@@ -92,31 +89,24 @@ void init_bnbt(py::module& m) {
         AmuletNBT::StringDecode string_decoder,
         bool named,
         py::object read_offset_py
-    ) -> NodeOrNamedTag {
+    ) {
         std::string buffer = get_buffer(filepath_or_buffer, compressed);
         if (py::isinstance<AmuletNBT::ReadOffset>(read_offset_py)){
             AmuletNBT::ReadOffset& read_offset = read_offset_py.cast<AmuletNBT::ReadOffset&>();
-            return named ? NodeOrNamedTag(AmuletNBT::read_nbt(
+            return AmuletNBT::read_nbt(
                 buffer,
                 endianness,
                 string_decoder,
+                named,
                 read_offset.offset
-            )) : NodeOrNamedTag(AmuletNBT::read_nbt_unnamed(
-                buffer,
-                endianness,
-                string_decoder,
-                read_offset.offset
-            ));
+            );
         } else if (read_offset_py.is(py::none())){
-            return named ? NodeOrNamedTag(AmuletNBT::read_nbt(
+            return AmuletNBT::read_nbt(
                 buffer,
                 endianness,
-                string_decoder
-            )) : NodeOrNamedTag(AmuletNBT::read_nbt_unnamed(
-                buffer,
-                endianness,
-                string_decoder
-            ));
+                string_decoder,
+                named
+            );
         } else {
             throw std::invalid_argument("read_offset must be ReadOffset or None");
         }
@@ -149,7 +139,7 @@ void init_bnbt(py::module& m) {
             "\n"
             ":param filepath_or_buffer: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.\n"
             ":param preset: The encoding preset. If this is defined little_endian and string_encoding have no effect.\n"
-            ":param named: If the tag to read is named.\n"
+            ":param named: If the tag to read is named, if not, return NamedTag with empty name.\n"
             ":param read_offset: Optional ReadOffset object to get read end offset.\n"
             ":raises: IndexError if the data is not long enough."
         )
@@ -187,7 +177,7 @@ void init_bnbt(py::module& m) {
             ":param compressed: Is the binary data gzip compressed.\n"
             ":param little_endian: Are the numerical values stored as little endian. True for Bedrock, False for Java.\n"
             ":param string_encoding: The bytes decoder function to parse strings. mutf8_encoding for Java, utf8_escape_encoding for Bedrock.\n"
-            ":param named: If the tag to read is named.\n"
+            ":param named: If the tag to read is named, if not, return NamedTag with empty name.\n"
             ":param read_offset: Optional ReadOffset object to get read end offset.\n"
             ":raises: IndexError if the data is not long enough."
         )
@@ -201,7 +191,7 @@ void init_bnbt(py::module& m) {
         AmuletNBT::StringDecode string_decoder,
         bool named,
         py::object read_offset_py
-    ) -> NodeOrNamedTagVector {
+    ) {
         if (count < -1){
             throw std::invalid_argument("count must be -1 or higher");
         }
@@ -209,60 +199,42 @@ void init_bnbt(py::module& m) {
         if (py::isinstance<AmuletNBT::ReadOffset>(read_offset_py)){
             AmuletNBT::ReadOffset& read_offset = read_offset_py.cast<AmuletNBT::ReadOffset&>();
             if (count == -1){
-                return named ? NodeOrNamedTagVector(AmuletNBT::read_nbt_array(
+                return AmuletNBT::read_nbt_array(
                     buffer,
                     endianness,
                     string_decoder,
+                    named,
                     read_offset.offset
-                )) : NodeOrNamedTagVector(AmuletNBT::read_nbt_array(
-                    buffer,
-                    endianness,
-                    string_decoder,
-                    read_offset.offset
-                ));
+                );
             } else {
-                return named ? NodeOrNamedTagVector(AmuletNBT::read_nbt_array(
+                return AmuletNBT::read_nbt_array(
                     buffer,
                     endianness,
                     string_decoder,
+                    named,
                     read_offset.offset,
                     count
-                )) : NodeOrNamedTagVector(AmuletNBT::read_nbt_array_unnamed(
-                    buffer,
-                    endianness,
-                    string_decoder,
-                    read_offset.offset,
-                    count
-                ));
+                );
             }
         } else if (read_offset_py.is(py::none())){
             size_t offset = 0;
             if (count == -1){
-                return named ? NodeOrNamedTagVector(AmuletNBT::read_nbt_array(
+                return AmuletNBT::read_nbt_array(
                     buffer,
                     endianness,
                     string_decoder,
+                    named,
                     offset
-                )) : NodeOrNamedTagVector(AmuletNBT::read_nbt_array_unnamed(
-                    buffer,
-                    endianness,
-                    string_decoder,
-                    offset
-                ));
+                );
             } else {
-                return named ? NodeOrNamedTagVector(AmuletNBT::read_nbt_array(
+                return AmuletNBT::read_nbt_array(
                     buffer,
                     endianness,
                     string_decoder,
+                    named,
                     offset,
                     count
-                )) : NodeOrNamedTagVector(AmuletNBT::read_nbt_array_unnamed(
-                    buffer,
-                    endianness,
-                    string_decoder,
-                    offset,
-                    count
-                ));
+                );
             }
         } else {
             throw std::invalid_argument("read_offset must be ReadOffset or None");
@@ -299,7 +271,7 @@ void init_bnbt(py::module& m) {
             ":param filepath_or_buffer: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.\n"
             ":param count: The number of binary NBT objects to read. Use -1 to exhaust the buffer.\n"
             ":param preset: The encoding preset. If this is defined little_endian and string_encoding have no effect.\n"
-            ":param named: If the tags to read are named.\n"
+            ":param named: If the tags to read are named, if not, return NamedTags with empty name.\n"
             ":param read_offset: Optional ReadOffset object to get read end offset.\n"
             ":raises: IndexError if the data is not long enough."
         )
@@ -342,7 +314,7 @@ void init_bnbt(py::module& m) {
             ":param compressed: Is the binary data gzip compressed. This only supports the whole buffer compressed as one.\n"
             ":param little_endian: Are the numerical values stored as little endian. True for Bedrock, False for Java.\n"
             ":param string_encoding: The bytes decoder function to parse strings. mutf8.decode_modified_utf8 for Java, amulet_nbt.utf8_escape_decoder for Bedrock.\n"
-            ":param named: If the tags to read are named.\n"
+            ":param named: If the tags to read are named, if not, return NamedTags with empty name.\n"
             ":param read_offset: Optional ReadOffset object to get read end offset.\n"
             ":raises: IndexError if the data is not long enough."
         )

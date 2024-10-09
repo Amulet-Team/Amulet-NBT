@@ -23,6 +23,12 @@ namespace AmuletNBT {
     std::vector<NamedTag> read_nbt_array(const std::string&, std::endian, StringDecode, size_t& offset);
     std::vector<NamedTag> read_nbt_array(const std::string&, std::endian, StringDecode, size_t& offset, size_t count);
 
+    TagNode read_nbt_unnamed(BinaryReader& reader);
+    TagNode read_nbt_unnamed(const std::string&, std::endian, StringDecode, size_t& offset);
+    TagNode read_nbt_unnamed(const std::string&, std::endian, StringDecode);
+    std::vector<TagNode> read_nbt_array_unnamed(const std::string&, std::endian, StringDecode, size_t& offset);
+    std::vector<TagNode> read_nbt_array_unnamed(const std::string&, std::endian, StringDecode, size_t& offset, size_t count);
+
     void write_nbt(BinaryWriter&, const std::optional<std::string>& name, const ByteTag&);
     void write_nbt(BinaryWriter&, const std::optional<std::string>& name, const ShortTag&);
     void write_nbt(BinaryWriter&, const std::optional<std::string>& name, const IntTag&);

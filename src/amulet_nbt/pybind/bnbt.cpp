@@ -90,8 +90,8 @@ void init_bnbt(py::module& m) {
         bool compressed,
         std::endian endianness,
         AmuletNBT::StringDecode string_decoder,
-        py::object read_offset_py,
-        bool named
+        bool named,
+        py::object read_offset_py
     ) -> NodeOrNamedTag {
         std::string buffer = get_buffer(filepath_or_buffer, compressed);
         if (py::isinstance<AmuletNBT::ReadOffset>(read_offset_py)){
@@ -127,23 +127,23 @@ void init_bnbt(py::module& m) {
         [read_nbt](
             py::object filepath_or_buffer,
             AmuletNBT::EncodingPreset preset,
-            py::object read_offset,
-            bool named
+            bool named,
+            py::object read_offset
         ){
             return read_nbt(
                 filepath_or_buffer,
                 preset.compressed,
                 preset.endianness,
                 preset.string_encoding.decode,
-                read_offset,
-                named
+                named,
+                read_offset
             );
         },
         py::arg("filepath_or_buffer"),
         py::kw_only(),
         py::arg("preset") = java_encoding,
-        py::arg("read_offset") = py::none(),
         py::arg("named") = true,
+        py::arg("read_offset") = py::none(),
         py::doc(
             "Load one binary NBT object.\n"
             "\n"
@@ -160,16 +160,16 @@ void init_bnbt(py::module& m) {
             bool compressed,
             bool little_endian,
             AmuletNBT::StringEncoding string_encoding,
-            py::object read_offset,
-            bool named
+            bool named,
+            py::object read_offset
         ){
             return read_nbt(
                 filepath_or_buffer,
                 compressed,
                 little_endian ? std::endian::little : std::endian::big,
                 string_encoding.decode,
-                read_offset,
-                named
+                named,
+                read_offset
             );
         },
         py::arg("filepath_or_buffer"),
@@ -177,8 +177,8 @@ void init_bnbt(py::module& m) {
         py::arg("compressed") = true,
         py::arg("little_endian") = false,
         py::arg("string_encoding") = mutf8_encoding,
-        py::arg("read_offset") = py::none(),
         py::arg("named") = true,
+        py::arg("read_offset") = py::none(),
         py::doc(
             "Load one binary NBT object.\n"
             "\n"
@@ -197,8 +197,8 @@ void init_bnbt(py::module& m) {
         bool compressed,
         std::endian endianness,
         AmuletNBT::StringDecode string_decoder,
-        py::object read_offset_py,
-        bool named
+        bool named,
+        py::object read_offset_py
     ) -> NodeOrNamedTagVector {
         if (count < -1){
             throw std::invalid_argument("count must be -1 or higher");
@@ -272,8 +272,8 @@ void init_bnbt(py::module& m) {
             py::object filepath_or_buffer,
             Py_ssize_t count,
             AmuletNBT::EncodingPreset preset,
-            py::object read_offset,
-            bool named
+            bool named,
+            py::object read_offset
         ){
             return read_nbt_array(
                 filepath_or_buffer,
@@ -281,16 +281,16 @@ void init_bnbt(py::module& m) {
                 preset.compressed,
                 preset.endianness,
                 preset.string_encoding.decode,
-                read_offset,
-                named
+                named,
+                read_offset
             );
         },
         py::arg("filepath_or_buffer"),
         py::kw_only(),
         py::arg("count") = 1,
         py::arg("preset") = java_encoding,
-        py::arg("read_offset") = py::none(),
         py::arg("named") = true,
+        py::arg("read_offset") = py::none(),
         py::doc(
             "Load an array of binary NBT objects from a contiguous buffer.\n"
             "\n"
@@ -310,8 +310,8 @@ void init_bnbt(py::module& m) {
             bool compressed,
             bool little_endian,
             AmuletNBT::StringEncoding string_encoding,
-            py::object read_offset,
-            bool named
+            bool named,
+            py::object read_offset
         ){
             return read_nbt_array(
                 filepath_or_buffer,
@@ -319,8 +319,8 @@ void init_bnbt(py::module& m) {
                 compressed,
                 little_endian ? std::endian::little : std::endian::big,
                 string_encoding.decode,
-                read_offset,
-                named
+                named,
+                read_offset
             );
         },
         py::arg("filepath_or_buffer"),
@@ -329,8 +329,8 @@ void init_bnbt(py::module& m) {
         py::arg("compressed") = true,
         py::arg("little_endian") = false,
         py::arg("string_encoding") = mutf8_encoding,
-        py::arg("read_offset") = py::none(),
         py::arg("named") = true,
+        py::arg("read_offset") = py::none(),
         py::doc(
             "Load an array of binary NBT objects from a contiguous buffer.\n"
             "\n"

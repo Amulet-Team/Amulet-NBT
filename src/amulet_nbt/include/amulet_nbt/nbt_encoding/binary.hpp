@@ -17,12 +17,11 @@
 #include <amulet_nbt/string_encoding.hpp>
 
 namespace AmuletNBT {
-    NamedTag read_nbt(BinaryReader& reader, bool named);
-    NamedTag read_nbt(const std::string&, std::endian, StringDecode, bool named, size_t& offset);
-    NamedTag read_nbt(const std::string&, std::endian, StringDecode, bool named);
-    NamedTag read_nbt(const std::string&, std::endian, StringDecode);
-    std::vector<NamedTag> read_nbt_array(const std::string&, std::endian, StringDecode, bool named, size_t& offset);
-    std::vector<NamedTag> read_nbt_array(const std::string&, std::endian, StringDecode, bool named, size_t& offset, size_t count);
+    NamedTag read_nbt(BinaryReader& reader, bool named = true);
+    NamedTag read_nbt(const std::string&, std::endian, StringDecode, size_t& offset, bool named = true);
+    NamedTag read_nbt(const std::string&, std::endian, StringDecode, bool named = true);
+    std::vector<NamedTag> read_nbt_array(const std::string&, std::endian, StringDecode, size_t& offset, bool named = true);
+    std::vector<NamedTag> read_nbt_array(const std::string&, std::endian, StringDecode, size_t& offset, size_t count, bool named);
 
     void write_nbt(BinaryWriter&, const std::optional<std::string>& name, const ByteTag&);
     void write_nbt(BinaryWriter&, const std::optional<std::string>& name, const ShortTag&);

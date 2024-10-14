@@ -97,8 +97,8 @@ void init_bnbt(py::module& m) {
                 buffer,
                 endianness,
                 string_decoder,
-                named,
-                read_offset.offset
+                read_offset.offset,
+                named
             );
         } else if (read_offset_py.is(py::none())){
             return AmuletNBT::read_nbt(
@@ -203,17 +203,17 @@ void init_bnbt(py::module& m) {
                     buffer,
                     endianness,
                     string_decoder,
-                    named,
-                    read_offset.offset
+                    read_offset.offset,
+                    named
                 );
             } else {
                 return AmuletNBT::read_nbt_array(
                     buffer,
                     endianness,
                     string_decoder,
-                    named,
                     read_offset.offset,
-                    count
+                    count,
+                    named
                 );
             }
         } else if (read_offset_py.is(py::none())){
@@ -223,17 +223,17 @@ void init_bnbt(py::module& m) {
                     buffer,
                     endianness,
                     string_decoder,
-                    named,
-                    offset
+                    offset,
+                    named
                 );
             } else {
                 return AmuletNBT::read_nbt_array(
                     buffer,
                     endianness,
                     string_decoder,
-                    named,
                     offset,
-                    count
+                    count,
+                    named
                 );
             }
         } else {

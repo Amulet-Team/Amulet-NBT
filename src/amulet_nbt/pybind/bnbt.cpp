@@ -87,8 +87,9 @@ void init_bnbt(py::module& m) {
         bool compressed,
         std::endian endianness,
         AmuletNBT::StringDecode string_decoder,
+        bool named,
         py::object read_offset_py
-    ){
+    ) {
         std::string buffer = get_buffer(filepath_or_buffer, compressed);
         if (py::isinstance<AmuletNBT::ReadOffset>(read_offset_py)){
             AmuletNBT::ReadOffset& read_offset = read_offset_py.cast<AmuletNBT::ReadOffset&>();
@@ -96,13 +97,15 @@ void init_bnbt(py::module& m) {
                 buffer,
                 endianness,
                 string_decoder,
+                named,
                 read_offset.offset
             );
         } else if (read_offset_py.is(py::none())){
             return AmuletNBT::read_nbt(
                 buffer,
                 endianness,
-                string_decoder
+                string_decoder,
+                named
             );
         } else {
             throw std::invalid_argument("read_offset must be ReadOffset or None");
@@ -114,6 +117,7 @@ void init_bnbt(py::module& m) {
         [read_nbt](
             py::object filepath_or_buffer,
             AmuletNBT::EncodingPreset preset,
+            bool named,
             py::object read_offset
         ){
             return read_nbt(
@@ -121,18 +125,21 @@ void init_bnbt(py::module& m) {
                 preset.compressed,
                 preset.endianness,
                 preset.string_encoding.decode,
+                named,
                 read_offset
             );
         },
         py::arg("filepath_or_buffer"),
         py::kw_only(),
         py::arg("preset") = java_encoding,
+        py::arg("named") = true,
         py::arg("read_offset") = py::none(),
         py::doc(
             "Load one binary NBT object.\n"
             "\n"
             ":param filepath_or_buffer: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.\n"
             ":param preset: The encoding preset. If this is defined little_endian and string_encoding have no effect.\n"
+            ":param named: If the tag to read is named, if not, return NamedTag with empty name.\n"
             ":param read_offset: Optional ReadOffset object to get read end offset.\n"
             ":raises: IndexError if the data is not long enough."
         )
@@ -144,6 +151,7 @@ void init_bnbt(py::module& m) {
             bool compressed,
             bool little_endian,
             AmuletNBT::StringEncoding string_encoding,
+            bool named,
             py::object read_offset
         ){
             return read_nbt(
@@ -151,6 +159,7 @@ void init_bnbt(py::module& m) {
                 compressed,
                 little_endian ? std::endian::little : std::endian::big,
                 string_encoding.decode,
+                named,
                 read_offset
             );
         },
@@ -159,6 +168,7 @@ void init_bnbt(py::module& m) {
         py::arg("compressed") = true,
         py::arg("little_endian") = false,
         py::arg("string_encoding") = mutf8_encoding,
+        py::arg("named") = true,
         py::arg("read_offset") = py::none(),
         py::doc(
             "Load one binary NBT object.\n"
@@ -167,6 +177,7 @@ void init_bnbt(py::module& m) {
             ":param compressed: Is the binary data gzip compressed.\n"
             ":param little_endian: Are the numerical values stored as little endian. True for Bedrock, False for Java.\n"
             ":param string_encoding: The bytes decoder function to parse strings. mutf8_encoding for Java, utf8_escape_encoding for Bedrock.\n"
+            ":param named: If the tag to read is named, if not, return NamedTag with empty name.\n"
             ":param read_offset: Optional ReadOffset object to get read end offset.\n"
             ":raises: IndexError if the data is not long enough."
         )
@@ -178,8 +189,9 @@ void init_bnbt(py::module& m) {
         bool compressed,
         std::endian endianness,
         AmuletNBT::StringDecode string_decoder,
+        bool named,
         py::object read_offset_py
-    ){
+    ) {
         if (count < -1){
             throw std::invalid_argument("count must be -1 or higher");
         }
@@ -191,6 +203,7 @@ void init_bnbt(py::module& m) {
                     buffer,
                     endianness,
                     string_decoder,
+                    named,
                     read_offset.offset
                 );
             } else {
@@ -198,6 +211,7 @@ void init_bnbt(py::module& m) {
                     buffer,
                     endianness,
                     string_decoder,
+                    named,
                     read_offset.offset,
                     count
                 );
@@ -209,6 +223,7 @@ void init_bnbt(py::module& m) {
                     buffer,
                     endianness,
                     string_decoder,
+                    named,
                     offset
                 );
             } else {
@@ -216,6 +231,7 @@ void init_bnbt(py::module& m) {
                     buffer,
                     endianness,
                     string_decoder,
+                    named,
                     offset,
                     count
                 );
@@ -230,6 +246,7 @@ void init_bnbt(py::module& m) {
             py::object filepath_or_buffer,
             Py_ssize_t count,
             AmuletNBT::EncodingPreset preset,
+            bool named,
             py::object read_offset
         ){
             return read_nbt_array(
@@ -238,6 +255,7 @@ void init_bnbt(py::module& m) {
                 preset.compressed,
                 preset.endianness,
                 preset.string_encoding.decode,
+                named,
                 read_offset
             );
         },
@@ -245,6 +263,7 @@ void init_bnbt(py::module& m) {
         py::kw_only(),
         py::arg("count") = 1,
         py::arg("preset") = java_encoding,
+        py::arg("named") = true,
         py::arg("read_offset") = py::none(),
         py::doc(
             "Load an array of binary NBT objects from a contiguous buffer.\n"
@@ -252,6 +271,7 @@ void init_bnbt(py::module& m) {
             ":param filepath_or_buffer: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.\n"
             ":param count: The number of binary NBT objects to read. Use -1 to exhaust the buffer.\n"
             ":param preset: The encoding preset. If this is defined little_endian and string_encoding have no effect.\n"
+            ":param named: If the tags to read are named, if not, return NamedTags with empty name.\n"
             ":param read_offset: Optional ReadOffset object to get read end offset.\n"
             ":raises: IndexError if the data is not long enough."
         )
@@ -265,6 +285,7 @@ void init_bnbt(py::module& m) {
             bool compressed,
             bool little_endian,
             AmuletNBT::StringEncoding string_encoding,
+            bool named,
             py::object read_offset
         ){
             return read_nbt_array(
@@ -273,6 +294,7 @@ void init_bnbt(py::module& m) {
                 compressed,
                 little_endian ? std::endian::little : std::endian::big,
                 string_encoding.decode,
+                named,
                 read_offset
             );
         },
@@ -282,6 +304,7 @@ void init_bnbt(py::module& m) {
         py::arg("compressed") = true,
         py::arg("little_endian") = false,
         py::arg("string_encoding") = mutf8_encoding,
+        py::arg("named") = true,
         py::arg("read_offset") = py::none(),
         py::doc(
             "Load an array of binary NBT objects from a contiguous buffer.\n"
@@ -291,6 +314,7 @@ void init_bnbt(py::module& m) {
             ":param compressed: Is the binary data gzip compressed. This only supports the whole buffer compressed as one.\n"
             ":param little_endian: Are the numerical values stored as little endian. True for Bedrock, False for Java.\n"
             ":param string_encoding: The bytes decoder function to parse strings. mutf8.decode_modified_utf8 for Java, amulet_nbt.utf8_escape_decoder for Bedrock.\n"
+            ":param named: If the tags to read are named, if not, return NamedTags with empty name.\n"
             ":param read_offset: Optional ReadOffset object to get read end offset.\n"
             ":raises: IndexError if the data is not long enough."
         )

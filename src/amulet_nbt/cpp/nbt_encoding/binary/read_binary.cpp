@@ -163,41 +163,46 @@ inline AmuletNBT::TagNode read_node(AmuletNBT::BinaryReader& reader, std::uint8_
 
 
 namespace AmuletNBT {
-    AmuletNBT::NamedTag read_nbt(AmuletNBT::BinaryReader& reader){
+    AmuletNBT::NamedTag read_nbt(AmuletNBT::BinaryReader& reader, bool named){
         std::uint8_t tag_id = reader.readNumeric<std::uint8_t>();
-        std::string name = read_string_tag(reader);
+        std::string name = named ? read_string_tag(reader) : "";
         AmuletNBT::TagNode node = read_node(reader, tag_id);
         return AmuletNBT::NamedTag(name, node);
     }
 
-    // Read one named tag from the string at position offset.
-    AmuletNBT::NamedTag read_nbt(const std::string& raw, std::endian endianness, AmuletNBT::StringDecode string_decode, size_t& offset){
+    // Read one (un)named tag from the string at position offset.
+    AmuletNBT::NamedTag read_nbt(const std::string& raw, std::endian endianness, AmuletNBT::StringDecode string_decode, bool named, size_t& offset){
         AmuletNBT::BinaryReader reader(raw, offset, endianness, string_decode);
-        return read_nbt(reader);
+        return read_nbt(reader, named);
+    }
+
+    // Read one (un)named tag from the string.
+    AmuletNBT::NamedTag read_nbt(const std::string& raw, std::endian endianness, AmuletNBT::StringDecode string_decode, bool named){
+        size_t offset = 0;
+        return read_nbt(raw, endianness, string_decode, named, offset);
     }
 
     // Read one named tag from the string.
     AmuletNBT::NamedTag read_nbt(const std::string& raw, std::endian endianness, AmuletNBT::StringDecode string_decode){
-        size_t offset = 0;
-        return read_nbt(raw, endianness, string_decode, offset);
+        return read_nbt(raw, endianness, string_decode, true);
     }
 
-    // Read count named tags from the string at position offset.
-    std::vector<AmuletNBT::NamedTag> read_nbt_array(const std::string& raw, std::endian endianness, AmuletNBT::StringDecode string_decode, size_t& offset, size_t count){
+    // Read count (un)named tags from the string at position offset.
+    std::vector<AmuletNBT::NamedTag> read_nbt_array(const std::string& raw, std::endian endianness, AmuletNBT::StringDecode string_decode, bool named, size_t& offset, size_t count){
         AmuletNBT::BinaryReader reader(raw, offset, endianness, string_decode);
         std::vector<AmuletNBT::NamedTag> out;
         for (size_t i = 0; i < count; i++){
-            out.push_back(read_nbt(reader));
+            out.push_back(read_nbt(reader, named));
         }
         return out;
     }
 
-    // Read all named tags from the string at position offset.
-    std::vector<AmuletNBT::NamedTag> read_nbt_array(const std::string& raw, std::endian endianness, AmuletNBT::StringDecode string_decode, size_t& offset){
+    // Read all (un)named tags from the string at position offset.
+    std::vector<AmuletNBT::NamedTag> read_nbt_array(const std::string& raw, std::endian endianness, AmuletNBT::StringDecode string_decode, bool named, size_t& offset){
         AmuletNBT::BinaryReader reader(raw, offset, endianness, string_decode);
         std::vector<AmuletNBT::NamedTag> out;
         while (reader.has_more_data()){
-            out.push_back(read_nbt(reader));
+            out.push_back(read_nbt(reader, named));
         }
         return out;
     }

@@ -122,7 +122,7 @@ class AbstractBaseTag:
         compressed: bool = True,
         little_endian: bool = False,
         string_encoding: StringEncoding = mutf8_encoding,
-        name: str | bytes = b"",
+        name: str | bytes | None = b"",
     ) -> bytes:
         """Get the data in binary NBT format.
 
@@ -130,7 +130,7 @@ class AbstractBaseTag:
         :param compressed: Should the bytes be compressed with gzip.
         :param little_endian: Should the bytes be saved in little endian format. Ignored if preset is defined.
         :param string_encoding: The StringEncoding to use. Ignored if preset is defined.
-        :param name: The root tag name.
+        :param name: The root tag name, or `None` for unnamed tag.
         :return: The binary NBT representation of the class.
         """
 
@@ -142,7 +142,7 @@ class AbstractBaseTag:
         compressed: bool = True,
         little_endian: bool = False,
         string_encoding: StringEncoding = mutf8_encoding,
-        name: str | bytes = b"",
+        name: str | bytes | None = b"",
     ) -> bytes:
         """Convert the data to the binary NBT format. Optionally write to a file.
 
@@ -155,7 +155,7 @@ class AbstractBaseTag:
         :param compressed: Should the bytes be compressed with gzip.
         :param little_endian: Should the bytes be saved in little endian format. Ignored if preset is defined.
         :param string_encoding: The StringEncoding to use. Ignored if preset is defined.
-        :param name: The root tag name.
+        :param name: The root tag name, or `None` for unnamed tag.
         :return: The binary NBT representation of the class.
         """
 
@@ -1592,12 +1592,14 @@ def read_nbt(
     filepath_or_buffer: str | bytes | memoryview | _Readable | None,
     *,
     preset: EncodingPreset | None = None,
+    named: bool = True,
     read_offset: ReadOffset | None = None,
 ) -> NamedTag:
     """Load one binary NBT object.
 
     :param filepath_or_buffer: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.
     :param preset: The encoding preset. If this is defined little_endian and string_encoding have no effect.
+    :param named: If the tag to read is named, if not, return NamedTag with empty name.
     :param read_offset: Optional ReadOffset object to get read end offset.
     :raises: IndexError if the data is not long enough.
     """
@@ -1609,6 +1611,7 @@ def read_nbt(
     compressed: bool = True,
     little_endian: bool = False,
     string_encoding: StringEncoding = mutf8_encoding,
+    named: bool = True,
     read_offset: ReadOffset | None = None,
 ) -> NamedTag:
     """Load one binary NBT object.
@@ -1617,6 +1620,7 @@ def read_nbt(
     :param compressed: Is the binary data gzip compressed.
     :param little_endian: Are the numerical values stored as little endian. True for Bedrock, False for Java.
     :param string_encoding: The bytes decoder function to parse strings. mutf8_encoding for Java, utf8_escape_encoding for Bedrock.
+    :param named: If the tag to read is named, if not, return NamedTag with empty name.
     :param read_offset: Optional ReadOffset object to get read end offset.
     :raises: IndexError if the data is not long enough.
     """
@@ -1627,6 +1631,7 @@ def read_nbt_array(
     *,
     count: int = 1,
     preset: EncodingPreset | None = None,
+    named: bool = True,
     read_offset: ReadOffset | None = None,
 ) -> list[NamedTag]:
     """Load an array of binary NBT objects from a contiguous buffer.
@@ -1634,6 +1639,7 @@ def read_nbt_array(
     :param filepath_or_buffer: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.
     :param count: The number of binary NBT objects to read. Use -1 to exhaust the buffer.
     :param preset: The encoding preset. If this is defined little_endian and string_encoding have no effect.
+    :param named: If the tags to read are named, if not, return NamedTags with empty name.
     :param read_offset: Optional ReadOffset object to get read end offset.
     :raises: IndexError if the data is not long enough.
     """
@@ -1646,6 +1652,7 @@ def read_nbt_array(
     compressed: bool = True,
     little_endian: bool = False,
     string_encoding: StringEncoding = mutf8_encoding,
+    named: bool = True,
     read_offset: ReadOffset | None = None,
 ) -> list[NamedTag]:
     """Load an array of binary NBT objects from a contiguous buffer.
@@ -1655,6 +1662,7 @@ def read_nbt_array(
     :param compressed: Is the binary data gzip compressed. This only supports the whole buffer compressed as one.
     :param little_endian: Are the numerical values stored as little endian. True for Bedrock, False for Java.
     :param string_encoding: The bytes decoder function to parse strings. mutf8.decode_modified_utf8 for Java, amulet_nbt.utf8_escape_decoder for Bedrock.
+    :param named: If the tags to read are named, if not, return NamedTags with empty name.
     :param read_offset: Optional ReadOffset object to get read end offset.
     :raises: IndexError if the data is not long enough.
     """

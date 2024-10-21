@@ -41,6 +41,13 @@ class StringTagTestCase(AbstractBaseImmutableTagTestCase, unittest.TestCase):
 
         self.assertEqual(b"value", StringTag("value").py_bytes)
 
+        self.assertIsInstance(StringTag("test").py_str_or_bytes, str)
+        self.assertEqual("test", StringTag("test").py_str_or_bytes)
+        self.assertIsInstance(StringTag("test").py_str_or_bytes, str)
+        self.assertEqual("test", StringTag("test").py_str_or_bytes)
+        self.assertIsInstance(StringTag(b"test\xFF").py_str_or_bytes, bytes)
+        self.assertEqual(b"test\xFF", StringTag(b"test\xFF").py_str_or_bytes)
+
     def test_repr(self) -> None:
         self.assertEqual("StringTag('')", repr(StringTag()))
         self.assertEqual("StringTag('value')", repr(StringTag("value")))

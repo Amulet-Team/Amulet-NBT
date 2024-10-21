@@ -59,6 +59,17 @@ void init_string(py::module& m) {
             )
         );
         StringTag.def_property_readonly(
+            "py_str_or_bytes",
+            [](const AmuletNBT::StringTag& self) -> std::variant<py::str, py::bytes> {
+                try {
+                    return py::str(self);
+                } catch (py::error_already_set&){
+                    return py::bytes(self);
+                }
+            },
+            py::doc("If the payload is UTF-8 returns a string else returns bytes.")
+        );
+        StringTag.def_property_readonly(
             "py_data",
             [](const AmuletNBT::StringTag& self){
                 return py::bytes(self);

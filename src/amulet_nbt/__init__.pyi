@@ -313,6 +313,10 @@ class StringTag(AbstractBaseImmutableTag):
     def py_bytes(self) -> bytes:
         """The bytes stored in the class."""
 
+    @property
+    def py_str_or_bytes(self) -> str | bytes:
+        """If the payload is UTF-8 returns a string else returns bytes."""
+
     def __ge__(self, other: Any) -> bool:
         """Check if the tag is greater than or equal to another tag."""
 

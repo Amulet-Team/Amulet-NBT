@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <string_view>
 
 #include <amulet_nbt/tag/int.hpp>
 #include <amulet_nbt/tag/float.hpp>
@@ -69,5 +70,5 @@ namespace AmuletNBT {
     std::string write_formatted_snbt(const LongArrayTag&, const std::string& indent);
 
     TagNode read_snbt(const CodePointVector& snbt);
-    TagNode read_snbt(const std::string& snbt);
-}
+    TagNode read_snbt(std::string_view snbt);
+    }

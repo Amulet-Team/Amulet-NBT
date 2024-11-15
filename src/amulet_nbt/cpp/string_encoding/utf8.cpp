@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <string>
+#include <string_view>
 #include <vector>
 #include <stdexcept>
 #include <amulet_nbt/string_encoding.hpp>
@@ -19,7 +20,7 @@ inline void push_escape(AmuletNBT::CodePointVector& dst, const uint8_t& b){
 
 
 template <bool escapeErrors>
-AmuletNBT::CodePointVector _read_utf8(const std::string& src) {
+AmuletNBT::CodePointVector _read_utf8(std::string_view src) {
     AmuletNBT::CodePointVector dst;
 
     for (size_t index = 0; index < src.size(); index++) {
@@ -221,7 +222,7 @@ constexpr void _write_utf8(std::string &dst, const AmuletNBT::CodePointVector& s
 
 
 namespace AmuletNBT{
-    CodePointVector read_utf8(const std::string& src) {
+    CodePointVector read_utf8(std::string_view src) {
         return _read_utf8<false>(src);
     }
 
@@ -235,7 +236,7 @@ namespace AmuletNBT{
         return dst;
     }
 
-    CodePointVector read_utf8_escape(const std::string& src) {
+    CodePointVector read_utf8_escape(std::string_view src) {
         return _read_utf8<true>(src);
     }
 
@@ -250,21 +251,21 @@ namespace AmuletNBT{
     }
 
     // Validate a utf-8 byte sequence and convert to itself.
-    std::string utf8_to_utf8(const std::string& src) {
+    std::string utf8_to_utf8(std::string_view src) {
         std::string dst;
         write_utf8(dst, read_utf8(src));
         return dst;
     }
 
     // Decode a utf-8 escape byte sequence to a regular utf-8 byte sequence
-    std::string utf8_escape_to_utf8(const std::string& src) {
+    std::string utf8_escape_to_utf8(std::string_view src) {
         std::string dst;
         write_utf8(dst, read_utf8_escape(src));
         return dst;
     }
 
     // Encode a regular utf-8 byte sequence to a utf-8 escape byte sequence
-    std::string utf8_to_utf8_escape(const std::string& src) {
+    std::string utf8_to_utf8_escape(std::string_view src) {
         std::string dst;
         write_utf8_escape(dst, read_utf8(src));
         return dst;

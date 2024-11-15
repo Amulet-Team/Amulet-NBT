@@ -8,22 +8,23 @@
 #include <bit>
 #include <functional>
 #include <stdexcept>
+#include <string_view>
 
 
 namespace AmuletNBT {
-    typedef std::function<std::string(const std::string&)> StringDecode;
+    typedef std::function<std::string(std::string_view)> StringDecode;
 
 
     class BinaryReader {
     protected:
-        const std::string& data;
+        std::string_view data;
         size_t& position;
         std::endian endianness;
         StringDecode string_decode;
 
     public:
         BinaryReader(
-            const std::string& input,
+            std::string_view input,
             size_t& position,
             std::endian endianness,
             StringDecode string_decode
@@ -76,7 +77,7 @@ namespace AmuletNBT {
                 throw std::out_of_range("Cannot read string at position " + std::to_string(position));
             }
 
-            std::string value = data.substr(position, length);
+            std::string_view value = data.substr(position, length);
             position += length;
             return string_decode(value);
         }

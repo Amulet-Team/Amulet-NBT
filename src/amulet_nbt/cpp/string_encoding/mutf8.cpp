@@ -3,13 +3,14 @@
 
 #include <cstdint>
 #include <string>
+#include <string_view>
 #include <vector>
 #include <stdexcept>
 #include <amulet_nbt/string_encoding.hpp>
 
 
 namespace AmuletNBT {
-    CodePointVector read_mutf8(const std::string &src) {
+    CodePointVector read_mutf8(std::string_view src) {
         CodePointVector dst;
 
         for (size_t index = 0; index < src.size(); index++) {
@@ -143,7 +144,7 @@ namespace AmuletNBT {
 
 
     // Decode a modified utf-8 byte sequence to a regular utf-8 byte sequence
-    std::string mutf8_to_utf8(const std::string& src) {
+    std::string mutf8_to_utf8(std::string_view src) {
         std::string dst;
         write_utf8(dst, read_mutf8(src));
         return dst;
@@ -151,7 +152,7 @@ namespace AmuletNBT {
 
 
     // Encode a regular utf-8 byte sequence to a modified utf-8 byte sequence
-    std::string utf8_to_mutf8(const std::string& src) {
+    std::string utf8_to_mutf8(std::string_view src) {
         std::string dst;
         write_mutf8(dst, read_utf8(src));
         return dst;

@@ -435,7 +435,7 @@ AmuletNBT::TagNode AmuletNBT::read_snbt(const AmuletNBT::CodePointVector& snbt){
 }
 
 
-AmuletNBT::TagNode AmuletNBT::read_snbt(const std::string& snbt){
+AmuletNBT::TagNode AmuletNBT::read_snbt(std::string_view snbt){
     AmuletNBT::CodePointVector code_points = AmuletNBT::read_utf8_escape(snbt);
     return AmuletNBT::read_snbt(code_points);
 }

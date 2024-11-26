@@ -34,7 +34,7 @@ class CMakeBuild(cmdclass.get("build_ext", build_ext)):
                 platform_args.extend(["-A", "Win32"])
             platform_args.extend(["-T", "v143"])
 
-        subprocess.run(
+        if subprocess.run(
             [
                 "cmake",
                 *platform_args,
@@ -45,9 +45,12 @@ class CMakeBuild(cmdclass.get("build_ext", build_ext)):
                 "-B",
                 "build",
             ]
-        )
-        subprocess.run(["cmake", "--build", "build", "--config", "Release"])
-        subprocess.run(["cmake", "--install", "build", "--config", "Release"])
+        ).returncode:
+            raise RuntimeError("Error configuring amulet_nbt")
+        if subprocess.run(["cmake", "--build", "build", "--config", "Release"]).returncode:
+            raise RuntimeError("Error installing amulet_nbt")
+        if subprocess.run(["cmake", "--install", "build", "--config", "Release"]).returncode:
+            raise RuntimeError("Error installing amulet_nbt")
 
 
 cmdclass["build_ext"] = CMakeBuild

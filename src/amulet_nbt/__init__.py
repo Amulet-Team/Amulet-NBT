@@ -26,33 +26,26 @@ if TYPE_CHECKING:
 
     _T = TypeVar("_T")
 
-
     class _Readable(Protocol):
         def read(self) -> bytes: ...
 
-
     class _Writeable(Protocol):
         def write(self, s: bytes) -> Any: ...
-
 
     class StringEncoding:
         def encode(self, data: bytes) -> bytes: ...
 
         def decode(self, data: bytes) -> bytes: ...
 
-
     mutf8_encoding: StringEncoding
     utf8_encoding: StringEncoding
     utf8_escape_encoding: StringEncoding
 
-
     class EncodingPreset:
         pass
 
-
     java_encoding: EncodingPreset
     bedrock_encoding: EncodingPreset
-
 
     class AbstractBaseTag:
         """Abstract Base Class for all Tag classes"""
@@ -68,13 +61,13 @@ if TYPE_CHECKING:
             """
 
         def to_nbt(
-                self,
-                *,
-                preset: EncodingPreset | None = None,
-                compressed: bool = True,
-                little_endian: bool = False,
-                string_encoding: StringEncoding = mutf8_encoding,
-                name: str | bytes | None = b"",
+            self,
+            *,
+            preset: EncodingPreset | None = None,
+            compressed: bool = True,
+            little_endian: bool = False,
+            string_encoding: StringEncoding = mutf8_encoding,
+            name: str | bytes | None = b"",
         ) -> bytes:
             """Get the data in binary NBT format.
 
@@ -87,14 +80,14 @@ if TYPE_CHECKING:
             """
 
         def save_to(
-                self,
-                filepath_or_buffer: str | _Writeable | None = None,
-                *,
-                preset: EncodingPreset | None = None,
-                compressed: bool = True,
-                little_endian: bool = False,
-                string_encoding: StringEncoding = mutf8_encoding,
-                name: str | bytes | None = b"",
+            self,
+            filepath_or_buffer: str | _Writeable | None = None,
+            *,
+            preset: EncodingPreset | None = None,
+            compressed: bool = True,
+            little_endian: bool = False,
+            string_encoding: StringEncoding = mutf8_encoding,
+            name: str | bytes | None = b"",
         ) -> bytes:
             """Convert the data to the binary NBT format. Optionally write to a file.
 
@@ -169,19 +162,16 @@ if TYPE_CHECKING:
             >>> tag2 = copy.deepcopy(tag)
             """
 
-
     class AbstractBaseImmutableTag(AbstractBaseTag):
         """Abstract Base Class for all immutable Tag classes"""
 
         def __hash__(self) -> int:
             """A hash of the data in the class."""
 
-
     class AbstractBaseMutableTag(AbstractBaseTag):
         """Abstract Base Class for all mutable Tag classes"""
 
         __hash__ = None  # type: ignore
-
 
     class AbstractBaseNumericTag(AbstractBaseImmutableTag):
         """Abstract Base Class for all numeric Tag classes"""
@@ -207,7 +197,6 @@ if TYPE_CHECKING:
         def __lt__(self, other: Any) -> bool:
             """Check if the tag is less than another tag."""
 
-
     # Types
     class AbstractBaseIntTag(AbstractBaseNumericTag):
         def __init__(self, value: SupportsInt = 0) -> None: ...
@@ -219,13 +208,11 @@ if TYPE_CHECKING:
             The returned data is immutable so changes will not mirror the instance.
             """
 
-
     class ByteTag(AbstractBaseIntTag):
         """
         A 1 byte integer class.
         Can Store numbers between -(2^7) and (2^7 - 1)
         """
-
 
     class ShortTag(AbstractBaseIntTag):
         """
@@ -233,20 +220,17 @@ if TYPE_CHECKING:
         Can Store numbers between -(2^15) and (2^15 - 1)
         """
 
-
     class IntTag(AbstractBaseIntTag):
         """
         A 4 byte integer class.
         Can Store numbers between -(2^31) and (2^31 - 1)
         """
 
-
     class LongTag(AbstractBaseIntTag):
         """
         An 8 byte integer class.
         Can Store numbers between -(2^63) and (2^63 - 1)
         """
-
 
     class AbstractBaseFloatTag(AbstractBaseNumericTag):
         def __init__(self, value: SupportsFloat = 0): ...
@@ -258,14 +242,11 @@ if TYPE_CHECKING:
             The returned data is immutable so changes will not mirror the instance.
             """
 
-
     class FloatTag(AbstractBaseFloatTag):
         """A single precision float class."""
 
-
     class DoubleTag(AbstractBaseFloatTag):
         """A double precision float class."""
-
 
     class StringTag(AbstractBaseImmutableTag):
         def __init__(self, value: str | bytes | Any = "") -> None: ...
@@ -297,9 +278,7 @@ if TYPE_CHECKING:
         def __lt__(self, other: Any) -> bool:
             """Check if the tag is less than another tag."""
 
-
     AnyNBTT = TypeVar("AnyNBTT", bound=AbstractBaseTag)
-
 
     class ListTag(AbstractBaseMutableTag, MutableSequence[AnyNBTT]):
         @overload
@@ -307,7 +286,7 @@ if TYPE_CHECKING:
 
         @overload
         def __init__(
-                self, value: Iterable[AnyNBTT] = (), element_tag_id: int = 1
+            self, value: Iterable[AnyNBTT] = (), element_tag_id: int = 1
         ) -> None: ...
 
         @property
@@ -327,21 +306,21 @@ if TYPE_CHECKING:
 
         @property
         def element_class(
-                self,
+            self,
         ) -> (
-                None
-                | Type[ByteTag]
-                | Type[ShortTag]
-                | Type[IntTag]
-                | Type[LongTag]
-                | Type[FloatTag]
-                | Type[DoubleTag]
-                | Type[StringTag]
-                | Type[ByteArrayTag]
-                | Type[ListTag]
-                | Type[CompoundTag]
-                | Type[IntArrayTag]
-                | Type[LongArrayTag]
+            None
+            | Type[ByteTag]
+            | Type[ShortTag]
+            | Type[IntTag]
+            | Type[LongTag]
+            | Type[FloatTag]
+            | Type[DoubleTag]
+            | Type[StringTag]
+            | Type[ByteArrayTag]
+            | Type[ListTag]
+            | Type[CompoundTag]
+            | Type[IntArrayTag]
+            | Type[LongArrayTag]
         ):
             """The python class for the tag type contained in this list or None if the list tag is in the 0 state."""
 
@@ -381,7 +360,9 @@ if TYPE_CHECKING:
         def __setitem__(self, index: int, value: AnyNBTT) -> None: ...
 
         @overload
-        def __setitem__(self, index: slice, value: Iterable[AbstractBaseTag]) -> None: ...
+        def __setitem__(
+            self, index: slice, value: Iterable[AbstractBaseTag]
+        ) -> None: ...
 
         @overload
         def __delitem__(self, index: int) -> None: ...
@@ -392,20 +373,18 @@ if TYPE_CHECKING:
         def __len__(self) -> int:
             pass
 
-
     _TagT = TypeVar("_TagT", bound=AbstractBaseTag)
-
 
     class CompoundTag(AbstractBaseMutableTag, MutableMapping[str | bytes, AnyNBT]):
         def __init__(
-                self,
-                value: (
-                        Mapping[str | bytes, AnyNBT | AbstractBaseTag]
-                        | Iterable[tuple[str | bytes, AnyNBT | AbstractBaseTag]]
-                        | Mapping[str, AnyNBT | AbstractBaseTag]
-                        | Mapping[bytes, AnyNBT | AbstractBaseTag]
-                ) = (),
-                **kwvals: AnyNBT,
+            self,
+            value: (
+                Mapping[str | bytes, AnyNBT | AbstractBaseTag]
+                | Iterable[tuple[str | bytes, AnyNBT | AbstractBaseTag]]
+                | Mapping[str, AnyNBT | AbstractBaseTag]
+                | Mapping[bytes, AnyNBT | AbstractBaseTag]
+            ) = (),
+            **kwvals: AnyNBT,
         ): ...
 
         @property
@@ -447,26 +426,28 @@ if TYPE_CHECKING:
 
         @overload
         def get_byte(
-                self, key: str | bytes, default: None, raise_errors: Literal[False]
+            self, key: str | bytes, default: None, raise_errors: Literal[False]
         ) -> ByteTag | None: ...
 
         @overload
         def get_byte(
-                self, key: str | bytes, default: ByteTag, raise_errors: Literal[False]
+            self, key: str | bytes, default: ByteTag, raise_errors: Literal[False]
         ) -> ByteTag: ...
 
         @overload
         def get_byte(
-                self, key: str | bytes, default: ByteTag | None, raise_errors: Literal[True]
+            self, key: str | bytes, default: ByteTag | None, raise_errors: Literal[True]
         ) -> ByteTag: ...
 
         @overload
         def get_byte(
-                self, key: str | bytes, *, raise_errors: Literal[False]
+            self, key: str | bytes, *, raise_errors: Literal[False]
         ) -> ByteTag | None: ...
 
         @overload
-        def get_byte(self, key: str | bytes, *, raise_errors: Literal[True]) -> ByteTag: ...
+        def get_byte(
+            self, key: str | bytes, *, raise_errors: Literal[True]
+        ) -> ByteTag: ...
 
         @overload
         def get_short(self, key: str | bytes) -> ShortTag | None: ...
@@ -479,27 +460,30 @@ if TYPE_CHECKING:
 
         @overload
         def get_short(
-                self, key: str | bytes, default: None, raise_errors: Literal[False]
+            self, key: str | bytes, default: None, raise_errors: Literal[False]
         ) -> ShortTag | None: ...
 
         @overload
         def get_short(
-                self, key: str | bytes, default: ShortTag, raise_errors: Literal[False]
+            self, key: str | bytes, default: ShortTag, raise_errors: Literal[False]
         ) -> ShortTag: ...
 
         @overload
         def get_short(
-                self, key: str | bytes, default: ShortTag | None, raise_errors: Literal[True]
+            self,
+            key: str | bytes,
+            default: ShortTag | None,
+            raise_errors: Literal[True],
         ) -> ShortTag: ...
 
         @overload
         def get_short(
-                self, key: str | bytes, *, raise_errors: Literal[False]
+            self, key: str | bytes, *, raise_errors: Literal[False]
         ) -> ShortTag | None: ...
 
         @overload
         def get_short(
-                self, key: str | bytes, *, raise_errors: Literal[True]
+            self, key: str | bytes, *, raise_errors: Literal[True]
         ) -> ShortTag: ...
 
         @overload
@@ -513,26 +497,28 @@ if TYPE_CHECKING:
 
         @overload
         def get_int(
-                self, key: str | bytes, default: None, raise_errors: Literal[False]
+            self, key: str | bytes, default: None, raise_errors: Literal[False]
         ) -> IntTag | None: ...
 
         @overload
         def get_int(
-                self, key: str | bytes, default: IntTag, raise_errors: Literal[False]
+            self, key: str | bytes, default: IntTag, raise_errors: Literal[False]
         ) -> IntTag: ...
 
         @overload
         def get_int(
-                self, key: str | bytes, default: IntTag | None, raise_errors: Literal[True]
+            self, key: str | bytes, default: IntTag | None, raise_errors: Literal[True]
         ) -> IntTag: ...
 
         @overload
         def get_int(
-                self, key: str | bytes, *, raise_errors: Literal[False]
+            self, key: str | bytes, *, raise_errors: Literal[False]
         ) -> IntTag | None: ...
 
         @overload
-        def get_int(self, key: str | bytes, *, raise_errors: Literal[True]) -> IntTag: ...
+        def get_int(
+            self, key: str | bytes, *, raise_errors: Literal[True]
+        ) -> IntTag: ...
 
         @overload
         def get_long(self, key: str | bytes) -> LongTag | None: ...
@@ -545,26 +531,28 @@ if TYPE_CHECKING:
 
         @overload
         def get_long(
-                self, key: str | bytes, default: None, raise_errors: Literal[False]
+            self, key: str | bytes, default: None, raise_errors: Literal[False]
         ) -> LongTag | None: ...
 
         @overload
         def get_long(
-                self, key: str | bytes, default: LongTag, raise_errors: Literal[False]
+            self, key: str | bytes, default: LongTag, raise_errors: Literal[False]
         ) -> LongTag: ...
 
         @overload
         def get_long(
-                self, key: str | bytes, default: LongTag | None, raise_errors: Literal[True]
+            self, key: str | bytes, default: LongTag | None, raise_errors: Literal[True]
         ) -> LongTag: ...
 
         @overload
         def get_long(
-                self, key: str | bytes, *, raise_errors: Literal[False]
+            self, key: str | bytes, *, raise_errors: Literal[False]
         ) -> LongTag | None: ...
 
         @overload
-        def get_long(self, key: str | bytes, *, raise_errors: Literal[True]) -> LongTag: ...
+        def get_long(
+            self, key: str | bytes, *, raise_errors: Literal[True]
+        ) -> LongTag: ...
 
         @overload
         def get_float(self, key: str | bytes) -> FloatTag | None: ...
@@ -577,27 +565,30 @@ if TYPE_CHECKING:
 
         @overload
         def get_float(
-                self, key: str | bytes, default: None, raise_errors: Literal[False]
+            self, key: str | bytes, default: None, raise_errors: Literal[False]
         ) -> FloatTag | None: ...
 
         @overload
         def get_float(
-                self, key: str | bytes, default: FloatTag, raise_errors: Literal[False]
+            self, key: str | bytes, default: FloatTag, raise_errors: Literal[False]
         ) -> FloatTag: ...
 
         @overload
         def get_float(
-                self, key: str | bytes, default: FloatTag | None, raise_errors: Literal[True]
+            self,
+            key: str | bytes,
+            default: FloatTag | None,
+            raise_errors: Literal[True],
         ) -> FloatTag: ...
 
         @overload
         def get_float(
-                self, key: str | bytes, *, raise_errors: Literal[False]
+            self, key: str | bytes, *, raise_errors: Literal[False]
         ) -> FloatTag | None: ...
 
         @overload
         def get_float(
-                self, key: str | bytes, *, raise_errors: Literal[True]
+            self, key: str | bytes, *, raise_errors: Literal[True]
         ) -> FloatTag: ...
 
         @overload
@@ -611,27 +602,30 @@ if TYPE_CHECKING:
 
         @overload
         def get_double(
-                self, key: str | bytes, default: None, raise_errors: Literal[False]
+            self, key: str | bytes, default: None, raise_errors: Literal[False]
         ) -> DoubleTag | None: ...
 
         @overload
         def get_double(
-                self, key: str | bytes, default: DoubleTag, raise_errors: Literal[False]
+            self, key: str | bytes, default: DoubleTag, raise_errors: Literal[False]
         ) -> DoubleTag: ...
 
         @overload
         def get_double(
-                self, key: str | bytes, default: DoubleTag | None, raise_errors: Literal[True]
+            self,
+            key: str | bytes,
+            default: DoubleTag | None,
+            raise_errors: Literal[True],
         ) -> DoubleTag: ...
 
         @overload
         def get_double(
-                self, key: str | bytes, *, raise_errors: Literal[False]
+            self, key: str | bytes, *, raise_errors: Literal[False]
         ) -> DoubleTag | None: ...
 
         @overload
         def get_double(
-                self, key: str | bytes, *, raise_errors: Literal[True]
+            self, key: str | bytes, *, raise_errors: Literal[True]
         ) -> DoubleTag: ...
 
         @overload
@@ -639,40 +633,40 @@ if TYPE_CHECKING:
 
         @overload
         def get_byte_array(
-                self, key: str | bytes, default: None
+            self, key: str | bytes, default: None
         ) -> ByteArrayTag | None: ...
 
         @overload
         def get_byte_array(
-                self, key: str | bytes, default: ByteArrayTag
+            self, key: str | bytes, default: ByteArrayTag
         ) -> ByteArrayTag: ...
 
         @overload
         def get_byte_array(
-                self, key: str | bytes, default: None, raise_errors: Literal[False]
+            self, key: str | bytes, default: None, raise_errors: Literal[False]
         ) -> ByteArrayTag | None: ...
 
         @overload
         def get_byte_array(
-                self, key: str | bytes, default: ByteArrayTag, raise_errors: Literal[False]
+            self, key: str | bytes, default: ByteArrayTag, raise_errors: Literal[False]
         ) -> ByteArrayTag: ...
 
         @overload
         def get_byte_array(
-                self,
-                key: str | bytes,
-                default: ByteArrayTag | None,
-                raise_errors: Literal[True],
+            self,
+            key: str | bytes,
+            default: ByteArrayTag | None,
+            raise_errors: Literal[True],
         ) -> ByteArrayTag: ...
 
         @overload
         def get_byte_array(
-                self, key: str | bytes, *, raise_errors: Literal[False]
+            self, key: str | bytes, *, raise_errors: Literal[False]
         ) -> ByteArrayTag | None: ...
 
         @overload
         def get_byte_array(
-                self, key: str | bytes, *, raise_errors: Literal[True]
+            self, key: str | bytes, *, raise_errors: Literal[True]
         ) -> ByteArrayTag: ...
 
         @overload
@@ -686,27 +680,30 @@ if TYPE_CHECKING:
 
         @overload
         def get_string(
-                self, key: str | bytes, default: None, raise_errors: Literal[False]
+            self, key: str | bytes, default: None, raise_errors: Literal[False]
         ) -> StringTag | None: ...
 
         @overload
         def get_string(
-                self, key: str | bytes, default: StringTag, raise_errors: Literal[False]
+            self, key: str | bytes, default: StringTag, raise_errors: Literal[False]
         ) -> StringTag: ...
 
         @overload
         def get_string(
-                self, key: str | bytes, default: StringTag | None, raise_errors: Literal[True]
+            self,
+            key: str | bytes,
+            default: StringTag | None,
+            raise_errors: Literal[True],
         ) -> StringTag: ...
 
         @overload
         def get_string(
-                self, key: str | bytes, *, raise_errors: Literal[False]
+            self, key: str | bytes, *, raise_errors: Literal[False]
         ) -> StringTag | None: ...
 
         @overload
         def get_string(
-                self, key: str | bytes, *, raise_errors: Literal[True]
+            self, key: str | bytes, *, raise_errors: Literal[True]
         ) -> StringTag: ...
 
         @overload
@@ -720,93 +717,109 @@ if TYPE_CHECKING:
 
         @overload
         def get_list(
-                self, key: str | bytes, default: None, raise_errors: Literal[False]
+            self, key: str | bytes, default: None, raise_errors: Literal[False]
         ) -> ListTag | None: ...
 
         @overload
         def get_list(
-                self, key: str | bytes, default: ListTag, raise_errors: Literal[False]
+            self, key: str | bytes, default: ListTag, raise_errors: Literal[False]
         ) -> ListTag: ...
 
         @overload
         def get_list(
-                self, key: str | bytes, default: ListTag | None, raise_errors: Literal[True]
+            self, key: str | bytes, default: ListTag | None, raise_errors: Literal[True]
         ) -> ListTag: ...
 
         @overload
         def get_list(
-                self, key: str | bytes, *, raise_errors: Literal[False]
+            self, key: str | bytes, *, raise_errors: Literal[False]
         ) -> ListTag | None: ...
 
         @overload
-        def get_list(self, key: str | bytes, *, raise_errors: Literal[True]) -> ListTag: ...
+        def get_list(
+            self, key: str | bytes, *, raise_errors: Literal[True]
+        ) -> ListTag: ...
 
         @overload
         def get_compound(self, key: str | bytes) -> CompoundTag | None: ...
 
         @overload
-        def get_compound(self, key: str | bytes, default: None) -> CompoundTag | None: ...
-
-        @overload
-        def get_compound(self, key: str | bytes, default: CompoundTag) -> CompoundTag: ...
-
-        @overload
         def get_compound(
-                self, key: str | bytes, default: None, raise_errors: Literal[False]
+            self, key: str | bytes, default: None
         ) -> CompoundTag | None: ...
 
         @overload
         def get_compound(
-                self, key: str | bytes, default: CompoundTag, raise_errors: Literal[False]
+            self, key: str | bytes, default: CompoundTag
         ) -> CompoundTag: ...
 
         @overload
         def get_compound(
-                self, key: str | bytes, default: CompoundTag | None, raise_errors: Literal[True]
-        ) -> CompoundTag: ...
-
-        @overload
-        def get_compound(
-                self, key: str | bytes, *, raise_errors: Literal[False]
+            self, key: str | bytes, default: None, raise_errors: Literal[False]
         ) -> CompoundTag | None: ...
 
         @overload
         def get_compound(
-                self, key: str | bytes, *, raise_errors: Literal[True]
+            self, key: str | bytes, default: CompoundTag, raise_errors: Literal[False]
+        ) -> CompoundTag: ...
+
+        @overload
+        def get_compound(
+            self,
+            key: str | bytes,
+            default: CompoundTag | None,
+            raise_errors: Literal[True],
+        ) -> CompoundTag: ...
+
+        @overload
+        def get_compound(
+            self, key: str | bytes, *, raise_errors: Literal[False]
+        ) -> CompoundTag | None: ...
+
+        @overload
+        def get_compound(
+            self, key: str | bytes, *, raise_errors: Literal[True]
         ) -> CompoundTag: ...
 
         @overload
         def get_int_array(self, key: str | bytes) -> IntArrayTag | None: ...
 
         @overload
-        def get_int_array(self, key: str | bytes, default: None) -> IntArrayTag | None: ...
-
-        @overload
-        def get_int_array(self, key: str | bytes, default: IntArrayTag) -> IntArrayTag: ...
-
-        @overload
         def get_int_array(
-                self, key: str | bytes, default: None, raise_errors: Literal[False]
+            self, key: str | bytes, default: None
         ) -> IntArrayTag | None: ...
 
         @overload
         def get_int_array(
-                self, key: str | bytes, default: IntArrayTag, raise_errors: Literal[False]
+            self, key: str | bytes, default: IntArrayTag
         ) -> IntArrayTag: ...
 
         @overload
         def get_int_array(
-                self, key: str | bytes, default: IntArrayTag | None, raise_errors: Literal[True]
-        ) -> IntArrayTag: ...
-
-        @overload
-        def get_int_array(
-                self, key: str | bytes, *, raise_errors: Literal[False]
+            self, key: str | bytes, default: None, raise_errors: Literal[False]
         ) -> IntArrayTag | None: ...
 
         @overload
         def get_int_array(
-                self, key: str | bytes, *, raise_errors: Literal[True]
+            self, key: str | bytes, default: IntArrayTag, raise_errors: Literal[False]
+        ) -> IntArrayTag: ...
+
+        @overload
+        def get_int_array(
+            self,
+            key: str | bytes,
+            default: IntArrayTag | None,
+            raise_errors: Literal[True],
+        ) -> IntArrayTag: ...
+
+        @overload
+        def get_int_array(
+            self, key: str | bytes, *, raise_errors: Literal[False]
+        ) -> IntArrayTag | None: ...
+
+        @overload
+        def get_int_array(
+            self, key: str | bytes, *, raise_errors: Literal[True]
         ) -> IntArrayTag: ...
 
         @overload
@@ -814,88 +827,88 @@ if TYPE_CHECKING:
 
         @overload
         def get_long_array(
-                self, key: str | bytes, default: None
+            self, key: str | bytes, default: None
         ) -> LongArrayTag | None: ...
 
         @overload
         def get_long_array(
-                self, key: str | bytes, default: LongArrayTag
+            self, key: str | bytes, default: LongArrayTag
         ) -> LongArrayTag: ...
 
         @overload
         def get_long_array(
-                self, key: str | bytes, default: None, raise_errors: Literal[False]
+            self, key: str | bytes, default: None, raise_errors: Literal[False]
         ) -> LongArrayTag | None: ...
 
         @overload
         def get_long_array(
-                self, key: str | bytes, default: LongArrayTag, raise_errors: Literal[False]
+            self, key: str | bytes, default: LongArrayTag, raise_errors: Literal[False]
         ) -> LongArrayTag: ...
 
         @overload
         def get_long_array(
-                self,
-                key: str | bytes,
-                default: LongArrayTag | None,
-                raise_errors: Literal[True],
+            self,
+            key: str | bytes,
+            default: LongArrayTag | None,
+            raise_errors: Literal[True],
         ) -> LongArrayTag: ...
 
         @overload
         def get_long_array(
-                self, key: str | bytes, *, raise_errors: Literal[False]
+            self, key: str | bytes, *, raise_errors: Literal[False]
         ) -> LongArrayTag | None: ...
 
         @overload
         def get_long_array(
-                self, key: str | bytes, *, raise_errors: Literal[True]
+            self, key: str | bytes, *, raise_errors: Literal[True]
         ) -> LongArrayTag: ...
 
         def setdefault_byte(
-                self, key: str | bytes, default: ByteTag | None = None
+            self, key: str | bytes, default: ByteTag | None = None
         ) -> ByteTag: ...
 
         def setdefault_short(
-                self, key: str | bytes, default: ShortTag | None = None
+            self, key: str | bytes, default: ShortTag | None = None
         ) -> ShortTag: ...
 
         def setdefault_int(
-                self, key: str | bytes, default: IntTag | None = None
+            self, key: str | bytes, default: IntTag | None = None
         ) -> IntTag: ...
 
         def setdefault_long(
-                self, key: str | bytes, default: LongTag | None = None
+            self, key: str | bytes, default: LongTag | None = None
         ) -> LongTag: ...
 
         def setdefault_float(
-                self, key: str | bytes, default: FloatTag | None = None
+            self, key: str | bytes, default: FloatTag | None = None
         ) -> FloatTag: ...
 
         def setdefault_double(
-                self, key: str | bytes, default: DoubleTag | None = None
+            self, key: str | bytes, default: DoubleTag | None = None
         ) -> DoubleTag: ...
 
         def setdefault_string(
-                self, key: str | bytes, default: StringTag | None = None
+            self, key: str | bytes, default: StringTag | None = None
         ) -> StringTag: ...
 
         def setdefault_list(
-                self, key: str | bytes, default: ListTag | None = None
+            self, key: str | bytes, default: ListTag | None = None
         ) -> ListTag: ...
 
         def setdefault_compound(
-                self, key: str | bytes, default: CompoundTag | None = None
+            self, key: str | bytes, default: CompoundTag | None = None
         ) -> CompoundTag: ...
 
         def setdefault_byte_array(
-                self, key: str | bytes, default: ByteArrayTag | None = None
+            self, key: str | bytes, default: ByteArrayTag | None = None
         ) -> ByteArrayTag: ...
 
         def setdefault_int_array(
-                self, key: str | bytes, default: IntArrayTag | None = None
+            self, key: str | bytes, default: IntArrayTag | None = None
         ) -> IntArrayTag: ...
 
         def setdefault_long_array(
-                self, key: str | bytes, default: LongArrayTag | None = None
+            self, key: str | bytes, default: LongArrayTag | None = None
         ) -> LongArrayTag: ...
 
         @overload
@@ -909,26 +922,28 @@ if TYPE_CHECKING:
 
         @overload
         def pop_byte(
-                self, key: str | bytes, default: None, raise_errors: Literal[False]
+            self, key: str | bytes, default: None, raise_errors: Literal[False]
         ) -> ByteTag | None: ...
 
         @overload
         def pop_byte(
-                self, key: str | bytes, default: ByteTag, raise_errors: Literal[False]
+            self, key: str | bytes, default: ByteTag, raise_errors: Literal[False]
         ) -> ByteTag: ...
 
         @overload
         def pop_byte(
-                self, key: str | bytes, default: ByteTag | None, raise_errors: Literal[True]
+            self, key: str | bytes, default: ByteTag | None, raise_errors: Literal[True]
         ) -> ByteTag: ...
 
         @overload
         def pop_byte(
-                self, key: str | bytes, *, raise_errors: Literal[False]
+            self, key: str | bytes, *, raise_errors: Literal[False]
         ) -> ByteTag | None: ...
 
         @overload
-        def pop_byte(self, key: str | bytes, *, raise_errors: Literal[True]) -> ByteTag: ...
+        def pop_byte(
+            self, key: str | bytes, *, raise_errors: Literal[True]
+        ) -> ByteTag: ...
 
         @overload
         def pop_short(self, key: str | bytes) -> ShortTag | None: ...
@@ -941,27 +956,30 @@ if TYPE_CHECKING:
 
         @overload
         def pop_short(
-                self, key: str | bytes, default: None, raise_errors: Literal[False]
+            self, key: str | bytes, default: None, raise_errors: Literal[False]
         ) -> ShortTag | None: ...
 
         @overload
         def pop_short(
-                self, key: str | bytes, default: ShortTag, raise_errors: Literal[False]
+            self, key: str | bytes, default: ShortTag, raise_errors: Literal[False]
         ) -> ShortTag: ...
 
         @overload
         def pop_short(
-                self, key: str | bytes, default: ShortTag | None, raise_errors: Literal[True]
+            self,
+            key: str | bytes,
+            default: ShortTag | None,
+            raise_errors: Literal[True],
         ) -> ShortTag: ...
 
         @overload
         def pop_short(
-                self, key: str | bytes, *, raise_errors: Literal[False]
+            self, key: str | bytes, *, raise_errors: Literal[False]
         ) -> ShortTag | None: ...
 
         @overload
         def pop_short(
-                self, key: str | bytes, *, raise_errors: Literal[True]
+            self, key: str | bytes, *, raise_errors: Literal[True]
         ) -> ShortTag: ...
 
         @overload
@@ -975,26 +993,28 @@ if TYPE_CHECKING:
 
         @overload
         def pop_int(
-                self, key: str | bytes, default: None, raise_errors: Literal[False]
+            self, key: str | bytes, default: None, raise_errors: Literal[False]
         ) -> IntTag | None: ...
 
         @overload
         def pop_int(
-                self, key: str | bytes, default: IntTag, raise_errors: Literal[False]
+            self, key: str | bytes, default: IntTag, raise_errors: Literal[False]
         ) -> IntTag: ...
 
         @overload
         def pop_int(
-                self, key: str | bytes, default: IntTag | None, raise_errors: Literal[True]
+            self, key: str | bytes, default: IntTag | None, raise_errors: Literal[True]
         ) -> IntTag: ...
 
         @overload
         def pop_int(
-                self, key: str | bytes, *, raise_errors: Literal[False]
+            self, key: str | bytes, *, raise_errors: Literal[False]
         ) -> IntTag | None: ...
 
         @overload
-        def pop_int(self, key: str | bytes, *, raise_errors: Literal[True]) -> IntTag: ...
+        def pop_int(
+            self, key: str | bytes, *, raise_errors: Literal[True]
+        ) -> IntTag: ...
 
         @overload
         def pop_long(self, key: str | bytes) -> LongTag | None: ...
@@ -1007,26 +1027,28 @@ if TYPE_CHECKING:
 
         @overload
         def pop_long(
-                self, key: str | bytes, default: None, raise_errors: Literal[False]
+            self, key: str | bytes, default: None, raise_errors: Literal[False]
         ) -> LongTag | None: ...
 
         @overload
         def pop_long(
-                self, key: str | bytes, default: LongTag, raise_errors: Literal[False]
+            self, key: str | bytes, default: LongTag, raise_errors: Literal[False]
         ) -> LongTag: ...
 
         @overload
         def pop_long(
-                self, key: str | bytes, default: LongTag | None, raise_errors: Literal[True]
+            self, key: str | bytes, default: LongTag | None, raise_errors: Literal[True]
         ) -> LongTag: ...
 
         @overload
         def pop_long(
-                self, key: str | bytes, *, raise_errors: Literal[False]
+            self, key: str | bytes, *, raise_errors: Literal[False]
         ) -> LongTag | None: ...
 
         @overload
-        def pop_long(self, key: str | bytes, *, raise_errors: Literal[True]) -> LongTag: ...
+        def pop_long(
+            self, key: str | bytes, *, raise_errors: Literal[True]
+        ) -> LongTag: ...
 
         @overload
         def pop_float(self, key: str | bytes) -> FloatTag | None: ...
@@ -1039,27 +1061,30 @@ if TYPE_CHECKING:
 
         @overload
         def pop_float(
-                self, key: str | bytes, default: None, raise_errors: Literal[False]
+            self, key: str | bytes, default: None, raise_errors: Literal[False]
         ) -> FloatTag | None: ...
 
         @overload
         def pop_float(
-                self, key: str | bytes, default: FloatTag, raise_errors: Literal[False]
+            self, key: str | bytes, default: FloatTag, raise_errors: Literal[False]
         ) -> FloatTag: ...
 
         @overload
         def pop_float(
-                self, key: str | bytes, default: FloatTag | None, raise_errors: Literal[True]
+            self,
+            key: str | bytes,
+            default: FloatTag | None,
+            raise_errors: Literal[True],
         ) -> FloatTag: ...
 
         @overload
         def pop_float(
-                self, key: str | bytes, *, raise_errors: Literal[False]
+            self, key: str | bytes, *, raise_errors: Literal[False]
         ) -> FloatTag | None: ...
 
         @overload
         def pop_float(
-                self, key: str | bytes, *, raise_errors: Literal[True]
+            self, key: str | bytes, *, raise_errors: Literal[True]
         ) -> FloatTag: ...
 
         @overload
@@ -1073,27 +1098,30 @@ if TYPE_CHECKING:
 
         @overload
         def pop_double(
-                self, key: str | bytes, default: None, raise_errors: Literal[False]
+            self, key: str | bytes, default: None, raise_errors: Literal[False]
         ) -> DoubleTag | None: ...
 
         @overload
         def pop_double(
-                self, key: str | bytes, default: DoubleTag, raise_errors: Literal[False]
+            self, key: str | bytes, default: DoubleTag, raise_errors: Literal[False]
         ) -> DoubleTag: ...
 
         @overload
         def pop_double(
-                self, key: str | bytes, default: DoubleTag | None, raise_errors: Literal[True]
+            self,
+            key: str | bytes,
+            default: DoubleTag | None,
+            raise_errors: Literal[True],
         ) -> DoubleTag: ...
 
         @overload
         def pop_double(
-                self, key: str | bytes, *, raise_errors: Literal[False]
+            self, key: str | bytes, *, raise_errors: Literal[False]
         ) -> DoubleTag | None: ...
 
         @overload
         def pop_double(
-                self, key: str | bytes, *, raise_errors: Literal[True]
+            self, key: str | bytes, *, raise_errors: Literal[True]
         ) -> DoubleTag: ...
 
         @overload
@@ -1101,40 +1129,40 @@ if TYPE_CHECKING:
 
         @overload
         def pop_byte_array(
-                self, key: str | bytes, default: None
+            self, key: str | bytes, default: None
         ) -> ByteArrayTag | None: ...
 
         @overload
         def pop_byte_array(
-                self, key: str | bytes, default: ByteArrayTag
+            self, key: str | bytes, default: ByteArrayTag
         ) -> ByteArrayTag: ...
 
         @overload
         def pop_byte_array(
-                self, key: str | bytes, default: None, raise_errors: Literal[False]
+            self, key: str | bytes, default: None, raise_errors: Literal[False]
         ) -> ByteArrayTag | None: ...
 
         @overload
         def pop_byte_array(
-                self, key: str | bytes, default: ByteArrayTag, raise_errors: Literal[False]
+            self, key: str | bytes, default: ByteArrayTag, raise_errors: Literal[False]
         ) -> ByteArrayTag: ...
 
         @overload
         def pop_byte_array(
-                self,
-                key: str | bytes,
-                default: ByteArrayTag | None,
-                raise_errors: Literal[True],
+            self,
+            key: str | bytes,
+            default: ByteArrayTag | None,
+            raise_errors: Literal[True],
         ) -> ByteArrayTag: ...
 
         @overload
         def pop_byte_array(
-                self, key: str | bytes, *, raise_errors: Literal[False]
+            self, key: str | bytes, *, raise_errors: Literal[False]
         ) -> ByteArrayTag | None: ...
 
         @overload
         def pop_byte_array(
-                self, key: str | bytes, *, raise_errors: Literal[True]
+            self, key: str | bytes, *, raise_errors: Literal[True]
         ) -> ByteArrayTag: ...
 
         @overload
@@ -1148,27 +1176,30 @@ if TYPE_CHECKING:
 
         @overload
         def pop_string(
-                self, key: str | bytes, default: None, raise_errors: Literal[False]
+            self, key: str | bytes, default: None, raise_errors: Literal[False]
         ) -> StringTag | None: ...
 
         @overload
         def pop_string(
-                self, key: str | bytes, default: StringTag, raise_errors: Literal[False]
+            self, key: str | bytes, default: StringTag, raise_errors: Literal[False]
         ) -> StringTag: ...
 
         @overload
         def pop_string(
-                self, key: str | bytes, default: StringTag | None, raise_errors: Literal[True]
+            self,
+            key: str | bytes,
+            default: StringTag | None,
+            raise_errors: Literal[True],
         ) -> StringTag: ...
 
         @overload
         def pop_string(
-                self, key: str | bytes, *, raise_errors: Literal[False]
+            self, key: str | bytes, *, raise_errors: Literal[False]
         ) -> StringTag | None: ...
 
         @overload
         def pop_string(
-                self, key: str | bytes, *, raise_errors: Literal[True]
+            self, key: str | bytes, *, raise_errors: Literal[True]
         ) -> StringTag: ...
 
         @overload
@@ -1182,93 +1213,109 @@ if TYPE_CHECKING:
 
         @overload
         def pop_list(
-                self, key: str | bytes, default: None, raise_errors: Literal[False]
+            self, key: str | bytes, default: None, raise_errors: Literal[False]
         ) -> ListTag | None: ...
 
         @overload
         def pop_list(
-                self, key: str | bytes, default: ListTag, raise_errors: Literal[False]
+            self, key: str | bytes, default: ListTag, raise_errors: Literal[False]
         ) -> ListTag: ...
 
         @overload
         def pop_list(
-                self, key: str | bytes, default: ListTag | None, raise_errors: Literal[True]
+            self, key: str | bytes, default: ListTag | None, raise_errors: Literal[True]
         ) -> ListTag: ...
 
         @overload
         def pop_list(
-                self, key: str | bytes, *, raise_errors: Literal[False]
+            self, key: str | bytes, *, raise_errors: Literal[False]
         ) -> ListTag | None: ...
 
         @overload
-        def pop_list(self, key: str | bytes, *, raise_errors: Literal[True]) -> ListTag: ...
+        def pop_list(
+            self, key: str | bytes, *, raise_errors: Literal[True]
+        ) -> ListTag: ...
 
         @overload
         def pop_compound(self, key: str | bytes) -> CompoundTag | None: ...
 
         @overload
-        def pop_compound(self, key: str | bytes, default: None) -> CompoundTag | None: ...
-
-        @overload
-        def pop_compound(self, key: str | bytes, default: CompoundTag) -> CompoundTag: ...
-
-        @overload
         def pop_compound(
-                self, key: str | bytes, default: None, raise_errors: Literal[False]
+            self, key: str | bytes, default: None
         ) -> CompoundTag | None: ...
 
         @overload
         def pop_compound(
-                self, key: str | bytes, default: CompoundTag, raise_errors: Literal[False]
+            self, key: str | bytes, default: CompoundTag
         ) -> CompoundTag: ...
 
         @overload
         def pop_compound(
-                self, key: str | bytes, default: CompoundTag | None, raise_errors: Literal[True]
-        ) -> CompoundTag: ...
-
-        @overload
-        def pop_compound(
-                self, key: str | bytes, *, raise_errors: Literal[False]
+            self, key: str | bytes, default: None, raise_errors: Literal[False]
         ) -> CompoundTag | None: ...
 
         @overload
         def pop_compound(
-                self, key: str | bytes, *, raise_errors: Literal[True]
+            self, key: str | bytes, default: CompoundTag, raise_errors: Literal[False]
+        ) -> CompoundTag: ...
+
+        @overload
+        def pop_compound(
+            self,
+            key: str | bytes,
+            default: CompoundTag | None,
+            raise_errors: Literal[True],
+        ) -> CompoundTag: ...
+
+        @overload
+        def pop_compound(
+            self, key: str | bytes, *, raise_errors: Literal[False]
+        ) -> CompoundTag | None: ...
+
+        @overload
+        def pop_compound(
+            self, key: str | bytes, *, raise_errors: Literal[True]
         ) -> CompoundTag: ...
 
         @overload
         def pop_int_array(self, key: str | bytes) -> IntArrayTag | None: ...
 
         @overload
-        def pop_int_array(self, key: str | bytes, default: None) -> IntArrayTag | None: ...
-
-        @overload
-        def pop_int_array(self, key: str | bytes, default: IntArrayTag) -> IntArrayTag: ...
-
-        @overload
         def pop_int_array(
-                self, key: str | bytes, default: None, raise_errors: Literal[False]
+            self, key: str | bytes, default: None
         ) -> IntArrayTag | None: ...
 
         @overload
         def pop_int_array(
-                self, key: str | bytes, default: IntArrayTag, raise_errors: Literal[False]
+            self, key: str | bytes, default: IntArrayTag
         ) -> IntArrayTag: ...
 
         @overload
         def pop_int_array(
-                self, key: str | bytes, default: IntArrayTag | None, raise_errors: Literal[True]
-        ) -> IntArrayTag: ...
-
-        @overload
-        def pop_int_array(
-                self, key: str | bytes, *, raise_errors: Literal[False]
+            self, key: str | bytes, default: None, raise_errors: Literal[False]
         ) -> IntArrayTag | None: ...
 
         @overload
         def pop_int_array(
-                self, key: str | bytes, *, raise_errors: Literal[True]
+            self, key: str | bytes, default: IntArrayTag, raise_errors: Literal[False]
+        ) -> IntArrayTag: ...
+
+        @overload
+        def pop_int_array(
+            self,
+            key: str | bytes,
+            default: IntArrayTag | None,
+            raise_errors: Literal[True],
+        ) -> IntArrayTag: ...
+
+        @overload
+        def pop_int_array(
+            self, key: str | bytes, *, raise_errors: Literal[False]
+        ) -> IntArrayTag | None: ...
+
+        @overload
+        def pop_int_array(
+            self, key: str | bytes, *, raise_errors: Literal[True]
         ) -> IntArrayTag: ...
 
         @overload
@@ -1276,40 +1323,40 @@ if TYPE_CHECKING:
 
         @overload
         def pop_long_array(
-                self, key: str | bytes, default: None
+            self, key: str | bytes, default: None
         ) -> LongArrayTag | None: ...
 
         @overload
         def pop_long_array(
-                self, key: str | bytes, default: LongArrayTag
+            self, key: str | bytes, default: LongArrayTag
         ) -> LongArrayTag: ...
 
         @overload
         def pop_long_array(
-                self, key: str | bytes, default: None, raise_errors: Literal[False]
+            self, key: str | bytes, default: None, raise_errors: Literal[False]
         ) -> LongArrayTag | None: ...
 
         @overload
         def pop_long_array(
-                self, key: str | bytes, default: LongArrayTag, raise_errors: Literal[False]
+            self, key: str | bytes, default: LongArrayTag, raise_errors: Literal[False]
         ) -> LongArrayTag: ...
 
         @overload
         def pop_long_array(
-                self,
-                key: str | bytes,
-                default: LongArrayTag | None,
-                raise_errors: Literal[True],
+            self,
+            key: str | bytes,
+            default: LongArrayTag | None,
+            raise_errors: Literal[True],
         ) -> LongArrayTag: ...
 
         @overload
         def pop_long_array(
-                self, key: str | bytes, *, raise_errors: Literal[False]
+            self, key: str | bytes, *, raise_errors: Literal[False]
         ) -> LongArrayTag | None: ...
 
         @overload
         def pop_long_array(
-                self, key: str | bytes, *, raise_errors: Literal[True]
+            self, key: str | bytes, *, raise_errors: Literal[True]
         ) -> LongArrayTag: ...
 
         def __setitem__(self, key: str | bytes, value: AnyNBT) -> None: ...
@@ -1321,7 +1368,6 @@ if TYPE_CHECKING:
         def __len__(self) -> int: ...
 
         def __iter__(self) -> Iterator[str | bytes]: ...
-
 
     class AbstractBaseArrayTag(AbstractBaseMutableTag):
         def __init__(self, value: Iterable[SupportsInt] = ()) -> None: ...
@@ -1358,12 +1404,12 @@ if TYPE_CHECKING:
 
         @overload
         def __getitem__(
-                self, item: slice
+            self, item: slice
         ) -> NDArray[numpy.int8 | numpy.int32 | numpy.int64]: ...
 
         @overload
         def __getitem__(
-                self, item: NDArray[numpy.integer]
+            self, item: NDArray[numpy.integer]
         ) -> NDArray[numpy.int8 | numpy.int32 | numpy.int64]: ...
 
         def __iter__(self) -> Iterator[numpy.int8 | numpy.int32 | numpy.int64]:
@@ -1398,16 +1444,16 @@ if TYPE_CHECKING:
 
         @overload
         def __setitem__(
-                self,
-                item: slice,
-                value: Iterable[SupportsInt],
+            self,
+            item: slice,
+            value: Iterable[SupportsInt],
         ) -> None: ...
 
         @overload
         def __setitem__(
-                self,
-                item: ArrayLike,
-                value: Iterable[SupportsInt],
+            self,
+            item: ArrayLike,
+            value: Iterable[SupportsInt],
         ) -> None:
             """Set item(s) in the array.
 
@@ -1422,7 +1468,7 @@ if TYPE_CHECKING:
             """
 
         def __array__(
-                self, dtype: numpy.dtype | None = None
+            self, dtype: numpy.dtype | None = None
         ) -> NDArray[numpy.int8 | numpy.int32 | numpy.int64]:
             """Get a numpy array representation of the stored data.
 
@@ -1431,7 +1477,6 @@ if TYPE_CHECKING:
             >>> tag = ByteArrayTag([1, 2, 3])
             >>> arr = numpy.asarray(tag)
             """
-
 
     class ByteArrayTag(AbstractBaseArrayTag):
         @property
@@ -1522,7 +1567,6 @@ if TYPE_CHECKING:
             >>> arr = numpy.asarray(tag)
             """
 
-
     class IntArrayTag(AbstractBaseArrayTag):
         @property
         def np_array(self) -> NDArray[numpy.int32]: ...
@@ -1611,7 +1655,6 @@ if TYPE_CHECKING:
             >>> tag = IntArrayTag([1, 2, 3])
             >>> arr = numpy.asarray(tag)
             """
-
 
     class LongArrayTag(AbstractBaseArrayTag):
         @property
@@ -1716,10 +1759,9 @@ if TYPE_CHECKING:
     TAG_Int_Array: TypeAlias = IntArrayTag
     TAG_Long_Array: TypeAlias = LongArrayTag
 
-
     class NamedTag(tuple[str | bytes, AnyNBT]):
         def __init__(
-                self, tag: AbstractBaseTag | AnyNBT | None = None, name: str | bytes = ""
+            self, tag: AbstractBaseTag | AnyNBT | None = None, name: str | bytes = ""
         ) -> None: ...
 
         @property
@@ -1735,12 +1777,12 @@ if TYPE_CHECKING:
         def name(self, name: str | bytes) -> None: ...
 
         def to_nbt(
-                self,
-                *,
-                preset: EncodingPreset | None = None,
-                compressed: bool = True,
-                little_endian: bool = False,
-                string_encoding: StringEncoding = mutf8_encoding,
+            self,
+            *,
+            preset: EncodingPreset | None = None,
+            compressed: bool = True,
+            little_endian: bool = False,
+            string_encoding: StringEncoding = mutf8_encoding,
         ) -> bytes:
             """Get the data in binary NBT format.
 
@@ -1752,13 +1794,13 @@ if TYPE_CHECKING:
             """
 
         def save_to(
-                self,
-                filepath_or_buffer: str | _Writeable | None = None,
-                *,
-                preset: EncodingPreset | None = None,
-                compressed: bool = True,
-                little_endian: bool = False,
-                string_encoding: StringEncoding = mutf8_encoding,
+            self,
+            filepath_or_buffer: str | _Writeable | None = None,
+            *,
+            preset: EncodingPreset | None = None,
+            compressed: bool = True,
+            little_endian: bool = False,
+            string_encoding: StringEncoding = mutf8_encoding,
         ) -> bytes:
             """Convert the data to the binary NBT format. Optionally write to a file.
 
@@ -1820,18 +1862,16 @@ if TYPE_CHECKING:
         @property
         def long_array(self) -> LongArrayTag: ...
 
-
     class ReadOffset:
         offset: int
 
-
     @overload
     def read_nbt(
-            filepath_or_buffer: str | bytes | memoryview | _Readable | None,
-            *,
-            preset: EncodingPreset | None = None,
-            named: bool = True,
-            read_offset: ReadOffset | None = None,
+        filepath_or_buffer: str | bytes | memoryview | _Readable | None,
+        *,
+        preset: EncodingPreset | None = None,
+        named: bool = True,
+        read_offset: ReadOffset | None = None,
     ) -> NamedTag:
         """Load one binary NBT object.
 
@@ -1842,16 +1882,15 @@ if TYPE_CHECKING:
         :raises: IndexError if the data is not long enough.
         """
 
-
     @overload
     def read_nbt(
-            filepath_or_buffer: str | bytes | memoryview | _Readable | None,
-            *,
-            compressed: bool = True,
-            little_endian: bool = False,
-            string_encoding: StringEncoding = mutf8_encoding,
-            named: bool = True,
-            read_offset: ReadOffset | None = None,
+        filepath_or_buffer: str | bytes | memoryview | _Readable | None,
+        *,
+        compressed: bool = True,
+        little_endian: bool = False,
+        string_encoding: StringEncoding = mutf8_encoding,
+        named: bool = True,
+        read_offset: ReadOffset | None = None,
     ) -> NamedTag:
         """Load one binary NBT object.
 
@@ -1864,15 +1903,14 @@ if TYPE_CHECKING:
         :raises: IndexError if the data is not long enough.
         """
 
-
     @overload
     def read_nbt_array(
-            filepath_or_buffer: str | bytes | memoryview | _Readable | None,
-            *,
-            count: int = 1,
-            preset: EncodingPreset | None = None,
-            named: bool = True,
-            read_offset: ReadOffset | None = None,
+        filepath_or_buffer: str | bytes | memoryview | _Readable | None,
+        *,
+        count: int = 1,
+        preset: EncodingPreset | None = None,
+        named: bool = True,
+        read_offset: ReadOffset | None = None,
     ) -> list[NamedTag]:
         """Load an array of binary NBT objects from a contiguous buffer.
 
@@ -1884,17 +1922,16 @@ if TYPE_CHECKING:
         :raises: IndexError if the data is not long enough.
         """
 
-
     @overload
     def read_nbt_array(
-            filepath_or_buffer: str | bytes | memoryview | _Readable | None,
-            *,
-            count: int = 1,
-            compressed: bool = True,
-            little_endian: bool = False,
-            string_encoding: StringEncoding = mutf8_encoding,
-            named: bool = True,
-            read_offset: ReadOffset | None = None,
+        filepath_or_buffer: str | bytes | memoryview | _Readable | None,
+        *,
+        count: int = 1,
+        compressed: bool = True,
+        little_endian: bool = False,
+        string_encoding: StringEncoding = mutf8_encoding,
+        named: bool = True,
+        read_offset: ReadOffset | None = None,
     ) -> list[NamedTag]:
         """Load an array of binary NBT objects from a contiguous buffer.
 
@@ -1907,7 +1944,6 @@ if TYPE_CHECKING:
         :param read_offset: Optional ReadOffset object to get read end offset.
         :raises: IndexError if the data is not long enough.
         """
-
 
     def read_snbt(snbt: str) -> AnyNBT:
         """

@@ -9,6 +9,7 @@
 #include <vector>
 #include <optional>
 
+#include <amulet_nbt/dll.hpp>
 #include <amulet_nbt/common.hpp>
 #include <amulet_nbt/tag/int.hpp>
 #include <amulet_nbt/tag/float.hpp>
@@ -219,89 +220,89 @@ inline std::string _write_nbt(const std::optional<std::string>& name, const T& t
 }
 
 namespace AmuletNBT {
-    void write_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const ByteTag& tag) {
+    AMULET_NBT_DLLX void write_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const ByteTag& tag) {
         write_name_and_tag<ByteTag>(writer, name, tag);
     }
-    void write_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const ShortTag& tag) {
+    AMULET_NBT_DLLX void write_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const ShortTag& tag) {
         write_name_and_tag<ShortTag>(writer, name, tag);
     }
-    void write_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const IntTag& tag) {
+    AMULET_NBT_DLLX void write_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const IntTag& tag) {
         write_name_and_tag<IntTag>(writer, name, tag);
     }
-    void write_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const LongTag& tag) {
+    AMULET_NBT_DLLX void write_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const LongTag& tag) {
         write_name_and_tag<LongTag>(writer, name, tag);
     }
-    void write_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const FloatTag& tag) {
+    AMULET_NBT_DLLX void write_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const FloatTag& tag) {
         write_name_and_tag<FloatTag>(writer, name, tag);
     }
-    void write_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const DoubleTag& tag) {
+    AMULET_NBT_DLLX void write_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const DoubleTag& tag) {
         write_name_and_tag<DoubleTag>(writer, name, tag);
     }
-    void write_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const ByteArrayTag& tag) {
+    AMULET_NBT_DLLX void write_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const ByteArrayTag& tag) {
         write_name_and_tag<ByteArrayTag>(writer, name, tag);
     }
-    void write_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const StringTag& tag) {
+    AMULET_NBT_DLLX void write_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const StringTag& tag) {
         write_name_and_tag<StringTag>(writer, name, tag);
     }
-    void write_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const ListTag& tag) {
+    AMULET_NBT_DLLX void write_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const ListTag& tag) {
         write_name_and_tag<ListTag>(writer, name, tag);
     }
-    void write_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const CompoundTag& tag) {
+    AMULET_NBT_DLLX void write_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const CompoundTag& tag) {
         write_name_and_tag<CompoundTag>(writer, name, tag);
     }
-    void write_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const IntArrayTag& tag) {
+    AMULET_NBT_DLLX void write_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const IntArrayTag& tag) {
         write_name_and_tag<IntArrayTag>(writer, name, tag);
     }
-    void write_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const LongArrayTag& tag) {
+    AMULET_NBT_DLLX void write_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const LongArrayTag& tag) {
         write_name_and_tag<LongArrayTag>(writer, name, tag);
     }
-    void write_nbt(BinaryWriter& writer, const std::string& name, const TagNode& tag) {
+    AMULET_NBT_DLLX void write_nbt(BinaryWriter& writer, const std::string& name, const TagNode& tag) {
         write_name_and_tag<TagNode>(writer, name, tag);
     }
-    void write_nbt(BinaryWriter& writer, const NamedTag& tag) {
+    AMULET_NBT_DLLX void write_nbt(BinaryWriter& writer, const NamedTag& tag) {
         write_name_and_tag<TagNode>(writer, tag.name, tag.tag_node);
     }
 
-    std::string write_nbt(const std::optional<std::string>& name, const AmuletNBT::ByteTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
+    AMULET_NBT_DLLX std::string write_nbt(const std::optional<std::string>& name, const AmuletNBT::ByteTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
         return _write_nbt(name, tag, endianness, string_encode);
     };
-    std::string write_nbt(const std::optional<std::string>& name, const AmuletNBT::ShortTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
+    AMULET_NBT_DLLX std::string write_nbt(const std::optional<std::string>& name, const AmuletNBT::ShortTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
         return _write_nbt(name, tag, endianness, string_encode);
     };
-    std::string write_nbt(const std::optional<std::string>& name, const AmuletNBT::IntTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
+    AMULET_NBT_DLLX std::string write_nbt(const std::optional<std::string>& name, const AmuletNBT::IntTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
         return _write_nbt(name, tag, endianness, string_encode);
     };
-    std::string write_nbt(const std::optional<std::string>& name, const AmuletNBT::LongTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
+    AMULET_NBT_DLLX std::string write_nbt(const std::optional<std::string>& name, const AmuletNBT::LongTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
         return _write_nbt(name, tag, endianness, string_encode);
     };
-    std::string write_nbt(const std::optional<std::string>& name, const AmuletNBT::FloatTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
+    AMULET_NBT_DLLX std::string write_nbt(const std::optional<std::string>& name, const AmuletNBT::FloatTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
         return _write_nbt(name, tag, endianness, string_encode);
     };
-    std::string write_nbt(const std::optional<std::string>& name, const AmuletNBT::DoubleTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
+    AMULET_NBT_DLLX std::string write_nbt(const std::optional<std::string>& name, const AmuletNBT::DoubleTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
         return _write_nbt(name, tag, endianness, string_encode);
     };
-    std::string write_nbt(const std::optional<std::string>& name, const AmuletNBT::ByteArrayTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
+    AMULET_NBT_DLLX std::string write_nbt(const std::optional<std::string>& name, const AmuletNBT::ByteArrayTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
         return _write_nbt(name, tag, endianness, string_encode);
     };
-    std::string write_nbt(const std::optional<std::string>& name, const AmuletNBT::StringTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
+    AMULET_NBT_DLLX std::string write_nbt(const std::optional<std::string>& name, const AmuletNBT::StringTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
         return _write_nbt(name, tag, endianness, string_encode);
     };
-    std::string write_nbt(const std::optional<std::string>& name, const AmuletNBT::ListTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
+    AMULET_NBT_DLLX std::string write_nbt(const std::optional<std::string>& name, const AmuletNBT::ListTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
         return _write_nbt(name, tag, endianness, string_encode);
     };
-    std::string write_nbt(const std::optional<std::string>& name, const AmuletNBT::CompoundTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
+    AMULET_NBT_DLLX std::string write_nbt(const std::optional<std::string>& name, const AmuletNBT::CompoundTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
         return _write_nbt(name, tag, endianness, string_encode);
     };
-    std::string write_nbt(const std::optional<std::string>& name, const AmuletNBT::IntArrayTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
+    AMULET_NBT_DLLX std::string write_nbt(const std::optional<std::string>& name, const AmuletNBT::IntArrayTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
         return _write_nbt(name, tag, endianness, string_encode);
     };
-    std::string write_nbt(const std::optional<std::string>& name, const AmuletNBT::LongArrayTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
+    AMULET_NBT_DLLX std::string write_nbt(const std::optional<std::string>& name, const AmuletNBT::LongArrayTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
         return _write_nbt(name, tag, endianness, string_encode);
     };
-    std::string write_nbt(const std::string& name, const AmuletNBT::TagNode& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
+    AMULET_NBT_DLLX std::string write_nbt(const std::string& name, const AmuletNBT::TagNode& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
         return _write_nbt(name, tag, endianness, string_encode);
     };
-    std::string write_nbt(const AmuletNBT::NamedTag& named_tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
+    AMULET_NBT_DLLX std::string write_nbt(const AmuletNBT::NamedTag& named_tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
         return write_nbt(named_tag.name, named_tag.tag_node, endianness, string_encode);
     }
 }

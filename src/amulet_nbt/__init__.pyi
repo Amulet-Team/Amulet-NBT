@@ -11,7 +11,6 @@ from typing import (
     Self,
     Type,
     Mapping,
-    Optional,
     Literal,
     TypeAlias,
     ClassVar,
@@ -75,12 +74,7 @@ __all__ = [
     "EncodingPreset",
     "java_encoding",
     "bedrock_encoding",
-    "get_include",
-    "get_source",
 ]
-
-def get_include() -> str: ...
-def get_source() -> str: ...
 
 class _Readable(Protocol):
     def read(self) -> bytes: ...

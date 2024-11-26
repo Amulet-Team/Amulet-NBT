@@ -1,6 +1,7 @@
 #pragma once
 
 #include <bit>
+
 #include <amulet_nbt/io/binary_reader.hpp>
 #include <amulet_nbt/io/binary_writer.hpp>
 

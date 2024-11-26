@@ -1,9 +1,9 @@
+from __future__ import annotations
 from typing import TYPE_CHECKING
 from . import _version
 import re
 
 if TYPE_CHECKING:
-    from __future__ import annotations
     from typing import (
         Any,
         SupportsInt,

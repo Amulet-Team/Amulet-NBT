@@ -72,23 +72,6 @@ void init_amulet_nbt(py::module& m) {
     init_bnbt(m);
     init_snbt(m);
 
-    // Paths
-    py::object path_join = py::module::import("os.path").attr("join");
-    m.def(
-        "get_include",
-        [m, path_join](){
-            return path_join(m.attr("__path__").attr("__getitem__")(0), py::str("include"));
-        },
-        py::doc("C++ include directory")
-    );
-    m.def(
-        "get_source",
-        [m, path_join](){
-            return path_join(m.attr("__path__").attr("__getitem__")(0), py::str("cpp"));
-        },
-        py::doc("C++ source directory")
-    );
-
     // NBT types
     py::object PyStr = py::module::import("builtins").attr("str");
     m.attr("SNBTType") = PyStr;
@@ -101,7 +84,6 @@ void init_amulet_nbt(py::module& m) {
     py::list all;
     all.append("__version__");
     all.append("__major__");
-    all.append("get_include");
     all.append("AbstractBaseTag");
     all.append("AbstractBaseImmutableTag");
     all.append("AbstractBaseMutableTag");

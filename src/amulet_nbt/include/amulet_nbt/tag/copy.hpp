@@ -4,6 +4,7 @@
 #include <type_traits>
 #include <variant>
 
+#include <amulet_nbt/dll.hpp>
 #include <amulet_nbt/common.hpp>
 #include <amulet_nbt/tag/int.hpp>
 #include <amulet_nbt/tag/float.hpp>
@@ -45,7 +46,7 @@ namespace AmuletNBT {
         return std::make_shared<T>(tag);
     }
 
-    AmuletNBT::ListTagPtr NBTTag_deep_copy_list(const AmuletNBT::ListTag& tag);
-    AmuletNBT::TagNode NBTTag_deep_copy_node(const AmuletNBT::TagNode& tag);
-    AmuletNBT::CompoundTagPtr NBTTag_deep_copy_compound(const AmuletNBT::CompoundTag& tag);
+    AMULET_NBT_DLLX AmuletNBT::ListTagPtr NBTTag_deep_copy_list(const AmuletNBT::ListTag& tag);
+    AMULET_NBT_DLLX AmuletNBT::TagNode NBTTag_deep_copy_node(const AmuletNBT::TagNode& tag);
+    AMULET_NBT_DLLX AmuletNBT::CompoundTagPtr NBTTag_deep_copy_compound(const AmuletNBT::CompoundTag& tag);
 }

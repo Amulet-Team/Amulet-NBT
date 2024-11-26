@@ -1,2 +1,5 @@
+recursive-include src/amulet_nbt *.cpp *.hpp *Config.cmake
+
+include CMakeLists.txt
+
 prune tests
-recursive-include src *.pyi py.typed *.py *.cpp *.hpp

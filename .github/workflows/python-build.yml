@@ -12,8 +12,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: ['3.11', '3.12']
-        os: [macos-latest, windows-latest]
+        python-version: ['3.11']
+        os: [ubuntu-latest]
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
@@ -29,5 +29,5 @@ jobs:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.AMULET_NBT_PYPI_PASSWORD }}
       run: |
-        python -m build
+        python -m build --sdist
         twine upload dist/* --skip-existing

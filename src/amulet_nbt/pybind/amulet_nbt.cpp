@@ -23,6 +23,12 @@ void init_bnbt(py::module& m);
 void init_snbt(py::module& m);
 
 void init_module(py::module& m) {
+    py::dict compiler_config;
+    compiler_config["pybind11_version"] = PYBIND11_VERSION;
+    compiler_config["compiler_id"] = COMPILER_ID;
+    compiler_config["compiler_version"] = COMPILER_VERSION;
+    m.attr("compiler_config") = compiler_config;
+
     // Convert cast_error to type_error
     py::register_local_exception_translator([](std::exception_ptr p) {
         try {

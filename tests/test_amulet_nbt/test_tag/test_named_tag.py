@@ -165,7 +165,7 @@ class NamedTagTestCase(AbstractBaseTestCase, unittest.TestCase):
                 named_tag.tag = tag2
                 self.assertEqual(tag2, named_tag.tag)
 
-        self.assertEqual(b"\xFF", NamedTag(name=b"\xFF").name)
+        self.assertEqual(b"\xff", NamedTag(name=b"\xff").name)
 
     def test_property(self) -> None:
         for cls in self.nbt_types:
@@ -235,14 +235,14 @@ class NamedTagTestCase(AbstractBaseTestCase, unittest.TestCase):
             (b"\x02\x00\x00\x00\x01", NamedTag(ShortTag(1))),
             (b"\x03\x00\x00\x00\x00\x00\x01", NamedTag(IntTag(1))),
             (b"\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01", NamedTag(LongTag(1))),
-            (b"\x05\x00\x00\x3F\x80\x00\x00", NamedTag(FloatTag(1))),
-            (b"\x06\x00\x00\x3F\xf0\x00\x00\x00\x00\x00\x00", NamedTag(DoubleTag(1))),
+            (b"\x05\x00\x00\x3f\x80\x00\x00", NamedTag(FloatTag(1))),
+            (b"\x06\x00\x00\x3f\xf0\x00\x00\x00\x00\x00\x00", NamedTag(DoubleTag(1))),
             (b"\x07\x00\x00\x00\x00\x00\x00", NamedTag(ByteArrayTag())),
-            (b"\x08\x00\x00\x00\x0Bhello world", NamedTag(StringTag("hello world"))),
+            (b"\x08\x00\x00\x00\x0bhello world", NamedTag(StringTag("hello world"))),
             (b"\x09\x00\x00\x01\x00\x00\x00\x00", NamedTag(ListTag())),
-            (b"\x0A\x00\x00\x00", NamedTag(CompoundTag())),
-            (b"\x0B\x00\x00\x00\x00\x00\x00", NamedTag(IntArrayTag())),
-            (b"\x0C\x00\x00\x00\x00\x00\x00", NamedTag(LongArrayTag())),
+            (b"\x0a\x00\x00\x00", NamedTag(CompoundTag())),
+            (b"\x0b\x00\x00\x00\x00\x00\x00", NamedTag(IntArrayTag())),
+            (b"\x0c\x00\x00\x00\x00\x00\x00", NamedTag(LongArrayTag())),
         ):
             with self.subTest(str(bnbt)):
                 named_tag = read_nbt(bnbt, compressed=False)
@@ -252,7 +252,7 @@ class NamedTagTestCase(AbstractBaseTestCase, unittest.TestCase):
 
         self.assertEqual(
             "hello world",
-            read_nbt(b"\x01\x00\x0Bhello world\x01", compressed=False).name,
+            read_nbt(b"\x01\x00\x0bhello world\x01", compressed=False).name,
         )
 
     def test_to_snbt(self) -> None:

@@ -732,98 +732,98 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
 
     def test_to_nbt(self) -> None:
         self.assertEqual(
-            b"\x0A\x00\x00\x00",
+            b"\x0a\x00\x00\x00",
             CompoundTag().to_nbt(compressed=False, little_endian=False),
         )
         self.assertEqual(
-            b"\x0A\x00\x00\x00",
+            b"\x0a\x00\x00\x00",
             CompoundTag().to_nbt(compressed=False, little_endian=True),
         )
 
         self.assertEqual(
-            b"\x0A\x00\x00\x01\x00\x04byte\x05\x00",
+            b"\x0a\x00\x00\x01\x00\x04byte\x05\x00",
             CompoundTag(byte=ByteTag(5)).to_nbt(compressed=False, little_endian=False),
         )
         self.assertEqual(
-            b"\x0A\x00\x00\x01\x04\x00byte\x05\x00",
+            b"\x0a\x00\x00\x01\x04\x00byte\x05\x00",
             CompoundTag(byte=ByteTag(5)).to_nbt(compressed=False, little_endian=True),
         )
         self.assertEqual(
-            b"\x0A\x00\x00\x02\x00\x05short\x00\x05\x00",
+            b"\x0a\x00\x00\x02\x00\x05short\x00\x05\x00",
             CompoundTag(short=ShortTag(5)).to_nbt(
                 compressed=False, little_endian=False
             ),
         )
         self.assertEqual(
-            b"\x0A\x00\x00\x02\x05\x00short\x05\x00\x00",
+            b"\x0a\x00\x00\x02\x05\x00short\x05\x00\x00",
             CompoundTag(short=ShortTag(5)).to_nbt(compressed=False, little_endian=True),
         )
         self.assertEqual(
-            b"\x0A\x00\x00\x03\x00\x03int\x00\x00\x00\x05\x00",
+            b"\x0a\x00\x00\x03\x00\x03int\x00\x00\x00\x05\x00",
             CompoundTag(int=IntTag(5)).to_nbt(compressed=False, little_endian=False),
         )
         self.assertEqual(
-            b"\x0A\x00\x00\x03\x03\x00int\x05\x00\x00\x00\x00",
+            b"\x0a\x00\x00\x03\x03\x00int\x05\x00\x00\x00\x00",
             CompoundTag(int=IntTag(5)).to_nbt(compressed=False, little_endian=True),
         )
         self.assertEqual(
-            b"\x0A\x00\x00\x04\x00\x04long\x00\x00\x00\x00\x00\x00\x00\x05\x00",
+            b"\x0a\x00\x00\x04\x00\x04long\x00\x00\x00\x00\x00\x00\x00\x05\x00",
             CompoundTag(long=LongTag(5)).to_nbt(compressed=False, little_endian=False),
         )
         self.assertEqual(
-            b"\x0A\x00\x00\x04\x04\x00long\x05\x00\x00\x00\x00\x00\x00\x00\x00",
+            b"\x0a\x00\x00\x04\x04\x00long\x05\x00\x00\x00\x00\x00\x00\x00\x00",
             CompoundTag(long=LongTag(5)).to_nbt(compressed=False, little_endian=True),
         )
 
     def test_from_nbt(self) -> None:
         self.assertEqual(
             CompoundTag(byte=ByteTag(5)),
-            read_nbt(b"\x0A\x00\x00\x01\x00\x04byte\x05\x00").compound,
+            read_nbt(b"\x0a\x00\x00\x01\x00\x04byte\x05\x00").compound,
         )
         self.assertEqual(
             CompoundTag(byte=ByteTag(5)),
             read_nbt(
-                b"\x0A\x00\x00\x01\x04\x00byte\x05\x00", little_endian=True
+                b"\x0a\x00\x00\x01\x04\x00byte\x05\x00", little_endian=True
             ).compound,
         )
         self.assertEqual(
             CompoundTag(short=ShortTag(5)),
-            read_nbt(b"\x0A\x00\x00\x02\x00\x05short\x00\x05\x00").compound,
+            read_nbt(b"\x0a\x00\x00\x02\x00\x05short\x00\x05\x00").compound,
         )
         self.assertEqual(
             CompoundTag(short=ShortTag(5)),
             read_nbt(
-                b"\x0A\x00\x00\x02\x05\x00short\x05\x00\x00", little_endian=True
+                b"\x0a\x00\x00\x02\x05\x00short\x05\x00\x00", little_endian=True
             ).compound,
         )
         self.assertEqual(
             CompoundTag(int=IntTag(5)),
-            read_nbt(b"\x0A\x00\x00\x03\x00\x03int\x00\x00\x00\x05\x00").compound,
+            read_nbt(b"\x0a\x00\x00\x03\x00\x03int\x00\x00\x00\x05\x00").compound,
         )
         self.assertEqual(
             CompoundTag(int=IntTag(5)),
             read_nbt(
-                b"\x0A\x00\x00\x03\x03\x00int\x05\x00\x00\x00\x00", little_endian=True
+                b"\x0a\x00\x00\x03\x03\x00int\x05\x00\x00\x00\x00", little_endian=True
             ).compound,
         )
         self.assertEqual(
             CompoundTag(long=LongTag(5)),
             read_nbt(
-                b"\x0A\x00\x00\x04\x00\x04long\x00\x00\x00\x00\x00\x00\x00\x05\x00"
+                b"\x0a\x00\x00\x04\x00\x04long\x00\x00\x00\x00\x00\x00\x00\x05\x00"
             ).compound,
         )
         self.assertEqual(
             CompoundTag(long=LongTag(5)),
             read_nbt(
-                b"\x0A\x00\x00\x04\x04\x00long\x05\x00\x00\x00\x00\x00\x00\x00\x00",
+                b"\x0a\x00\x00\x04\x04\x00long\x05\x00\x00\x00\x00\x00\x00\x00\x00",
                 little_endian=True,
             ).compound,
         )
 
         with self.assertRaises(IndexError):
-            read_nbt(b"\x0A")
+            read_nbt(b"\x0a")
         with self.assertRaises(IndexError):
-            read_nbt(b"\x0A\x00\x00")
+            read_nbt(b"\x0a\x00\x00")
 
     def test_to_snbt(self) -> None:
         full_compound = CompoundTag(

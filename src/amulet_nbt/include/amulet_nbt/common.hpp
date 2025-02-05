@@ -6,6 +6,8 @@
 #include <memory>
 #include <stdexcept>
 
+#include <amulet_nbt/export.hpp>
+
 template<typename V, typename T, size_t I = 0>
 constexpr size_t variant_index() {
     static_assert(I < std::variant_size_v<V>, "Type T is not a member of variant V");

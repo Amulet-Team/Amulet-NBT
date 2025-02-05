@@ -14,7 +14,7 @@
 #include <utility>
 #include <iterator>
 
-#include <amulet_nbt/dll.hpp>
+#include <amulet_nbt/export.hpp>
 #include <amulet_nbt/common.hpp>
 #include <amulet_nbt/tag/int.hpp>
 #include <amulet_nbt/tag/float.hpp>
@@ -328,155 +328,155 @@ namespace AmuletNBT {
     }
 
 
-    AMULET_NBT_DLLX std::string encode_snbt(const TagNode& tag){
+    std::string encode_snbt(const TagNode& tag){
         std::string snbt;
         encode_snbt(snbt, tag);
         return snbt;
     }
-    AMULET_NBT_DLLX std::string encode_snbt(const ByteTag& tag){
+    std::string encode_snbt(const ByteTag& tag){
         std::string snbt;
         encode_snbt(snbt, tag);
         return snbt;
     }
-    AMULET_NBT_DLLX std::string encode_snbt(const ShortTag& tag){
+    std::string encode_snbt(const ShortTag& tag){
         std::string snbt;
         encode_snbt(snbt, tag);
         return snbt;
     }
-    AMULET_NBT_DLLX std::string encode_snbt(const IntTag& tag){
+    std::string encode_snbt(const IntTag& tag){
         std::string snbt;
         encode_snbt(snbt, tag);
         return snbt;
     }
-    AMULET_NBT_DLLX std::string encode_snbt(const LongTag& tag){
+    std::string encode_snbt(const LongTag& tag){
         std::string snbt;
         encode_snbt(snbt, tag);
         return snbt;
     }
-    AMULET_NBT_DLLX std::string encode_snbt(const FloatTag& tag){
+    std::string encode_snbt(const FloatTag& tag){
         std::string snbt;
         encode_snbt(snbt, tag);
         return snbt;
     }
-    AMULET_NBT_DLLX std::string encode_snbt(const DoubleTag& tag){
+    std::string encode_snbt(const DoubleTag& tag){
         std::string snbt;
         encode_snbt(snbt, tag);
         return snbt;
     }
-    AMULET_NBT_DLLX std::string encode_snbt(const ByteArrayTag& tag){
+    std::string encode_snbt(const ByteArrayTag& tag){
         std::string snbt;
         encode_snbt(snbt, tag);
         return snbt;
     }
-    AMULET_NBT_DLLX std::string encode_snbt(const StringTag& tag){
+    std::string encode_snbt(const StringTag& tag){
         std::string snbt;
         encode_snbt(snbt, tag);
         return snbt;
     }
-    AMULET_NBT_DLLX std::string encode_snbt(const ListTag& tag){
+    std::string encode_snbt(const ListTag& tag){
         std::string snbt;
         encode_snbt(snbt, tag);
         return snbt;
     }
-    AMULET_NBT_DLLX std::string encode_snbt(const CompoundTag& tag){
+    std::string encode_snbt(const CompoundTag& tag){
         std::string snbt;
         encode_snbt(snbt, tag);
         return snbt;
     }
-    AMULET_NBT_DLLX std::string encode_snbt(const IntArrayTag& tag){
+    std::string encode_snbt(const IntArrayTag& tag){
         std::string snbt;
         encode_snbt(snbt, tag);
         return snbt;
     }
-    AMULET_NBT_DLLX std::string encode_snbt(const LongArrayTag& tag){
+    std::string encode_snbt(const LongArrayTag& tag){
         std::string snbt;
         encode_snbt(snbt, tag);
         return snbt;
     }
 
-    AMULET_NBT_DLLX void encode_formatted_snbt(std::string& snbt, const TagNode& tag, const std::string& indent){
+    void encode_formatted_snbt(std::string& snbt, const TagNode& tag, const std::string& indent){
         return encode_formatted_snbt(snbt, tag, indent, 0);
     }
-    AMULET_NBT_DLLX void encode_formatted_snbt(std::string& snbt, const ByteTag& tag, const std::string& indent){
+    void encode_formatted_snbt(std::string& snbt, const ByteTag& tag, const std::string& indent){
         encode_snbt(snbt, tag);
     }
-    AMULET_NBT_DLLX void encode_formatted_snbt(std::string& snbt, const ShortTag& tag, const std::string& indent){
+    void encode_formatted_snbt(std::string& snbt, const ShortTag& tag, const std::string& indent){
         encode_snbt(snbt, tag);
     }
-    AMULET_NBT_DLLX void encode_formatted_snbt(std::string& snbt, const IntTag& tag, const std::string& indent){
+    void encode_formatted_snbt(std::string& snbt, const IntTag& tag, const std::string& indent){
         encode_snbt(snbt, tag);
     }
-    AMULET_NBT_DLLX void encode_formatted_snbt(std::string& snbt, const LongTag& tag, const std::string& indent){
+    void encode_formatted_snbt(std::string& snbt, const LongTag& tag, const std::string& indent){
         encode_snbt(snbt, tag);
     }
-    AMULET_NBT_DLLX void encode_formatted_snbt(std::string& snbt, const FloatTag& tag, const std::string& indent){
+    void encode_formatted_snbt(std::string& snbt, const FloatTag& tag, const std::string& indent){
         encode_snbt(snbt, tag);
     }
-    AMULET_NBT_DLLX void encode_formatted_snbt(std::string& snbt, const DoubleTag& tag, const std::string& indent){
+    void encode_formatted_snbt(std::string& snbt, const DoubleTag& tag, const std::string& indent){
         encode_snbt(snbt, tag);
     }
-    AMULET_NBT_DLLX void encode_formatted_snbt(std::string& snbt, const ByteArrayTag& tag, const std::string& indent){
+    void encode_formatted_snbt(std::string& snbt, const ByteArrayTag& tag, const std::string& indent){
         encode_snbt(snbt, tag);
     }
-    AMULET_NBT_DLLX void encode_formatted_snbt(std::string& snbt, const StringTag& tag, const std::string& indent){
+    void encode_formatted_snbt(std::string& snbt, const StringTag& tag, const std::string& indent){
         encode_snbt(snbt, tag);
     }
-    AMULET_NBT_DLLX void encode_formatted_snbt(std::string& snbt, const ListTag& tag, const std::string& indent){
+    void encode_formatted_snbt(std::string& snbt, const ListTag& tag, const std::string& indent){
         return encode_formatted_snbt(snbt, tag, indent, 0);
     }
-    AMULET_NBT_DLLX void encode_formatted_snbt(std::string& snbt, const CompoundTag& tag, const std::string& indent){
+    void encode_formatted_snbt(std::string& snbt, const CompoundTag& tag, const std::string& indent){
         return encode_formatted_snbt(snbt, tag, indent, 0);
     }
-    AMULET_NBT_DLLX void encode_formatted_snbt(std::string& snbt, const IntArrayTag& tag, const std::string& indent){
+    void encode_formatted_snbt(std::string& snbt, const IntArrayTag& tag, const std::string& indent){
         encode_snbt(snbt, tag);
     }
-    AMULET_NBT_DLLX void encode_formatted_snbt(std::string& snbt, const LongArrayTag& tag, const std::string& indent){
+    void encode_formatted_snbt(std::string& snbt, const LongArrayTag& tag, const std::string& indent){
         encode_snbt(snbt, tag);
     }
 
-    AMULET_NBT_DLLX std::string encode_formatted_snbt(const TagNode& tag, const std::string& indent){
+    std::string encode_formatted_snbt(const TagNode& tag, const std::string& indent){
         std::string snbt;
         encode_formatted_snbt(snbt, tag, indent);
         return snbt;
     }
-    AMULET_NBT_DLLX std::string encode_formatted_snbt(const ByteTag& tag, const std::string& indent){
+    std::string encode_formatted_snbt(const ByteTag& tag, const std::string& indent){
         return encode_snbt(tag);
     }
-    AMULET_NBT_DLLX std::string encode_formatted_snbt(const ShortTag& tag, const std::string& indent){
+    std::string encode_formatted_snbt(const ShortTag& tag, const std::string& indent){
         return encode_snbt(tag);
     }
-    AMULET_NBT_DLLX std::string encode_formatted_snbt(const IntTag& tag, const std::string& indent){
+    std::string encode_formatted_snbt(const IntTag& tag, const std::string& indent){
         return encode_snbt(tag);
     }
-    AMULET_NBT_DLLX std::string encode_formatted_snbt(const LongTag& tag, const std::string& indent){
+    std::string encode_formatted_snbt(const LongTag& tag, const std::string& indent){
         return encode_snbt(tag);
     }
-    AMULET_NBT_DLLX std::string encode_formatted_snbt(const FloatTag& tag, const std::string& indent){
+    std::string encode_formatted_snbt(const FloatTag& tag, const std::string& indent){
         return encode_snbt(tag);
     }
-    AMULET_NBT_DLLX std::string encode_formatted_snbt(const DoubleTag& tag, const std::string& indent){
+    std::string encode_formatted_snbt(const DoubleTag& tag, const std::string& indent){
         return encode_snbt(tag);
     }
-    AMULET_NBT_DLLX std::string encode_formatted_snbt(const ByteArrayTag& tag, const std::string& indent){
+    std::string encode_formatted_snbt(const ByteArrayTag& tag, const std::string& indent){
         return encode_snbt(tag);
     }
-    AMULET_NBT_DLLX std::string encode_formatted_snbt(const StringTag& tag, const std::string& indent){
+    std::string encode_formatted_snbt(const StringTag& tag, const std::string& indent){
         return encode_snbt(tag);
     }
-    AMULET_NBT_DLLX std::string encode_formatted_snbt(const ListTag& tag, const std::string& indent){
+    std::string encode_formatted_snbt(const ListTag& tag, const std::string& indent){
         std::string snbt;
         encode_formatted_snbt(snbt, tag, indent);
         return snbt;
     }
-    AMULET_NBT_DLLX std::string encode_formatted_snbt(const CompoundTag& tag, const std::string& indent){
+    AMULET_NBT_EXPORT std::string encode_formatted_snbt(const CompoundTag& tag, const std::string& indent){
         std::string snbt;
         encode_formatted_snbt(snbt, tag, indent);
         return snbt;
     }
-    AMULET_NBT_DLLX std::string encode_formatted_snbt(const IntArrayTag& tag, const std::string& indent){
+    AMULET_NBT_EXPORT std::string encode_formatted_snbt(const IntArrayTag& tag, const std::string& indent){
         return encode_snbt(tag);
     }
-    AMULET_NBT_DLLX std::string encode_formatted_snbt(const LongArrayTag& tag, const std::string& indent){
+    AMULET_NBT_EXPORT std::string encode_formatted_snbt(const LongArrayTag& tag, const std::string& indent){
         return encode_snbt(tag);
     }
 }

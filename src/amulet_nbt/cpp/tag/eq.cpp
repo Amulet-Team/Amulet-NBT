@@ -3,7 +3,7 @@
 #include <vector>
 #include <variant>
 
-#include <amulet_nbt/dll.hpp>
+#include <amulet_nbt/export.hpp>
 #include <amulet_nbt/common.hpp>
 #include <amulet_nbt/tag/int.hpp>
 #include <amulet_nbt/tag/float.hpp>
@@ -17,16 +17,16 @@
 
 
 namespace AmuletNBT{
-    AMULET_NBT_DLLX bool NBTTag_eq(const AmuletNBT::ByteTag& a, const AmuletNBT::ByteTag& b){return a == b;};
-    AMULET_NBT_DLLX bool NBTTag_eq(const AmuletNBT::ShortTag& a, const AmuletNBT::ShortTag& b){return a == b;};
-    AMULET_NBT_DLLX bool NBTTag_eq(const AmuletNBT::IntTag& a, const AmuletNBT::IntTag& b){return a == b;};
-    AMULET_NBT_DLLX bool NBTTag_eq(const AmuletNBT::LongTag& a, const AmuletNBT::LongTag& b){return a == b;};
-    AMULET_NBT_DLLX bool NBTTag_eq(const AmuletNBT::FloatTag& a, const AmuletNBT::FloatTag& b){return a == b;};
-    AMULET_NBT_DLLX bool NBTTag_eq(const AmuletNBT::DoubleTag& a, const AmuletNBT::DoubleTag& b){return a == b;};
-    AMULET_NBT_DLLX bool NBTTag_eq(const AmuletNBT::StringTag& a, const AmuletNBT::StringTag& b){return a == b;};
-    AMULET_NBT_DLLX bool NBTTag_eq(const AmuletNBT::ByteArrayTag& a, const AmuletNBT::ByteArrayTag& b){return a == b;};
-    AMULET_NBT_DLLX bool NBTTag_eq(const AmuletNBT::IntArrayTag& a, const AmuletNBT::IntArrayTag& b){return a == b;};
-    AMULET_NBT_DLLX bool NBTTag_eq(const AmuletNBT::LongArrayTag& a, const AmuletNBT::LongArrayTag& b){return a == b;};
+    bool NBTTag_eq(const AmuletNBT::ByteTag& a, const AmuletNBT::ByteTag& b){return a == b;};
+    bool NBTTag_eq(const AmuletNBT::ShortTag& a, const AmuletNBT::ShortTag& b){return a == b;};
+    bool NBTTag_eq(const AmuletNBT::IntTag& a, const AmuletNBT::IntTag& b){return a == b;};
+    bool NBTTag_eq(const AmuletNBT::LongTag& a, const AmuletNBT::LongTag& b){return a == b;};
+    bool NBTTag_eq(const AmuletNBT::FloatTag& a, const AmuletNBT::FloatTag& b){return a == b;};
+    bool NBTTag_eq(const AmuletNBT::DoubleTag& a, const AmuletNBT::DoubleTag& b){return a == b;};
+    bool NBTTag_eq(const AmuletNBT::StringTag& a, const AmuletNBT::StringTag& b){return a == b;};
+    bool NBTTag_eq(const AmuletNBT::ByteArrayTag& a, const AmuletNBT::ByteArrayTag& b){return a == b;};
+    bool NBTTag_eq(const AmuletNBT::IntArrayTag& a, const AmuletNBT::IntArrayTag& b){return a == b;};
+    bool NBTTag_eq(const AmuletNBT::LongArrayTag& a, const AmuletNBT::LongArrayTag& b){return a == b;};
 
     template <typename SelfT>
     inline bool ListTag_eq(const std::vector<SelfT>& a_vec, const AmuletNBT::ListTag& b){
@@ -51,7 +51,7 @@ namespace AmuletNBT{
             return a_vec == b_vec;
         }
     }
-    AMULET_NBT_DLLX bool NBTTag_eq(const AmuletNBT::ListTag& a, const AmuletNBT::ListTag& b){
+    bool NBTTag_eq(const AmuletNBT::ListTag& a, const AmuletNBT::ListTag& b){
         return std::visit([&b](auto&& list) -> bool {
             using T = std::decay_t<decltype(list)>;
             if constexpr (std::is_same_v<T, std::monostate>) {
@@ -62,7 +62,7 @@ namespace AmuletNBT{
             }
         }, a);
     };
-    AMULET_NBT_DLLX bool NBTTag_eq(const AmuletNBT::CompoundTag& a, const AmuletNBT::CompoundTag& b){
+    bool NBTTag_eq(const AmuletNBT::CompoundTag& a, const AmuletNBT::CompoundTag& b){
         if (a.size() != b.size()){
             // Size does not match
             return false;
@@ -80,7 +80,7 @@ namespace AmuletNBT{
         }
         return true;
     };
-    AMULET_NBT_DLLX bool NBTTag_eq(const AmuletNBT::TagNode& a, const AmuletNBT::TagNode& b){
+    bool NBTTag_eq(const AmuletNBT::TagNode& a, const AmuletNBT::TagNode& b){
         return std::visit([&b](auto&& tag) -> bool {
             using T = std::decay_t<decltype(tag)>;
             if (!std::holds_alternative<T>(b)) {
@@ -94,7 +94,7 @@ namespace AmuletNBT{
             }
         }, a);
     };
-    AMULET_NBT_DLLX bool NBTTag_eq(const AmuletNBT::NamedTag& a, const AmuletNBT::NamedTag& b) {
+    bool NBTTag_eq(const AmuletNBT::NamedTag& a, const AmuletNBT::NamedTag& b) {
         return a.name == b.name && NBTTag_eq(a.tag_node, b.tag_node);
     };
 }

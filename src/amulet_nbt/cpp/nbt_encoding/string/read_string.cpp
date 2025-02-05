@@ -8,7 +8,7 @@
 #include <vector>
 #include <memory>
 
-#include <amulet_nbt/dll.hpp>
+#include <amulet_nbt/export.hpp>
 #include <amulet_nbt/nbt_encoding/string.hpp>
 #include <amulet_nbt/tag/list.hpp>
 #include <amulet_nbt/tag/list_methods.hpp>
@@ -431,12 +431,12 @@ AmuletNBT::TagNode _decode_snbt(const AmuletNBT::CodePointVector& snbt, size_t& 
 
 
 namespace AmuletNBT {
-    AMULET_NBT_DLLX AmuletNBT::TagNode decode_snbt(const AmuletNBT::CodePointVector& snbt){
+    AmuletNBT::TagNode decode_snbt(const AmuletNBT::CodePointVector& snbt){
         size_t index = 0;
         return _decode_snbt(snbt, index);
     }
 
-    AMULET_NBT_DLLX AmuletNBT::TagNode decode_snbt(std::string_view snbt){
+    AmuletNBT::TagNode decode_snbt(std::string_view snbt){
         AmuletNBT::CodePointVector code_points = AmuletNBT::read_utf8_escape(snbt);
         return decode_snbt(code_points);
     }

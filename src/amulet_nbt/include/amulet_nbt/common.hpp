@@ -23,7 +23,7 @@ template<class T>
 struct is_shared_ptr<std::shared_ptr<T>> : std::true_type {};
 
 namespace AmuletNBT {
-    class type_error : public std::runtime_error {
+    class AMULET_NBT_EXPORT_EXCEPTION type_error : public std::runtime_error {
     public:
         using std::runtime_error::runtime_error;
     };

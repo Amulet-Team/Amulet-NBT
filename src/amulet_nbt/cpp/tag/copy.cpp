@@ -6,7 +6,7 @@
 #include <stdexcept>
 #include <vector>
 
-#include <amulet_nbt/dll.hpp>
+#include <amulet_nbt/export.hpp>
 #include <amulet_nbt/tag/int.hpp>
 #include <amulet_nbt/tag/float.hpp>
 #include <amulet_nbt/tag/string.hpp>
@@ -46,7 +46,7 @@ namespace AmuletNBT {
         return new_tag;
     }
 
-    AMULET_NBT_DLLX AmuletNBT::ListTagPtr NBTTag_deep_copy_list(const AmuletNBT::ListTag& tag) {
+    AmuletNBT::ListTagPtr NBTTag_deep_copy_list(const AmuletNBT::ListTag& tag) {
         return std::visit([](auto&& list) {
             using T = std::decay_t<decltype(list)>;
             if constexpr (std::is_same_v<T, std::monostate>) {
@@ -61,7 +61,7 @@ namespace AmuletNBT {
         }, tag);
     }
 
-    AMULET_NBT_DLLX AmuletNBT::TagNode NBTTag_deep_copy_node(const AmuletNBT::TagNode& node) {
+    AmuletNBT::TagNode NBTTag_deep_copy_node(const AmuletNBT::TagNode& node) {
         return std::visit([](auto&& tag) -> AmuletNBT::TagNode {
             using T = std::decay_t<decltype(tag)>;
             if constexpr (std::is_same_v<T, AmuletNBT::ListTagPtr>) {
@@ -83,7 +83,7 @@ namespace AmuletNBT {
         }, node);
     }
 
-    AMULET_NBT_DLLX AmuletNBT::CompoundTagPtr NBTTag_deep_copy_compound(const AmuletNBT::CompoundTag& tag) {
+    AmuletNBT::CompoundTagPtr NBTTag_deep_copy_compound(const AmuletNBT::CompoundTag& tag) {
         auto new_tag = std::make_shared<AmuletNBT::CompoundTag>();
         for (auto& [key, value] : tag) {
             (*new_tag)[key] = NBTTag_deep_copy_node(value);

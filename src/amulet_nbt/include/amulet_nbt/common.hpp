@@ -6,6 +6,8 @@
 #include <memory>
 #include <stdexcept>
 
+#include <amulet_nbt/export.hpp>
+
 template<typename V, typename T, size_t I = 0>
 constexpr size_t variant_index() {
     static_assert(I < std::variant_size_v<V>, "Type T is not a member of variant V");
@@ -23,7 +25,7 @@ template<class T>
 struct is_shared_ptr<std::shared_ptr<T>> : std::true_type {};
 
 namespace AmuletNBT {
-    class type_error : public std::runtime_error {
+    class AMULET_NBT_EXPORT_EXCEPTION type_error : public std::runtime_error {
     public:
         using std::runtime_error::runtime_error;
     };

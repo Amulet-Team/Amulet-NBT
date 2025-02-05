@@ -7,7 +7,7 @@
 #include <vector>
 #include <stdexcept>
 
-#include <amulet_nbt/dll.hpp>
+#include <amulet_nbt/export.hpp>
 #include <amulet_nbt/string_encoding.hpp>
 
 const size_t HexChars[16] = {48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102};
@@ -224,50 +224,50 @@ constexpr void _write_utf8(std::string &dst, const AmuletNBT::CodePointVector& s
 
 
 namespace AmuletNBT{
-    AMULET_NBT_DLLX CodePointVector read_utf8(std::string_view src) {
+    CodePointVector read_utf8(std::string_view src) {
         return _read_utf8<false>(src);
     }
 
-    AMULET_NBT_DLLX void write_utf8(std::string &dst, const CodePointVector& src) {
+    void write_utf8(std::string &dst, const CodePointVector& src) {
         _write_utf8<false>(dst, src);
     }
 
-    AMULET_NBT_DLLX std::string write_utf8(const CodePointVector& src) {
+    std::string write_utf8(const CodePointVector& src) {
         std::string dst;
         _write_utf8<false>(dst, src);
         return dst;
     }
 
-    AMULET_NBT_DLLX CodePointVector read_utf8_escape(std::string_view src) {
+    CodePointVector read_utf8_escape(std::string_view src) {
         return _read_utf8<true>(src);
     }
 
-    AMULET_NBT_DLLX void write_utf8_escape(std::string &dst, const CodePointVector& src) {
+    void write_utf8_escape(std::string &dst, const CodePointVector& src) {
         _write_utf8<true>(dst, src);
     }
 
-    AMULET_NBT_DLLX std::string write_utf8_escape(const CodePointVector& src) {
+    std::string write_utf8_escape(const CodePointVector& src) {
         std::string dst;
         _write_utf8<true>(dst, src);
         return dst;
     }
 
     // Validate a utf-8 byte sequence and convert to itself.
-    AMULET_NBT_DLLX std::string utf8_to_utf8(std::string_view src) {
+    std::string utf8_to_utf8(std::string_view src) {
         std::string dst;
         write_utf8(dst, read_utf8(src));
         return dst;
     }
 
     // Decode a utf-8 escape byte sequence to a regular utf-8 byte sequence
-    AMULET_NBT_DLLX std::string utf8_escape_to_utf8(std::string_view src) {
+    std::string utf8_escape_to_utf8(std::string_view src) {
         std::string dst;
         write_utf8(dst, read_utf8_escape(src));
         return dst;
     }
 
     // Encode a regular utf-8 byte sequence to a utf-8 escape byte sequence
-    AMULET_NBT_DLLX std::string utf8_to_utf8_escape(std::string_view src) {
+    std::string utf8_to_utf8_escape(std::string_view src) {
         std::string dst;
         write_utf8_escape(dst, read_utf8(src));
         return dst;

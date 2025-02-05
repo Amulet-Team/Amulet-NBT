@@ -264,11 +264,11 @@ void init_list(py::module& m) {
         ListTag.def(
             py::pickle(
                 [](const AmuletNBT::ListTag& self){
-                    return py::bytes(AmuletNBT::write_nbt("", self, std::endian::big, AmuletNBT::utf8_to_mutf8));
+                    return py::bytes(AmuletNBT::encode_nbt("", self, std::endian::big, AmuletNBT::utf8_to_mutf8));
                 },
                 [](py::bytes state){
                     return std::get<AmuletNBT::ListTagPtr>(
-                        AmuletNBT::read_nbt(state, std::endian::big, AmuletNBT::mutf8_to_utf8).tag_node
+                        AmuletNBT::decode_nbt(state, std::endian::big, AmuletNBT::mutf8_to_utf8).tag_node
                     );
                 }
             )

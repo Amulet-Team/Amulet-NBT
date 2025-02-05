@@ -93,7 +93,7 @@ void init_bnbt(py::module& m) {
         std::string buffer = get_buffer(filepath_or_buffer, compressed);
         if (py::isinstance<AmuletNBT::ReadOffset>(read_offset_py)){
             AmuletNBT::ReadOffset& read_offset = read_offset_py.cast<AmuletNBT::ReadOffset&>();
-            return AmuletNBT::read_nbt(
+            return AmuletNBT::decode_nbt(
                 buffer,
                 endianness,
                 string_decoder,
@@ -101,7 +101,7 @@ void init_bnbt(py::module& m) {
                 named
             );
         } else if (read_offset_py.is(py::none())){
-            return AmuletNBT::read_nbt(
+            return AmuletNBT::decode_nbt(
                 buffer,
                 endianness,
                 string_decoder,
@@ -199,7 +199,7 @@ void init_bnbt(py::module& m) {
         if (py::isinstance<AmuletNBT::ReadOffset>(read_offset_py)){
             AmuletNBT::ReadOffset& read_offset = read_offset_py.cast<AmuletNBT::ReadOffset&>();
             if (count == -1){
-                return AmuletNBT::read_nbt_array(
+                return AmuletNBT::decode_nbt_array(
                     buffer,
                     endianness,
                     string_decoder,
@@ -207,7 +207,7 @@ void init_bnbt(py::module& m) {
                     named
                 );
             } else {
-                return AmuletNBT::read_nbt_array(
+                return AmuletNBT::decode_nbt_array(
                     buffer,
                     endianness,
                     string_decoder,
@@ -219,7 +219,7 @@ void init_bnbt(py::module& m) {
         } else if (read_offset_py.is(py::none())){
             size_t offset = 0;
             if (count == -1){
-                return AmuletNBT::read_nbt_array(
+                return AmuletNBT::decode_nbt_array(
                     buffer,
                     endianness,
                     string_decoder,
@@ -227,7 +227,7 @@ void init_bnbt(py::module& m) {
                     named
                 );
             } else {
-                return AmuletNBT::read_nbt_array(
+                return AmuletNBT::decode_nbt_array(
                     buffer,
                     endianness,
                     string_decoder,

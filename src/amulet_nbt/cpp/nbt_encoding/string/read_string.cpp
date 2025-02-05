@@ -291,7 +291,7 @@ inline AmuletNBT::TagNode read_array(const AmuletNBT::CodePointVector& snbt, siz
 }
 
 
-AmuletNBT::TagNode _read_snbt(const AmuletNBT::CodePointVector& snbt, size_t& index){
+AmuletNBT::TagNode _decode_snbt(const AmuletNBT::CodePointVector& snbt, size_t& index){
     read_whitespace(snbt, index);
     switch (read_code_point(snbt, index)){
         case '{':
@@ -309,7 +309,7 @@ AmuletNBT::TagNode _read_snbt(const AmuletNBT::CodePointVector& snbt, size_t& in
                     read_colon(snbt, index);
 
                     // Read the nested value
-                    AmuletNBT::TagNode node = _read_snbt(snbt, index);
+                    AmuletNBT::TagNode node = _decode_snbt(snbt, index);
                     
                     // Write to the map
                     tag[key] = node;
@@ -338,7 +338,7 @@ AmuletNBT::TagNode _read_snbt(const AmuletNBT::CodePointVector& snbt, size_t& in
                     auto tag = std::make_shared<AmuletNBT::ListTag>();
                     while (read_code_point(snbt, index) != ']'){
                         // read the value
-                        auto value = _read_snbt(snbt, index);
+                        auto value = _decode_snbt(snbt, index);
 
                         if (tag->index() != 0 && tag->index() != value.index() + 1){
                             throw std::invalid_argument("All elements of a list tag must have the same type.");
@@ -431,13 +431,13 @@ AmuletNBT::TagNode _read_snbt(const AmuletNBT::CodePointVector& snbt, size_t& in
 
 
 namespace AmuletNBT {
-    AMULET_NBT_DLLX AmuletNBT::TagNode read_snbt(const AmuletNBT::CodePointVector& snbt){
+    AMULET_NBT_DLLX AmuletNBT::TagNode decode_snbt(const AmuletNBT::CodePointVector& snbt){
         size_t index = 0;
-        return _read_snbt(snbt, index);
+        return _decode_snbt(snbt, index);
     }
 
-    AMULET_NBT_DLLX AmuletNBT::TagNode read_snbt(std::string_view snbt){
+    AMULET_NBT_DLLX AmuletNBT::TagNode decode_snbt(std::string_view snbt){
         AmuletNBT::CodePointVector code_points = AmuletNBT::read_utf8_escape(snbt);
-        return read_snbt(code_points);
+        return decode_snbt(code_points);
     }
 }

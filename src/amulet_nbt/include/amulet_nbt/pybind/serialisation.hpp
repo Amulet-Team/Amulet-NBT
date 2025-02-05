@@ -6,7 +6,7 @@
         std::endian endianness,\
         AmuletNBT::StringEncode string_encoder\
     ) -> py::bytes {\
-        py::bytes data = AmuletNBT::write_nbt(name, self, endianness, string_encoder);\
+        py::bytes data = AmuletNBT::encode_nbt(name, self, endianness, string_encoder);\
         if (compressed){\
             return compress(data);\
         }\
@@ -131,11 +131,11 @@
             py::object indent\
         ){\
             if (indent.is(py::none())){\
-                return AmuletNBT::write_snbt(self);\
+                return AmuletNBT::encode_snbt(self);\
             } else if (py::isinstance<py::int_>(indent)){\
-                return AmuletNBT::write_formatted_snbt(self, std::string(indent.cast<size_t>(), ' '));\
+                return AmuletNBT::encode_formatted_snbt(self, std::string(indent.cast<size_t>(), ' '));\
             } else if (py::isinstance<py::str>(indent)){\
-                return AmuletNBT::write_formatted_snbt(self, indent.cast<std::string>());\
+                return AmuletNBT::encode_formatted_snbt(self, indent.cast<std::string>());\
             } else {\
                 throw std::invalid_argument("indent must be None, int or str");\
             }\

@@ -788,52 +788,52 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         )
 
         self.assertEqual(
-            b"\x09\x00\x00\x01\x00\x00\x00\x03\xFF\x00\x01",
+            b"\x09\x00\x00\x01\x00\x00\x00\x03\xff\x00\x01",
             ListTag([ByteTag(-1), ByteTag(0), ByteTag(1)]).to_nbt(
                 compressed=False, little_endian=False
             ),
         )
         self.assertEqual(
-            b"\x09\x00\x00\x01\x03\x00\x00\x00\xFF\x00\x01",
+            b"\x09\x00\x00\x01\x03\x00\x00\x00\xff\x00\x01",
             ListTag([ByteTag(-1), ByteTag(0), ByteTag(1)]).to_nbt(
                 compressed=False, little_endian=True
             ),
         )
 
         self.assertEqual(
-            b"\x09\x00\x00\x02\x00\x00\x00\x03\xFF\xFF\x00\x00\x00\x01",
+            b"\x09\x00\x00\x02\x00\x00\x00\x03\xff\xff\x00\x00\x00\x01",
             ListTag([ShortTag(-1), ShortTag(0), ShortTag(1)]).to_nbt(
                 compressed=False, little_endian=False
             ),
         )
         self.assertEqual(
-            b"\x09\x00\x00\x02\x03\x00\x00\x00\xFF\xFF\x00\x00\x01\x00",
+            b"\x09\x00\x00\x02\x03\x00\x00\x00\xff\xff\x00\x00\x01\x00",
             ListTag([ShortTag(-1), ShortTag(0), ShortTag(1)]).to_nbt(
                 compressed=False, little_endian=True
             ),
         )
 
         self.assertEqual(
-            b"\x09\x00\x00\x03\x00\x00\x00\x03\xFF\xFF\xFF\xFF\x00\x00\x00\x00\x00\x00\x00\x01",
+            b"\x09\x00\x00\x03\x00\x00\x00\x03\xff\xff\xff\xff\x00\x00\x00\x00\x00\x00\x00\x01",
             ListTag([IntTag(-1), IntTag(0), IntTag(1)]).to_nbt(
                 compressed=False, little_endian=False
             ),
         )
         self.assertEqual(
-            b"\x09\x00\x00\x03\x03\x00\x00\x00\xFF\xFF\xFF\xFF\x00\x00\x00\x00\x01\x00\x00\x00",
+            b"\x09\x00\x00\x03\x03\x00\x00\x00\xff\xff\xff\xff\x00\x00\x00\x00\x01\x00\x00\x00",
             ListTag([IntTag(-1), IntTag(0), IntTag(1)]).to_nbt(
                 compressed=False, little_endian=True
             ),
         )
 
         self.assertEqual(
-            b"\x09\x00\x00\x04\x00\x00\x00\x03\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01",
+            b"\x09\x00\x00\x04\x00\x00\x00\x03\xff\xff\xff\xff\xff\xff\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01",
             ListTag([LongTag(-1), LongTag(0), LongTag(1)]).to_nbt(
                 compressed=False, little_endian=False
             ),
         )
         self.assertEqual(
-            b"\x09\x00\x00\x04\x03\x00\x00\x00\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00",
+            b"\x09\x00\x00\x04\x03\x00\x00\x00\xff\xff\xff\xff\xff\xff\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00",
             ListTag([LongTag(-1), LongTag(0), LongTag(1)]).to_nbt(
                 compressed=False, little_endian=True
             ),
@@ -841,7 +841,7 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
 
     def test_from_nbt(self) -> None:
         self.assertEqual(
-            ListTag([], 1), read_nbt(b"\x09\x00\x00\x01\xFF\xFF\xFF\xFF").list
+            ListTag([], 1), read_nbt(b"\x09\x00\x00\x01\xff\xff\xff\xff").list
         )
 
         with self.assertRaises(IndexError):

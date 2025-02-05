@@ -104,7 +104,7 @@ void init_named_tag(py::module& m) {
             std::endian endianness,
             AmuletNBT::StringEncode string_encoder
         ) -> py::bytes {
-            py::bytes data = AmuletNBT::write_nbt(self.name, self.tag_node, endianness, string_encoder);
+            py::bytes data = AmuletNBT::encode_nbt(self.name, self.tag_node, endianness, string_encoder);
             if (compressed){
                 return compress(data);
             }
@@ -216,11 +216,11 @@ void init_named_tag(py::module& m) {
                 py::object indent
             ){
                 if (indent.is(py::none())){
-                    return AmuletNBT::write_snbt(self.tag_node);
+                    return AmuletNBT::encode_snbt(self.tag_node);
                 } else if (py::isinstance<py::int_>(indent)){
-                    return AmuletNBT::write_formatted_snbt(self.tag_node, std::string(indent.cast<size_t>(), ' '));
+                    return AmuletNBT::encode_formatted_snbt(self.tag_node, std::string(indent.cast<size_t>(), ' '));
                 } else if (py::isinstance<py::str>(indent)){
-                    return AmuletNBT::write_formatted_snbt(self.tag_node, indent.cast<std::string>());
+                    return AmuletNBT::encode_formatted_snbt(self.tag_node, indent.cast<std::string>());
                 } else {
                     throw std::invalid_argument("indent must be None, int or str");
                 }
@@ -246,10 +246,10 @@ void init_named_tag(py::module& m) {
         NamedTag.def(
             py::pickle(
                 [](const AmuletNBT::NamedTag& self){
-                    return py::bytes(AmuletNBT::write_nbt(self, std::endian::big, AmuletNBT::utf8_to_mutf8));
+                    return py::bytes(AmuletNBT::encode_nbt(self, std::endian::big, AmuletNBT::utf8_to_mutf8));
                 },
                 [](py::bytes state){
-                    return AmuletNBT::read_nbt(state, std::endian::big, AmuletNBT::mutf8_to_utf8);
+                    return AmuletNBT::decode_nbt(state, std::endian::big, AmuletNBT::mutf8_to_utf8);
                 }
             )
         );

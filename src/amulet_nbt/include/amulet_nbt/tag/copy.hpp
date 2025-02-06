@@ -3,6 +3,7 @@
 #include <memory>
 #include <type_traits>
 #include <variant>
+#include <set>
 
 #include <amulet_nbt/common.hpp>
 #include <amulet_nbt/export.hpp>
@@ -59,26 +60,32 @@ template <typename T>
     || std::is_same_v<T, AmuletNBT::ByteArrayTag>
     || std::is_same_v<T, AmuletNBT::IntArrayTag>
     || std::is_same_v<T, AmuletNBT::LongArrayTag>
-T deep_copy(const T& tag)
+T deep_copy_2(const T& tag, std::set<size_t>& memo)
 {
     return tag;
 }
 
-AMULET_NBT_EXPORT AmuletNBT::ListTag deep_copy(const AmuletNBT::ListTag&);
-AMULET_NBT_EXPORT AmuletNBT::CompoundTag deep_copy(const AmuletNBT::CompoundTag&);
-AMULET_NBT_EXPORT AmuletNBT::TagNode deep_copy(const AmuletNBT::TagNode&);
-AMULET_NBT_EXPORT AmuletNBT::NamedTag deep_copy(const AmuletNBT::NamedTag&);
+AMULET_NBT_EXPORT AmuletNBT::ListTag deep_copy_2(const AmuletNBT::ListTag&, std::set<size_t>& memo);
+AMULET_NBT_EXPORT AmuletNBT::CompoundTag deep_copy_2(const AmuletNBT::CompoundTag&, std::set<size_t>& memo);
+AMULET_NBT_EXPORT AmuletNBT::TagNode deep_copy_2(const AmuletNBT::TagNode&, std::set<size_t>& memo);
+AMULET_NBT_EXPORT AmuletNBT::NamedTag deep_copy_2(const AmuletNBT::NamedTag&, std::set<size_t>& memo);
 
 template <typename T>
-std::unique_ptr<T> deep_copy(const std::unique_ptr<T>& tag)
+std::unique_ptr<T> deep_copy_2(const std::unique_ptr<T>& tag, std::set<size_t>& memo)
 {
-    return std::make_unique<T>(deep_copy(*tag));
+    return std::make_unique<T>(deep_copy_2(*tag, memo));
 }
 
 template <typename T>
-std::shared_ptr<T> deep_copy(const std::shared_ptr<T>& tag)
+std::shared_ptr<T> deep_copy_2(const std::shared_ptr<T>& tag, std::set<size_t>& memo)
 {
-    return std::make_shared<T>(deep_copy(*tag));
+    return std::make_shared<T>(deep_copy_2(*tag, memo));
+}
+
+template <typename T>
+auto deep_copy(const T& obj) {
+    std::set<size_t> memo;
+    return deep_copy_2(obj, memo);
 }
 
 } // namespace AmuletNBT

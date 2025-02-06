@@ -415,6 +415,18 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         self.assertNotEqual(tag, tag2)
         self.assertEqual(1, tag2[0][0])
 
+        tag = ListTag()
+        tag.append(tag)
+        with self.assertRaises(RuntimeError):
+            copy.deepcopy(tag)
+
+        list_tag = ListTag()
+        compound_tag = CompoundTag()
+        list_tag.append(compound_tag)
+        compound_tag["test"] = list_tag
+        with self.assertRaises(RuntimeError):
+            copy.deepcopy(list_tag)
+
     def test_hash(self) -> None:
         with self.assertRaises(TypeError):
             hash(ListTag())

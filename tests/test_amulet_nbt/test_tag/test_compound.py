@@ -331,6 +331,18 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         tag["long_array"][0] = 10
         self.assertEqual(LongArrayTag([1, 2, 3]), tag2["long_array"])
 
+        tag = CompoundTag()
+        tag["test"] = tag
+        with self.assertRaises(RuntimeError):
+            copy.deepcopy(tag)
+
+        compound_tag = CompoundTag()
+        list_tag = ListTag()
+        compound_tag["test"] = list_tag
+        list_tag.append(compound_tag)
+        with self.assertRaises(RuntimeError):
+            copy.deepcopy(compound_tag)
+
     def test_hash(self) -> None:
         with self.assertRaises(TypeError):
             hash(CompoundTag())

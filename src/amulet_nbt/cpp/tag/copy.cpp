@@ -1,4 +1,5 @@
 #include <memory>
+#include <set>
 #include <stdexcept>
 #include <type_traits>
 #include <utility>
@@ -18,53 +19,66 @@
 namespace AmuletNBT {
 
 template <typename T>
-AmuletNBT::ListTag deep_copy_list_vector(const std::vector<T>& vec)
+AmuletNBT::ListTag deep_copy_list_vector(const std::vector<T>& vec, std::set<size_t>& memo)
 {
     std::vector<T> new_vector;
     new_vector.reserve(vec.size());
     for (const T& value : vec) {
-        new_vector.push_back(deep_copy(value));
+        new_vector.push_back(deep_copy_2(value, memo));
     }
     return new_vector;
 }
 
-AmuletNBT::ListTag deep_copy(const AmuletNBT::ListTag& tag)
+AmuletNBT::ListTag deep_copy_2(const AmuletNBT::ListTag& tag, std::set<size_t>& memo)
 {
-    return std::visit(
-        [](auto&& list) -> AmuletNBT::ListTag {
+    auto ptr = reinterpret_cast<size_t>(&tag);
+    if (memo.contains(ptr)) {
+        throw std::runtime_error("ListTag cannot contain itself.");
+    }
+    memo.insert(ptr);
+    auto new_tag = std::visit(
+        [&memo](auto&& list) -> AmuletNBT::ListTag {
             using T = std::decay_t<decltype(list)>;
             if constexpr (std::is_same_v<T, std::monostate>) {
                 return AmuletNBT::ListTag();
             } else if constexpr (is_shared_ptr<typename T::value_type>::value) {
-                return deep_copy_list_vector(list);
+                return deep_copy_list_vector(list, memo);
             } else {
                 return list;
             }
         },
         tag);
-}
-
-AmuletNBT::CompoundTag deep_copy(const AmuletNBT::CompoundTag& tag)
-{
-    AmuletNBT::CompoundTag new_tag;
-    for (auto& [key, value] : tag) {
-        new_tag.emplace(key, deep_copy(value));
-    }
+    memo.erase(ptr);
     return new_tag;
 }
 
-AmuletNBT::TagNode deep_copy(const AmuletNBT::TagNode& node)
+AmuletNBT::CompoundTag deep_copy_2(const AmuletNBT::CompoundTag& tag, std::set<size_t>& memo)
+{
+    auto ptr = reinterpret_cast<size_t>(&tag);
+    if (memo.contains(ptr)) {
+        throw std::runtime_error("CompoundTag cannot contain itself.");
+    }
+    memo.insert(ptr);
+    AmuletNBT::CompoundTag new_tag;
+    for (auto& [key, value] : tag) {
+        new_tag.emplace(key, deep_copy_2(value, memo));
+    }
+    memo.erase(ptr);
+    return new_tag;
+}
+
+AmuletNBT::TagNode deep_copy_2(const AmuletNBT::TagNode& node, std::set<size_t>& memo)
 {
     return std::visit(
-        [](auto&& tag) -> AmuletNBT::TagNode {
-            return deep_copy(tag);
+        [&memo](auto&& tag) -> AmuletNBT::TagNode {
+            return deep_copy_2(tag, memo);
         },
         node);
 }
 
-AmuletNBT::NamedTag deep_copy(const AmuletNBT::NamedTag& named_tag)
+AmuletNBT::NamedTag deep_copy_2(const AmuletNBT::NamedTag& named_tag, std::set<size_t>& memo)
 {
-    return { named_tag.name, deep_copy(named_tag.tag_node) };
+    return { named_tag.name, deep_copy_2(named_tag.tag_node, memo) };
 }
 
 } // namespace AmuletNBT

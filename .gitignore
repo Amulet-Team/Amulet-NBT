@@ -4,7 +4,9 @@ __pycache__/
 *$py.class
 
 # C extensions
+*.dll
 *.so
+*.dylib
 
 # Distribution / packaging
 .Python
@@ -120,4 +122,4 @@ temp
 *.exp
 *.lib
 *.pdb
-src/amulet_nbt/x64/
+/install

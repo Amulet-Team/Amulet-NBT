@@ -276,13 +276,13 @@ void init_list(py::module& m) {
         ListTag.def(
             "__copy__",
             [](const AmuletNBT::ListTag& self){
-                return NBTTag_copy<AmuletNBT::ListTag>(self);
+                return shallow_copy(self);
             }
         );
         ListTag.def(
             "__deepcopy__",
             [](const AmuletNBT::ListTag& self, py::dict){
-                return AmuletNBT::NBTTag_deep_copy_list(self);
+                return deep_copy(self);
             },
             py::arg("memo")
         );

@@ -18,11 +18,28 @@ else()
     set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
 
+include(FetchContent)
+
+# Add zlib
+set(ZLIB_BUILD_EXAMPLES OFF)
+FetchContent_Declare(
+  zlib
+  GIT_REPOSITORY https://github.com/madler/zlib.git
+  GIT_TAG        51b7f2abdade71cd9bb0e7a373ef2610ec6f9daf
+)
+FetchContent_MakeAvailable(zlib)
+set(ZLIB_ROOT ${zlib_SOURCE_DIR})
+set(ZLIB_USE_STATIC_LIBS ON)
+set(ZLIB_LIBRARY ${INSTALL_LIB_DIR})
+find_package(ZLIB REQUIRED)
+target_compile_definitions(zlibstatic PUBLIC ZLIB_CONST)
+
 # Add pybind11
 find_package(pybind11 CONFIG REQUIRED)
 
 # Add implementation
 add_library(amulet_nbt SHARED)
+target_link_libraries( amulet_nbt PRIVATE zlibstatic )
 target_compile_definitions(amulet_nbt PRIVATE ExportAmuletNBT)
 target_include_directories(amulet_nbt PUBLIC "src/amulet_nbt/include")
 target_sources(amulet_nbt PRIVATE "src/amulet_nbt/cpp/nbt_encoding/binary/read_binary.cpp")
@@ -33,6 +50,7 @@ target_sources(amulet_nbt PRIVATE "src/amulet_nbt/cpp/string_encoding/mutf8.cpp"
 target_sources(amulet_nbt PRIVATE "src/amulet_nbt/cpp/string_encoding/utf8.cpp")
 target_sources(amulet_nbt PRIVATE "src/amulet_nbt/cpp/tag/copy.cpp")
 target_sources(amulet_nbt PRIVATE "src/amulet_nbt/cpp/tag/eq.cpp")
+target_sources(amulet_nbt PRIVATE "src/amulet_nbt/cpp/zlib.cpp")
 
 # Add python extension
 pybind11_add_module(_amulet_nbt)

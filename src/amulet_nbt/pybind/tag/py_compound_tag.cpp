@@ -188,13 +188,13 @@ void init_compound(py::module& m) {
         CompoundTag.def(
             "__copy__",
             [](const AmuletNBT::CompoundTag& self){
-                return NBTTag_copy<AmuletNBT::CompoundTag>(self);
+                return shallow_copy(self);
             }
         );
         CompoundTag.def(
             "__deepcopy__",
             [](const AmuletNBT::CompoundTag& self, py::dict){
-                return AmuletNBT::NBTTag_deep_copy_compound(self);
+                return deep_copy(self);
             },
             py::arg("memo")
         );

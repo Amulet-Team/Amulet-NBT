@@ -256,13 +256,13 @@ void init_named_tag(py::module& m) {
         NamedTag.def(
             "__copy__",
             [](const AmuletNBT::NamedTag& self){
-                return self;
+                return shallow_copy(self);
             }
         );
         NamedTag.def(
             "__deepcopy__",
             [](const AmuletNBT::NamedTag& self, py::dict){
-                return AmuletNBT::NamedTag(self.name, AmuletNBT::NBTTag_deep_copy_node(self.tag_node));
+                return deep_copy(self);
             },
             py::arg("memo")
         );

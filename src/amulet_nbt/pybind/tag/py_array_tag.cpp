@@ -117,13 +117,13 @@ namespace py = pybind11;
     CLSNAME.def(\
         "__copy__",\
         [](const AmuletNBT::CLSNAME& self){\
-            return NBTTag_copy<AmuletNBT::CLSNAME>(self);\
+            return shallow_copy(self);\
         }\
     );\
     CLSNAME.def(\
         "__deepcopy__",\
         [](const AmuletNBT::CLSNAME& self, py::dict){\
-            return AmuletNBT::NBTTag_copy<AmuletNBT::CLSNAME>(self);\
+            return deep_copy(self);\
         },\
         py::arg("memo")\
     );\

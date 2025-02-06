@@ -7,6 +7,7 @@
 
 #include <amulet_nbt/tag/abc.hpp>
 #include <amulet_nbt/tag/float.hpp>
+#include <amulet_nbt/tag/copy.hpp>
 #include <amulet_nbt/nbt_encoding/binary.hpp>
 #include <amulet_nbt/nbt_encoding/string.hpp>
 #include <amulet_nbt/pybind/serialisation.hpp>
@@ -80,13 +81,13 @@ namespace py = pybind11;
     CLSNAME.def(\
         "__copy__",\
         [](const AmuletNBT::CLSNAME& self){\
-            return self;\
+            return shallow_copy(self);\
         }\
     );\
     CLSNAME.def(\
         "__deepcopy__",\
         [](const AmuletNBT::CLSNAME& self, py::dict){\
-            return self;\
+            return deep_copy(self);\
         },\
         py::arg("memo")\
     );\

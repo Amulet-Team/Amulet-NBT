@@ -1,93 +1,84 @@
-#include <vector>
 #include <memory>
+#include <set>
+#include <stdexcept>
+#include <type_traits>
 #include <utility>
 #include <variant>
-#include <type_traits>
-#include <stdexcept>
 #include <vector>
 
 #include <amulet_nbt/export.hpp>
-#include <amulet_nbt/tag/int.hpp>
-#include <amulet_nbt/tag/float.hpp>
-#include <amulet_nbt/tag/string.hpp>
-#include <amulet_nbt/tag/list.hpp>
-#include <amulet_nbt/tag/compound.hpp>
 #include <amulet_nbt/tag/array.hpp>
+#include <amulet_nbt/tag/compound.hpp>
+#include <amulet_nbt/tag/float.hpp>
+#include <amulet_nbt/tag/int.hpp>
+#include <amulet_nbt/tag/list.hpp>
+#include <amulet_nbt/tag/string.hpp>
 
 #include <amulet_nbt/tag/copy.hpp>
 
-
 namespace AmuletNBT {
-    template <
-        typename T,
-        std::enable_if_t<
-        std::is_same_v<T, AmuletNBT::ListTagPtr> ||
-        std::is_same_v<T, AmuletNBT::CompoundTagPtr> ||
-        std::is_same_v<T, AmuletNBT::ByteArrayTagPtr> ||
-        std::is_same_v<T, AmuletNBT::IntArrayTagPtr> ||
-        std::is_same_v<T, AmuletNBT::LongArrayTagPtr>,
-        bool
-        > = true
-    >
-    AmuletNBT::ListTagPtr NBTTag_deep_copy_list_vector(const std::vector<T>&tag) {
-        AmuletNBT::ListTagPtr new_tag = std::make_shared<AmuletNBT::ListTag>(std::in_place_type<std::vector<T>>);
-        std::vector<T>& new_vector = std::get<std::vector<T>>(*new_tag);
-        for (T value : tag) {
-            if constexpr (std::is_same_v<T, AmuletNBT::ListTagPtr>) {
-                new_vector.push_back(NBTTag_deep_copy_list(*value));
-            }
-            else if constexpr (std::is_same_v<T, AmuletNBT::CompoundTagPtr>) {
-                new_vector.push_back(NBTTag_deep_copy_compound(*value));
-            }
-            else {
-                new_vector.push_back(NBTTag_copy<typename T::element_type>(*value));
-            }
-        }
-        return new_tag;
-    }
 
-    AmuletNBT::ListTagPtr NBTTag_deep_copy_list(const AmuletNBT::ListTag& tag) {
-        return std::visit([](auto&& list) {
+template <typename T>
+AmuletNBT::ListTag deep_copy_list_vector(const std::vector<T>& vec, std::set<size_t>& memo)
+{
+    std::vector<T> new_vector;
+    new_vector.reserve(vec.size());
+    for (const T& value : vec) {
+        new_vector.push_back(deep_copy_2(value, memo));
+    }
+    return new_vector;
+}
+
+AmuletNBT::ListTag deep_copy_2(const AmuletNBT::ListTag& tag, std::set<size_t>& memo)
+{
+    auto ptr = reinterpret_cast<size_t>(&tag);
+    if (memo.contains(ptr)) {
+        throw std::runtime_error("ListTag cannot contain itself.");
+    }
+    memo.insert(ptr);
+    auto new_tag = std::visit(
+        [&memo](auto&& list) -> AmuletNBT::ListTag {
             using T = std::decay_t<decltype(list)>;
             if constexpr (std::is_same_v<T, std::monostate>) {
-                return std::make_shared<AmuletNBT::ListTag>();
+                return AmuletNBT::ListTag();
+            } else if constexpr (is_shared_ptr<typename T::value_type>::value) {
+                return deep_copy_list_vector(list, memo);
+            } else {
+                return list;
             }
-            else if constexpr (is_shared_ptr<typename T::value_type>::value) {
-                return NBTTag_deep_copy_list_vector(list);
-            }
-            else {
-                return std::make_shared<AmuletNBT::ListTag>(list);
-            }
-        }, tag);
-    }
-
-    AmuletNBT::TagNode NBTTag_deep_copy_node(const AmuletNBT::TagNode& node) {
-        return std::visit([](auto&& tag) -> AmuletNBT::TagNode {
-            using T = std::decay_t<decltype(tag)>;
-            if constexpr (std::is_same_v<T, AmuletNBT::ListTagPtr>) {
-                return NBTTag_deep_copy_list(*tag);
-            }
-            else if constexpr (std::is_same_v<T, AmuletNBT::CompoundTagPtr>) {
-                return NBTTag_deep_copy_compound(*tag);
-            }
-            else if constexpr (
-                std::is_same_v<T, AmuletNBT::ByteArrayTagPtr> ||
-                std::is_same_v<T, AmuletNBT::IntArrayTagPtr> ||
-                std::is_same_v<T, AmuletNBT::LongArrayTagPtr>
-            ) {
-                return NBTTag_copy(*tag);
-            }
-            else {
-                return tag;
-            }
-        }, node);
-    }
-
-    AmuletNBT::CompoundTagPtr NBTTag_deep_copy_compound(const AmuletNBT::CompoundTag& tag) {
-        auto new_tag = std::make_shared<AmuletNBT::CompoundTag>();
-        for (auto& [key, value] : tag) {
-            (*new_tag)[key] = NBTTag_deep_copy_node(value);
-        }
-        return new_tag;
-    }
+        },
+        tag);
+    memo.erase(ptr);
+    return new_tag;
 }
+
+AmuletNBT::CompoundTag deep_copy_2(const AmuletNBT::CompoundTag& tag, std::set<size_t>& memo)
+{
+    auto ptr = reinterpret_cast<size_t>(&tag);
+    if (memo.contains(ptr)) {
+        throw std::runtime_error("CompoundTag cannot contain itself.");
+    }
+    memo.insert(ptr);
+    AmuletNBT::CompoundTag new_tag;
+    for (auto& [key, value] : tag) {
+        new_tag.emplace(key, deep_copy_2(value, memo));
+    }
+    memo.erase(ptr);
+    return new_tag;
+}
+
+AmuletNBT::TagNode deep_copy_2(const AmuletNBT::TagNode& node, std::set<size_t>& memo)
+{
+    return std::visit(
+        [&memo](auto&& tag) -> AmuletNBT::TagNode {
+            return deep_copy_2(tag, memo);
+        },
+        node);
+}
+
+AmuletNBT::NamedTag deep_copy_2(const AmuletNBT::NamedTag& named_tag, std::set<size_t>& memo)
+{
+    return { named_tag.name, deep_copy_2(named_tag.tag_node, memo) };
+}
+
+} // namespace AmuletNBT

@@ -13,6 +13,7 @@
 #include <amulet_nbt/nbt_encoding/string.hpp>
 #include <amulet_nbt/pybind/serialisation.hpp>
 #include <amulet_nbt/pybind/encoding.hpp>
+#include <amulet_nbt/tag/copy.hpp>
 
 namespace py = pybind11;
 
@@ -117,13 +118,13 @@ void init_string(py::module& m) {
         StringTag.def(
             "__copy__",
             [](const AmuletNBT::StringTag& self){
-                return self;
+                return shallow_copy(self);
             }
         );
         StringTag.def(
             "__deepcopy__",
             [](const AmuletNBT::StringTag& self, py::dict){
-                return self;
+                return deep_copy(self);
             },
             py::arg("memo")
         );

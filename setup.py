@@ -8,7 +8,6 @@ from setuptools.command.build_ext import build_ext
 
 import versioneer
 
-
 dependencies = [
     "amulet-compiler-target==1.0",
     "numpy>=1.17,<3.0",
@@ -18,9 +17,7 @@ setup_args = {}
 try:
     import amulet_compiler_version
 except ImportError:
-    dependencies.append(
-        "amulet-compiler-version@git+https://github.com/Amulet-Team/Amulet-Compiler-Version.git@1.0"
-    )
+    dependencies.append("amulet-compiler-version==1.1.0")
 else:
     dependencies.append(
         f"amulet-compiler-version=={amulet_compiler_version.__version__}"

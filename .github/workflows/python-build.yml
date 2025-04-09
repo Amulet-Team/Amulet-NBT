@@ -54,9 +54,13 @@ jobs:
       run: |
         twine upload lib/Amulet-Compiler-Version/dist/* --skip-existing
 
-    - name: Build Amulet-NBT
+    - name: Build Amulet-NBT Source Distribution
       run: |
-        python -m build -C=AMULET_FREEZE_COMPILER=1 .
+        python -m build --sdist .
+
+    - name: Build Amulet-NBT Compiled Distribution
+      run: |
+        python -m build -C=AMULET_FREEZE_COMPILER=1 --wheel .
 
     - name: Publish Amulet-NBT
       env:

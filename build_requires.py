@@ -1,4 +1,5 @@
 from typing import Union, Mapping
+import os
 
 from setuptools import build_meta
 from setuptools.build_meta import *
@@ -11,7 +12,9 @@ def get_requires_for_build_wheel(
     requirements.extend(build_meta.get_requires_for_build_wheel(config_settings))
     requirements.append("wheel")
     requirements.append("pybind11[global]==2.13.6")
-    if config_settings and config_settings.get("AMULET_FREEZE_COMPILER"):
+    if (
+        config_settings and config_settings.get("AMULET_FREEZE_COMPILER")
+    ) or os.environ.get("AMULET_FREEZE_COMPILER", None):
         requirements.append(
             "amulet-compiler-version@git+https://github.com/Amulet-Team/Amulet-Compiler-Version.git@1.0"
         )

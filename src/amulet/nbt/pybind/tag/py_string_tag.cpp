@@ -37,7 +37,7 @@ void init_string(py::module& m)
             }
         }),
         py::arg("value") = "",
-        py::doc("__init__(self: amulet_nbt.StringTag, value: str | bytes) -> None"));
+        py::doc("__init__(self: amulet.nbt.StringTag, value: str | bytes) -> None"));
     StringTag.def_property_readonly(
         "py_str",
         [](const Amulet::NBT::StringTag& self) -> std::string {

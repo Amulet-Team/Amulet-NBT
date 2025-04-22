@@ -34,7 +34,7 @@ namespace py = pybind11;
             return std::make_shared<Amulet::NBT::CLSNAME>(v.begin(), v.end());                                                                \
         }),                                                                                                                                   \
         py::arg("value") = py::tuple(),                                                                                                       \
-        py::doc("__init__(self: amulet_nbt." #CLSNAME ", value: collections.abc.Iterable[typing.SupportsInt] = ()) -> None"));                \
+        py::doc("__init__(self: amulet.nbt." #CLSNAME ", value: collections.abc.Iterable[typing.SupportsInt] = ()) -> None"));                \
     CLSNAME.def_buffer(                                                                                                                       \
         [](Amulet::NBT::CLSNAME& self) -> py::buffer_info {                                                                                   \
             return py::buffer_info(                                                                                                           \

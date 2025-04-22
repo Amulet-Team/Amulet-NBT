@@ -119,7 +119,7 @@ if TYPE_CHECKING:
 
             This will only return True if the tag type is the same and the data contained is the same.
 
-            >>> from amulet_nbt import ByteTag, ShortTag
+            >>> from amulet.nbt import ByteTag, ShortTag
             >>> tag1 = ByteTag(1)
             >>> tag2 = ByteTag(2)
             >>> tag3 = ShortTag(1)
@@ -131,7 +131,7 @@ if TYPE_CHECKING:
         def __repr__(self) -> str:
             """A string representation of the object to show how it can be constructed.
 
-            >>> from amulet_nbt import ByteTag
+            >>> from amulet.nbt import ByteTag
             >>> tag = ByteTag(1)
             >>> repr(tag)  # "ByteTag(1)"
             """
@@ -148,7 +148,7 @@ if TYPE_CHECKING:
             """A shallow copy of the class
 
             >>> import copy
-            >>> from amulet_nbt import ListTag
+            >>> from amulet.nbt import ListTag
             >>> tag = ListTag()
             >>> tag2 = copy.copy(tag)
             """
@@ -157,7 +157,7 @@ if TYPE_CHECKING:
             """A deep copy of the class
 
             >>> import copy
-            >>> from amulet_nbt import ListTag
+            >>> from amulet.nbt import ListTag
             >>> tag = ListTag()
             >>> tag2 = copy.deepcopy(tag)
             """
@@ -1382,7 +1382,7 @@ if TYPE_CHECKING:
         def __len__(self) -> int:
             """The length of the array.
 
-            >>> from amulet_nbt import ByteArrayTag
+            >>> from amulet.nbt import ByteArrayTag
             >>> tag = ByteArrayTag([1, 2, 3])
             >>> len(tag)  # 3
             """
@@ -1394,7 +1394,7 @@ if TYPE_CHECKING:
             This supports the full numpy protocol.
             If a numpy array is returned, the array data is the same as the data contained in this class.
 
-            >>> from amulet_nbt import ByteArrayTag
+            >>> from amulet.nbt import ByteArrayTag
             >>> import numpy
             >>> tag = ByteArrayTag([1, 2, 3])
             >>> tag[0]  # 1
@@ -1415,7 +1415,7 @@ if TYPE_CHECKING:
         def __iter__(self) -> Iterator[numpy.int8 | numpy.int32 | numpy.int64]:
             """Iterate through the items in the array.
 
-            >>> from amulet_nbt import ByteArrayTag
+            >>> from amulet.nbt import ByteArrayTag
             >>> tag = ByteArrayTag([1, 2, 3])
             >>> for num in tag:
             >>>     pass
@@ -1425,7 +1425,7 @@ if TYPE_CHECKING:
         def __reversed__(self) -> Iterator[numpy.int8 | numpy.int32 | numpy.int64]:
             """Iterate through the items in the array in reverse order.
 
-            >>> from amulet_nbt import ByteArrayTag
+            >>> from amulet.nbt import ByteArrayTag
             >>> tag = ByteArrayTag([1, 2, 3])
             >>> for num in reversed(tag):
             >>>     pass
@@ -1434,7 +1434,7 @@ if TYPE_CHECKING:
         def __contains__(self, item: Any) -> bool:
             """Check if an item is in the array.
 
-            >>> from amulet_nbt import ByteArrayTag
+            >>> from amulet.nbt import ByteArrayTag
             >>> tag = ByteArrayTag([1, 2, 3])
             >>> 1 in tag  # True
             """
@@ -1459,7 +1459,7 @@ if TYPE_CHECKING:
 
             This supports the full numpy protocol.
 
-            >>> from amulet_nbt import ByteArrayTag
+            >>> from amulet.nbt import ByteArrayTag
             >>> import numpy
             >>> tag = ByteArrayTag([1, 2, 3])
             >>> tag[0] = 10  # [10, 2, 3]
@@ -1472,7 +1472,7 @@ if TYPE_CHECKING:
         ) -> NDArray[numpy.int8 | numpy.int32 | numpy.int64]:
             """Get a numpy array representation of the stored data.
 
-            >>> from amulet_nbt import ByteArrayTag
+            >>> from amulet.nbt import ByteArrayTag
             >>> import numpy
             >>> tag = ByteArrayTag([1, 2, 3])
             >>> arr = numpy.asarray(tag)
@@ -1485,7 +1485,7 @@ if TYPE_CHECKING:
         def __len__(self) -> int:
             """The length of the array.
 
-            >>> from amulet_nbt import ByteArrayTag
+            >>> from amulet.nbt import ByteArrayTag
             >>> tag = ByteArrayTag([1, 2, 3])
             >>> len(tag)  # 3
             """
@@ -1497,7 +1497,7 @@ if TYPE_CHECKING:
             This supports the full numpy protocol.
             If a numpy array is returned, the array data is the same as the data contained in this class.
 
-            >>> from amulet_nbt import ByteArrayTag
+            >>> from amulet.nbt import ByteArrayTag
             >>> import numpy
             >>> tag = ByteArrayTag([1, 2, 3])
             >>> tag[0]  # 1
@@ -1514,7 +1514,7 @@ if TYPE_CHECKING:
         def __iter__(self) -> Iterator[numpy.int8]:
             """Iterate through the items in the array.
 
-            >>> from amulet_nbt import ByteArrayTag
+            >>> from amulet.nbt import ByteArrayTag
             >>> tag = ByteArrayTag([1, 2, 3])
             >>> for num in tag:
             >>>     pass
@@ -1524,7 +1524,7 @@ if TYPE_CHECKING:
         def __reversed__(self) -> Iterator[numpy.int8]:
             """Iterate through the items in the array in reverse order.
 
-            >>> from amulet_nbt import ByteArrayTag
+            >>> from amulet.nbt import ByteArrayTag
             >>> tag = ByteArrayTag([1, 2, 3])
             >>> for num in reversed(tag):
             >>>     pass
@@ -1533,7 +1533,7 @@ if TYPE_CHECKING:
         def __contains__(self, value: int) -> bool:
             """Check if an item is in the array.
 
-            >>> from amulet_nbt import ByteArrayTag
+            >>> from amulet.nbt import ByteArrayTag
             >>> tag = ByteArrayTag([1, 2, 3])
             >>> 1 in tag  # True
             """
@@ -1550,7 +1550,7 @@ if TYPE_CHECKING:
 
             This supports the full numpy protocol.
 
-            >>> from amulet_nbt import ByteArrayTag
+            >>> from amulet.nbt import ByteArrayTag
             >>> import numpy
             >>> tag = ByteArrayTag([1, 2, 3])
             >>> tag[0] = 10  # [10, 2, 3]
@@ -1561,7 +1561,7 @@ if TYPE_CHECKING:
         def __array__(self, dtype: numpy.dtype | None = None) -> NDArray[numpy.int8]:
             """Get a numpy array representation of the stored data.
 
-            >>> from amulet_nbt import ByteArrayTag
+            >>> from amulet.nbt import ByteArrayTag
             >>> import numpy
             >>> tag = ByteArrayTag([1, 2, 3])
             >>> arr = numpy.asarray(tag)
@@ -1574,7 +1574,7 @@ if TYPE_CHECKING:
         def __len__(self) -> int:
             """The length of the array.
 
-            >>> from amulet_nbt import IntArrayTag
+            >>> from amulet.nbt import IntArrayTag
             >>> tag = IntArrayTag([1, 2, 3])
             >>> len(tag)  # 3
             """
@@ -1586,7 +1586,7 @@ if TYPE_CHECKING:
             This supports the full numpy protocol.
             If a numpy array is returned, the array data is the same as the data contained in this class.
 
-            >>> from amulet_nbt import IntArrayTag
+            >>> from amulet.nbt import IntArrayTag
             >>> import numpy
             >>> tag = IntArrayTag([1, 2, 3])
             >>> tag[0]  # 1
@@ -1603,7 +1603,7 @@ if TYPE_CHECKING:
         def __iter__(self) -> Iterator[numpy.int32]:
             """Iterate through the items in the array.
 
-            >>> from amulet_nbt import IntArrayTag
+            >>> from amulet.nbt import IntArrayTag
             >>> tag = IntArrayTag([1, 2, 3])
             >>> for num in tag:
             >>>     pass
@@ -1613,7 +1613,7 @@ if TYPE_CHECKING:
         def __reversed__(self) -> Iterator[numpy.int32]:
             """Iterate through the items in the array in reverse order.
 
-            >>> from amulet_nbt import IntArrayTag
+            >>> from amulet.nbt import IntArrayTag
             >>> tag = IntArrayTag([1, 2, 3])
             >>> for num in reversed(tag):
             >>>     pass
@@ -1622,7 +1622,7 @@ if TYPE_CHECKING:
         def __contains__(self, value: int) -> bool:
             """Check if an item is in the array.
 
-            >>> from amulet_nbt import IntArrayTag
+            >>> from amulet.nbt import IntArrayTag
             >>> tag = IntArrayTag([1, 2, 3])
             >>> 1 in tag  # True
             """
@@ -1639,7 +1639,7 @@ if TYPE_CHECKING:
 
             This supports the full numpy protocol.
 
-            >>> from amulet_nbt import IntArrayTag
+            >>> from amulet.nbt import IntArrayTag
             >>> import numpy
             >>> tag = IntArrayTag([1, 2, 3])
             >>> tag[0] = 10  # [10, 2, 3]
@@ -1650,7 +1650,7 @@ if TYPE_CHECKING:
         def __array__(self, dtype: numpy.dtype | None = None) -> NDArray[numpy.int32]:
             """Get a numpy array representation of the stored data.
 
-            >>> from amulet_nbt import IntArrayTag
+            >>> from amulet.nbt import IntArrayTag
             >>> import numpy
             >>> tag = IntArrayTag([1, 2, 3])
             >>> arr = numpy.asarray(tag)
@@ -1663,7 +1663,7 @@ if TYPE_CHECKING:
         def __len__(self) -> int:
             """The length of the array.
 
-            >>> from amulet_nbt import LongArrayTag
+            >>> from amulet.nbt import LongArrayTag
             >>> tag = LongArrayTag([1, 2, 3])
             >>> len(tag)  # 3
             """
@@ -1675,7 +1675,7 @@ if TYPE_CHECKING:
             This supports the full numpy protocol.
             If a numpy array is returned, the array data is the same as the data contained in this class.
 
-            >>> from amulet_nbt import LongArrayTag
+            >>> from amulet.nbt import LongArrayTag
             >>> import numpy
             >>> tag = LongArrayTag([1, 2, 3])
             >>> tag[0]  # 1
@@ -1692,7 +1692,7 @@ if TYPE_CHECKING:
         def __iter__(self) -> Iterator[numpy.int64]:
             """Iterate through the items in the array.
 
-            >>> from amulet_nbt import LongArrayTag
+            >>> from amulet.nbt import LongArrayTag
             >>> tag = LongArrayTag([1, 2, 3])
             >>> for num in tag:
             >>>     pass
@@ -1702,7 +1702,7 @@ if TYPE_CHECKING:
         def __reversed__(self) -> Iterator[numpy.int64]:
             """Iterate through the items in the array in reverse order.
 
-            >>> from amulet_nbt import LongArrayTag
+            >>> from amulet.nbt import LongArrayTag
             >>> tag = LongArrayTag([1, 2, 3])
             >>> for num in reversed(tag):
             >>>     pass
@@ -1711,7 +1711,7 @@ if TYPE_CHECKING:
         def __contains__(self, value: int) -> bool:
             """Check if an item is in the array.
 
-            >>> from amulet_nbt import LongArrayTag
+            >>> from amulet.nbt import LongArrayTag
             >>> tag = LongArrayTag([1, 2, 3])
             >>> 1 in tag  # True
             """
@@ -1728,7 +1728,7 @@ if TYPE_CHECKING:
 
             This supports the full numpy protocol.
 
-            >>> from amulet_nbt import LongArrayTag
+            >>> from amulet.nbt import LongArrayTag
             >>> import numpy
             >>> tag = LongArrayTag([1, 2, 3])
             >>> tag[0] = 10  # [10, 2, 3]
@@ -1739,7 +1739,7 @@ if TYPE_CHECKING:
         def __array__(self, dtype: numpy.dtype | None = None) -> NDArray[numpy.int64]:
             """Get a numpy array representation of the stored data.
 
-            >>> from amulet_nbt import LongArrayTag
+            >>> from amulet.nbt import LongArrayTag
             >>> import numpy
             >>> tag = LongArrayTag([1, 2, 3])
             >>> arr = numpy.asarray(tag)
@@ -1939,7 +1939,7 @@ if TYPE_CHECKING:
         :param count: The number of binary NBT objects to read. Use -1 to exhaust the buffer.
         :param compressed: Is the binary data gzip compressed. This only supports the whole buffer compressed as one.
         :param little_endian: Are the numerical values stored as little endian. True for Bedrock, False for Java.
-        :param string_encoding: The bytes decoder function to parse strings. mutf8.decode_modified_utf8 for Java, amulet_nbt.utf8_escape_decoder for Bedrock.
+        :param string_encoding: The bytes decoder function to parse strings. mutf8.decode_modified_utf8 for Java, amulet.nbt.utf8_escape_decoder for Bedrock.
         :param named: If the tags to read are named, if not, return NamedTags with empty name.
         :param read_offset: Optional ReadOffset object to get read end offset.
         :raises: IndexError if the data is not long enough.

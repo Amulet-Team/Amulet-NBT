@@ -6,7 +6,7 @@ import os
 import pybind11
 import pybind11_extensions
 
-import amulet_nbt
+import amulet.nbt
 
 
 def main():
@@ -31,7 +31,7 @@ def main():
             f"-DPYTHON_EXECUTABLE={sys.executable}",
             f"-Dpybind11_DIR={pybind11.get_cmake_dir().replace(os.sep, '/')}",
             f"-Dpybind11_extensions_DIR={pybind11_extensions.__path__[0].replace(os.sep, '/')}",
-            f"-Damulet_nbt_DIR={amulet_nbt.__path__[0].replace(os.sep, '/')}",
+            f"-Damulet_nbt_DIR={amulet.nbt.__path__[0].replace(os.sep, '/')}",
             f"-DCMAKE_INSTALL_PREFIX={os.path.join(os.path.dirname(__file__), 'test_amulet_nbt').replace(os.sep, '/')}",
             "-B",
             "build",

@@ -8,7 +8,7 @@ faulthandler.enable()
 
 from .test_abc import AbstractBaseImmutableTagTestCase
 
-from amulet_nbt import (
+from amulet.nbt import (
     StringTag,
     AbstractBaseTag,
     AbstractBaseImmutableTag,

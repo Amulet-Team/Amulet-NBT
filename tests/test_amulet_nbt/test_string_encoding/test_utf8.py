@@ -1,5 +1,5 @@
 import unittest
-from amulet_nbt import mutf8_encoding, utf8_encoding
+from amulet.nbt import mutf8_encoding, utf8_encoding
 
 
 class TestUTF(unittest.TestCase):

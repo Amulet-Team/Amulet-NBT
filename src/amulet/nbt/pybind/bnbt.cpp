@@ -289,7 +289,7 @@ void init_bnbt(py::module& m)
             ":param count: The number of binary NBT objects to read. Use -1 to exhaust the buffer.\n"
             ":param compressed: Is the binary data gzip compressed. This only supports the whole buffer compressed as one.\n"
             ":param little_endian: Are the numerical values stored as little endian. True for Bedrock, False for Java.\n"
-            ":param string_encoding: The bytes decoder function to parse strings. mutf8.decode_modified_utf8 for Java, amulet_nbt.utf8_escape_decoder for Bedrock.\n"
+            ":param string_encoding: The bytes decoder function to parse strings. mutf8.decode_modified_utf8 for Java, amulet.nbt.utf8_escape_decoder for Bedrock.\n"
             ":param named: If the tags to read are named, if not, return NamedTags with empty name.\n"
             ":param read_offset: Optional ReadOffset object to get read end offset.\n"
             ":raises: IndexError if the data is not long enough."));

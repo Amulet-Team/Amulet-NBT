@@ -12,9 +12,9 @@ import datetime
 import inspect
 import importlib.machinery
 import re
-import amulet_nbt
+import amulet.nbt
 
-ROOT = os.path.dirname(amulet_nbt.__path__[0])
+ROOT = os.path.dirname(amulet.nbt.__path__[0])
 
 
 # -- Project information -----------------------------------------------------
@@ -25,9 +25,9 @@ author = "The Amulet Team"
 
 
 # The short X.Y version
-version = ".".join(amulet_nbt.__version__.split(".")[:2])
+version = ".".join(amulet.nbt.__version__.split(".")[:2])
 # The full version, including alpha/beta/rc tags
-release = amulet_nbt.__version__
+release = amulet.nbt.__version__
 
 
 # -- General configuration ---------------------------------------------------
@@ -231,7 +231,7 @@ def find_source(module_name: str, object_name: str) -> Tuple[str, int, int]:
             if fn is None:
                 raise Exception(f"Could not find source file for {obj}.")
             fn = os.path.relpath(
-                fn, start=os.path.dirname(os.path.dirname(amulet_nbt.__file__))
+                fn, start=os.path.dirname(os.path.dirname(amulet.nbt.__file__))
             )
             source, lineno = inspect.getsourcelines(obj)
             return fn, lineno, lineno + len(source) - 1

@@ -34,7 +34,7 @@ namespace py = pybind11;
             return Amulet::NBT::CLSNAME(value);                                                                            \
         }),                                                                                                                \
         py::arg("value") = 0,                                                                                              \
-        py::doc("__init__(self: amulet_nbt." #CLSNAME ", value: typing.SupportsInt) -> None"));                            \
+        py::doc("__init__(self: amulet.nbt." #CLSNAME ", value: typing.SupportsInt) -> None"));                            \
     CLSNAME.def_property_readonly(                                                                                         \
         "py_int",                                                                                                          \
         [](const Amulet::NBT::CLSNAME& self) -> NATIVE {                                                                   \

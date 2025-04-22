@@ -8,7 +8,7 @@ namespace py = pybind11;
 void init_test_zlib(py::module);
 
 void init_module(py::module m){
-    auto amulet_nbt = py::module::import("amulet_nbt");
+    auto amulet_nbt = py::module::import("amulet.nbt");
 
     pybind11_extensions::init_compiler_config(m);
     pybind11_extensions::check_compatibility(amulet_nbt, m);

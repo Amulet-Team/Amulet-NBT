@@ -76,7 +76,7 @@ cmdclass["build_ext"] = CMakeBuild
 setup(
     version=versioneer.get_version(),
     cmdclass=cmdclass,
-    ext_modules=[Extension("amulet_nbt._amulet_nbt", [])],
+    ext_modules=[Extension("amulet.nbt._amulet_nbt", [])],
     install_requires=dependencies,
     **setup_args,
 )

@@ -28,7 +28,7 @@ namespace py = pybind11;
             }                                                                                                              \
         }),                                                                                                                \
         py::arg("value") = 0.0,                                                                                            \
-        py::doc("__init__(self: amulet_nbt." #CLSNAME ", value: typing.SupportsFloat) -> None"));                          \
+        py::doc("__init__(self: amulet.nbt." #CLSNAME ", value: typing.SupportsFloat) -> None"));                          \
     CLSNAME.def_property_readonly(                                                                                         \
         "py_float",                                                                                                        \
         [](const Amulet::NBT::CLSNAME& self) -> NATIVE {                                                                   \

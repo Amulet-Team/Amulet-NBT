@@ -8,7 +8,7 @@ import struct
 faulthandler.enable()
 
 from .test_numeric import AbstractBaseNumericTagTestCase
-from amulet_nbt import (
+from amulet.nbt import (
     AbstractBaseTag,
     AbstractBaseImmutableTag,
     AbstractBaseNumericTag,

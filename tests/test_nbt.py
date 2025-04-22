@@ -1,16 +1,16 @@
 import unittest
 from copy import copy
 
-import amulet_nbt
+import amulet.nbt
 from tests.binary_data import binary_data_tuple
 
 
 class NBTTests(unittest.TestCase):
-    def _load(self, b: bytes, little_endian: bool = False) -> amulet_nbt.NamedTag:
+    def _load(self, b: bytes, little_endian: bool = False) -> amulet.nbt.NamedTag:
         b_copy = copy(b)
-        named_tag = amulet_nbt.read_nbt(b_copy, little_endian=little_endian)
+        named_tag = amulet.nbt.read_nbt(b_copy, little_endian=little_endian)
         self.assertEqual(b, b_copy, msg="The buffer changed.")
-        named_tag2 = amulet_nbt.read_nbt(b_copy, little_endian=little_endian)
+        named_tag2 = amulet.nbt.read_nbt(b_copy, little_endian=little_endian)
         self.assertEqual(named_tag.name, named_tag2.name)
         self.assertEqual(named_tag.tag, named_tag2.tag)
         return named_tag
@@ -25,7 +25,7 @@ class NBTTests(unittest.TestCase):
         for data in binary_data_tuple:
             self.assertEqual(
                 data.named_tag,
-                amulet_nbt.read_nbt(data.big_endian_compressed),
+                amulet.nbt.read_nbt(data.big_endian_compressed),
                 msg=str(data.named_tag),
             )
 
@@ -41,7 +41,7 @@ class NBTTests(unittest.TestCase):
         for data in binary_data_tuple:
             self.assertEqual(
                 data.named_tag,
-                amulet_nbt.read_nbt(data.little_endian_compressed, little_endian=True),
+                amulet.nbt.read_nbt(data.little_endian_compressed, little_endian=True),
                 msg=str(data.named_tag),
             )
 
@@ -64,25 +64,25 @@ class NBTTests(unittest.TestCase):
     def test_unnamed(self) -> None:
         # Only one case is tested as the implementation of this is shared among all tag types and thus behaves the same
         self.assertEqual(
-            amulet_nbt.read_nbt(
+            amulet.nbt.read_nbt(
                 b"\x01\x05", named=False, compressed=False, little_endian=False
             ),
-            amulet_nbt.NamedTag(amulet_nbt.ByteTag(5), ""),
+            amulet.nbt.NamedTag(amulet.nbt.ByteTag(5), ""),
             "reading unnamed tag",
         )
         self.assertEqual(
-            amulet_nbt.read_nbt_array(
+            amulet.nbt.read_nbt_array(
                 b"\x01\x05\x01\x06\x01\x07",
                 named=False,
                 count=-1,
                 compressed=False,
                 little_endian=False,
             ),
-            [amulet_nbt.NamedTag(amulet_nbt.ByteTag(i), "") for i in (5, 6, 7)],
+            [amulet.nbt.NamedTag(amulet.nbt.ByteTag(i), "") for i in (5, 6, 7)],
             "reading unnamed tag array",
         )
         self.assertEqual(
-            amulet_nbt.ByteTag(5).to_nbt(
+            amulet.nbt.ByteTag(5).to_nbt(
                 name=None, compressed=False, little_endian=False
             ),
             b"\x01\x05",

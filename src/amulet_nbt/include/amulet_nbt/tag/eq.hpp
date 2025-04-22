@@ -3,13 +3,13 @@
 // All of the NBT equal functions
 
 #include <amulet_nbt/export.hpp>
-#include <amulet_nbt/tag/int.hpp>
-#include <amulet_nbt/tag/float.hpp>
-#include <amulet_nbt/tag/string.hpp>
-#include <amulet_nbt/tag/list.hpp>
-#include <amulet_nbt/tag/compound.hpp>
 #include <amulet_nbt/tag/array.hpp>
+#include <amulet_nbt/tag/compound.hpp>
+#include <amulet_nbt/tag/float.hpp>
+#include <amulet_nbt/tag/int.hpp>
+#include <amulet_nbt/tag/list.hpp>
 #include <amulet_nbt/tag/named_tag.hpp>
+#include <amulet_nbt/tag/string.hpp>
 
 namespace Amulet {
 namespace NBT {

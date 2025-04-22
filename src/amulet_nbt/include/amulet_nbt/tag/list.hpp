@@ -6,11 +6,11 @@
 
 #include <amulet_nbt/common.hpp>
 #include <amulet_nbt/tag/abc.hpp>
-#include <amulet_nbt/tag/int.hpp>
-#include <amulet_nbt/tag/float.hpp>
-#include <amulet_nbt/tag/string.hpp>
-#include <amulet_nbt/tag/compound.hpp>
 #include <amulet_nbt/tag/array.hpp>
+#include <amulet_nbt/tag/compound.hpp>
+#include <amulet_nbt/tag/float.hpp>
+#include <amulet_nbt/tag/int.hpp>
+#include <amulet_nbt/tag/string.hpp>
 
 namespace Amulet {
 namespace NBT {
@@ -46,22 +46,30 @@ namespace NBT {
         ListListTag,
         CompoundListTag,
         IntArrayListTag,
-        LongArrayListTag
-    > ListTagNative;
+        LongArrayListTag>
+        ListTagNative;
 
-    class ListTag: public ListTagNative, public AbstractBaseImmutableTag{
+    class ListTag : public ListTagNative, public AbstractBaseImmutableTag {
         using variant::variant;
     };
 
     static_assert(std::is_copy_constructible_v<ListTag>, "ListTag is not copy constructible");
     static_assert(std::is_copy_assignable_v<ListTag>, "ListTag is not copy assignable");
 
-    template<> struct tag_id<ListTag> { static constexpr std::uint8_t value = 9; };
-    template<> struct tag_id<ListTagPtr> { static constexpr std::uint8_t value = 9; };
+    template <>
+    struct tag_id<ListTag> {
+        static constexpr std::uint8_t value = 9;
+    };
+    template <>
+    struct tag_id<ListTagPtr> {
+        static constexpr std::uint8_t value = 9;
+    };
 } // namespace NBT
 } // namespace Amulet
 
 namespace std {
-    template <> struct variant_size<Amulet::NBT::ListTag> : std::variant_size<Amulet::NBT::ListTagNative> {};
-    template <std::size_t I> struct variant_alternative<I, Amulet::NBT::ListTag> : variant_alternative<I, Amulet::NBT::ListTagNative> {};
+template <>
+struct variant_size<Amulet::NBT::ListTag> : std::variant_size<Amulet::NBT::ListTagNative> { };
+template <std::size_t I>
+struct variant_alternative<I, Amulet::NBT::ListTag> : variant_alternative<I, Amulet::NBT::ListTagNative> { };
 }

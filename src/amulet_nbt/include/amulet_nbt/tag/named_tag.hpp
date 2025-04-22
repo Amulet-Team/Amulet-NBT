@@ -9,11 +9,15 @@
 namespace Amulet {
 namespace NBT {
     class NamedTag {
-        public:
-            std::string name;
-            TagNode tag_node;
+    public:
+        std::string name;
+        TagNode tag_node;
 
-            NamedTag(const std::string& name, const TagNode& tag_node): name(name), tag_node(tag_node) {}
+        NamedTag(const std::string& name, const TagNode& tag_node)
+            : name(name)
+            , tag_node(tag_node)
+        {
+        }
     };
 } // namespace NBT
 } // namespace Amulet

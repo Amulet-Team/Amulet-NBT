@@ -1,23 +1,23 @@
 #pragma once
 
-#include <utility>
+#include <bit>
+#include <optional>
 #include <string>
 #include <string_view>
-#include <bit>
+#include <utility>
 #include <vector>
-#include <optional>
 
 #include <amulet_nbt/export.hpp>
-#include <amulet_nbt/tag/int.hpp>
-#include <amulet_nbt/tag/float.hpp>
-#include <amulet_nbt/tag/string.hpp>
-#include <amulet_nbt/tag/list.hpp>
-#include <amulet_nbt/tag/compound.hpp>
-#include <amulet_nbt/tag/array.hpp>
-#include <amulet_nbt/tag/named_tag.hpp>
 #include <amulet_nbt/io/binary_reader.hpp>
 #include <amulet_nbt/io/binary_writer.hpp>
 #include <amulet_nbt/string_encoding.hpp>
+#include <amulet_nbt/tag/array.hpp>
+#include <amulet_nbt/tag/compound.hpp>
+#include <amulet_nbt/tag/float.hpp>
+#include <amulet_nbt/tag/int.hpp>
+#include <amulet_nbt/tag/list.hpp>
+#include <amulet_nbt/tag/named_tag.hpp>
+#include <amulet_nbt/tag/string.hpp>
 
 namespace Amulet {
 namespace NBT {
@@ -41,7 +41,7 @@ namespace NBT {
     AMULET_NBT_EXPORT void encode_nbt(BinaryWriter&, const std::optional<std::string>& name, const LongArrayTag&);
     AMULET_NBT_EXPORT void encode_nbt(BinaryWriter&, const std::string& name, const TagNode&);
     AMULET_NBT_EXPORT void encode_nbt(BinaryWriter&, const NamedTag& tag);
-    
+
     AMULET_NBT_EXPORT std::string encode_nbt(const std::optional<std::string>& name, const ByteTag&, std::endian, StringEncode);
     AMULET_NBT_EXPORT std::string encode_nbt(const std::optional<std::string>& name, const ShortTag&, std::endian, StringEncode);
     AMULET_NBT_EXPORT std::string encode_nbt(const std::optional<std::string>& name, const IntTag&, std::endian, StringEncode);

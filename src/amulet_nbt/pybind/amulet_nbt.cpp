@@ -22,7 +22,8 @@ void init_named_tag(py::module&);
 void init_bnbt(py::module& m);
 void init_snbt(py::module& m);
 
-void init_module(py::module& m) {
+void init_module(py::module& m)
+{
     py::dict compiler_config;
     compiler_config["pybind11_version"] = PYBIND11_VERSION;
     compiler_config["compiler_id"] = COMPILER_ID;
@@ -79,6 +80,7 @@ void init_module(py::module& m) {
     init_snbt(m);
 }
 
-PYBIND11_MODULE(_amulet_nbt, m) {
+PYBIND11_MODULE(_amulet_nbt, m)
+{
     m.def("init", &init_module);
 }

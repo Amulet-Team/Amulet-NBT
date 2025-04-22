@@ -15,8 +15,8 @@ namespace NBT {
     AMULET_NBT_EXPORT CodePointVector read_utf8_escape(std::string_view src);
     AMULET_NBT_EXPORT CodePointVector read_mutf8(std::string_view src);
 
-    AMULET_NBT_EXPORT void write_utf8(std::string &dst, const CodePointVector& src);
-    AMULET_NBT_EXPORT void write_utf8_escape(std::string &dst, const CodePointVector& src);
+    AMULET_NBT_EXPORT void write_utf8(std::string& dst, const CodePointVector& src);
+    AMULET_NBT_EXPORT void write_utf8_escape(std::string& dst, const CodePointVector& src);
     AMULET_NBT_EXPORT void write_mutf8(std::string& dst, const CodePointVector& src);
 
     AMULET_NBT_EXPORT std::string write_utf8(const CodePointVector& src);

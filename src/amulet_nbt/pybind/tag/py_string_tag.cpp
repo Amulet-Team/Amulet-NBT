@@ -22,18 +22,18 @@ void init_string(py::module& m) {
     py::object java_encoding = m.attr("java_encoding");
     py::object compress = py::module::import("gzip").attr("compress");
 
-    py::class_<AmuletNBT::StringTag, AmuletNBT::AbstractBaseImmutableTag> StringTag(m, "StringTag",
+    py::class_<Amulet::NBT::StringTag, Amulet::NBT::AbstractBaseImmutableTag> StringTag(m, "StringTag",
         "A class that behaves like a string."
     );
         StringTag.def_property_readonly_static("tag_id", [](py::object) {return 8;});
         StringTag.def(
             py::init([](py::object value) {
-                if (py::isinstance<AmuletNBT::StringTag>(value)){
-                    return value.cast<AmuletNBT::StringTag>();
+                if (py::isinstance<Amulet::NBT::StringTag>(value)){
+                    return value.cast<Amulet::NBT::StringTag>();
                 } else if (py::isinstance<py::bytes>(value) || py::isinstance<py::str>(value)){
-                    return AmuletNBT::StringTag(value.cast<std::string>());
+                    return Amulet::NBT::StringTag(value.cast<std::string>());
                 } else {
-                    return AmuletNBT::StringTag(py::str(value).cast<std::string>());
+                    return Amulet::NBT::StringTag(py::str(value).cast<std::string>());
                 }
             }),
             py::arg("value") = "",
@@ -41,7 +41,7 @@ void init_string(py::module& m) {
         );
         StringTag.def_property_readonly(
             "py_str",
-            [](const AmuletNBT::StringTag& self) -> std::string {
+            [](const Amulet::NBT::StringTag& self) -> std::string {
                 return self;
             },
             py::doc(
@@ -52,7 +52,7 @@ void init_string(py::module& m) {
         );
         StringTag.def_property_readonly(
             "py_bytes",
-            [](const AmuletNBT::StringTag& self){
+            [](const Amulet::NBT::StringTag& self){
                 return py::bytes(self);
             },
             py::doc(
@@ -61,7 +61,7 @@ void init_string(py::module& m) {
         );
         StringTag.def_property_readonly(
             "py_str_or_bytes",
-            [](const AmuletNBT::StringTag& self) -> std::variant<py::str, py::bytes> {
+            [](const Amulet::NBT::StringTag& self) -> std::variant<py::str, py::bytes> {
                 try {
                     return py::str(self);
                 } catch (py::error_already_set&){
@@ -72,7 +72,7 @@ void init_string(py::module& m) {
         );
         StringTag.def_property_readonly(
             "py_data",
-            [](const AmuletNBT::StringTag& self){
+            [](const Amulet::NBT::StringTag& self){
                 return py::bytes(self);
             },
             py::doc(
@@ -85,7 +85,7 @@ void init_string(py::module& m) {
         SerialiseTag(StringTag)\
         StringTag.def(
             "__repr__",
-            [](const AmuletNBT::StringTag& self){
+            [](const Amulet::NBT::StringTag& self){
                 try {
                     return "StringTag(" + py::repr(py::str(self)).cast<std::string>() + ")";
                 } catch (py::error_already_set&){
@@ -95,82 +95,82 @@ void init_string(py::module& m) {
         );
         StringTag.def(
             "__str__",
-            [](const AmuletNBT::StringTag& self) -> std::string {
+            [](const Amulet::NBT::StringTag& self) -> std::string {
                 return self;
             }
         );
         StringTag.def(
             "__bytes__",
-            [](const AmuletNBT::StringTag& self){
+            [](const Amulet::NBT::StringTag& self){
                 return py::bytes(self);
             }
         );
         StringTag.def(
             py::pickle(
-                [](const AmuletNBT::StringTag& self){
+                [](const Amulet::NBT::StringTag& self){
                     return py::bytes(self);
                 },
                 [](py::bytes state){
-                    return AmuletNBT::StringTag(state);
+                    return Amulet::NBT::StringTag(state);
                 }
             )
         );
         StringTag.def(
             "__copy__",
-            [](const AmuletNBT::StringTag& self){
+            [](const Amulet::NBT::StringTag& self){
                 return shallow_copy(self);
             }
         );
         StringTag.def(
             "__deepcopy__",
-            [](const AmuletNBT::StringTag& self, py::dict){
+            [](const Amulet::NBT::StringTag& self, py::dict){
                 return deep_copy(self);
             },
             py::arg("memo")
         );
         StringTag.def(
             "__hash__",
-            [](const AmuletNBT::StringTag& self){
+            [](const Amulet::NBT::StringTag& self){
                 return py::hash(py::make_tuple(8, py::bytes(self)));
             }
         );
         StringTag.def(
             "__bool__",
-            [](const AmuletNBT::StringTag& self){
+            [](const Amulet::NBT::StringTag& self){
                 return !self.empty();
             }
         );
         StringTag.def(
             "__eq__",
-            [](const AmuletNBT::StringTag& self, const AmuletNBT::StringTag& other){
+            [](const Amulet::NBT::StringTag& self, const Amulet::NBT::StringTag& other){
                 return self == other;
             },
             py::is_operator()
         );
         StringTag.def(
             "__ge__",
-            [](const AmuletNBT::StringTag& self, const AmuletNBT::StringTag& other){
+            [](const Amulet::NBT::StringTag& self, const Amulet::NBT::StringTag& other){
                 return self >= other;
             },
             py::is_operator()
         );
         StringTag.def(
             "__gt__",
-            [](const AmuletNBT::StringTag& self, const AmuletNBT::StringTag& other){
+            [](const Amulet::NBT::StringTag& self, const Amulet::NBT::StringTag& other){
                 return self > other;
             },
             py::is_operator()
         );
         StringTag.def(
             "__le__",
-            [](const AmuletNBT::StringTag& self, const AmuletNBT::StringTag& other){
+            [](const Amulet::NBT::StringTag& self, const Amulet::NBT::StringTag& other){
                 return self <= other;
             },
             py::is_operator()
         );
         StringTag.def(
             "__lt__",
-            [](const AmuletNBT::StringTag& self, const AmuletNBT::StringTag& other){
+            [](const Amulet::NBT::StringTag& self, const Amulet::NBT::StringTag& other){
                 return self < other;
             },
             py::is_operator()

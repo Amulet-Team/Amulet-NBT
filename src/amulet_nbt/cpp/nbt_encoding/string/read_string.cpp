@@ -13,49 +13,51 @@
 #include <amulet_nbt/tag/list.hpp>
 #include <amulet_nbt/tag/list_methods.hpp>
 
+namespace Amulet {
+namespace NBT {
 
 const std::unordered_set<size_t> Whitespace{' ', '\t', '\r', '\n'};
 const std::unordered_set<size_t> AlphaNumPlus{'+', '-', '.', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '_', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
-const AmuletNBT::ByteTag byte_false = 0;
-const AmuletNBT::ByteTag byte_true = 1;
+const ByteTag byte_false = 0;
+const ByteTag byte_true = 1;
 
 
-inline bool in_range(const AmuletNBT::CodePointVector& snbt, const size_t& index){
+inline bool in_range(const CodePointVector& snbt, const size_t& index){
     return index < snbt.size();
 }
 
-inline bool in_range(const AmuletNBT::CodePointVector& snbt, const size_t& index, const size_t count){
+inline bool in_range(const CodePointVector& snbt, const size_t& index, const size_t count){
     return index + count - 1 < snbt.size();
 }
 
-inline bool bounds_check(const AmuletNBT::CodePointVector& snbt, const size_t& index){
+inline bool bounds_check(const CodePointVector& snbt, const size_t& index){
     if (in_range(snbt, index)){
         return true;
     }
     throw std::out_of_range("SNBT string is incomplete. Reached the end of the string.");
 }
 
-inline void read_whitespace(const AmuletNBT::CodePointVector& snbt, size_t& index){
+inline void read_whitespace(const CodePointVector& snbt, size_t& index){
     while (in_range(snbt, index) && Whitespace.contains(snbt[index])){
         index++;
     }
 }
 
-inline size_t read_code_point(const AmuletNBT::CodePointVector& snbt, const size_t& index){
+inline size_t read_code_point(const CodePointVector& snbt, const size_t& index){
     bounds_check(snbt, index);
     return snbt[index];
 }
 
-inline std::string read_error(const AmuletNBT::CodePointVector& snbt, const size_t& index){
-    return AmuletNBT::write_utf8(AmuletNBT::CodePointVector(snbt.begin() + index, snbt.begin() + std::min(index + 10, snbt.size())));
+inline std::string read_error(const CodePointVector& snbt, const size_t& index){
+    return write_utf8(CodePointVector(snbt.begin() + index, snbt.begin() + std::min(index + 10, snbt.size())));
 }
 
-inline std::pair<AmuletNBT::CodePointVector, bool> read_string(const AmuletNBT::CodePointVector& snbt, size_t& index){
+inline std::pair<CodePointVector, bool> read_string(const CodePointVector& snbt, size_t& index){
     size_t quote_code = read_code_point(snbt, index);
     if (quote_code == '"' || quote_code == '\''){
         // quoted string
         index++;
-        AmuletNBT::CodePointVector string;
+        CodePointVector string;
         bool escaped = false;
         while (true){
             size_t code = read_code_point(snbt, index);
@@ -91,13 +93,13 @@ inline std::pair<AmuletNBT::CodePointVector, bool> read_string(const AmuletNBT::
             index++;
         }
         return std::make_pair(
-            AmuletNBT::CodePointVector(snbt.begin() + start, snbt.begin() + index),
+            CodePointVector(snbt.begin() + start, snbt.begin() + index),
             false
         );
     }
 }
 
-inline void read_colon(const AmuletNBT::CodePointVector& snbt, size_t& index){
+inline void read_colon(const CodePointVector& snbt, size_t& index){
     read_whitespace(snbt, index);
     if (read_code_point(snbt, index) != ':'){
         throw std::invalid_argument("Expected : at position " + std::to_string(index) + " but got ->" + read_error(snbt, index) + " instead");
@@ -106,7 +108,7 @@ inline void read_colon(const AmuletNBT::CodePointVector& snbt, size_t& index){
     read_whitespace(snbt, index);
 }
 
-inline void read_comma(const AmuletNBT::CodePointVector& snbt, size_t& index, unsigned char end_chr){
+inline void read_comma(const CodePointVector& snbt, size_t& index, unsigned char end_chr){
     read_whitespace(snbt, index);
     size_t code = read_code_point(snbt, index);
     if (code == ','){
@@ -118,7 +120,7 @@ inline void read_comma(const AmuletNBT::CodePointVector& snbt, size_t& index, un
 }
 
 
-inline std::pair<size_t, size_t> find_int(const AmuletNBT::CodePointVector& snbt, const size_t& index){
+inline std::pair<size_t, size_t> find_int(const CodePointVector& snbt, const size_t& index){
     // Find an int at position index.
     // If an int is found, the return value will be the start and end position of the int
     // If a valid int was not found, the values will be equal.
@@ -143,16 +145,16 @@ inline std::pair<size_t, size_t> find_int(const AmuletNBT::CodePointVector& snbt
 template <
     typename T,
     std::enable_if_t<
-        std::is_same_v<T, AmuletNBT::ByteTagNative> ||
-        std::is_same_v<T, AmuletNBT::ShortTagNative> ||
-        std::is_same_v<T, AmuletNBT::IntTagNative> ||
-        std::is_same_v<T, AmuletNBT::LongTagNative>,
+        std::is_same_v<T, ByteTagNative> ||
+        std::is_same_v<T, ShortTagNative> ||
+        std::is_same_v<T, IntTagNative> ||
+        std::is_same_v<T, LongTagNative>,
         bool
     > = true
 >
-inline T read_int(const AmuletNBT::CodePointVector& snbt, const size_t& start, const size_t& stop){
+inline T read_int(const CodePointVector& snbt, const size_t& start, const size_t& stop){
     std::string text;
-    AmuletNBT::write_utf8(text, AmuletNBT::CodePointVector(snbt.begin() + start, snbt.begin() + stop));
+    write_utf8(text, CodePointVector(snbt.begin() + start, snbt.begin() + stop));
     return static_cast<T>(std::stoll(text));
 }
 
@@ -160,19 +162,19 @@ inline T read_int(const AmuletNBT::CodePointVector& snbt, const size_t& start, c
 template <
     typename T,
     std::enable_if_t<
-        std::is_same_v<T, AmuletNBT::ByteTag> ||
-        std::is_same_v<T, AmuletNBT::ShortTag> ||
-        std::is_same_v<T, AmuletNBT::IntTag> ||
-        std::is_same_v<T, AmuletNBT::LongTag>,
+        std::is_same_v<T, ByteTag> ||
+        std::is_same_v<T, ShortTag> ||
+        std::is_same_v<T, IntTag> ||
+        std::is_same_v<T, LongTag>,
         bool
     > = true
 >
-inline T read_int_tag(const AmuletNBT::CodePointVector& snbt, const size_t & start, const size_t & stop) {
+inline T read_int_tag(const CodePointVector& snbt, const size_t & start, const size_t & stop) {
     return T(read_int<typename T::native_type>(snbt, start, stop));
 }
 
 
-inline std::tuple<size_t, size_t, bool> find_float(const AmuletNBT::CodePointVector& snbt, const size_t& index){
+inline std::tuple<size_t, size_t, bool> find_float(const CodePointVector& snbt, const size_t& index){
     // Find a float at position index.
     // If an float is found, the return value will be the start and end position of the float
     // If a valid float was not found, the values will be equal.
@@ -228,15 +230,15 @@ inline std::tuple<size_t, size_t, bool> find_float(const AmuletNBT::CodePointVec
 template <
     typename T,
     std::enable_if_t<
-        std::is_same_v<T, AmuletNBT::FloatTag> ||
-        std::is_same_v<T, AmuletNBT::DoubleTag>,
+        std::is_same_v<T, FloatTag> ||
+        std::is_same_v<T, DoubleTag>,
         bool
     > = true
 >
-inline T read_float(const AmuletNBT::CodePointVector& snbt, size_t start, size_t stop){
+inline T read_float(const CodePointVector& snbt, size_t start, size_t stop){
     std::string text;
-    AmuletNBT::write_utf8(text, AmuletNBT::CodePointVector(snbt.begin() + start, snbt.begin() + stop));
-    if constexpr (std::is_same_v<T, AmuletNBT::DoubleTag>){
+    write_utf8(text, CodePointVector(snbt.begin() + start, snbt.begin() + stop));
+    if constexpr (std::is_same_v<T, DoubleTag>){
         return std::stod(text);
     } else {
         return std::stof(text);
@@ -247,13 +249,13 @@ inline T read_float(const AmuletNBT::CodePointVector& snbt, size_t start, size_t
 template <
     typename T,
     std::enable_if_t<
-    std::is_same_v<T, AmuletNBT::ByteArrayTag> ||
-    std::is_same_v<T, AmuletNBT::IntArrayTag> ||
-    std::is_same_v<T, AmuletNBT::LongArrayTag>,
+    std::is_same_v<T, ByteArrayTag> ||
+    std::is_same_v<T, IntArrayTag> ||
+    std::is_same_v<T, LongArrayTag>,
     bool
     > = true
 >
-inline AmuletNBT::TagNode read_array(const AmuletNBT::CodePointVector& snbt, size_t& index){
+inline TagNode read_array(const CodePointVector& snbt, size_t& index){
     //The caller must have read [ and validated B; but not read it (index must be after "[")
 
     // read past B;
@@ -266,12 +268,12 @@ inline AmuletNBT::TagNode read_array(const AmuletNBT::CodePointVector& snbt, siz
         if (start == stop){
             throw std::invalid_argument("Expected a ] or int at position " + std::to_string(index) + " but got ->" + read_error(snbt, index) + " instead");
         }
-        if constexpr (std::is_same_v<T, AmuletNBT::ByteArrayTag>){
+        if constexpr (std::is_same_v<T, ByteArrayTag>){
             if ((read_code_point(snbt, stop) | 32) != 'b'){
                 throw std::invalid_argument("Expected 'B' position " + std::to_string(stop) + " but got ->" + read_error(snbt, stop) + " instead");
             }
             index = stop + 1;
-        } else if constexpr (std::is_same_v<T, AmuletNBT::LongArrayTag>){
+        } else if constexpr (std::is_same_v<T, LongArrayTag>){
             if ((read_code_point(snbt, stop) | 32) != 'l'){
                 throw std::invalid_argument("Expected 'L' position " + std::to_string(stop) + " but got ->" + read_error(snbt, stop) + " instead");
             }
@@ -291,7 +293,7 @@ inline AmuletNBT::TagNode read_array(const AmuletNBT::CodePointVector& snbt, siz
 }
 
 
-AmuletNBT::TagNode _decode_snbt(const AmuletNBT::CodePointVector& snbt, size_t& index){
+TagNode _decode_snbt(const CodePointVector& snbt, size_t& index){
     read_whitespace(snbt, index);
     switch (read_code_point(snbt, index)){
         case '{':
@@ -299,17 +301,17 @@ AmuletNBT::TagNode _decode_snbt(const AmuletNBT::CodePointVector& snbt, size_t& 
             {
                 index++;
                 read_whitespace(snbt, index);
-                AmuletNBT::CompoundTagPtr tag_ptr = std::make_shared<AmuletNBT::CompoundTag>();
-                AmuletNBT::CompoundTag& tag = *tag_ptr;
+                CompoundTagPtr tag_ptr = std::make_shared<CompoundTag>();
+                CompoundTag& tag = *tag_ptr;
                 while (read_code_point(snbt, index) != '}'){
                     // read the key
-                    std::string key = AmuletNBT::write_utf8(read_string(snbt, index).first);
+                    std::string key = write_utf8(read_string(snbt, index).first);
 
                     // Read past the colon
                     read_colon(snbt, index);
 
                     // Read the nested value
-                    AmuletNBT::TagNode node = _decode_snbt(snbt, index);
+                    TagNode node = _decode_snbt(snbt, index);
                     
                     // Write to the map
                     tag[key] = node;
@@ -326,16 +328,16 @@ AmuletNBT::TagNode _decode_snbt(const AmuletNBT::CodePointVector& snbt, size_t& 
             if (snbt.size() >= index + 2){
                 if (snbt[index] == 'B' && snbt[index+1] == ';'){
                     // byte array
-                    return read_array<AmuletNBT::ByteArrayTag>(snbt, index);
+                    return read_array<ByteArrayTag>(snbt, index);
                 } else if (snbt[index] == 'I' && snbt[index+1] == ';'){
                     // int array
-                    return read_array<AmuletNBT::IntArrayTag>(snbt, index);
+                    return read_array<IntArrayTag>(snbt, index);
                 } else if (snbt[index] == 'L' && snbt[index+1] == ';'){
                     // long array
-                    return read_array<AmuletNBT::LongArrayTag>(snbt, index);
+                    return read_array<LongArrayTag>(snbt, index);
                 } else {
                     // list
-                    auto tag = std::make_shared<AmuletNBT::ListTag>();
+                    auto tag = std::make_shared<ListTag>();
                     while (read_code_point(snbt, index) != ']'){
                         // read the value
                         auto value = _decode_snbt(snbt, index);
@@ -344,7 +346,7 @@ AmuletNBT::TagNode _decode_snbt(const AmuletNBT::CodePointVector& snbt, size_t& 
                             throw std::invalid_argument("All elements of a list tag must have the same type.");
                         }
 
-                        AmuletNBT::ListTag_append<AmuletNBT::TagNode>(*tag, value);
+                        ListTag_append<TagNode>(*tag, value);
 
                         // Read past the comma
                         read_comma(snbt, index, ']');
@@ -355,13 +357,13 @@ AmuletNBT::TagNode _decode_snbt(const AmuletNBT::CodePointVector& snbt, size_t& 
             } else if (read_code_point(snbt, index) == ']'){
                 // empty list
                 index++;
-                return std::make_shared<AmuletNBT::ListTag>();
+                return std::make_shared<ListTag>();
             }
         default:
             {
                 auto [string, is_quoted] = read_string(snbt, index);
                 if (is_quoted){
-                    return AmuletNBT::write_utf8(string);
+                    return write_utf8(string);
                 }
                 if (string.empty()) {
                     throw std::invalid_argument("Expected data matching [A-Za-z0-9._+-]+ at position " + std::to_string(index) + " but got ->" + read_error(snbt, index) + " instead");
@@ -390,15 +392,15 @@ AmuletNBT::TagNode _decode_snbt(const AmuletNBT::CodePointVector& snbt, size_t& 
                 auto [int_start, int_stop] = find_int(string, 0);
                 if (int_stop == string.size()){
                     // found an int that takes the whole string
-                    return read_int_tag<AmuletNBT::IntTag>(string, int_start, int_stop);
+                    return read_int_tag<IntTag>(string, int_start, int_stop);
                 } else if (int_start != int_stop && int_stop == string.size() - 1) {
                     switch (string[string.size() - 1] | 32){
                         case 'b':
-                            return read_int_tag<AmuletNBT::ByteTag>(string, int_start, int_stop);
+                            return read_int_tag<ByteTag>(string, int_start, int_stop);
                         case 's':
-                            return read_int_tag<AmuletNBT::ShortTag>(string, int_start, int_stop);
+                            return read_int_tag<ShortTag>(string, int_start, int_stop);
                         case 'l':
-                            return read_int_tag<AmuletNBT::LongTag>(string, int_start, int_stop);
+                            return read_int_tag<LongTag>(string, int_start, int_stop);
                     }
                 }
 
@@ -407,19 +409,19 @@ AmuletNBT::TagNode _decode_snbt(const AmuletNBT::CodePointVector& snbt, size_t& 
                 if (float_stop == string.size()){
                     // found a float that takes the whole string
                     if (!needs_code){
-                        return read_float<AmuletNBT::DoubleTag>(string, float_start, float_stop);
+                        return read_float<DoubleTag>(string, float_start, float_stop);
                     }
                 } else if (float_start != float_stop && float_stop == string.size() - 1) {
                     switch (string[string.size() - 1] | 32){
                         case 'f':
-                            return read_float<AmuletNBT::FloatTag>(string, float_start, float_stop);
+                            return read_float<FloatTag>(string, float_start, float_stop);
                         case 'd':
-                            return read_float<AmuletNBT::DoubleTag>(string, float_start, float_stop);
+                            return read_float<DoubleTag>(string, float_start, float_stop);
                     }
                 }
 
                 // if none of the above, return as string
-                return AmuletNBT::write_utf8(string);
+                return write_utf8(string);
             }
     }
 #if defined(_MSC_VER) && !defined(__clang__) // MSVC
@@ -429,15 +431,14 @@ AmuletNBT::TagNode _decode_snbt(const AmuletNBT::CodePointVector& snbt, size_t& 
 #endif
 }
 
-
-namespace AmuletNBT {
-    AmuletNBT::TagNode decode_snbt(const AmuletNBT::CodePointVector& snbt){
+    TagNode decode_snbt(const CodePointVector& snbt){
         size_t index = 0;
         return _decode_snbt(snbt, index);
     }
 
-    AmuletNBT::TagNode decode_snbt(std::string_view snbt){
-        AmuletNBT::CodePointVector code_points = AmuletNBT::read_utf8_escape(snbt);
+    TagNode decode_snbt(std::string_view snbt){
+        CodePointVector code_points = read_utf8_escape(snbt);
         return decode_snbt(code_points);
     }
-}
+} // namespace NBT
+} // namespace Amulet

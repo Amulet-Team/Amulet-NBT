@@ -11,7 +11,8 @@
 #include <string_view>
 
 
-namespace AmuletNBT {
+namespace Amulet {
+namespace NBT {
     typedef std::function<std::string(std::string_view)> StringDecode;
 
 
@@ -92,4 +93,5 @@ namespace AmuletNBT {
             return position < data.size();
         }
     };
-}
+} // namespace NBT
+} // namespace Amulet

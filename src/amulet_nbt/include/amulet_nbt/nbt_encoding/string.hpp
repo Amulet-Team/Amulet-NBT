@@ -12,7 +12,8 @@
 #include <amulet_nbt/tag/array.hpp>
 #include <amulet_nbt/string_encoding.hpp>
 
-namespace AmuletNBT {
+namespace Amulet {
+namespace NBT {
     AMULET_NBT_EXPORT void encode_snbt(std::string&, const TagNode&);
     AMULET_NBT_EXPORT void encode_snbt(std::string&, const ByteTag&);
     AMULET_NBT_EXPORT void encode_snbt(std::string&, const ShortTag&);
@@ -72,4 +73,5 @@ namespace AmuletNBT {
 
     AMULET_NBT_EXPORT TagNode decode_snbt(const CodePointVector& snbt);
     AMULET_NBT_EXPORT TagNode decode_snbt(std::string_view snbt);
-    }
+} // namespace NBT
+} // namespace Amulet

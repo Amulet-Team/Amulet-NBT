@@ -11,7 +11,8 @@
 #include <amulet_nbt/string_encoding.hpp>
 
 
-namespace AmuletNBT {
+namespace Amulet {
+namespace NBT {
     CodePointVector read_mutf8(std::string_view src) {
         CodePointVector dst;
 
@@ -159,4 +160,5 @@ namespace AmuletNBT {
         write_mutf8(dst, read_utf8(src));
         return dst;
     }
-}
+} // namespace NBT
+} // namespace Amulet

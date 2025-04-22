@@ -12,7 +12,7 @@ void init_snbt(py::module& m) {
     m.def(
         "read_snbt",
         [](std::string snbt){
-            return AmuletNBT::decode_snbt(snbt);
+            return Amulet::NBT::decode_snbt(snbt);
         },
         py::arg("snbt"),
         py::doc(

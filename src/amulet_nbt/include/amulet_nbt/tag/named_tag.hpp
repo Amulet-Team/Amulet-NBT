@@ -6,7 +6,8 @@
 #include <amulet_nbt/tag/abc.hpp>
 #include <amulet_nbt/tag/compound.hpp>
 
-namespace AmuletNBT {
+namespace Amulet {
+namespace NBT {
     class NamedTag {
         public:
             std::string name;
@@ -14,4 +15,5 @@ namespace AmuletNBT {
 
             NamedTag(const std::string& name, const TagNode& tag_node): name(name), tag_node(tag_node) {}
     };
-}
+} // namespace NBT
+} // namespace Amulet

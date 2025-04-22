@@ -5,7 +5,8 @@
 #include <amulet_nbt/common.hpp>
 #include <amulet_nbt/tag/abc.hpp>
 
-namespace AmuletNBT {
+namespace Amulet {
+namespace NBT {
     typedef float FloatTagNative;
     typedef double DoubleTagNative;
 
@@ -46,4 +47,5 @@ namespace AmuletNBT {
 
     template<> struct tag_id<FloatTag> { static constexpr std::uint8_t value = 5; };
     template<> struct tag_id<DoubleTag> { static constexpr std::uint8_t value = 6; };
-}
+} // namespace NBT
+} // namespace Amulet

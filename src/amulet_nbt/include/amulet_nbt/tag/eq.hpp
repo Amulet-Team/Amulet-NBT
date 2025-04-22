@@ -11,19 +11,21 @@
 #include <amulet_nbt/tag/array.hpp>
 #include <amulet_nbt/tag/named_tag.hpp>
 
-namespace AmuletNBT {
-    AMULET_NBT_EXPORT bool NBTTag_eq(const AmuletNBT::ByteTag& a, const AmuletNBT::ByteTag& b);
-    AMULET_NBT_EXPORT bool NBTTag_eq(const AmuletNBT::ShortTag& a, const AmuletNBT::ShortTag& b);
-    AMULET_NBT_EXPORT bool NBTTag_eq(const AmuletNBT::IntTag& a, const AmuletNBT::IntTag& b);
-    AMULET_NBT_EXPORT bool NBTTag_eq(const AmuletNBT::LongTag& a, const AmuletNBT::LongTag& b);
-    AMULET_NBT_EXPORT bool NBTTag_eq(const AmuletNBT::FloatTag& a, const AmuletNBT::FloatTag& b);
-    AMULET_NBT_EXPORT bool NBTTag_eq(const AmuletNBT::DoubleTag& a, const AmuletNBT::DoubleTag& b);
-    AMULET_NBT_EXPORT bool NBTTag_eq(const AmuletNBT::ByteArrayTag& a, const AmuletNBT::ByteArrayTag& b);
-    AMULET_NBT_EXPORT bool NBTTag_eq(const AmuletNBT::StringTag& a, const AmuletNBT::StringTag& b);
-    AMULET_NBT_EXPORT bool NBTTag_eq(const AmuletNBT::ListTag& a, const AmuletNBT::ListTag& b);
-    AMULET_NBT_EXPORT bool NBTTag_eq(const AmuletNBT::CompoundTag& a, const AmuletNBT::CompoundTag& b);
-    AMULET_NBT_EXPORT bool NBTTag_eq(const AmuletNBT::IntArrayTag& a, const AmuletNBT::IntArrayTag& b);
-    AMULET_NBT_EXPORT bool NBTTag_eq(const AmuletNBT::LongArrayTag& a, const AmuletNBT::LongArrayTag& b);
-    AMULET_NBT_EXPORT bool NBTTag_eq(const AmuletNBT::TagNode& a, const AmuletNBT::TagNode& b);
-    AMULET_NBT_EXPORT bool NBTTag_eq(const AmuletNBT::NamedTag& a, const AmuletNBT::NamedTag& b);
-}
+namespace Amulet {
+namespace NBT {
+    AMULET_NBT_EXPORT bool NBTTag_eq(const ByteTag& a, const ByteTag& b);
+    AMULET_NBT_EXPORT bool NBTTag_eq(const ShortTag& a, const ShortTag& b);
+    AMULET_NBT_EXPORT bool NBTTag_eq(const IntTag& a, const IntTag& b);
+    AMULET_NBT_EXPORT bool NBTTag_eq(const LongTag& a, const LongTag& b);
+    AMULET_NBT_EXPORT bool NBTTag_eq(const FloatTag& a, const FloatTag& b);
+    AMULET_NBT_EXPORT bool NBTTag_eq(const DoubleTag& a, const DoubleTag& b);
+    AMULET_NBT_EXPORT bool NBTTag_eq(const ByteArrayTag& a, const ByteArrayTag& b);
+    AMULET_NBT_EXPORT bool NBTTag_eq(const StringTag& a, const StringTag& b);
+    AMULET_NBT_EXPORT bool NBTTag_eq(const ListTag& a, const ListTag& b);
+    AMULET_NBT_EXPORT bool NBTTag_eq(const CompoundTag& a, const CompoundTag& b);
+    AMULET_NBT_EXPORT bool NBTTag_eq(const IntArrayTag& a, const IntArrayTag& b);
+    AMULET_NBT_EXPORT bool NBTTag_eq(const LongArrayTag& a, const LongArrayTag& b);
+    AMULET_NBT_EXPORT bool NBTTag_eq(const TagNode& a, const TagNode& b);
+    AMULET_NBT_EXPORT bool NBTTag_eq(const NamedTag& a, const NamedTag& b);
+} // namespace NBT
+} // namespace Amulet

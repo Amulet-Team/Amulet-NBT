@@ -19,7 +19,8 @@
 #include <amulet_nbt/io/binary_writer.hpp>
 #include <amulet_nbt/string_encoding.hpp>
 
-namespace AmuletNBT {
+namespace Amulet {
+namespace NBT {
     AMULET_NBT_EXPORT NamedTag decode_nbt(BinaryReader& reader, bool named = true);
     AMULET_NBT_EXPORT NamedTag decode_nbt(std::string_view, std::endian, StringDecode, size_t& offset, bool named = true);
     AMULET_NBT_EXPORT NamedTag decode_nbt(std::string_view, std::endian, StringDecode, bool named = true);
@@ -55,4 +56,5 @@ namespace AmuletNBT {
     AMULET_NBT_EXPORT std::string encode_nbt(const std::optional<std::string>& name, const LongArrayTag&, std::endian, StringEncode);
     AMULET_NBT_EXPORT std::string encode_nbt(const std::string& name, const TagNode&, std::endian, StringEncode);
     AMULET_NBT_EXPORT std::string encode_nbt(const NamedTag& tag, std::endian, StringEncode);
-}
+} // namespace NBT
+} // namespace Amulet

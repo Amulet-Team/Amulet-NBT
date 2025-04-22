@@ -5,7 +5,8 @@
 #include <amulet_nbt/common.hpp>
 #include <amulet_nbt/tag/abc.hpp>
 
-namespace AmuletNBT {
+namespace Amulet {
+namespace NBT {
     class StringTag: public std::string, public AbstractBaseImmutableTag {
         public:
             using std::string::string;
@@ -16,4 +17,5 @@ namespace AmuletNBT {
     static_assert(std::is_copy_assignable_v<StringTag>, "StringTag is not copy assignable");
 
     template<> struct tag_id<StringTag> { static constexpr std::uint8_t value = 8; };
-}
+} // namespace NBT
+} // namespace Amulet

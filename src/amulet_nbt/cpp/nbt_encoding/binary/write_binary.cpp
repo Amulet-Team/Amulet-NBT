@@ -21,23 +21,25 @@
 
 #include <amulet_nbt/io/binary_writer.hpp>
 
+namespace Amulet {
+namespace NBT {
 
 template <
     class T,
     std::enable_if_t<
-        std::is_same_v<T, AmuletNBT::ByteTag> ||
-        std::is_same_v<T, AmuletNBT::ShortTag> ||
-        std::is_same_v<T, AmuletNBT::IntTag> ||
-        std::is_same_v<T, AmuletNBT::LongTag> ||
-        std::is_same_v<T, AmuletNBT::FloatTag> ||
-        std::is_same_v<T, AmuletNBT::DoubleTag>,
+        std::is_same_v<T, ByteTag> ||
+        std::is_same_v<T, ShortTag> ||
+        std::is_same_v<T, IntTag> ||
+        std::is_same_v<T, LongTag> ||
+        std::is_same_v<T, FloatTag> ||
+        std::is_same_v<T, DoubleTag>,
         bool
     > = true>
-inline void write_payload(AmuletNBT::BinaryWriter& writer, const T& value){
+inline void write_payload(BinaryWriter& writer, const T& value){
     writer.writeNumeric<typename T::native_type>(value);
 };
 
-inline void write_string(AmuletNBT::BinaryWriter& writer, const std::string& value){
+inline void write_string(BinaryWriter& writer, const std::string& value){
     std::string encoded_string = writer.encodeString(value);
     if (encoded_string.size() > static_cast<size_t>(std::numeric_limits<std::uint16_t>::max())){
         throw std::overflow_error("String of length " + std::to_string(encoded_string.size()) + " is too long.");
@@ -49,23 +51,23 @@ inline void write_string(AmuletNBT::BinaryWriter& writer, const std::string& val
 template <
     typename T,
     std::enable_if_t<
-    std::is_same_v<T, AmuletNBT::StringTag>,
+    std::is_same_v<T, StringTag>,
     bool
 > = true>
-inline void write_payload(AmuletNBT::BinaryWriter& writer, const T& value) {
+inline void write_payload(BinaryWriter& writer, const T& value) {
     write_string(writer, value);
 };
 
 template <
     class T,
     std::enable_if_t<
-        std::is_same_v<T, AmuletNBT::ByteArrayTag> ||
-        std::is_same_v<T, AmuletNBT::IntArrayTag> ||
-        std::is_same_v<T, AmuletNBT::LongArrayTag>,
+        std::is_same_v<T, ByteArrayTag> ||
+        std::is_same_v<T, IntArrayTag> ||
+        std::is_same_v<T, LongArrayTag>,
         bool
     > = true
 >
-inline void write_payload(AmuletNBT::BinaryWriter& writer, const T& value){
+inline void write_payload(BinaryWriter& writer, const T& value){
     if (value.size() > static_cast<size_t>(std::numeric_limits<std::int32_t>::max())){
         throw std::overflow_error("Array of length " + std::to_string(value.size()) + " is too long.");
     }
@@ -79,29 +81,29 @@ inline void write_payload(AmuletNBT::BinaryWriter& writer, const T& value){
 
 template <
     class T,
-    std::enable_if_t<std::is_same_v<T, AmuletNBT::ListTag>, bool> = true
+    std::enable_if_t<std::is_same_v<T, ListTag>, bool> = true
 >
-inline void write_payload(AmuletNBT::BinaryWriter& writer, const T& value);
+inline void write_payload(BinaryWriter& writer, const T& value);
 
 template <
     class T,
-    std::enable_if_t<std::is_same_v<T, AmuletNBT::CompoundTag>, bool> = true
+    std::enable_if_t<std::is_same_v<T, CompoundTag>, bool> = true
 >
-inline void write_payload(AmuletNBT::BinaryWriter& writer, const T& value);
+inline void write_payload(BinaryWriter& writer, const T& value);
 
 
 template <
     class T,
     std::enable_if_t<
-    std::is_same_v<T, AmuletNBT::ListTagPtr> ||
-    std::is_same_v<T, AmuletNBT::CompoundTagPtr> ||
-    std::is_same_v<T, AmuletNBT::ByteArrayTagPtr> ||
-    std::is_same_v<T, AmuletNBT::IntArrayTagPtr> ||
-    std::is_same_v<T, AmuletNBT::LongArrayTagPtr>,
+    std::is_same_v<T, ListTagPtr> ||
+    std::is_same_v<T, CompoundTagPtr> ||
+    std::is_same_v<T, ByteArrayTagPtr> ||
+    std::is_same_v<T, IntArrayTagPtr> ||
+    std::is_same_v<T, LongArrayTagPtr>,
     bool
     > = true
 >
-inline void write_payload(AmuletNBT::BinaryWriter & writer, const T value) {
+inline void write_payload(BinaryWriter & writer, const T value) {
     write_payload(writer, *value);
 }
 
@@ -109,26 +111,26 @@ inline void write_payload(AmuletNBT::BinaryWriter & writer, const T value) {
 template <
     typename T,
     std::enable_if_t<
-        std::is_same_v<T, AmuletNBT::ByteTag> ||
-        std::is_same_v<T, AmuletNBT::ShortTag> ||
-        std::is_same_v<T, AmuletNBT::IntTag> ||
-        std::is_same_v<T, AmuletNBT::LongTag> ||
-        std::is_same_v<T, AmuletNBT::FloatTag> ||
-        std::is_same_v<T, AmuletNBT::DoubleTag> ||
-        std::is_same_v<T, AmuletNBT::ByteArrayTagPtr> ||
-        std::is_same_v<T, AmuletNBT::StringTag> ||
-        std::is_same_v<T, AmuletNBT::ListTagPtr> ||
-        std::is_same_v<T, AmuletNBT::CompoundTagPtr> ||
-        std::is_same_v<T, AmuletNBT::IntArrayTagPtr> ||
-        std::is_same_v<T, AmuletNBT::LongArrayTagPtr>,
+        std::is_same_v<T, ByteTag> ||
+        std::is_same_v<T, ShortTag> ||
+        std::is_same_v<T, IntTag> ||
+        std::is_same_v<T, LongTag> ||
+        std::is_same_v<T, FloatTag> ||
+        std::is_same_v<T, DoubleTag> ||
+        std::is_same_v<T, ByteArrayTagPtr> ||
+        std::is_same_v<T, StringTag> ||
+        std::is_same_v<T, ListTagPtr> ||
+        std::is_same_v<T, CompoundTagPtr> ||
+        std::is_same_v<T, IntArrayTagPtr> ||
+        std::is_same_v<T, LongArrayTagPtr>,
         bool
     > = true
 >
-inline void write_list_tag_payload(AmuletNBT::BinaryWriter& writer, const std::vector<T>& list){
+inline void write_list_tag_payload(BinaryWriter& writer, const std::vector<T>& list){
     if (list.size() > static_cast<size_t>(std::numeric_limits<std::int32_t>::max())){
         throw std::overflow_error("List of length " + std::to_string(list.size()) + " is too long.");
     }
-    writer.writeNumeric<std::uint8_t>(AmuletNBT::tag_id_v<T>);
+    writer.writeNumeric<std::uint8_t>(tag_id_v<T>);
     writer.writeNumeric<std::int32_t>(static_cast<std::int32_t>(list.size()));
     for (const T& element: list){
         write_payload(writer, element);
@@ -137,7 +139,7 @@ inline void write_list_tag_payload(AmuletNBT::BinaryWriter& writer, const std::v
 
 
 template <>
-inline void write_payload<AmuletNBT::ListTag>(AmuletNBT::BinaryWriter& writer, const AmuletNBT::ListTag& value){
+inline void write_payload<ListTag>(BinaryWriter& writer, const ListTag& value){
     std::visit([&writer](auto&& tag) {
         using T = std::decay_t<decltype(tag)>;
         if constexpr (std::is_same_v<T, std::monostate>) {
@@ -154,23 +156,23 @@ inline void write_payload<AmuletNBT::ListTag>(AmuletNBT::BinaryWriter& writer, c
 template <
     typename T,
     std::enable_if_t<
-        std::is_same_v<T, AmuletNBT::ByteTag> ||
-        std::is_same_v<T, AmuletNBT::ShortTag> ||
-        std::is_same_v<T, AmuletNBT::IntTag> ||
-        std::is_same_v<T, AmuletNBT::LongTag> ||
-        std::is_same_v<T, AmuletNBT::FloatTag> ||
-        std::is_same_v<T, AmuletNBT::DoubleTag> ||
-        std::is_same_v<T, AmuletNBT::ByteArrayTag> ||
-        std::is_same_v<T, AmuletNBT::StringTag> ||
-        std::is_same_v<T, AmuletNBT::ListTag> ||
-        std::is_same_v<T, AmuletNBT::CompoundTag> ||
-        std::is_same_v<T, AmuletNBT::IntArrayTag> ||
-        std::is_same_v<T, AmuletNBT::LongArrayTag>,
+        std::is_same_v<T, ByteTag> ||
+        std::is_same_v<T, ShortTag> ||
+        std::is_same_v<T, IntTag> ||
+        std::is_same_v<T, LongTag> ||
+        std::is_same_v<T, FloatTag> ||
+        std::is_same_v<T, DoubleTag> ||
+        std::is_same_v<T, ByteArrayTag> ||
+        std::is_same_v<T, StringTag> ||
+        std::is_same_v<T, ListTag> ||
+        std::is_same_v<T, CompoundTag> ||
+        std::is_same_v<T, IntArrayTag> ||
+        std::is_same_v<T, LongArrayTag>,
         bool
     > = true
 >
-inline void write_name_and_tag(AmuletNBT::BinaryWriter& writer, const std::optional<std::string>& name, const T& tag){
-    writer.writeNumeric<std::uint8_t>(AmuletNBT::tag_id_v<T>);
+inline void write_name_and_tag(BinaryWriter& writer, const std::optional<std::string>& name, const T& tag){
+    writer.writeNumeric<std::uint8_t>(tag_id_v<T>);
     if (name) write_string(writer, *name);
     write_payload(writer, tag);
 }
@@ -178,24 +180,24 @@ inline void write_name_and_tag(AmuletNBT::BinaryWriter& writer, const std::optio
 template <
     typename T,
     std::enable_if_t<
-    std::is_same_v<T, AmuletNBT::ByteArrayTagPtr> ||
-    std::is_same_v<T, AmuletNBT::ListTagPtr> ||
-    std::is_same_v<T, AmuletNBT::CompoundTagPtr> ||
-    std::is_same_v<T, AmuletNBT::IntArrayTagPtr> ||
-    std::is_same_v<T, AmuletNBT::LongArrayTagPtr>,
+    std::is_same_v<T, ByteArrayTagPtr> ||
+    std::is_same_v<T, ListTagPtr> ||
+    std::is_same_v<T, CompoundTagPtr> ||
+    std::is_same_v<T, IntArrayTagPtr> ||
+    std::is_same_v<T, LongArrayTagPtr>,
     bool
     > = true
 >
-inline void write_name_and_tag(AmuletNBT::BinaryWriter & writer, const std::optional<std::string>& name, const T tag) {
+inline void write_name_and_tag(BinaryWriter & writer, const std::optional<std::string>& name, const T tag) {
     write_name_and_tag<typename T::element_type>(writer, name, *tag);
 }
 
 
 template <
     typename T,
-    std::enable_if_t<std::is_same_v<T, AmuletNBT::TagNode>, bool> = true
+    std::enable_if_t<std::is_same_v<T, TagNode>, bool> = true
 >
-inline void write_name_and_tag(AmuletNBT::BinaryWriter& writer, const std::optional<std::string>& name, const AmuletNBT::TagNode& node){
+inline void write_name_and_tag(BinaryWriter& writer, const std::optional<std::string>& name, const TagNode& node){
     std::visit([&writer, &name](auto&& tag) {
         using tagT = std::decay_t<decltype(tag)>;
         write_name_and_tag<tagT>(writer, name, tag);
@@ -204,22 +206,21 @@ inline void write_name_and_tag(AmuletNBT::BinaryWriter& writer, const std::optio
 
 
 template <>
-inline void write_payload<AmuletNBT::CompoundTag>(AmuletNBT::BinaryWriter& writer, const AmuletNBT::CompoundTag& value){
+inline void write_payload<CompoundTag>(BinaryWriter& writer, const CompoundTag& value){
     for (auto it = value.begin(); it != value.end(); it++){
-        write_name_and_tag<AmuletNBT::TagNode>(writer, it->first, it->second);
+        write_name_and_tag<TagNode>(writer, it->first, it->second);
     }
     writer.writeNumeric<std::uint8_t>(0);
 };
 
 
 template <typename T>
-inline std::string _encode_nbt(const std::optional<std::string>& name, const T& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
-    AmuletNBT::BinaryWriter writer(endianness, string_encode);
+inline std::string _encode_nbt(const std::optional<std::string>& name, const T& tag, std::endian endianness, StringEncode string_encode){
+    BinaryWriter writer(endianness, string_encode);
     write_name_and_tag<T>(writer, name, tag);
     return writer.getBuffer();
 }
 
-namespace AmuletNBT {
     void encode_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const ByteTag& tag) {
         write_name_and_tag<ByteTag>(writer, name, tag);
     }
@@ -263,46 +264,47 @@ namespace AmuletNBT {
         write_name_and_tag<TagNode>(writer, tag.name, tag.tag_node);
     }
 
-    std::string encode_nbt(const std::optional<std::string>& name, const AmuletNBT::ByteTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
+    std::string encode_nbt(const std::optional<std::string>& name, const ByteTag& tag, std::endian endianness, StringEncode string_encode){
         return _encode_nbt(name, tag, endianness, string_encode);
     };
-    std::string encode_nbt(const std::optional<std::string>& name, const AmuletNBT::ShortTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
+    std::string encode_nbt(const std::optional<std::string>& name, const ShortTag& tag, std::endian endianness, StringEncode string_encode){
         return _encode_nbt(name, tag, endianness, string_encode);
     };
-    std::string encode_nbt(const std::optional<std::string>& name, const AmuletNBT::IntTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
+    std::string encode_nbt(const std::optional<std::string>& name, const IntTag& tag, std::endian endianness, StringEncode string_encode){
         return _encode_nbt(name, tag, endianness, string_encode);
     };
-    std::string encode_nbt(const std::optional<std::string>& name, const AmuletNBT::LongTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
+    std::string encode_nbt(const std::optional<std::string>& name, const LongTag& tag, std::endian endianness, StringEncode string_encode){
         return _encode_nbt(name, tag, endianness, string_encode);
     };
-    std::string encode_nbt(const std::optional<std::string>& name, const AmuletNBT::FloatTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
+    std::string encode_nbt(const std::optional<std::string>& name, const FloatTag& tag, std::endian endianness, StringEncode string_encode){
         return _encode_nbt(name, tag, endianness, string_encode);
     };
-    std::string encode_nbt(const std::optional<std::string>& name, const AmuletNBT::DoubleTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
+    std::string encode_nbt(const std::optional<std::string>& name, const DoubleTag& tag, std::endian endianness, StringEncode string_encode){
         return _encode_nbt(name, tag, endianness, string_encode);
     };
-    std::string encode_nbt(const std::optional<std::string>& name, const AmuletNBT::ByteArrayTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
+    std::string encode_nbt(const std::optional<std::string>& name, const ByteArrayTag& tag, std::endian endianness, StringEncode string_encode){
         return _encode_nbt(name, tag, endianness, string_encode);
     };
-    std::string encode_nbt(const std::optional<std::string>& name, const AmuletNBT::StringTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
+    std::string encode_nbt(const std::optional<std::string>& name, const StringTag& tag, std::endian endianness, StringEncode string_encode){
         return _encode_nbt(name, tag, endianness, string_encode);
     };
-    std::string encode_nbt(const std::optional<std::string>& name, const AmuletNBT::ListTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
+    std::string encode_nbt(const std::optional<std::string>& name, const ListTag& tag, std::endian endianness, StringEncode string_encode){
         return _encode_nbt(name, tag, endianness, string_encode);
     };
-    std::string encode_nbt(const std::optional<std::string>& name, const AmuletNBT::CompoundTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
+    std::string encode_nbt(const std::optional<std::string>& name, const CompoundTag& tag, std::endian endianness, StringEncode string_encode){
         return _encode_nbt(name, tag, endianness, string_encode);
     };
-    std::string encode_nbt(const std::optional<std::string>& name, const AmuletNBT::IntArrayTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
+    std::string encode_nbt(const std::optional<std::string>& name, const IntArrayTag& tag, std::endian endianness, StringEncode string_encode){
         return _encode_nbt(name, tag, endianness, string_encode);
     };
-    std::string encode_nbt(const std::optional<std::string>& name, const AmuletNBT::LongArrayTag& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
+    std::string encode_nbt(const std::optional<std::string>& name, const LongArrayTag& tag, std::endian endianness, StringEncode string_encode){
         return _encode_nbt(name, tag, endianness, string_encode);
     };
-    AMULET_NBT_EXPORT std::string encode_nbt(const std::string& name, const AmuletNBT::TagNode& tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
+    AMULET_NBT_EXPORT std::string encode_nbt(const std::string& name, const TagNode& tag, std::endian endianness, StringEncode string_encode){
         return _encode_nbt(name, tag, endianness, string_encode);
     };
-    AMULET_NBT_EXPORT std::string encode_nbt(const AmuletNBT::NamedTag& named_tag, std::endian endianness, AmuletNBT::StringEncode string_encode){
+    AMULET_NBT_EXPORT std::string encode_nbt(const NamedTag& named_tag, std::endian endianness, StringEncode string_encode){
         return encode_nbt(named_tag.name, named_tag.tag_node, endianness, string_encode);
     }
-}
+} // namespace NBT
+} // namespace Amulet

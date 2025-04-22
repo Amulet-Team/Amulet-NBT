@@ -9,7 +9,8 @@
 #include <functional>
 
 
-namespace AmuletNBT {
+namespace Amulet {
+namespace NBT {
     typedef std::function<std::string(const std::string&)> StringEncode;
 
 
@@ -57,4 +58,5 @@ namespace AmuletNBT {
             return data;
         }
     };
-}
+} // namespace NBT
+} // namespace Amulet

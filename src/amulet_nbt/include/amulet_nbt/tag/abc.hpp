@@ -1,6 +1,7 @@
 #pragma once
 
-namespace AmuletNBT {
+namespace Amulet {
+namespace NBT {
 
     class AbstractBaseTag {
         public:
@@ -33,20 +34,21 @@ namespace AmuletNBT {
     };
 
     #define FOR_EACH_LIST_TAG(MACRO)\
-            MACRO(1,   "byte",        ByteTag,       AmuletNBT::ByteTag,          AmuletNBT::ByteListTag)\
-            MACRO(2,   "short",       ShortTag,      AmuletNBT::ShortTag,         AmuletNBT::ShortListTag)\
-            MACRO(3,   "int",         IntTag,        AmuletNBT::IntTag,           AmuletNBT::IntListTag)\
-            MACRO(4,   "long",        LongTag,       AmuletNBT::LongTag,          AmuletNBT::LongListTag)\
-            MACRO(5,   "float",       FloatTag,      AmuletNBT::FloatTag,         AmuletNBT::FloatListTag)\
-            MACRO(6,   "double",      DoubleTag,     AmuletNBT::DoubleTag,        AmuletNBT::DoubleListTag)\
-            MACRO(7,   "byte_array",  ByteArrayTag,  AmuletNBT::ByteArrayTagPtr,  AmuletNBT::ByteArrayListTag)\
-            MACRO(8,   "string",      StringTag,     AmuletNBT::StringTag,        AmuletNBT::StringListTag)\
-            MACRO(9,   "list",        ListTag,       AmuletNBT::ListTagPtr,       AmuletNBT::ListListTag)\
-            MACRO(10,  "compound",    CompoundTag,   AmuletNBT::CompoundTagPtr,   AmuletNBT::CompoundListTag)\
-            MACRO(11,  "int_array",   IntArrayTag,   AmuletNBT::IntArrayTagPtr,   AmuletNBT::IntArrayListTag)\
-            MACRO(12,  "long_array",  LongArrayTag,  AmuletNBT::LongArrayTagPtr,  AmuletNBT::LongArrayListTag)
+            MACRO(1,   "byte",        ByteTag,       Amulet::NBT::ByteTag,          Amulet::NBT::ByteListTag)\
+            MACRO(2,   "short",       ShortTag,      Amulet::NBT::ShortTag,         Amulet::NBT::ShortListTag)\
+            MACRO(3,   "int",         IntTag,        Amulet::NBT::IntTag,           Amulet::NBT::IntListTag)\
+            MACRO(4,   "long",        LongTag,       Amulet::NBT::LongTag,          Amulet::NBT::LongListTag)\
+            MACRO(5,   "float",       FloatTag,      Amulet::NBT::FloatTag,         Amulet::NBT::FloatListTag)\
+            MACRO(6,   "double",      DoubleTag,     Amulet::NBT::DoubleTag,        Amulet::NBT::DoubleListTag)\
+            MACRO(7,   "byte_array",  ByteArrayTag,  Amulet::NBT::ByteArrayTagPtr,  Amulet::NBT::ByteArrayListTag)\
+            MACRO(8,   "string",      StringTag,     Amulet::NBT::StringTag,        Amulet::NBT::StringListTag)\
+            MACRO(9,   "list",        ListTag,       Amulet::NBT::ListTagPtr,       Amulet::NBT::ListListTag)\
+            MACRO(10,  "compound",    CompoundTag,   Amulet::NBT::CompoundTagPtr,   Amulet::NBT::CompoundListTag)\
+            MACRO(11,  "int_array",   IntArrayTag,   Amulet::NBT::IntArrayTagPtr,   Amulet::NBT::IntArrayListTag)\
+            MACRO(12,  "long_array",  LongArrayTag,  Amulet::NBT::LongArrayTagPtr,  Amulet::NBT::LongArrayListTag)
 
     #define FOR_EACH_LIST_TAG2(MACRO)\
             MACRO(0, "end", std::monostate, std::monostate, std::monostate)\
             FOR_EACH_LIST_TAG(MACRO)
-}
+} // namespace NBT
+} // namespace Amulet

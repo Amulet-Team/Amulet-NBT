@@ -1,12 +1,12 @@
 #define SerialiseTag(CLSNAME)\
     auto to_nbt_##CLSNAME = [compress](\
-        const AmuletNBT::CLSNAME& self,\
+        const Amulet::NBT::CLSNAME& self,\
         std::optional<std::string> name,\
         bool compressed,\
         std::endian endianness,\
-        AmuletNBT::StringEncode string_encoder\
+        Amulet::NBT::StringEncode string_encoder\
     ) -> py::bytes {\
-        py::bytes data = AmuletNBT::encode_nbt(name, self, endianness, string_encoder);\
+        py::bytes data = Amulet::NBT::encode_nbt(name, self, endianness, string_encoder);\
         if (compressed){\
             return compress(data);\
         }\
@@ -15,8 +15,8 @@
     CLSNAME.def(\
         "to_nbt",\
         [to_nbt_##CLSNAME](\
-            const AmuletNBT::CLSNAME& self,\
-            AmuletNBT::EncodingPreset preset,\
+            const Amulet::NBT::CLSNAME& self,\
+            Amulet::NBT::EncodingPreset preset,\
             std::optional<std::string> name\
         ){\
             return to_nbt_##CLSNAME(\
@@ -34,10 +34,10 @@
     CLSNAME.def(\
         "to_nbt",\
         [to_nbt_##CLSNAME](\
-            const AmuletNBT::CLSNAME& self,\
+            const Amulet::NBT::CLSNAME& self,\
             bool compressed,\
             bool little_endian,\
-            AmuletNBT::StringEncoding string_encoding,\
+            Amulet::NBT::StringEncoding string_encoding,\
             std::optional<std::string> name\
         ){\
             return to_nbt_##CLSNAME(\
@@ -55,12 +55,12 @@
         py::arg("name") = ""\
     );\
     auto save_to_##CLSNAME = [to_nbt_##CLSNAME](\
-        const AmuletNBT::CLSNAME& self,\
+        const Amulet::NBT::CLSNAME& self,\
         py::object filepath_or_writable,\
         std::optional<std::string> name,\
         bool compressed,\
         std::endian endianness,\
-        AmuletNBT::StringEncode string_encoder\
+        Amulet::NBT::StringEncode string_encoder\
     ){\
         py::bytes py_data = to_nbt_##CLSNAME(self, name, compressed, endianness, string_encoder);\
         if (!filepath_or_writable.is(py::none())){\
@@ -77,9 +77,9 @@
     CLSNAME.def(\
         "save_to",\
         [save_to_##CLSNAME](\
-            const AmuletNBT::CLSNAME& self,\
+            const Amulet::NBT::CLSNAME& self,\
             py::object filepath_or_writable,\
-            AmuletNBT::EncodingPreset preset,\
+            Amulet::NBT::EncodingPreset preset,\
             std::optional<std::string> name\
         ){\
             return save_to_##CLSNAME(\
@@ -100,11 +100,11 @@
     CLSNAME.def(\
         "save_to",\
         [save_to_##CLSNAME](\
-            const AmuletNBT::CLSNAME& self,\
+            const Amulet::NBT::CLSNAME& self,\
             py::object filepath_or_writable,\
             bool compressed,\
             bool little_endian,\
-            AmuletNBT::StringEncoding string_encoding,\
+            Amulet::NBT::StringEncoding string_encoding,\
             std::optional<std::string> name\
         ){\
             return save_to_##CLSNAME(\
@@ -127,15 +127,15 @@
     CLSNAME.def(\
         "to_snbt",\
         [](\
-            const AmuletNBT::CLSNAME& self,\
+            const Amulet::NBT::CLSNAME& self,\
             py::object indent\
         ){\
             if (indent.is(py::none())){\
-                return AmuletNBT::encode_snbt(self);\
+                return Amulet::NBT::encode_snbt(self);\
             } else if (py::isinstance<py::int_>(indent)){\
-                return AmuletNBT::encode_formatted_snbt(self, std::string(indent.cast<size_t>(), ' '));\
+                return Amulet::NBT::encode_formatted_snbt(self, std::string(indent.cast<size_t>(), ' '));\
             } else if (py::isinstance<py::str>(indent)){\
-                return AmuletNBT::encode_formatted_snbt(self, indent.cast<std::string>());\
+                return Amulet::NBT::encode_formatted_snbt(self, indent.cast<std::string>());\
             } else {\
                 throw std::invalid_argument("indent must be None, int or str");\
             }\

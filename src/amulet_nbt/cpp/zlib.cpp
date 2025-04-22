@@ -12,7 +12,8 @@
 static_assert(MAX_AVAIL_IN <= std::numeric_limits<uInt>::max());
 static_assert(DST_CHUNK_SIZE <= std::numeric_limits<uInt>::max());
 
-namespace AmuletNBT {
+namespace Amulet {
+namespace NBT {
 
 void decompress_zlib_gzip(const std::string_view src, std::string& dst)
 {
@@ -168,4 +169,5 @@ void compress_gzip(const std::string_view src, std::string& dst)
     deflateEnd(&stream);
 }
 
-} // namespace AmuletNBT
+} // namespace NBT
+} // namespace Amulet

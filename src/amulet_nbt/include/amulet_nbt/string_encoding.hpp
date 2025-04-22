@@ -6,7 +6,8 @@
 
 #include <amulet_nbt/export.hpp>
 
-namespace AmuletNBT {
+namespace Amulet {
+namespace NBT {
     typedef std::vector<size_t> CodePointVector;
 
     // Functions to convert between code point vector and encoded formats
@@ -28,4 +29,5 @@ namespace AmuletNBT {
     AMULET_NBT_EXPORT std::string utf8_to_utf8_escape(std::string_view src);
     AMULET_NBT_EXPORT std::string mutf8_to_utf8(std::string_view src);
     AMULET_NBT_EXPORT std::string utf8_to_mutf8(std::string_view src);
-}
+} // namespace NBT
+} // namespace Amulet

@@ -12,7 +12,8 @@
 #include <amulet_nbt/tag/compound.hpp>
 #include <amulet_nbt/tag/array.hpp>
 
-namespace AmuletNBT {
+namespace Amulet {
+namespace NBT {
     class ListTag;
     typedef std::shared_ptr<ListTag> ListTagPtr;
     class CompoundTag;
@@ -57,9 +58,10 @@ namespace AmuletNBT {
 
     template<> struct tag_id<ListTag> { static constexpr std::uint8_t value = 9; };
     template<> struct tag_id<ListTagPtr> { static constexpr std::uint8_t value = 9; };
-}
+} // namespace NBT
+} // namespace Amulet
 
 namespace std {
-    template <> struct variant_size<AmuletNBT::ListTag> : std::variant_size<AmuletNBT::ListTagNative> {};
-    template <std::size_t I> struct variant_alternative<I, AmuletNBT::ListTag> : variant_alternative<I, AmuletNBT::ListTagNative> {};
+    template <> struct variant_size<Amulet::NBT::ListTag> : std::variant_size<Amulet::NBT::ListTagNative> {};
+    template <std::size_t I> struct variant_alternative<I, Amulet::NBT::ListTag> : variant_alternative<I, Amulet::NBT::ListTagNative> {};
 }

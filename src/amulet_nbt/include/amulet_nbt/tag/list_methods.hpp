@@ -1,7 +1,8 @@
 #include <amulet_nbt/tag/list.hpp>
 #include <amulet_nbt/tag/compound.hpp>
 
-namespace AmuletNBT {
+namespace Amulet {
+namespace NBT {
     inline size_t ListTag_size(const ListTag& self) {
         return std::visit([](auto&& list) -> size_t {
             using T = std::decay_t<decltype(list)>;
@@ -17,18 +18,18 @@ namespace AmuletNBT {
     template <
         typename tagT,
         std::enable_if_t<
-        std::is_same_v<tagT, AmuletNBT::ByteTag> ||
-        std::is_same_v<tagT, AmuletNBT::ShortTag> ||
-        std::is_same_v<tagT, AmuletNBT::IntTag> ||
-        std::is_same_v<tagT, AmuletNBT::LongTag> ||
-        std::is_same_v<tagT, AmuletNBT::FloatTag> ||
-        std::is_same_v<tagT, AmuletNBT::DoubleTag> ||
-        std::is_same_v<tagT, AmuletNBT::ByteArrayTagPtr> ||
-        std::is_same_v<tagT, AmuletNBT::StringTag> ||
-        std::is_same_v<tagT, AmuletNBT::ListTagPtr> ||
-        std::is_same_v<tagT, AmuletNBT::CompoundTagPtr> ||
-        std::is_same_v<tagT, AmuletNBT::IntArrayTagPtr> ||
-        std::is_same_v<tagT, AmuletNBT::LongArrayTagPtr>,
+        std::is_same_v<tagT, ByteTag> ||
+        std::is_same_v<tagT, ShortTag> ||
+        std::is_same_v<tagT, IntTag> ||
+        std::is_same_v<tagT, LongTag> ||
+        std::is_same_v<tagT, FloatTag> ||
+        std::is_same_v<tagT, DoubleTag> ||
+        std::is_same_v<tagT, ByteArrayTagPtr> ||
+        std::is_same_v<tagT, StringTag> ||
+        std::is_same_v<tagT, ListTagPtr> ||
+        std::is_same_v<tagT, CompoundTagPtr> ||
+        std::is_same_v<tagT, IntArrayTagPtr> ||
+        std::is_same_v<tagT, LongArrayTagPtr>,
         bool
         > = true
     >
@@ -52,7 +53,7 @@ namespace AmuletNBT {
     template <
         typename tagT,
         std::enable_if_t<
-        std::is_same_v<tagT, AmuletNBT::TagNode>,
+        std::is_same_v<tagT, TagNode>,
         bool
         > = true
     >
@@ -98,18 +99,18 @@ namespace AmuletNBT {
         typename tagT,
         typename indexT,
         std::enable_if_t<
-        std::is_same_v<tagT, AmuletNBT::ByteTag> ||
-        std::is_same_v<tagT, AmuletNBT::ShortTag> ||
-        std::is_same_v<tagT, AmuletNBT::IntTag> ||
-        std::is_same_v<tagT, AmuletNBT::LongTag> ||
-        std::is_same_v<tagT, AmuletNBT::FloatTag> ||
-        std::is_same_v<tagT, AmuletNBT::DoubleTag> ||
-        std::is_same_v<tagT, AmuletNBT::ByteArrayTagPtr> ||
-        std::is_same_v<tagT, AmuletNBT::StringTag> ||
-        std::is_same_v<tagT, AmuletNBT::ListTagPtr> ||
-        std::is_same_v<tagT, AmuletNBT::CompoundTagPtr> ||
-        std::is_same_v<tagT, AmuletNBT::IntArrayTagPtr> ||
-        std::is_same_v<tagT, AmuletNBT::LongArrayTagPtr>,
+        std::is_same_v<tagT, ByteTag> ||
+        std::is_same_v<tagT, ShortTag> ||
+        std::is_same_v<tagT, IntTag> ||
+        std::is_same_v<tagT, LongTag> ||
+        std::is_same_v<tagT, FloatTag> ||
+        std::is_same_v<tagT, DoubleTag> ||
+        std::is_same_v<tagT, ByteArrayTagPtr> ||
+        std::is_same_v<tagT, StringTag> ||
+        std::is_same_v<tagT, ListTagPtr> ||
+        std::is_same_v<tagT, CompoundTagPtr> ||
+        std::is_same_v<tagT, IntArrayTagPtr> ||
+        std::is_same_v<tagT, LongArrayTagPtr>,
         bool
         > = true
     >
@@ -238,4 +239,5 @@ namespace AmuletNBT {
         }
         return count;
     }
-}
+} // namespace NBT
+} // namespace Amulet

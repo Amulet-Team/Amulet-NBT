@@ -24,7 +24,7 @@ namespace py = pybind11;
 
 
 #define PyArray(CLSNAME, ELEMENTCLS, BITCOUNT, TAGID)\
-    py::class_<AmuletNBT::CLSNAME, std::shared_ptr<AmuletNBT::CLSNAME>> CLSNAME(m, #CLSNAME, AbstractBaseArrayTag, py::buffer_protocol(),\
+    py::class_<Amulet::NBT::CLSNAME, std::shared_ptr<Amulet::NBT::CLSNAME>> CLSNAME(m, #CLSNAME, AbstractBaseArrayTag, py::buffer_protocol(),\
         "This class stores a fixed size signed "#BITCOUNT" bit vector."\
     );\
     CLSNAME.def_property_readonly_static("tag_id", [](py::object) {return TAGID;});\
@@ -33,13 +33,13 @@ namespace py = pybind11;
             /* Is there a better way to do this? */\
             py::array arr = asarray(value, dtype("int"#BITCOUNT)).attr("ravel")().cast<py::array>();\
             std::vector<ELEMENTCLS> v = arr.cast<std::vector<ELEMENTCLS>> ();\
-            return std::make_shared<AmuletNBT::CLSNAME>(v.begin(), v.end());\
+            return std::make_shared<Amulet::NBT::CLSNAME>(v.begin(), v.end());\
         }),\
         py::arg("value") = py::tuple(),\
         py::doc("__init__(self: amulet_nbt."#CLSNAME", value: collections.abc.Iterable[typing.SupportsInt] = ()) -> None")\
     );\
     CLSNAME.def_buffer(\
-        [](AmuletNBT::CLSNAME& self) -> py::buffer_info {\
+        [](Amulet::NBT::CLSNAME& self) -> py::buffer_info {\
             return py::buffer_info(\
                 self.data(),\
                 sizeof(ELEMENTCLS),\
@@ -52,7 +52,7 @@ namespace py = pybind11;
     );\
     CLSNAME.def_property_readonly(\
         "np_array",\
-        [asarray](const AmuletNBT::CLSNAME& self){\
+        [asarray](const Amulet::NBT::CLSNAME& self){\
             return asarray(self);\
         },\
         py::doc(\
@@ -63,7 +63,7 @@ namespace py = pybind11;
     );\
     CLSNAME.def_property_readonly(\
         "py_data",\
-        [asarray](const AmuletNBT::CLSNAME& self){\
+        [asarray](const Amulet::NBT::CLSNAME& self){\
             return asarray(self);\
         },\
         py::doc(\
@@ -76,7 +76,7 @@ namespace py = pybind11;
     SerialiseTag(CLSNAME)\
     CLSNAME.def(\
         "__repr__",\
-        [](const AmuletNBT::CLSNAME& self){\
+        [](const Amulet::NBT::CLSNAME& self){\
             std::string out = #CLSNAME "([";\
             for (size_t i = 0; i < self.size(); i++){\
                 if (i){\
@@ -90,7 +90,7 @@ namespace py = pybind11;
     );\
     CLSNAME.def(\
         "__str__",\
-        [](const AmuletNBT::CLSNAME& self){\
+        [](const Amulet::NBT::CLSNAME& self){\
             std::string out = "[";\
             for (size_t i = 0; i < self.size(); i++){\
                 if (i){\
@@ -104,65 +104,65 @@ namespace py = pybind11;
     );\
     CLSNAME.def(\
         py::pickle(\
-            [](const AmuletNBT::CLSNAME& self){\
-                return py::bytes(AmuletNBT::encode_nbt("", self, std::endian::big, AmuletNBT::utf8_to_mutf8));\
+            [](const Amulet::NBT::CLSNAME& self){\
+                return py::bytes(Amulet::NBT::encode_nbt("", self, std::endian::big, Amulet::NBT::utf8_to_mutf8));\
             },\
             [](py::bytes state){\
-                return std::get<AmuletNBT::CLSNAME##Ptr>(\
-                    AmuletNBT::decode_nbt(state, std::endian::big, AmuletNBT::mutf8_to_utf8).tag_node\
+                return std::get<Amulet::NBT::CLSNAME##Ptr>(\
+                    Amulet::NBT::decode_nbt(state, std::endian::big, Amulet::NBT::mutf8_to_utf8).tag_node\
                 );\
             }\
         )\
     );\
     CLSNAME.def(\
         "__copy__",\
-        [](const AmuletNBT::CLSNAME& self){\
+        [](const Amulet::NBT::CLSNAME& self){\
             return shallow_copy(self);\
         }\
     );\
     CLSNAME.def(\
         "__deepcopy__",\
-        [](const AmuletNBT::CLSNAME& self, py::dict){\
+        [](const Amulet::NBT::CLSNAME& self, py::dict){\
             return deep_copy(self);\
         },\
         py::arg("memo")\
     );\
     CLSNAME.def(\
         "__eq__",\
-        [](const AmuletNBT::CLSNAME& self, const AmuletNBT::CLSNAME& other){\
+        [](const Amulet::NBT::CLSNAME& self, const Amulet::NBT::CLSNAME& other){\
             return self == other;\
         },\
         py::is_operator()\
     );\
     CLSNAME.def(\
         "__len__",\
-        [](const AmuletNBT::CLSNAME& self){\
+        [](const Amulet::NBT::CLSNAME& self){\
             return self.size();\
         }\
     );\
     CLSNAME.def(\
         "__iter__",\
-        [](const AmuletNBT::CLSNAME& self) {return py::make_iterator(self.begin(), self.end());},\
+        [](const Amulet::NBT::CLSNAME& self) {return py::make_iterator(self.begin(), self.end());},\
         py::keep_alive<0, 1>() /* Essential: keep object alive while iterator exists */);\
     CLSNAME.def(\
         "__reversed__",\
-        [](const AmuletNBT::CLSNAME& self) {return py::make_iterator(self.rbegin(), self.rend());},\
+        [](const Amulet::NBT::CLSNAME& self) {return py::make_iterator(self.rbegin(), self.rend());},\
         py::keep_alive<0, 1>() /* Essential: keep object alive while iterator exists */);\
     CLSNAME.def(\
         "__getitem__",\
-        [asarray](const AmuletNBT::CLSNAME& self, py::object item){\
+        [asarray](const Amulet::NBT::CLSNAME& self, py::object item){\
             return asarray(self).attr("__getitem__")(item);\
         }\
     );\
     CLSNAME.def(\
         "__setitem__",\
-        [asarray](const AmuletNBT::CLSNAME& self, py::object item, py::object value){\
+        [asarray](const Amulet::NBT::CLSNAME& self, py::object item, py::object value){\
             asarray(self)[item] = value;\
         }\
     );\
     CLSNAME.def(\
         "__contains__",\
-        [asarray](const AmuletNBT::CLSNAME& self, py::object value){\
+        [asarray](const Amulet::NBT::CLSNAME& self, py::object value){\
             asarray(self).contains(value);\
         }\
     );

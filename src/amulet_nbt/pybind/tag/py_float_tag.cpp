@@ -17,14 +17,14 @@ namespace py = pybind11;
 
 
 #define PyFloat(NATIVE, CLSNAME, PRECISION, TAGID)\
-    py::class_<AmuletNBT::CLSNAME, AmuletNBT::AbstractBaseFloatTag> CLSNAME(m, #CLSNAME,\
+    py::class_<Amulet::NBT::CLSNAME, Amulet::NBT::AbstractBaseFloatTag> CLSNAME(m, #CLSNAME,\
         "A "#PRECISION" precision float class."\
     );\
     CLSNAME.def_property_readonly_static("tag_id", [](py::object) {return TAGID;});\
     CLSNAME.def(\
         py::init([](py::object value) {\
             try {\
-                return AmuletNBT::CLSNAME(value.cast<NATIVE>());\
+                return Amulet::NBT::CLSNAME(value.cast<NATIVE>());\
             } catch (const py::cast_error&){\
                 throw py::type_error("value must be float or float-like");\
             }\
@@ -34,7 +34,7 @@ namespace py = pybind11;
     );\
     CLSNAME.def_property_readonly(\
         "py_float",\
-        [](const AmuletNBT::CLSNAME& self) -> NATIVE {\
+        [](const Amulet::NBT::CLSNAME& self) -> NATIVE {\
             return self;\
         },\
         py::doc(\
@@ -45,7 +45,7 @@ namespace py = pybind11;
     );\
     CLSNAME.def_property_readonly(\
         "py_data",\
-        [](const AmuletNBT::CLSNAME& self) -> NATIVE {\
+        [](const Amulet::NBT::CLSNAME& self) -> NATIVE {\
             return self;\
         },\
         py::doc(\
@@ -58,94 +58,94 @@ namespace py = pybind11;
     SerialiseTag(CLSNAME)\
     CLSNAME.def(\
         "__repr__",\
-        [](const AmuletNBT::CLSNAME& self){\
+        [](const Amulet::NBT::CLSNAME& self){\
             return #CLSNAME "(" + py::repr(py::cast(static_cast<NATIVE>(self))).cast<std::string>() + ")";\
         }\
     );\
     CLSNAME.def(\
         "__str__",\
-        [](const AmuletNBT::CLSNAME& self){\
+        [](const Amulet::NBT::CLSNAME& self){\
             return py::repr(py::cast(static_cast<NATIVE>(self)));\
         }\
     );\
     CLSNAME.def(\
         py::pickle(\
-            [](const AmuletNBT::CLSNAME& self) -> NATIVE {\
+            [](const Amulet::NBT::CLSNAME& self) -> NATIVE {\
                 return self;\
             },\
             [](NATIVE state){\
-                return AmuletNBT::CLSNAME(state);\
+                return Amulet::NBT::CLSNAME(state);\
             }\
         )\
     );\
     CLSNAME.def(\
         "__copy__",\
-        [](const AmuletNBT::CLSNAME& self){\
+        [](const Amulet::NBT::CLSNAME& self){\
             return shallow_copy(self);\
         }\
     );\
     CLSNAME.def(\
         "__deepcopy__",\
-        [](const AmuletNBT::CLSNAME& self, py::dict){\
+        [](const Amulet::NBT::CLSNAME& self, py::dict){\
             return deep_copy(self);\
         },\
         py::arg("memo")\
     );\
     CLSNAME.def(\
         "__hash__",\
-        [](const AmuletNBT::CLSNAME& self){\
+        [](const Amulet::NBT::CLSNAME& self){\
             return py::hash(py::make_tuple(TAGID, static_cast<NATIVE>(self)));\
         }\
     );\
     CLSNAME.def(\
         "__int__",\
-        [](const AmuletNBT::CLSNAME& self) -> py::int_ {\
+        [](const Amulet::NBT::CLSNAME& self) -> py::int_ {\
             return py::cast(static_cast<NATIVE>(self));\
         }\
     );\
     CLSNAME.def(\
         "__float__",\
-        [](const AmuletNBT::CLSNAME& self) -> NATIVE {\
+        [](const Amulet::NBT::CLSNAME& self) -> NATIVE {\
             return self;\
         }\
     );\
     CLSNAME.def(\
         "__bool__",\
-        [](const AmuletNBT::CLSNAME& self){\
+        [](const Amulet::NBT::CLSNAME& self){\
             return self != 0.0;\
         }\
     );\
     CLSNAME.def(\
         "__eq__",\
-        [](const AmuletNBT::CLSNAME& self, const AmuletNBT::CLSNAME& other){\
+        [](const Amulet::NBT::CLSNAME& self, const Amulet::NBT::CLSNAME& other){\
             return self == other;\
         },\
         py::is_operator()\
     );\
     CLSNAME.def(\
         "__ge__",\
-        [](const AmuletNBT::CLSNAME& self, const AmuletNBT::CLSNAME& other){\
+        [](const Amulet::NBT::CLSNAME& self, const Amulet::NBT::CLSNAME& other){\
             return self >= other;\
         },\
         py::is_operator()\
     );\
     CLSNAME.def(\
         "__gt__",\
-        [](const AmuletNBT::CLSNAME& self, const AmuletNBT::CLSNAME& other){\
+        [](const Amulet::NBT::CLSNAME& self, const Amulet::NBT::CLSNAME& other){\
             return self > other;\
         },\
         py::is_operator()\
     );\
     CLSNAME.def(\
         "__le__",\
-        [](const AmuletNBT::CLSNAME& self, const AmuletNBT::CLSNAME& other){\
+        [](const Amulet::NBT::CLSNAME& self, const Amulet::NBT::CLSNAME& other){\
             return self <= other;\
         },\
         py::is_operator()\
     );\
     CLSNAME.def(\
         "__lt__",\
-        [](const AmuletNBT::CLSNAME& self, const AmuletNBT::CLSNAME& other){\
+        [](const Amulet::NBT::CLSNAME& self, const Amulet::NBT::CLSNAME& other){\
             return self < other;\
         },\
         py::is_operator()\

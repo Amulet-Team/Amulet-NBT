@@ -27,11 +27,12 @@
 #include <amulet_nbt/nbt_encoding/string.hpp>
 
 
-namespace AmuletNBT {
+namespace Amulet {
+namespace NBT {
     // Forward declarations
-    void encode_formatted_snbt(std::string& snbt, const AmuletNBT::TagNode& node, const std::string& indent, const size_t& indent_count);
-    void encode_formatted_snbt(std::string& snbt, const AmuletNBT::ListTag& tag, const std::string& indent, const size_t& indent_count);
-    void encode_formatted_snbt(std::string& snbt, const AmuletNBT::CompoundTag& tag, const std::string& indent, const size_t& indent_count);
+    void encode_formatted_snbt(std::string& snbt, const TagNode& node, const std::string& indent, const size_t& indent_count);
+    void encode_formatted_snbt(std::string& snbt, const ListTag& tag, const std::string& indent, const size_t& indent_count);
+    void encode_formatted_snbt(std::string& snbt, const CompoundTag& tag, const std::string& indent, const size_t& indent_count);
 
     inline void write_indent(std::string& snbt, const std::string& indent, const size_t& indent_count){
         for (size_t i = 0; i < indent_count; i++){
@@ -145,18 +146,18 @@ namespace AmuletNBT {
     template <
         typename T,
         std::enable_if_t<
-        std::is_same_v<T, AmuletNBT::ByteTag> ||
-        std::is_same_v<T, AmuletNBT::ShortTag> ||
-        std::is_same_v<T, AmuletNBT::IntTag> ||
-        std::is_same_v<T, AmuletNBT::LongTag> ||
-        std::is_same_v<T, AmuletNBT::FloatTag> ||
-        std::is_same_v<T, AmuletNBT::DoubleTag> ||
-        std::is_same_v<T, AmuletNBT::ByteArrayTagPtr> ||
-        std::is_same_v<T, AmuletNBT::StringTag> ||
-        std::is_same_v<T, AmuletNBT::ListTagPtr> ||
-        std::is_same_v<T, AmuletNBT::CompoundTagPtr> ||
-        std::is_same_v<T, AmuletNBT::IntArrayTagPtr> ||
-        std::is_same_v<T, AmuletNBT::LongArrayTagPtr>,
+        std::is_same_v<T, ByteTag> ||
+        std::is_same_v<T, ShortTag> ||
+        std::is_same_v<T, IntTag> ||
+        std::is_same_v<T, LongTag> ||
+        std::is_same_v<T, FloatTag> ||
+        std::is_same_v<T, DoubleTag> ||
+        std::is_same_v<T, ByteArrayTagPtr> ||
+        std::is_same_v<T, StringTag> ||
+        std::is_same_v<T, ListTagPtr> ||
+        std::is_same_v<T, CompoundTagPtr> ||
+        std::is_same_v<T, IntArrayTagPtr> ||
+        std::is_same_v<T, LongArrayTagPtr>,
         bool
         > = true
     >
@@ -479,4 +480,5 @@ namespace AmuletNBT {
     AMULET_NBT_EXPORT std::string encode_formatted_snbt(const LongArrayTag& tag, const std::string& indent){
         return encode_snbt(tag);
     }
-}
+} // namespace NBT
+} // namespace Amulet

@@ -8,7 +8,8 @@
 #include <amulet_nbt/common.hpp>
 #include <amulet_nbt/tag/abc.hpp>
 
-namespace AmuletNBT {
+namespace Amulet {
+namespace NBT {
     template <typename T>
     class ArrayTagTemplate: private std::vector<T>, public AbstractBaseArrayTag{
         static_assert(
@@ -83,4 +84,5 @@ namespace AmuletNBT {
     template<> struct tag_id<IntArrayTagPtr> { static constexpr std::uint8_t value = 11; };
     template<> struct tag_id<LongArrayTag> { static constexpr std::uint8_t value = 12; };
     template<> struct tag_id<LongArrayTagPtr> { static constexpr std::uint8_t value = 12; };
-}
+} // namespace NBT
+} // namespace Amulet

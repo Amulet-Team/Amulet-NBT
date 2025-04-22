@@ -6,7 +6,8 @@
 #include <amulet_nbt/common.hpp>
 #include <amulet_nbt/tag/abc.hpp>
 
-namespace AmuletNBT {
+namespace Amulet {
+namespace NBT {
     typedef std::int8_t ByteTagNative;
     typedef std::int16_t ShortTagNative;
     typedef std::int32_t IntTagNative;
@@ -85,4 +86,5 @@ namespace AmuletNBT {
     template<> struct tag_id<ShortTag> {static constexpr std::uint8_t value = 2;};
     template<> struct tag_id<IntTag> {static constexpr std::uint8_t value = 3;};
     template<> struct tag_id<LongTag> {static constexpr std::uint8_t value = 4;};
-}
+} // namespace NBT
+} // namespace Amulet

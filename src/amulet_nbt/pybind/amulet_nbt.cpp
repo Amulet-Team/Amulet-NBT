@@ -45,7 +45,7 @@ void init_module(py::module& m) {
             if (p) {
                 std::rethrow_exception(p);
             }
-        } catch (const AmuletNBT::type_error& e) {
+        } catch (const Amulet::NBT::type_error& e) {
             py::set_error(PyExc_TypeError, e.what());
         }
     });

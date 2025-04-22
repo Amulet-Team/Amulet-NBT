@@ -15,23 +15,24 @@
 #include <amulet_nbt/tag/named_tag.hpp>
 #include <amulet_nbt/tag/string.hpp>
 
-namespace AmuletNBT {
+namespace Amulet {
+namespace NBT {
 
 template <typename T>
-    requires std::is_same_v<T, AmuletNBT::ByteTag>
-    || std::is_same_v<T, AmuletNBT::ShortTag>
-    || std::is_same_v<T, AmuletNBT::IntTag>
-    || std::is_same_v<T, AmuletNBT::LongTag>
-    || std::is_same_v<T, AmuletNBT::FloatTag>
-    || std::is_same_v<T, AmuletNBT::DoubleTag>
-    || std::is_same_v<T, AmuletNBT::StringTag>
-    || std::is_same_v<T, AmuletNBT::ListTag>
-    || std::is_same_v<T, AmuletNBT::CompoundTag>
-    || std::is_same_v<T, AmuletNBT::ByteArrayTag>
-    || std::is_same_v<T, AmuletNBT::IntArrayTag>
-    || std::is_same_v<T, AmuletNBT::LongArrayTag>
-    || std::is_same_v<T, AmuletNBT::TagNode>
-    || std::is_same_v<T, AmuletNBT::NamedTag>
+    requires std::is_same_v<T, ByteTag>
+    || std::is_same_v<T, ShortTag>
+    || std::is_same_v<T, IntTag>
+    || std::is_same_v<T, LongTag>
+    || std::is_same_v<T, FloatTag>
+    || std::is_same_v<T, DoubleTag>
+    || std::is_same_v<T, StringTag>
+    || std::is_same_v<T, ListTag>
+    || std::is_same_v<T, CompoundTag>
+    || std::is_same_v<T, ByteArrayTag>
+    || std::is_same_v<T, IntArrayTag>
+    || std::is_same_v<T, LongArrayTag>
+    || std::is_same_v<T, TagNode>
+    || std::is_same_v<T, NamedTag>
 T shallow_copy(const T& tag)
 {
     return tag;
@@ -50,25 +51,25 @@ std::shared_ptr<T> shallow_copy(const std::shared_ptr<T>& tag)
 }
 
 template <typename T>
-    requires std::is_same_v<T, AmuletNBT::ByteTag>
-    || std::is_same_v<T, AmuletNBT::ShortTag>
-    || std::is_same_v<T, AmuletNBT::IntTag>
-    || std::is_same_v<T, AmuletNBT::LongTag>
-    || std::is_same_v<T, AmuletNBT::FloatTag>
-    || std::is_same_v<T, AmuletNBT::DoubleTag>
-    || std::is_same_v<T, AmuletNBT::StringTag>
-    || std::is_same_v<T, AmuletNBT::ByteArrayTag>
-    || std::is_same_v<T, AmuletNBT::IntArrayTag>
-    || std::is_same_v<T, AmuletNBT::LongArrayTag>
+    requires std::is_same_v<T, ByteTag>
+    || std::is_same_v<T, ShortTag>
+    || std::is_same_v<T, IntTag>
+    || std::is_same_v<T, LongTag>
+    || std::is_same_v<T, FloatTag>
+    || std::is_same_v<T, DoubleTag>
+    || std::is_same_v<T, StringTag>
+    || std::is_same_v<T, ByteArrayTag>
+    || std::is_same_v<T, IntArrayTag>
+    || std::is_same_v<T, LongArrayTag>
 T deep_copy_2(const T& tag, std::set<size_t>& memo)
 {
     return tag;
 }
 
-AMULET_NBT_EXPORT AmuletNBT::ListTag deep_copy_2(const AmuletNBT::ListTag&, std::set<size_t>& memo);
-AMULET_NBT_EXPORT AmuletNBT::CompoundTag deep_copy_2(const AmuletNBT::CompoundTag&, std::set<size_t>& memo);
-AMULET_NBT_EXPORT AmuletNBT::TagNode deep_copy_2(const AmuletNBT::TagNode&, std::set<size_t>& memo);
-AMULET_NBT_EXPORT AmuletNBT::NamedTag deep_copy_2(const AmuletNBT::NamedTag&, std::set<size_t>& memo);
+AMULET_NBT_EXPORT ListTag deep_copy_2(const ListTag&, std::set<size_t>& memo);
+AMULET_NBT_EXPORT CompoundTag deep_copy_2(const CompoundTag&, std::set<size_t>& memo);
+AMULET_NBT_EXPORT TagNode deep_copy_2(const TagNode&, std::set<size_t>& memo);
+AMULET_NBT_EXPORT NamedTag deep_copy_2(const NamedTag&, std::set<size_t>& memo);
 
 template <typename T>
 std::unique_ptr<T> deep_copy_2(const std::unique_ptr<T>& tag, std::set<size_t>& memo)
@@ -88,4 +89,5 @@ auto deep_copy(const T& obj) {
     return deep_copy_2(obj, memo);
 }
 
-} // namespace AmuletNBT
+} // namespace NBT
+} // namespace Amulet

@@ -6,7 +6,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-#include <amulet/nbt/io/binary_writer.hpp>
+#include <amulet/io/binary_writer.hpp>
 #include <amulet/nbt/nbt_encoding/binary.hpp>
 #include <amulet/nbt/nbt_encoding/string.hpp>
 #include <amulet/nbt/string_encoding/encoding.py.hpp>

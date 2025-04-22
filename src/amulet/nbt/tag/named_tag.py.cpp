@@ -102,7 +102,7 @@ void init_named_tag(py::module& m)
                       const Amulet::NBT::NamedTag& self,
                       bool compressed,
                       std::endian endianness,
-                      Amulet::NBT::StringEncode string_encoder) -> py::bytes {
+                      Amulet::StringEncoder string_encoder) -> py::bytes {
         py::bytes data = Amulet::NBT::encode_nbt(self.name, self.tag_node, endianness, string_encoder);
         if (compressed) {
             return compress(data);
@@ -144,7 +144,7 @@ void init_named_tag(py::module& m)
                        py::object filepath_or_writable,
                        bool compressed,
                        std::endian endianness,
-                       Amulet::NBT::StringEncode string_encoder) {
+                       Amulet::StringEncoder string_encoder) {
         py::bytes py_data = to_nbt(self, compressed, endianness, string_encoder);
         if (!filepath_or_writable.is(py::none())) {
             if (py::isinstance<py::str>(filepath_or_writable)) {

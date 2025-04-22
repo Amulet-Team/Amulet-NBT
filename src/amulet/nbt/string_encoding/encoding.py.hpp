@@ -2,8 +2,8 @@
 
 #include <bit>
 
-#include <amulet/nbt/io/binary_reader.hpp>
-#include <amulet/nbt/io/binary_writer.hpp>
+#include <amulet/io/binary_reader.hpp>
+#include <amulet/io/binary_writer.hpp>
 
 namespace py = pybind11;
 
@@ -11,11 +11,11 @@ namespace Amulet {
 namespace NBT {
     class StringEncoding {
     public:
-        StringEncode encode;
-        StringDecode decode;
+        Amulet::StringEncoder encode;
+        Amulet::StringDecoder decode;
         StringEncoding(
-            StringEncode encode,
-            StringDecode decode)
+            Amulet::StringEncoder encode,
+            Amulet::StringDecoder decode)
             : encode(encode)
             , decode(decode) { };
     };

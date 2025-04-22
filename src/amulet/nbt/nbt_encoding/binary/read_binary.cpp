@@ -23,13 +23,13 @@ namespace NBT {
     template <typename T>
     inline T read_numeric_tag(BinaryReader& reader)
     {
-        return T(reader.readNumeric<typename T::native_type>());
+        return T(reader.read_numeric<typename T::native_type>());
     }
 
     inline std::string read_string(BinaryReader& reader)
     {
-        std::uint16_t length = reader.readNumeric<std::uint16_t>();
-        return reader.readString(length);
+        std::uint16_t length = reader.read_numeric<std::uint16_t>();
+        return reader.read_string(length);
     };
 
     inline StringTag read_string_tag(BinaryReader& reader)
@@ -44,7 +44,7 @@ namespace NBT {
         CompoundTagPtr tag_ptr = std::make_shared<CompoundTag>();
         CompoundTag& tag = *tag_ptr;
         while (true) {
-            std::uint8_t tag_id = reader.readNumeric<std::uint8_t>();
+            std::uint8_t tag_id = reader.read_numeric<std::uint8_t>();
             if (tag_id == 0) {
                 break;
             }
@@ -58,13 +58,13 @@ namespace NBT {
     template <typename T>
     inline std::shared_ptr<T> read_array_tag(BinaryReader& reader)
     {
-        std::int32_t length = reader.readNumeric<std::int32_t>();
+        std::int32_t length = reader.read_numeric<std::int32_t>();
         if (length < 0) {
             length = 0;
         }
         std::shared_ptr<T> tag = std::make_shared<T>(length);
         for (std::int32_t i = 0; i < length; i++) {
-            reader.readNumericInto((*tag)[i]);
+            reader.read_numeric_into((*tag)[i]);
         }
         return tag;
     }
@@ -72,14 +72,14 @@ namespace NBT {
     template <typename T>
     inline ListTagPtr read_numeric_list_tag(BinaryReader& reader)
     {
-        std::int32_t length = reader.readNumeric<std::int32_t>();
+        std::int32_t length = reader.read_numeric<std::int32_t>();
         if (length < 0) {
             length = 0;
         }
         ListTagPtr tag = std::make_shared<ListTag>(std::vector<T>(length));
         std::vector<T>& list = std::get<std::vector<T>>(*tag);
         for (std::int32_t i = 0; i < length; i++) {
-            list[i] = T(reader.readNumeric<typename T::native_type>());
+            list[i] = T(reader.read_numeric<typename T::native_type>());
         }
         return tag;
     }
@@ -87,7 +87,7 @@ namespace NBT {
     template <typename T, T (*readTag)(BinaryReader&)>
     inline ListTagPtr read_template_list_tag(BinaryReader& reader)
     {
-        std::int32_t length = reader.readNumeric<std::int32_t>();
+        std::int32_t length = reader.read_numeric<std::int32_t>();
         if (length < 0) {
             length = 0;
         }
@@ -101,7 +101,7 @@ namespace NBT {
 
     inline ListTagPtr read_void_list_tag(BinaryReader& reader)
     {
-        std::int32_t length = reader.readNumeric<std::int32_t>();
+        std::int32_t length = reader.read_numeric<std::int32_t>();
         if (length < 0) {
             length = 0;
         }
@@ -113,7 +113,7 @@ namespace NBT {
 
     inline ListTagPtr read_list_tag(BinaryReader& reader)
     {
-        std::uint8_t tag_type = reader.readNumeric<std::uint8_t>();
+        std::uint8_t tag_type = reader.read_numeric<std::uint8_t>();
         switch (tag_type) {
         case 0:
             return read_void_list_tag(reader);
@@ -180,28 +180,28 @@ namespace NBT {
 
     NamedTag decode_nbt(BinaryReader& reader, bool named)
     {
-        std::uint8_t tag_id = reader.readNumeric<std::uint8_t>();
+        std::uint8_t tag_id = reader.read_numeric<std::uint8_t>();
         std::string name = named ? read_string_tag(reader) : "";
         TagNode node = read_node(reader, tag_id);
         return NamedTag(name, node);
     }
 
     // Read one (un)named tag from the string at position offset.
-    NamedTag decode_nbt(std::string_view raw, std::endian endianness, StringDecode string_decode, size_t& offset, bool named)
+    NamedTag decode_nbt(std::string_view raw, std::endian endianness, Amulet::StringDecoder string_decode, size_t& offset, bool named)
     {
         BinaryReader reader(raw, offset, endianness, string_decode);
         return decode_nbt(reader, named);
     }
 
     // Read one (un)named tag from the string.
-    NamedTag decode_nbt(std::string_view raw, std::endian endianness, StringDecode string_decode, bool named)
+    NamedTag decode_nbt(std::string_view raw, std::endian endianness, Amulet::StringDecoder string_decode, bool named)
     {
         size_t offset = 0;
         return decode_nbt(raw, endianness, string_decode, offset, named);
     }
 
     // Read count (un)named tags from the string at position offset.
-    std::vector<NamedTag> decode_nbt_array(std::string_view raw, std::endian endianness, StringDecode string_decode, size_t& offset, size_t count, bool named)
+    std::vector<NamedTag> decode_nbt_array(std::string_view raw, std::endian endianness, Amulet::StringDecoder string_decode, size_t& offset, size_t count, bool named)
     {
         BinaryReader reader(raw, offset, endianness, string_decode);
         std::vector<NamedTag> out;
@@ -212,7 +212,7 @@ namespace NBT {
     }
 
     // Read all (un)named tags from the string at position offset.
-    std::vector<NamedTag> decode_nbt_array(std::string_view raw, std::endian endianness, StringDecode string_decode, size_t& offset, bool named)
+    std::vector<NamedTag> decode_nbt_array(std::string_view raw, std::endian endianness, Amulet::StringDecoder string_decode, size_t& offset, bool named)
     {
         BinaryReader reader(raw, offset, endianness, string_decode);
         std::vector<NamedTag> out;

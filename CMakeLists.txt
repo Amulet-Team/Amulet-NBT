@@ -40,6 +40,7 @@ target_compile_definitions(zlibstatic PUBLIC ZLIB_CONST)
 
 # Add pybind11
 find_package(pybind11 CONFIG REQUIRED)
+find_package(amulet_io CONFIG REQUIRED)
 
 # Find C++ files
 file(REAL_PATH src SOURCE_PATH)
@@ -53,6 +54,7 @@ list(REMOVE_ITEM AMULET_NBT_HEADERS ${AMULET_NBT_EXTENSION_HEADERS})
 # Add implementation
 add_library(amulet_nbt SHARED)
 target_link_libraries( amulet_nbt PRIVATE zlibstatic )
+target_link_libraries( amulet_nbt PUBLIC amulet_io )
 target_compile_definitions(amulet_nbt PRIVATE ExportAmuletNBT)
 target_include_directories(amulet_nbt PUBLIC "src")
 target_sources(amulet_nbt PRIVATE ${AMULET_NBT_SOURCES} ${AMULET_NBT_HEADERS})

@@ -84,7 +84,7 @@ void init_bnbt(py::module& m)
                         py::object filepath_or_buffer,
                         bool compressed,
                         std::endian endianness,
-                        Amulet::NBT::StringDecode string_decoder,
+                        Amulet::StringDecoder string_decoder,
                         bool named,
                         py::object read_offset_py) {
         std::string buffer = get_buffer(filepath_or_buffer, compressed);
@@ -175,7 +175,7 @@ void init_bnbt(py::module& m)
                               Py_ssize_t count,
                               bool compressed,
                               std::endian endianness,
-                              Amulet::NBT::StringDecode string_decoder,
+                              Amulet::StringDecoder string_decoder,
                               bool named,
                               py::object read_offset_py) {
         if (count < -1) {

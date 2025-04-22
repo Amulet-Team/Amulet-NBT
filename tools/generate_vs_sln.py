@@ -4,6 +4,7 @@ import os
 import shutil
 
 import pybind11
+import amulet.io
 
 
 def fix_path(path: str) -> str:
@@ -32,6 +33,7 @@ def main():
             *platform_args,
             f"-DPYTHON_EXECUTABLE={sys.executable}",
             f"-Dpybind11_DIR={fix_path(pybind11.get_cmake_dir())}",
+            f"-Damulet_io_DIR={fix_path(amulet.io.__path__[0])}",
             f"-DCMAKE_INSTALL_PREFIX=install",
             f"-DSRC_INSTALL_DIR=src",
             "-B",

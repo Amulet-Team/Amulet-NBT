@@ -4,7 +4,7 @@
                                 std::optional<std::string> name,                                                                  \
                                 bool compressed,                                                                                  \
                                 std::endian endianness,                                                                           \
-                                Amulet::NBT::StringEncode string_encoder) -> py::bytes {                                          \
+                                Amulet::StringEncoder string_encoder) -> py::bytes {                                          \
         py::bytes data = Amulet::NBT::encode_nbt(name, self, endianness, string_encoder);                                         \
         if (compressed) {                                                                                                         \
             return compress(data);                                                                                                \
@@ -53,7 +53,7 @@
                                  std::optional<std::string> name,                                                                 \
                                  bool compressed,                                                                                 \
                                  std::endian endianness,                                                                          \
-                                 Amulet::NBT::StringEncode string_encoder) {                                                      \
+                                 Amulet::StringEncoder string_encoder) {                                                      \
         py::bytes py_data = to_nbt_##CLSNAME(self, name, compressed, endianness, string_encoder);                                 \
         if (!filepath_or_writable.is(py::none())) {                                                                               \
             if (py::isinstance<py::str>(filepath_or_writable)) {                                                                  \

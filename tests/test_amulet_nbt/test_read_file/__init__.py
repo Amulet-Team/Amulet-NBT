@@ -1,7 +1,7 @@
 import os
 from typing import Callable, TypeVar, Sequence, TypeAlias
 import unittest
-from amulet_nbt import CompoundTag, read_nbt, read_snbt, NamedTag, AbstractBaseTag
+from amulet.nbt import CompoundTag, read_nbt, read_snbt, NamedTag, AbstractBaseTag
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "src")
 

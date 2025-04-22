@@ -35,5 +35,5 @@ jobs:
 
     - name: run stylecheck
       run: |
-        python -m black --check --diff src/amulet_nbt
+        python -m black --check --diff src
         python -m black --check --diff tests

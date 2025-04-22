@@ -1,7 +1,7 @@
 import unittest
 import os
 
-from amulet_nbt import (
+from amulet.nbt import (
     ListTag,
     IntTag,
     read_nbt,

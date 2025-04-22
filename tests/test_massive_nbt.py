@@ -1,7 +1,7 @@
 import unittest
 import numpy
 import os
-from amulet_nbt import (
+from amulet.nbt import (
     ByteTag,
     ShortTag,
     IntTag,

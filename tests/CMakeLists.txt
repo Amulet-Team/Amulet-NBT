@@ -20,6 +20,7 @@ endif()
 # Find dependencies
 find_package(pybind11 CONFIG REQUIRED)
 find_package(pybind11_extensions CONFIG REQUIRED)
+find_package(amulet_io CONFIG REQUIRED)
 find_package(amulet_nbt CONFIG REQUIRED)
 
 # Find sources

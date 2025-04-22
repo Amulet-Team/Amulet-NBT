@@ -1,6 +1,6 @@
 include build_requires.py
 
-recursive-include src/amulet_nbt *.cpp *.hpp *Config.cmake
+recursive-include src/amulet/nbt *.cpp *.hpp *Config.cmake
 
 include CMakeLists.txt
 

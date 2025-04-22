@@ -4,7 +4,7 @@ import faulthandler
 
 faulthandler.enable()
 
-from amulet_nbt import (
+from amulet.nbt import (
     AbstractBaseTag,
     AbstractBaseNumericTag,
     AbstractBaseIntTag,

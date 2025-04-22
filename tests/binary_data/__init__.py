@@ -1,7 +1,7 @@
 from typing import List, Tuple
 from dataclasses import dataclass
 
-from amulet_nbt import (
+from amulet.nbt import (
     ByteTag,
     ShortTag,
     IntTag,

@@ -5,7 +5,7 @@ This is here in case that data needs to be recreated in the future.
 """
 
 from typing import Type, Any, Iterable
-from amulet_nbt import (
+from amulet.nbt import (
     AbstractBaseTag,
     ByteTag,
     ShortTag,

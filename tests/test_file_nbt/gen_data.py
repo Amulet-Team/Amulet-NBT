@@ -1,6 +1,6 @@
 import glob
 import os
-import amulet_nbt
+import amulet.nbt
 
 datas = {
     "big_endian_nbt": (False),
@@ -15,7 +15,7 @@ def main() -> None:
 
     for path in glob.glob(os.path.join(input_dir, "*.nbt")):
         fname = os.path.splitext(os.path.basename(path))[0]
-        nbt = amulet_nbt.read_nbt(path)
+        nbt = amulet.nbt.read_nbt(path)
         nbt.save_to(
             os.path.join(data_dir, "big_endian_nbt", fname + ".nbt"),
             compressed=False,

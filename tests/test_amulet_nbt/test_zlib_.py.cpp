@@ -1,6 +1,6 @@
 #include <pybind11/pybind11.h>
 
-#include <amulet_nbt/zlib.hpp>
+#include <amulet/nbt/zlib.hpp>
 
 namespace py = pybind11;
 

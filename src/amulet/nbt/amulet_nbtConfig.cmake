@@ -1,7 +1,7 @@
 if (NOT TARGET amulet_nbt)
     message(STATUS "Finding amulet_nbt")
 
-    set(amulet_nbt_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/include")
+    set(amulet_nbt_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/../..")
     find_library(amulet_nbt_LIBRARY NAMES amulet_nbt PATHS "${CMAKE_CURRENT_LIST_DIR}")
     message(STATUS "amulet_nbt_LIBRARY: ${amulet_nbt_LIBRARY}")
 

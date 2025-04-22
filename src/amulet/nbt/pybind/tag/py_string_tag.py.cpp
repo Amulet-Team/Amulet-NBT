@@ -9,8 +9,8 @@
 #include <amulet_nbt/io/binary_writer.hpp>
 #include <amulet_nbt/nbt_encoding/binary.hpp>
 #include <amulet_nbt/nbt_encoding/string.hpp>
-#include <amulet_nbt/pybind/encoding.hpp>
-#include <amulet_nbt/pybind/serialisation.hpp>
+#include <amulet_nbt/pybind/encoding.py.hpp>
+#include <amulet_nbt/pybind/serialisation.py.hpp>
 #include <amulet_nbt/tag/abc.hpp>
 #include <amulet_nbt/tag/copy.hpp>
 #include <amulet_nbt/tag/string.hpp>

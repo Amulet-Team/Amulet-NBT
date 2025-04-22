@@ -6,7 +6,7 @@
 #include <pybind11/stl.h>
 
 #include <amulet_nbt/nbt_encoding/binary.hpp>
-#include <amulet_nbt/pybind/encoding.hpp>
+#include <amulet_nbt/pybind/encoding.py.hpp>
 
 namespace py = pybind11;
 

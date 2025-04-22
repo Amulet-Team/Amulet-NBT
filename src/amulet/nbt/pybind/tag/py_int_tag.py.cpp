@@ -7,35 +7,41 @@
 
 #include <amulet_nbt/nbt_encoding/binary.hpp>
 #include <amulet_nbt/nbt_encoding/string.hpp>
-#include <amulet_nbt/pybind/encoding.hpp>
-#include <amulet_nbt/pybind/serialisation.hpp>
+#include <amulet_nbt/pybind/encoding.py.hpp>
+#include <amulet_nbt/pybind/serialisation.py.hpp>
 #include <amulet_nbt/tag/abc.hpp>
 #include <amulet_nbt/tag/copy.hpp>
-#include <amulet_nbt/tag/float.hpp>
+#include <amulet_nbt/tag/int.hpp>
 
 namespace py = pybind11;
 
-#define PyFloat(NATIVE, CLSNAME, PRECISION, TAGID)                                                                         \
-    py::class_<Amulet::NBT::CLSNAME, Amulet::NBT::AbstractBaseFloatTag> CLSNAME(m, #CLSNAME,                               \
-        "A " #PRECISION " precision float class.");                                                                        \
+#define PyInt(NATIVE, CLSNAME, BYTEWIDTH, BITPOW, SIGNBIT, MAGBITS, TAGID)                                                 \
+    py::class_<Amulet::NBT::CLSNAME, Amulet::NBT::AbstractBaseIntTag> CLSNAME(m, #CLSNAME,                                 \
+        "A " #BYTEWIDTH " byte integer class.\n"                                                                           \
+        "\n"                                                                                                               \
+        "Can Store numbers between -(2^" #BITPOW ") and (2^" #BITPOW " - 1)");                                             \
     CLSNAME.def_property_readonly_static("tag_id", [](py::object) { return TAGID; });                                      \
     CLSNAME.def(                                                                                                           \
-        py::init([](py::object value) {                                                                                    \
-            try {                                                                                                          \
-                return Amulet::NBT::CLSNAME(value.cast<NATIVE>());                                                         \
-            } catch (const py::cast_error&) {                                                                              \
-                throw py::type_error("value must be float or float-like");                                                 \
+        py::init([PyIntCls](py::object py_value) {                                                                         \
+            /* cast to a python int */                                                                                     \
+            py::object py_int = PyIntCls(py_value);                                                                        \
+            /* get the magnitude bits */                                                                                   \
+            NATIVE value = py_int.attr("__and__")(py::cast(MAGBITS)).cast<NATIVE>();                                       \
+            /* get the sign bits */                                                                                        \
+            if (py_int.attr("__and__")(py::cast(SIGNBIT)).cast<bool>()) {                                                  \
+                value -= SIGNBIT;                                                                                          \
             }                                                                                                              \
+            return Amulet::NBT::CLSNAME(value);                                                                            \
         }),                                                                                                                \
-        py::arg("value") = 0.0,                                                                                            \
-        py::doc("__init__(self: amulet.nbt." #CLSNAME ", value: typing.SupportsFloat) -> None"));                          \
+        py::arg("value") = 0,                                                                                              \
+        py::doc("__init__(self: amulet.nbt." #CLSNAME ", value: typing.SupportsInt) -> None"));                            \
     CLSNAME.def_property_readonly(                                                                                         \
-        "py_float",                                                                                                        \
+        "py_int",                                                                                                          \
         [](const Amulet::NBT::CLSNAME& self) -> NATIVE {                                                                   \
             return self;                                                                                                   \
         },                                                                                                                 \
         py::doc(                                                                                                           \
-            "A python float representation of the class.\n"                                                                \
+            "A python int representation of the class.\n"                                                                  \
             "\n"                                                                                                           \
             "The returned data is immutable so changes will not mirror the instance."));                                   \
     CLSNAME.def_property_readonly(                                                                                         \
@@ -52,12 +58,12 @@ namespace py = pybind11;
         CLSNAME.def(                                                                                                       \
             "__repr__",                                                                                                    \
             [](const Amulet::NBT::CLSNAME& self) {                                                                         \
-                return #CLSNAME "(" + py::repr(py::cast(static_cast<NATIVE>(self))).cast<std::string>() + ")";             \
+                return #CLSNAME "(" + std::to_string(static_cast<NATIVE>(self)) + ")";                                     \
             });                                                                                                            \
     CLSNAME.def(                                                                                                           \
         "__str__",                                                                                                         \
         [](const Amulet::NBT::CLSNAME& self) {                                                                             \
-            return py::repr(py::cast(static_cast<NATIVE>(self)));                                                          \
+            return std::to_string(static_cast<NATIVE>(self));                                                              \
         });                                                                                                                \
     CLSNAME.def(                                                                                                           \
         py::pickle(                                                                                                        \
@@ -85,18 +91,18 @@ namespace py = pybind11;
         });                                                                                                                \
     CLSNAME.def(                                                                                                           \
         "__int__",                                                                                                         \
-        [](const Amulet::NBT::CLSNAME& self) -> py::int_ {                                                                 \
-            return py::cast(static_cast<NATIVE>(self));                                                                    \
-        });                                                                                                                \
-    CLSNAME.def(                                                                                                           \
-        "__float__",                                                                                                       \
         [](const Amulet::NBT::CLSNAME& self) -> NATIVE {                                                                   \
             return self;                                                                                                   \
         });                                                                                                                \
     CLSNAME.def(                                                                                                           \
+        "__float__",                                                                                                       \
+        [](const Amulet::NBT::CLSNAME& self) -> py::float_ {                                                               \
+            return py::cast(static_cast<NATIVE>(self));                                                                    \
+        });                                                                                                                \
+    CLSNAME.def(                                                                                                           \
         "__bool__",                                                                                                        \
         [](const Amulet::NBT::CLSNAME& self) {                                                                             \
-            return self != 0.0;                                                                                            \
+            return self != 0;                                                                                              \
         });                                                                                                                \
     CLSNAME.def(                                                                                                           \
         "__eq__",                                                                                                          \
@@ -129,11 +135,14 @@ namespace py = pybind11;
         },                                                                                                                 \
         py::is_operator());
 
-void init_float(py::module& m)
+void init_int(py::module& m)
 {
+    py::object PyIntCls = py::module::import("builtins").attr("int");
     py::object mutf8_encoding = m.attr("mutf8_encoding");
     py::object java_encoding = m.attr("java_encoding");
     py::object compress = py::module::import("gzip").attr("compress");
-    PyFloat(float, FloatTag, single, 5)
-        PyFloat(double, DoubleTag, double, 6)
-}
+    PyInt(std::int8_t, ByteTag, 1, 7, 0x80, 0x7F, 1)
+        PyInt(std::int16_t, ShortTag, 2, 15, 0x8000, 0x7FFF, 2)
+            PyInt(std::int32_t, IntTag, 4, 31, 0x80000000, 0x7FFFFFFF, 3)
+                PyInt(std::int64_t, LongTag, 8, 63, 0x8000000000000000, 0x7FFFFFFFFFFFFFFF, 4)
+};

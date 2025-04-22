@@ -12,7 +12,7 @@
 
 #include <amulet_nbt/nbt_encoding/binary.hpp>
 #include <amulet_nbt/nbt_encoding/string.hpp>
-#include <amulet_nbt/pybind/encoding.hpp>
+#include <amulet_nbt/pybind/encoding.py.hpp>
 #include <amulet_nbt/tag/compound.hpp>
 #include <amulet_nbt/tag/copy.hpp>
 #include <amulet_nbt/tag/eq.hpp>

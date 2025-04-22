@@ -19,3 +19,9 @@ def get_requires_for_build_wheel(
             "amulet-compiler-version@git+https://github.com/Amulet-Team/Amulet-Compiler-Version.git@1.0"
         )
     return requirements
+
+
+def get_requires_for_build_editable(
+    config_settings: Union[Mapping[str, Union[str, list[str], None]], None] = None,
+) -> list[str]:
+    return build_meta.get_requires_for_build_editable(config_settings) + ["pybind11[global]==2.13.6"]

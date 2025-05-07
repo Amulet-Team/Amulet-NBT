@@ -3,11 +3,12 @@
 #include <exception>
 #include <iostream>
 
-#include <pybind11_extensions/compatibility.hpp>
+#include <amulet/pybind11_extensions/compatibility.hpp>
 
 #include <amulet/nbt/common.hpp>
 
 namespace py = pybind11;
+namespace pyext = Amulet::pybind11_extensions;
 
 void init_encoding(py::module&);
 
@@ -26,7 +27,7 @@ void init_snbt(py::module& m);
 
 void init_module(py::module& m)
 {
-    pybind11_extensions::init_compiler_config(m);
+    pyext::init_compiler_config(m);
 
     // Convert cast_error to type_error
     py::register_local_exception_translator([](std::exception_ptr p) {

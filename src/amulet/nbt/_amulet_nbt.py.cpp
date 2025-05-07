@@ -1,9 +1,11 @@
-#include <exception>
-
 #include <pybind11/pybind11.h>
 
-#include <amulet/nbt/common.hpp>
+#include <exception>
 #include <iostream>
+
+#include <pybind11_extensions/compatibility.hpp>
+
+#include <amulet/nbt/common.hpp>
 
 namespace py = pybind11;
 
@@ -24,11 +26,7 @@ void init_snbt(py::module& m);
 
 void init_module(py::module& m)
 {
-    py::dict compiler_config;
-    compiler_config["pybind11_version"] = PYBIND11_VERSION;
-    compiler_config["compiler_id"] = COMPILER_ID;
-    compiler_config["compiler_version"] = COMPILER_VERSION;
-    m.attr("compiler_config") = compiler_config;
+    pybind11_extensions::init_compiler_config(m);
 
     // Convert cast_error to type_error
     py::register_local_exception_translator([](std::exception_ptr p) {

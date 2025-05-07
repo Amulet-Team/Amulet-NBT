@@ -2,6 +2,7 @@
 requires = [
     "setuptools>=42",
     "versioneer",
+    "packaging",
 ]
 build-backend = "build_requires"
 backend-path = [""]
@@ -35,7 +36,7 @@ dev = [
     "pre_commit>=1.11.1",
     "mypy",
     "types-pyinstaller",
-    "amulet_io==1.0.0a0",
+    "packaging",
 ]
 
 [project.urls]

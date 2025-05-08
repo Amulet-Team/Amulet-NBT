@@ -6,6 +6,7 @@ from pathlib import Path
 from setuptools import setup, Extension, Command
 from setuptools.command.build_ext import build_ext
 
+from packaging.version import Version
 import versioneer
 
 
@@ -16,9 +17,25 @@ def fix_path(path: str) -> str:
 dependencies = [
     "amulet-compiler-target==1.0",
     "numpy>=1.17,<3.0",
-    "amulet_io==1.0.0a0",
 ]
 setup_args = {}
+
+
+def add_cpp_dependency(lib_name: str, version_str: str) -> None:
+    version = Version(version_str)
+    if version.is_prerelease:
+        # Breaking API changes can be made between pre-release versions. Pin to this exact release.
+        dependencies.append(f"{lib_name}=={version_str}")
+    else:
+        # Major - breaking API change. Dependents must be updated and recompiled.
+        major = version.major
+        # Minor - backwards compatible API change. Dependents must be recompiled.
+        minor = version.minor
+        # Patch - API unchanged. Dependents must be recompiled.
+        patch = version.micro
+        # Fix - API unchanged. Dependents do not need to be recompiled.
+        dependencies.append(f"{lib_name}~={major}.{minor}.{patch}.0")
+
 
 try:
     import amulet_compiler_version
@@ -34,6 +51,14 @@ else:
         }
     }
 
+try:
+    import amulet.io
+except ImportError:
+    dependencies.append("amulet_io~=1.0")
+else:
+    add_cpp_dependency("amulet_io", amulet.io.__version__)
+
+
 cmdclass: dict[str, type[Command]] = versioneer.get_cmdclass()
 
 
@@ -41,6 +66,7 @@ class CMakeBuild(cmdclass.get("build_ext", build_ext)):
     def build_extension(self, ext):
         import pybind11
         import amulet.io
+        import amulet.pybind11_extensions
 
         ext_fullpath = Path.cwd() / self.get_ext_fullpath("")
         src_dir = ext_fullpath.parent.resolve()
@@ -60,9 +86,10 @@ class CMakeBuild(cmdclass.get("build_ext", build_ext)):
                 *platform_args,
                 f"-DPYTHON_EXECUTABLE={sys.executable}",
                 f"-Dpybind11_DIR={fix_path(pybind11.get_cmake_dir())}",
+                f"-Damulet_pybind11_extensions_DIR={(amulet.pybind11_extensions.__path__[0])}",
                 f"-Damulet_io_DIR={fix_path(amulet.io.__path__[0])}",
+                f"-Damulet_nbt_DIR={fix_path(os.path.join(src_dir, 'amulet', 'nbt'))}",
                 f"-DCMAKE_INSTALL_PREFIX=install",
-                f"-DSRC_INSTALL_DIR={src_dir}",
                 "-B",
                 "build",
             ]

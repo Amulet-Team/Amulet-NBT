@@ -2,6 +2,7 @@
 requires = [
     "setuptools>=42",
     "versioneer",
+    "packaging",
 ]
 build-backend = "build_requires"
 backend-path = [""]
@@ -31,11 +32,12 @@ dev = [
     "versioneer",
     "wheel",
     "pybind11[global]==2.13.6",
+    "amulet_pybind11_extensions~=1.0",
     "black>=22.3",
     "pre_commit>=1.11.1",
     "mypy",
     "types-pyinstaller",
-    "amulet_io==1.0.0a0",
+    "packaging",
 ]
 
 [project.urls]

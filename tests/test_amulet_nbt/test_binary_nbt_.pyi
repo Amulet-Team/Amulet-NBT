@@ -1,0 +1,3 @@
+from amulet.nbt import NamedTag
+
+def encode_binary_nbt(tag: NamedTag) -> bytes: ...

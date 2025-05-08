@@ -59,14 +59,6 @@ else:
     add_cpp_dependency("amulet_io", amulet.io.__version__)
 
 
-try:
-    import amulet.pybind11_extensions
-except ImportError:
-    dependencies.append("amulet_pybind11_extensions~=1.0")
-else:
-    add_cpp_dependency("amulet_pybind11_extensions", amulet.pybind11_extensions.__version__)
-
-
 cmdclass: dict[str, type[Command]] = versioneer.get_cmdclass()
 
 

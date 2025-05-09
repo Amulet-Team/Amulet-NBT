@@ -81,9 +81,13 @@ foreach(FILE ${EXTENSION_SOURCES} ${EXTENSION_HEADERS})
     source_group(${GROUP} FILES ${FILE})
 endforeach()
 
+if(NOT DEFINED AMULET_NBT_EXT_DIR)
+    set(AMULET_NBT_EXT_DIR ${amulet_nbt_DIR})
+endif()
+
 # Install
 install(TARGETS amulet_nbt DESTINATION ${amulet_nbt_DIR})
-install(TARGETS _amulet_nbt DESTINATION ${amulet_nbt_DIR})
+install(TARGETS _amulet_nbt DESTINATION ${AMULET_NBT_EXT_DIR})
 
 if (TEST_AMULET_NBT_DIR)
     add_subdirectory(tests)

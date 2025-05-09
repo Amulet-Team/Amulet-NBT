@@ -68,8 +68,14 @@ class CMakeBuild(cmdclass.get("build_ext", build_ext)):
         import amulet.io
         import amulet.pybind11_extensions
 
-        ext_fullpath = Path.cwd() / self.get_ext_fullpath("")
-        src_dir = ext_fullpath.parent.resolve()
+        ext_dir = (
+                (Path.cwd() / self.get_ext_fullpath("")).parent.resolve()
+                / "amulet"
+                / "nbt"
+        )
+        nbt_src_dir = (
+            Path.cwd() / "src" / "amulet" / "nbt" if self.editable_mode else ext_dir
+        )
 
         platform_args = []
         if sys.platform == "win32":
@@ -88,7 +94,8 @@ class CMakeBuild(cmdclass.get("build_ext", build_ext)):
                 f"-Dpybind11_DIR={fix_path(pybind11.get_cmake_dir())}",
                 f"-Damulet_pybind11_extensions_DIR={(amulet.pybind11_extensions.__path__[0])}",
                 f"-Damulet_io_DIR={fix_path(amulet.io.__path__[0])}",
-                f"-Damulet_nbt_DIR={fix_path(os.path.join(src_dir, 'amulet', 'nbt'))}",
+                f"-Damulet_nbt_DIR={fix_path(nbt_src_dir)}",
+                f"-DAMULET_NBT_EXT_DIR={fix_path(ext_dir)}",
                 f"-DCMAKE_INSTALL_PREFIX=install",
                 "-B",
                 "build",

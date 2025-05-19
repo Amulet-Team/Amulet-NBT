@@ -46,7 +46,7 @@ jobs:
       if: ${{ matrix.os == 'windows-latest' }}
       run: |
         cmd.exe /c '"C:\VS\VC\Auxiliary\Build\vcvars64.bat" && pip install -vv .[dev]'
-        cmd.exe /c '"C:\VS\VC\Auxiliary\Build\vcvars64.bat" && python tools/compile_tests.py'
+        cmd.exe /c '"C:\VS\VC\Auxiliary\Build\vcvars64.bat" && python tools\compile_tests.py'
 
     - name: Install Amulet NBT (Linux/MacOS)
       if: ${{ matrix.os != 'windows-latest' }}

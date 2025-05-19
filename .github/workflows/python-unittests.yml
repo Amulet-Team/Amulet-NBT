@@ -40,7 +40,7 @@ jobs:
       if: ${{ matrix.os == 'windows-latest' }}
       run: |
         curl -L -o vs_enterprise.exe https://download.visualstudio.microsoft.com/download/pr/f50ab15d-99d5-43aa-b0b4-496b6cb1e574/e85a548c7acecb44083a86960fe08811757b1ef9dc869214e9ea17fbd46427b9/vs_Enterprise.exe
-        vs_enterprise.exe --quiet --wait --norestart --installPath C:\VS --add Microsoft.VisualStudio.Workload.VCTools --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64
+        ./vs_enterprise.exe --quiet --wait --norestart --installPath C:\VS --add Microsoft.VisualStudio.Workload.VCTools --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64
 
     - name: Install Amulet NBT (Windows)
       if: ${{ matrix.os == 'windows-latest' }}

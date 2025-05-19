@@ -41,18 +41,9 @@ jobs:
       shell: powershell
       run: |
         Invoke-WebRequest -Method Get -Uri https://download.visualstudio.microsoft.com/download/pr/f50ab15d-99d5-43aa-b0b4-496b6cb1e574/e85a548c7acecb44083a86960fe08811757b1ef9dc869214e9ea17fbd46427b9/vs_Enterprise.exe -OutFile vs_enterprise.exe
-        & ./vs_enterprise.exe --installPath "C:\VS" --add Microsoft.VisualStudio.Workload.VCTools --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --quiet --norestart --wait
+        & ./vs_enterprise.exe modify --installPath "C:\Program Files\Microsoft Visual Studio\2022\Enterprise" --add Microsoft.VisualStudio.Workload.VCTools --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --quiet --norestart --wait
 
-    - name: Install Amulet NBT (Windows)
-      if: ${{ matrix.os == 'windows-latest' }}
-      shell: powershell
-      run: |
-        C:\VS\VC\Auxiliary\Build\vcvars64.bat
-        pip install -vv .[dev]
-        python tools\compile_tests.py
-
-    - name: Install Amulet NBT (Linux/MacOS)
-      if: ${{ matrix.os != 'windows-latest' }}
+    - name: Install Amulet NBT
       run: |
         pip install -vv .[dev]
         python tools/compile_tests.py

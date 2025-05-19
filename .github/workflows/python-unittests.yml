@@ -35,8 +35,18 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -vv .[dev]
-        python tools/compile_tests.py
+
+    - name: Set up Visual Studio
+      if: ${{ matrix.os == 'windows-latest' }}
+      run: |
+        curl -L -o vs_enterprise.exe https://download.visualstudio.microsoft.com/download/pr/f50ab15d-99d5-43aa-b0b4-496b6cb1e574/e85a548c7acecb44083a86960fe08811757b1ef9dc869214e9ea17fbd46427b9/vs_Enterprise.exe
+        cmd.exe /c 'vs_enterprise.exe --quiet --wait --norestart --installPath C:\VS --add Microsoft.VisualStudio.Workload.VCTools --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64'
+
+    - name: Install Amulet NBT
+      if: ${{ matrix.os == 'windows-latest' }}
+      run: |
+        cmd.exe /c '"C:\VS\VC\Auxiliary\Build\vcvars64.bat" && pip install -vv .[dev]'
+        cmd.exe /c '"C:\VS\VC\Auxiliary\Build\vcvars64.bat" && python tools/compile_tests.py'
 
     - name: Test with unittest
       run: python -m unittest discover -v -s tests

@@ -51,8 +51,22 @@ jobs:
         pip install -vv .[dev]
         python tools\compile_tests.py
 
-    - name: Install Amulet NBT (Linux/MacOS)
-      if: ${{ matrix.os != 'windows-latest' }}
+    - name: Set up LLVM/Clang
+      if: ${{ matrix.os == 'macos-latest' }}
+      run: |
+        brew install llvm@20.1.5
+
+    - name: Install Amulet NBT (MacOS)
+      if: ${{ matrix.os == 'macos-latest' }}
+      run: |
+        export PATH="/usr/local/opt/llvm/bin:$PATH"
+        export LDFLAGS="-L/usr/local/opt/llvm/lib"
+        export CPPFLAGS="-I/usr/local/opt/llvm/include"
+        pip install -vv .[dev]
+        python tools/compile_tests.py
+
+    - name: Install Amulet NBT (Linux)
+      if: ${{ matrix.os == 'ubuntu-latest' }}
       run: |
         pip install -vv .[dev]
         python tools/compile_tests.py

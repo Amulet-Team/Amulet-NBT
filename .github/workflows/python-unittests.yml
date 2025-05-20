@@ -60,11 +60,10 @@ jobs:
     - name: Install Amulet NBT (MacOS)
       if: ${{ matrix.os == 'macos-latest' }}
       run: |
-        export PATH="~/LLVM-20.1.4-macOS-ARM64/bin:$PATH"
-        export LDFLAGS="-L~/LLVM-20.1.4-macOS-ARM64/lib"
-        export CPPFLAGS="-I~/LLVM-20.1.4-macOS-ARM64/include"
-        export CC="~/LLVM-20.1.4-macOS-ARM64/bin/clang"
-        export CXX="~/LLVM-20.1.4-macOS-ARM64/bin/clang++"
+        export LLVM_DIR=$HOME/LLVM-20.1.4-macOS-ARM64
+        export PATH="$LLVM_DIR/bin:$PATH"
+        export LDFLAGS="-L$LLVM_DIR/lib"
+        export CPPFLAGS="-I$LLVM_DIR/include"
         clang --version
         pip install -v .[dev]
         python tools/compile_tests.py

@@ -60,9 +60,9 @@ jobs:
     - name: Install Amulet NBT (MacOS)
       if: ${{ matrix.os == 'macos-latest' }}
       run: |
-        export PATH="~/llvm/bin:$PATH"
-        export LDFLAGS="-L~/llvm/lib"
-        export CPPFLAGS="-I~/include"
+        export PATH="~/llvm/LLVM-20.1.4-macOS-ARM64/bin:$PATH"
+        export LDFLAGS="-L~/llvm/LLVM-20.1.4-macOS-ARM64/lib"
+        export CPPFLAGS="-I~/llvm/LLVM-20.1.4-macOS-ARM64/include"
         clang --version
         pip install -v .[dev]
         python tools/compile_tests.py
@@ -75,3 +75,9 @@ jobs:
 
     - name: Test with unittest
       run: python -m unittest discover -v -s tests
+
+# https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-history
+# https://learn.microsoft.com/en-us/visualstudio/install/use-command-line-parameters-to-install-visual-studio?view=vs-2022
+# https://learn.microsoft.com/en-us/visualstudio/install/command-line-parameter-examples?view=vs-2022
+# https://learn.microsoft.com/en-us/visualstudio/install/workload-component-id-vs-build-tools?view=vs-2022
+# https://github.com/search?q=vs_enterprise.exe+path%3A.github%2Fworkflows%2F*.yml&type=code

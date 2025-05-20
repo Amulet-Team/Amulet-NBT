@@ -63,6 +63,11 @@ jobs:
         export PATH="$PWD/llvm/bin:$PATH"
         export LDFLAGS="-L$PWD/llvm/lib"
         export CPPFLAGS="-I$PWD/llvm/include"
+        clang --version
+        for entry in $PWD/llvm/*
+        do
+          echo "$entry"
+        done
         pip install -v .[dev]
         python tools/compile_tests.py
 

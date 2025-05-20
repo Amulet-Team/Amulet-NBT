@@ -54,14 +54,15 @@ jobs:
     - name: Set up LLVM/Clang
       if: ${{ matrix.os == 'macos-latest' }}
       run: |
-        brew install llvm@20.1.5
+        curl -L https://github.com/llvm/llvm-project/releases/download/llvmorg-20.1.4/LLVM-20.1.4-macOS-ARM64.tar.xz -o llvm.tar.xz
+        tar -xf llvm.tar.xz
 
     - name: Install Amulet NBT (MacOS)
       if: ${{ matrix.os == 'macos-latest' }}
       run: |
-        export PATH="/usr/local/opt/llvm/bin:$PATH"
-        export LDFLAGS="-L/usr/local/opt/llvm/lib"
-        export CPPFLAGS="-I/usr/local/opt/llvm/include"
+        export PATH="$PWD/llvm/bin:$PATH"
+        export LDFLAGS="-L$PWD/llvm/lib"
+        export CPPFLAGS="-I$PWD/llvm/include"
         pip install -vv .[dev]
         python tools/compile_tests.py
 

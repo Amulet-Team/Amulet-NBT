@@ -48,7 +48,7 @@ jobs:
       shell: powershell
       run: |
         C:\VS\VC\Auxiliary\Build\vcvars64.bat
-        pip install -vv .[dev]
+        pip install -v .[dev]
         python tools\compile_tests.py
 
     - name: Set up LLVM/Clang
@@ -63,13 +63,13 @@ jobs:
         export PATH="$PWD/llvm/bin:$PATH"
         export LDFLAGS="-L$PWD/llvm/lib"
         export CPPFLAGS="-I$PWD/llvm/include"
-        pip install -vv .[dev]
+        pip install -v .[dev]
         python tools/compile_tests.py
 
     - name: Install Amulet NBT (Linux)
       if: ${{ matrix.os == 'ubuntu-latest' }}
       run: |
-        pip install -vv .[dev]
+        pip install -v .[dev]
         python tools/compile_tests.py
 
     - name: Test with unittest

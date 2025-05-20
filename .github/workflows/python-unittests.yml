@@ -64,6 +64,8 @@ jobs:
         export PATH="$LLVM_DIR/bin:$PATH"
         export LDFLAGS="-L$LLVM_DIR/lib"
         export CPPFLAGS="-I$LLVM_DIR/include"
+        export CC="$LLVM_DIR/bin/clang"
+        export CXX="$LLVM_DIR/bin/clang++"
         clang --version
         pip install -v .[dev]
         python tools/compile_tests.py

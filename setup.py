@@ -11,6 +11,7 @@ import versioneer
 
 import requirements
 
+
 def fix_path(path: str) -> str:
     return os.path.realpath(path).replace(os.sep, "/")
 
@@ -27,9 +28,7 @@ class CMakeBuild(cmdclass.get("build_ext", build_ext)):
         import amulet.pybind11_extensions
 
         ext_dir = (
-                (Path.cwd() / self.get_ext_fullpath("")).parent.resolve()
-                / "amulet"
-                / "nbt"
+            (Path.cwd() / self.get_ext_fullpath("")).parent.resolve() / "amulet" / "nbt"
         )
         nbt_src_dir = (
             Path.cwd() / "src" / "amulet" / "nbt" if self.editable_mode else ext_dir
@@ -72,6 +71,7 @@ class CMakeBuild(cmdclass.get("build_ext", build_ext)):
 
 cmdclass["build_ext"] = CMakeBuild
 
+
 def _get_version() -> str:
     version_str: str = versioneer.get_version()
 
@@ -82,15 +82,23 @@ def _get_version() -> str:
             pass
         else:
             # Add the compiler version to the library version so that pip sees it as a distinct version.
-            compiler_version_str = ".".join(amulet_compiler_version.__version__.split(".")[3:])
+            compiler_version_str = ".".join(
+                amulet_compiler_version.__version__.split(".")[3:]
+            )
             if compiler_version_str:
                 version = Version(version_str)
-                if version.epoch != 0 or version.is_devrelease or version.is_postrelease:
+                if (
+                    version.epoch != 0
+                    or version.is_devrelease
+                    or version.is_postrelease
+                ):
                     raise RuntimeError(f"Unsupported version format. {version_str}")
                 major, minor, patch, fix, *_ = version.release + (0, 0, 0, 0)
                 pre = "".join(map(str, version.pre)) if version.is_prerelease else ""
                 local = f"+{version.local}" if version.local else ""
-                version_str = f"{major}.{minor}.{patch}.{fix}.{compiler_version_str}{pre}{local}"
+                version_str = (
+                    f"{major}.{minor}.{patch}.{fix}.{compiler_version_str}{pre}{local}"
+                )
 
     return version_str
 

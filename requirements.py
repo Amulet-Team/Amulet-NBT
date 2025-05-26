@@ -50,7 +50,7 @@ def get_runtime_dependencies() -> list[str]:
         with suppress(ImportError):
             import amulet_compiler_version
             amulet_compiler_version_requirement = f"amulet-compiler-version=={amulet_compiler_version.__version__}"
-            compiler_suffix = f".{'.'.join(amulet_compiler_version.__version__.split(".")[3:])}"
+            compiler_suffix = f".{'.'.join(amulet_compiler_version.__version__.split('.')[3:])}"
 
     try:
         import amulet.io

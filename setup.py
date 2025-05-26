@@ -72,9 +72,31 @@ class CMakeBuild(cmdclass.get("build_ext", build_ext)):
 
 cmdclass["build_ext"] = CMakeBuild
 
+def _get_version() -> str:
+    version_str: str = versioneer.get_version()
+
+    if os.environ.get("AMULET_FREEZE_COMPILER", None):
+        try:
+            import amulet_compiler_version
+        except ImportError:
+            pass
+        else:
+            # Add the compiler version to the library version so that pip sees it as a distinct version.
+            compiler_version_str = ".".join(amulet_compiler_version.__version__.split(".")[3:])
+            if compiler_version_str:
+                version = Version(version_str)
+                if version.epoch != 0 or version.is_devrelease or version.is_postrelease:
+                    raise RuntimeError(f"Unsupported version format. {version_str}")
+                major, minor, patch, fix, *_ = version.release + (0, 0, 0, 0)
+                pre = "".join(map(str, version.pre)) if version.is_prerelease else ""
+                local = f"+{version.local}" if version.local else ""
+                version_str = f"{major}.{minor}.{patch}.{fix}.{compiler_version_str}{pre}{local}"
+
+    return version_str
+
 
 setup(
-    version=versioneer.get_version(),
+    version=_get_version(),
     cmdclass=cmdclass,
     ext_modules=[Extension("amulet.nbt._amulet_nbt", [])],
     install_requires=dependencies,

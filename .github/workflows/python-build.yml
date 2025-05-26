@@ -43,6 +43,9 @@ jobs:
 
     - name: Install Amulet-Compiler-Version
       uses: ./lib/Amulet-Compiler-Version/.github/actions/install
+      with:
+        twine-username: ${{ secrets.PYPI_USERNAME }}
+        twine-password: ${{ secrets.AMULET_COMPILER_VERSION_PYPI_PASSWORD }}
 
     - name: Build SDist
       run: |

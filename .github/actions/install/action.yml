@@ -1,0 +1,52 @@
+name: 'Install Specialised Amulet-NBT'
+description: 'Build, publish and install this library specialised for the installed compiler. Requires Python, build and twine.'
+inputs:
+  twine-username:
+    description: 'The twine username'
+  twine-password:
+    description: 'The twine password'
+  nbt-specifier:
+    description: 'The PEP 440 version specifier for the NBT library'
+outputs:
+  version:
+    description: "The version number of the installed library."
+    value: ${{ steps.get-version.outputs.version }}
+runs:
+  using: "composite"
+  steps:
+    - name: Install Prebuilt
+      id: install
+      shell: bash
+      continue-on-error: true
+      run: |
+        python -m pip install --only-binary amulet-nbt amulet-nbt${{ inputs.nbt-specifier }}
+
+    - name: Build
+      if: steps.install.outcome == 'failure'
+      shell: bash
+      env:
+        AMULET_FREEZE_COMPILER: 1
+      run: |
+        python -m build --wheel "${{ github.action_path }}"/../../..
+
+    - name: Publish
+      if: steps.install.outcome == 'failure'
+      shell: bash
+      env:
+        TWINE_USERNAME: ${{ inputs.twine-username }}
+        TWINE_PASSWORD: ${{ inputs.twine-password }}
+      run: |
+        twine upload "${{ github.action_path }}"/../../../dist/* --skip-existing
+
+    - name: Install
+      if: steps.install.outcome == 'failure'
+      shell: bash
+      run: |
+        python -m pip install "${{ github.action_path }}"/../../../dist/amulet_nbt-*.whl
+
+    - name: Get __version__
+      id: get-version
+      shell: bash
+      run: |
+        version=$(python -c "import amulet.nbt; print(amulet.nbt.__version__)")
+        echo "version=$version" >> "$GITHUB_OUTPUT"

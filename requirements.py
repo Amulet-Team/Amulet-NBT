@@ -1,6 +1,8 @@
 import os
 from packaging.version import Version
 
+import amulet_compiler_version
+
 PYBIND11_REQUIREMENT = "==2.13.6"
 AMULET_COMPILER_TARGET_REQUIREMENT = "==1.0"
 AMULET_COMPILER_VERSION_REQUIREMENT = "==3.0.0"
@@ -32,12 +34,7 @@ def _get_specifier_set(version_str: str, compiler_suffix: str = "") -> str:
 
 
 if os.environ.get("AMULET_FREEZE_COMPILER", None):
-    try:
-        import amulet_compiler_version
-    except ImportError:
-        pass
-    else:
-        AMULET_COMPILER_VERSION_REQUIREMENT = f"=={amulet_compiler_version.__version__}"
+    AMULET_COMPILER_VERSION_REQUIREMENT = f"=={amulet_compiler_version.__version__}"
 
     try:
         import amulet.io

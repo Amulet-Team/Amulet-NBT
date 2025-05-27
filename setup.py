@@ -10,6 +10,7 @@ from packaging.version import Version
 import versioneer
 
 import requirements
+import amulet_compiler_version
 
 
 def fix_path(path: str) -> str:
@@ -76,29 +77,24 @@ def _get_version() -> str:
     version_str: str = versioneer.get_version()
 
     if os.environ.get("AMULET_FREEZE_COMPILER", None):
-        try:
-            import amulet_compiler_version
-        except ImportError:
-            pass
-        else:
-            # Add the compiler version to the library version so that pip sees it as a distinct version.
-            compiler_version_str = ".".join(
-                amulet_compiler_version.__version__.split(".")[3:]
+        # Add the compiler version to the library version so that pip sees it as a distinct version.
+        compiler_version_str = ".".join(
+            amulet_compiler_version.__version__.split(".")[3:]
+        )
+        if compiler_version_str:
+            version = Version(version_str)
+            if (
+                version.epoch != 0
+                or version.is_devrelease
+                or version.is_postrelease
+            ):
+                raise RuntimeError(f"Unsupported version format. {version_str}")
+            major, minor, patch, fix, *_ = version.release + (0, 0, 0, 0)
+            pre = "".join(map(str, version.pre)) if version.is_prerelease else ""
+            local = f"+{version.local}" if version.local else ""
+            version_str = (
+                f"{major}.{minor}.{patch}.{fix}.{compiler_version_str}{pre}{local}"
             )
-            if compiler_version_str:
-                version = Version(version_str)
-                if (
-                    version.epoch != 0
-                    or version.is_devrelease
-                    or version.is_postrelease
-                ):
-                    raise RuntimeError(f"Unsupported version format. {version_str}")
-                major, minor, patch, fix, *_ = version.release + (0, 0, 0, 0)
-                pre = "".join(map(str, version.pre)) if version.is_prerelease else ""
-                local = f"+{version.local}" if version.local else ""
-                version_str = (
-                    f"{major}.{minor}.{patch}.{fix}.{compiler_version_str}{pre}{local}"
-                )
 
     return version_str
 

@@ -2,6 +2,7 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+import platform
 
 from setuptools import setup, Extension, Command
 from setuptools.command.build_ext import build_ext
@@ -43,6 +44,9 @@ class CMakeBuild(cmdclass.get("build_ext", build_ext)):
             else:
                 platform_args.extend(["-A", "Win32"])
             platform_args.extend(["-T", "v143"])
+        elif sys.platform == "darwin":
+            if platform.machine() == "arm64":
+                platform_args.append('-DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"')
 
         if subprocess.run(
             [

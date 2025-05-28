@@ -83,11 +83,7 @@ def _get_version() -> str:
         )
         if compiler_version_str:
             version = Version(version_str)
-            if (
-                version.epoch != 0
-                or version.is_devrelease
-                or version.is_postrelease
-            ):
+            if version.epoch != 0 or version.is_devrelease or version.is_postrelease:
                 raise RuntimeError(f"Unsupported version format. {version_str}")
             major, minor, patch, fix, *_ = version.release + (0, 0, 0, 0)
             pre = "".join(map(str, version.pre)) if version.is_prerelease else ""

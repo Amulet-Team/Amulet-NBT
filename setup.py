@@ -94,7 +94,7 @@ def _get_version() -> str:
         epoch = f"{version.epoch}!" if version.epoch else ""
         release = ".".join(map(str, version.release))
         pre = "".join(map(str, version.pre)) if version.is_prerelease else ""
-        post = f".post{datetime.datetime.now().strftime("%Y%m%d%H%M%S")}"
+        post = f".post{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
         local = f"+{version.local}" if version.local else ""
         version_str = f"{epoch}{release}{pre}{post}{local}"
 

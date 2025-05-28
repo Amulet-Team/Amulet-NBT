@@ -11,10 +11,10 @@ AMULET_IO_REQUIREMENT = "~=1.0"
 NUMPY_REQUIREMENT = "~=2.0"
 
 
-def _get_specifier_set(version_str: str, compiler_suffix: str = "") -> str:
+def _get_specifier_set(version_str: str) -> str:
     """
     version_str: The PEP 440 version number of the library.
-    compiler_suffix: Only specified if it is a compiled library and the compiler is being frozen.
+    compiler_suffix_: Only specified if it is a compiled library and the compiler is being frozen.
     """
     version = Version(version_str)
     if version.epoch != 0 or version.is_devrelease or version.is_postrelease:
@@ -22,15 +22,7 @@ def _get_specifier_set(version_str: str, compiler_suffix: str = "") -> str:
 
     major, minor, patch, fix, *_ = version.release + (0, 0, 0, 0)
 
-    if version.is_prerelease:
-        # Pre-releases can make breaking changes. Pin to this exact release.
-        if compiler_suffix:
-            return f"=={major}.{minor}.{patch}.{fix}{compiler_suffix}{''.join(map(str, version.pre))}"
-        else:
-            return f"=={version_str}"
-    else:
-        # Require an ABI compatible build.
-        return f"~={major}.{minor}.{patch}.{fix}"
+    return f"~={major}.{minor}.{patch}.{fix}{''.join(map(str, version.pre or ()))}"
 
 
 if os.environ.get("AMULET_FREEZE_COMPILER", None):

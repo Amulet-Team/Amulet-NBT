@@ -1,5 +1,4 @@
 from typing import Union, Mapping
-import os
 
 from setuptools import build_meta
 from setuptools.build_meta import *

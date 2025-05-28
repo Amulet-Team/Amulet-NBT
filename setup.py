@@ -2,6 +2,7 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+import platform
 
 from setuptools import setup, Extension, Command
 from setuptools.command.build_ext import build_ext
@@ -11,6 +12,14 @@ import versioneer
 
 import requirements
 import amulet_compiler_version
+
+
+if (
+    os.environ.get("AMULET_FREEZE_COMPILER", None)
+    and sys.platform == "darwin"
+    and platform.machine() != "arm64"
+):
+    raise Exception("The MacOS frozen build must be created on arm64")
 
 
 def fix_path(path: str) -> str:
@@ -43,6 +52,9 @@ class CMakeBuild(cmdclass.get("build_ext", build_ext)):
             else:
                 platform_args.extend(["-A", "Win32"])
             platform_args.extend(["-T", "v143"])
+        elif sys.platform == "darwin":
+            if platform.machine() == "arm64":
+                platform_args.append('-DCMAKE_OSX_ARCHITECTURES=x86_64;arm64')
 
         if subprocess.run(
             [
@@ -83,11 +95,7 @@ def _get_version() -> str:
         )
         if compiler_version_str:
             version = Version(version_str)
-            if (
-                version.epoch != 0
-                or version.is_devrelease
-                or version.is_postrelease
-            ):
+            if version.epoch != 0 or version.is_devrelease or version.is_postrelease:
                 raise RuntimeError(f"Unsupported version format. {version_str}")
             major, minor, patch, fix, *_ = version.release + (0, 0, 0, 0)
             pre = "".join(map(str, version.pre)) if version.is_prerelease else ""

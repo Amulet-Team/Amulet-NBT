@@ -5,6 +5,8 @@ inputs:
     description: 'The twine username'
   twine-password:
     description: 'The twine password'
+  compiler-specifier:
+    description: 'The PEP 440 version specifier for the compiler library'
   nbt-specifier:
     description: 'The PEP 440 version specifier for the NBT library'
 outputs:
@@ -19,7 +21,7 @@ runs:
       shell: bash
       continue-on-error: true
       run: |
-        python -m pip install --only-binary amulet-nbt amulet-nbt${{ inputs.nbt-specifier }}
+        python -m pip install --only-binary amulet-nbt amulet-compiler-version${{ inputs.compiler-specifier }} amulet-nbt${{ inputs.nbt-specifier }}
 
     - name: Build
       if: steps.install.outcome == 'failure'

@@ -14,6 +14,14 @@ import requirements
 import amulet_compiler_version
 
 
+if (
+    os.environ.get("AMULET_FREEZE_COMPILER", None)
+    and sys.platform == "darwin"
+    and platform.machine() != "arm64"
+):
+    raise Exception("The MacOS frozen build must be created on arm64")
+
+
 def fix_path(path: str) -> str:
     return os.path.realpath(path).replace(os.sep, "/")
 

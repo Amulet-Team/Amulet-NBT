@@ -21,26 +21,11 @@ if (MSVC)
     add_definitions("/MP")
 endif()
 
-include(FetchContent)
-
-# Add zlib
-set(ZLIB_BUILD_EXAMPLES OFF)
-FetchContent_Declare(
-  zlib
-  GIT_REPOSITORY https://github.com/madler/zlib.git
-  GIT_TAG        51b7f2abdade71cd9bb0e7a373ef2610ec6f9daf
-)
-FetchContent_MakeAvailable(zlib)
-set(ZLIB_ROOT ${zlib_SOURCE_DIR})
-set(ZLIB_USE_STATIC_LIBS ON)
-set(ZLIB_LIBRARY ${INSTALL_LIB_DIR})
-find_package(ZLIB REQUIRED)
-target_compile_definitions(zlibstatic PUBLIC ZLIB_CONST)
-
 # Add pybind11
 find_package(pybind11 CONFIG REQUIRED)
-find_package(amulet_io CONFIG REQUIRED)
 find_package(amulet_pybind11_extensions CONFIG REQUIRED)
+find_package(amulet_io CONFIG REQUIRED)
+find_package(amulet_zlib CONFIG REQUIRED)
 
 # Find C++ files
 file(REAL_PATH src SOURCE_PATH)
@@ -53,7 +38,6 @@ list(REMOVE_ITEM HEADERS ${EXTENSION_HEADERS})
 
 # Add implementation
 add_library(amulet_nbt SHARED)
-target_link_libraries( amulet_nbt PRIVATE zlibstatic )
 target_link_libraries( amulet_nbt PUBLIC amulet_io )
 target_compile_definitions(amulet_nbt PRIVATE ExportAmuletNBT)
 target_include_directories(amulet_nbt PUBLIC "src")
@@ -73,6 +57,7 @@ target_compile_definitions(_amulet_nbt PRIVATE COMPILER_ID="${CMAKE_CXX_COMPILER
 target_compile_definitions(_amulet_nbt PRIVATE COMPILER_VERSION="${CMAKE_CXX_COMPILER_VERSION}")
 target_link_libraries(_amulet_nbt PRIVATE amulet_pybind11_extensions)
 target_link_libraries(_amulet_nbt PRIVATE amulet_nbt)
+target_link_libraries(_amulet_nbt PRIVATE amulet_zlib)
 target_sources(_amulet_nbt PRIVATE ${EXTENSION_SOURCES} ${EXTENSION_HEADERS})
 foreach(FILE ${EXTENSION_SOURCES} ${EXTENSION_HEADERS})
     file(RELATIVE_PATH REL_PATH ${SOURCE_PATH} ${FILE})

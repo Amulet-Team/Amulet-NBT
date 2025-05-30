@@ -22,7 +22,7 @@ if os.environ.get("AMULET_ZLIB_REQUIREMENT", None):
     )
 
 
-def _get_specifier_set(version_str: str) -> str:
+def get_specifier_set(version_str: str) -> str:
     """
     version_str: The PEP 440 version number of the library.
     compiler_suffix_: Only specified if it is a compiled library and the compiler is being frozen.
@@ -42,14 +42,14 @@ if os.environ.get("AMULET_FREEZE_COMPILER", None):
     except ImportError:
         pass
     else:
-        AMULET_IO_REQUIREMENT = _get_specifier_set(amulet.io.__version__)
+        AMULET_IO_REQUIREMENT = get_specifier_set(amulet.io.__version__)
 
     try:
         import amulet.zlib
     except ImportError:
         pass
     else:
-        AMULET_ZLIB_REQUIREMENT = _get_specifier_set(amulet.zlib.__version__)
+        AMULET_ZLIB_REQUIREMENT = get_specifier_set(amulet.zlib.__version__)
 
 
 def get_build_dependencies() -> list:

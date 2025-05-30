@@ -1969,6 +1969,9 @@ def _init() -> None:
     else:
         raise RuntimeError(f"Unsupported platform {sys.platform}")
 
+    # Import dependencies
+    import amulet.zlib
+
     # Load the shared library
     ctypes.cdll.LoadLibrary(lib_path)
 

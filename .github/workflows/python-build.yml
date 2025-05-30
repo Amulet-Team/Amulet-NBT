@@ -21,31 +21,17 @@ jobs:
         shell: bash
 
     steps:
-    - name: Clone Amulet-NBT.
+    - name: Clone
       uses: actions/checkout@v4
-
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
 
     - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install build twine
-
-    - name: Clone Amulet-Compiler-Version
-      uses: actions/checkout@v4
+      uses: ./.github/actions/install-dependencies
       with:
-        repository: 'Amulet-Team/Amulet-Compiler-Version'
-        ref: '3.0'
-        path: 'lib/Amulet-Compiler-Version'
-
-    - name: Install Amulet-Compiler-Version
-      uses: ./lib/Amulet-Compiler-Version/.github/actions/install
-      with:
-        twine-username: ${{ secrets.PYPI_USERNAME }}
-        twine-password: ${{ secrets.AMULET_COMPILER_VERSION_PYPI_PASSWORD }}
+        python-version: ${{ matrix.python-version }}
+        username: ${{ secrets.PYPI_USERNAME }}
+        compiler-version-password: ${{ secrets.AMULET_COMPILER_VERSION_PYPI_PASSWORD }}
+        zlib-password: ${{ secrets.AMULET_ZLIB_PYPI_PASSWORD }}
+        rest-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build SDist
       run: |
@@ -57,7 +43,7 @@ jobs:
       run: |
         python -m build --wheel .
 
-    - name: Publish Amulet-NBT
+    - name: Publish
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.AMULET_NBT_PYPI_PASSWORD }}

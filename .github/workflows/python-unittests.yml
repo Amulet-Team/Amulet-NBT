@@ -11,12 +11,12 @@ on:
   pull_request:
 
 jobs:
-  unittests:
+  unittests-first:
     strategy:
       fail-fast: false
       matrix:
         python-version: [ '3.11', '3.12', '3.13' ]
-        os: [ macos-latest, windows-latest, ubuntu-latest ]
+        os: [ macos-latest, windows-latest ]
 
     runs-on: ${{ matrix.os }}
     defaults:
@@ -24,19 +24,70 @@ jobs:
         shell: bash
 
     steps:
-    - name: Clone Amulet-NBT.
+    - name: Clone
       uses: actions/checkout@v4
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
+    - name: Install dependencies
+      uses: ./.github/actions/install-dependencies
       with:
         python-version: ${{ matrix.python-version }}
+        username: ${{ secrets.PYPI_USERNAME }}
+        compiler-version-password: ${{ secrets.AMULET_COMPILER_VERSION_PYPI_PASSWORD }}
+        zlib-password: ${{ secrets.AMULET_ZLIB_PYPI_PASSWORD }}
+        rest-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
         pip install -vv .[dev]
         python tools/compile_tests.py
 
     - name: Test with unittest
       run: python -m unittest discover -v -s tests
+
+  unittests-first-ubuntu:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ '3.11', '3.12', '3.13' ]
+        os: [ ubuntu-latest ]
+
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Clone
+        uses: actions/checkout@v4
+
+      - name: Build and run unittests
+        uses: ./.github/actions/unittests-src
+        with:
+          python-version: ${{ matrix.python-version }}
+
+  unittests-third:
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ '3.11', '3.12', '3.13' ]
+        os: [ windows-latest, macos-latest, ubuntu-latest ]
+
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Clone
+        uses: actions/checkout@v4
+
+      - name: Build and run unittests
+        uses: ./.github/actions/unittests-src
+        with:
+          python-version: ${{ matrix.python-version }}

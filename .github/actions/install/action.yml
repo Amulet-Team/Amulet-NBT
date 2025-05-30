@@ -7,6 +7,10 @@ inputs:
     description: 'The twine password'
   compiler-specifier:
     description: 'The PEP 440 version specifier for the compiler library'
+  io-specifier:
+    description: 'The PEP 440 version specifier for the io library'
+  zlib-specifier:
+    description: 'The PEP 440 version specifier for the zlib library'
   nbt-specifier:
     description: 'The PEP 440 version specifier for the NBT library'
 outputs:
@@ -21,13 +25,15 @@ runs:
       shell: bash
       continue-on-error: true
       run: |
-        python -m pip install --only-binary amulet-nbt amulet-compiler-version${{ inputs.compiler-specifier }} amulet-nbt${{ inputs.nbt-specifier }}
+        python -m pip install --only-binary amulet-nbt amulet-compiler-version${{ inputs.compiler-specifier }} amulet-io${{ inputs.io-specifier }} amulet-zlib${{ inputs.zlib-specifier }} amulet-nbt${{ inputs.nbt-specifier }}
 
     - name: Build
       if: steps.install.outcome == 'failure'
       shell: bash
       env:
         AMULET_FREEZE_COMPILER: 1
+        AMULET_IO_REQUIREMENT: ${{ inputs.io-specifier }}
+        AMULET_ZLIB_REQUIREMENT: ${{ inputs.zlib-specifier }}
       run: |
         python -m build --wheel "${{ github.action_path }}"/../../..
 

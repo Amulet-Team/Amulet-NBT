@@ -10,6 +10,7 @@
 
 #include <amulet/nbt/nbt_encoding/binary.hpp>
 #include <amulet/nbt/string_encoding/encoding.py.hpp>
+#include <amulet/zlib/zlib.hpp>
 
 namespace py = pybind11;
 
@@ -34,13 +35,10 @@ void init_bnbt(py::module& m)
         py::arg("offset") = 0);
     ReadOffset.def_readonly("offset", &Amulet::NBT::ReadOffset::offset);
 
-    py::object decompress = py::module::import("gzip").attr("decompress");
-    py::object BadGzipFile = py::module::import("gzip").attr("BadGzipFile");
-    py::object zlib_error = py::module::import("zlib").attr("error");
     py::object mutf8_encoding = m.attr("mutf8_encoding");
     py::object java_encoding = m.attr("java_encoding");
 
-    auto get_buffer = [decompress, BadGzipFile, zlib_error](
+    auto get_buffer = [](
                           py::object filepath_or_buffer,
                           bool compressed) -> std::string {
         std::string data;
@@ -66,16 +64,11 @@ void init_bnbt(py::module& m)
             throw std::invalid_argument("filepath_or_buffer must be a path string, bytes, memory view or an object with a read method.");
         }
 
-        if (compressed) {
-            try {
-                // TODO: move this to C++
-                data = decompress(py::bytes((data))).cast<std::string>();
-            } catch (py::error_already_set& e) {
-                if (!(
-                        e.matches(BadGzipFile) || e.matches(PyExc_EOFError) || e.matches(zlib_error))) {
-                    throw;
-                }
-            }
+        if (compressed && data[0] == 0x1f) {
+            py::gil_scoped_release nogil;
+            std::string data2;
+            Amulet::zlib::decompress_zlib_gzip(data, data2);
+            return data2;
         }
         return data;
     };

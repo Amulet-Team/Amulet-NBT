@@ -32,7 +32,7 @@ dev = [
     "setuptools>=42",
     "versioneer",
     "wheel",
-    "pybind11[global]==2.13.6",
+    "pybind11==2.13.6",
     "amulet_pybind11_extensions~=1.0",
     "black>=22.3",
     "pre_commit>=1.11.1",

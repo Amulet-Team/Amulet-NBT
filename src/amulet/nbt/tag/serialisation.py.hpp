@@ -1,13 +1,19 @@
 #define SerialiseTag(CLSNAME)                                                                                                     \
-    auto to_nbt_##CLSNAME = [compress](                                                                                           \
+    auto to_nbt_##CLSNAME = [](                                                                                                   \
                                 const Amulet::NBT::CLSNAME& self,                                                                 \
                                 std::optional<std::string> name,                                                                  \
                                 bool compressed,                                                                                  \
                                 std::endian endianness,                                                                           \
-                                Amulet::StringEncoder string_encoder) -> py::bytes {                                          \
-        py::bytes data = Amulet::NBT::encode_nbt(name, self, endianness, string_encoder);                                         \
-        if (compressed) {                                                                                                         \
-            return compress(data);                                                                                                \
+                                Amulet::StringEncoder string_encoder) -> py::bytes {                                              \
+        std::string data;                                                                                                         \
+        {                                                                                                                         \
+            py::gil_scoped_release nogil;                                                                                         \
+            data = Amulet::NBT::encode_nbt(name, self, endianness, string_encoder);                                               \
+            if (compressed) {                                                                                                     \
+                std::string data2;                                                                                                \
+                Amulet::zlib::compress_gzip(data, data2);                                                                         \
+                data = std::move(data2);                                                                                          \
+            }                                                                                                                     \
         }                                                                                                                         \
         return data;                                                                                                              \
     };                                                                                                                            \
@@ -53,7 +59,7 @@
                                  std::optional<std::string> name,                                                                 \
                                  bool compressed,                                                                                 \
                                  std::endian endianness,                                                                          \
-                                 Amulet::StringEncoder string_encoder) {                                                      \
+                                 Amulet::StringEncoder string_encoder) {                                                          \
         py::bytes py_data = to_nbt_##CLSNAME(self, name, compressed, endianness, string_encoder);                                 \
         if (!filepath_or_writable.is(py::none())) {                                                                               \
             if (py::isinstance<py::str>(filepath_or_writable)) {                                                                  \

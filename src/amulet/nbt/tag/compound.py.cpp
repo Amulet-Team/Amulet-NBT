@@ -11,6 +11,8 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include <amulet/zlib/zlib.hpp>
+
 #include <amulet/nbt/common.hpp>
 #include <amulet/nbt/nbt_encoding/binary.hpp>
 #include <amulet/nbt/nbt_encoding/string.hpp>
@@ -114,7 +116,6 @@ void init_compound(py::module& m)
     py::object isinstance = py::module::import("builtins").attr("isinstance");
     py::object mutf8_encoding = m.attr("mutf8_encoding");
     py::object java_encoding = m.attr("java_encoding");
-    py::object compress = py::module::import("gzip").attr("compress");
 
     // py::class_<Amulet::NBT::CompoundTag, Amulet::NBT::AbstractBaseMutableTag, std::shared_ptr<Amulet::NBT::CompoundTag>> CompoundTag(m, "CompoundTag",
     py::class_<Amulet::NBT::CompoundTag, std::shared_ptr<Amulet::NBT::CompoundTag>> CompoundTag(m, "CompoundTag", AbstractBaseMutableTag,

@@ -11,6 +11,16 @@ AMULET_IO_REQUIREMENT = "~=1.0"
 AMULET_ZLIB_REQUIREMENT = ">=1.0.0.0a0,<1.0.0.0a1"
 NUMPY_REQUIREMENT = "~=2.0"
 
+if os.environ.get("AMULET_IO_REQUIREMENT", None):
+    AMULET_IO_REQUIREMENT = (
+        f"{AMULET_IO_REQUIREMENT},{os.environ['AMULET_IO_REQUIREMENT']}"
+    )
+
+if os.environ.get("AMULET_ZLIB_REQUIREMENT", None):
+    AMULET_ZLIB_REQUIREMENT = (
+        f"{AMULET_ZLIB_REQUIREMENT},{os.environ['AMULET_ZLIB_REQUIREMENT']}"
+    )
+
 
 def _get_specifier_set(version_str: str) -> str:
     """

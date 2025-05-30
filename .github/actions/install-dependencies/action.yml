@@ -1,0 +1,72 @@
+name: 'Install dependencies'
+description: 'Build if needed and install the library dependencies'
+inputs:
+  python-version:
+    description: 'The version of Python to install.'
+  username:
+    description: 'The pypi username'
+  compiler-version-password:
+    description: 'The password for the compiler-version library'
+  zlib-password:
+    description: 'The password for the zlib library'
+  rest-token:
+    description: 'The Github authentication token to use to access the REST API.'
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python ${{ inputs.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install dependencies
+      shell: bash
+      run: |
+        pip cache purge
+        python -m pip install --upgrade pip
+        pip install build twine packaging
+
+    - name: Clone Amulet-Compiler-Version
+      uses: actions/checkout@v4
+      with:
+        repository: 'Amulet-Team/Amulet-Compiler-Version'
+        ref: '3.0'
+        path: 'build/pylib/Amulet-Compiler-Version'
+
+    - name: Install Amulet-Compiler-Version
+      id: compiler
+      uses: ./build/pylib/Amulet-Compiler-Version/.github/actions/install
+      with:
+        twine-username: ${{ inputs.username }}
+        twine-password: ${{ inputs.compiler-version-password }}
+
+    - name: Get Dependencies
+      id: dep
+      shell: bash
+      run: |
+        zlib=$(python -c "import requirements; print(requirements.AMULET_ZLIB_REQUIREMENT)")
+        echo "zlib=$zlib" >> "$GITHUB_OUTPUT"
+
+    - name: Clone Amulet-zlib
+      id: zlib-clone
+      uses: Amulet-Team/checkout-pep440@v1
+      with:
+        repository: 'Amulet-Team/Amulet-zlib'
+        specifier: ${{ steps.dep.outputs.zlib }}
+        path: 'build/pylib/Amulet-zlib'
+        rest-token: ${{ inputs.rest-token }}
+
+    - name: Specialise Specifiers
+      id: dep2
+      shell: bash
+      run: |
+        zlib=$(python -c "import requirements; print(requirements.get_specifier_set(\"${{ steps.zlib-clone.outputs.ref }}\"))")
+        echo "zlib=$zlib" >> "$GITHUB_OUTPUT"
+
+    - name: Install Amulet-zlib
+      uses: ./build/pylib/Amulet-zlib/.github/actions/install
+      with:
+        twine-username: ${{ inputs.username }}
+        twine-password: ${{ inputs.zlib-password }}
+        compiler-specifier: '==${{ steps.compiler.outputs.version }}'
+        zlib-specifier: ${{ steps.dep2.outputs.zlib }}

@@ -6,6 +6,8 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include <amulet/zlib/zlib.hpp>
+
 #include <amulet/io/binary_writer.hpp>
 #include <amulet/nbt/nbt_encoding/binary.hpp>
 #include <amulet/nbt/nbt_encoding/string.hpp>
@@ -21,7 +23,6 @@ void init_string(py::module& m)
 {
     py::object mutf8_encoding = m.attr("mutf8_encoding");
     py::object java_encoding = m.attr("java_encoding");
-    py::object compress = py::module::import("gzip").attr("compress");
 
     py::class_<Amulet::NBT::StringTag, Amulet::NBT::AbstractBaseImmutableTag> StringTag(m, "StringTag",
         "A class that behaves like a string.");

@@ -10,6 +10,8 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include <amulet/zlib/zlib.hpp>
+
 #include <amulet/nbt/nbt_encoding/binary.hpp>
 #include <amulet/nbt/nbt_encoding/string.hpp>
 #include <amulet/nbt/string_encoding/encoding.py.hpp>
@@ -52,7 +54,6 @@ void init_named_tag(py::module& m)
 {
     py::object mutf8_encoding = m.attr("mutf8_encoding");
     py::object java_encoding = m.attr("java_encoding");
-    py::object compress = py::module::import("gzip").attr("compress");
 
     py::class_<AmuletPy::NamedTagIterator> NamedTagIterator(m, "NamedTagIterator");
     NamedTagIterator.def(
@@ -98,14 +99,20 @@ void init_named_tag(py::module& m)
         [](Amulet::NBT::NamedTag& self, Amulet::NBT::TagNode tag) {
             self.tag_node = tag;
         });
-    auto to_nbt = [compress](
+    auto to_nbt = [](
                       const Amulet::NBT::NamedTag& self,
                       bool compressed,
                       std::endian endianness,
                       Amulet::StringEncoder string_encoder) -> py::bytes {
-        py::bytes data = Amulet::NBT::encode_nbt(self.name, self.tag_node, endianness, string_encoder);
-        if (compressed) {
-            return compress(data);
+        std::string data;
+        {
+            py::gil_scoped_release nogil;
+            data = Amulet::NBT::encode_nbt(self.name, self.tag_node, endianness, string_encoder);
+            if (compressed) {
+                std::string data2;
+                Amulet::zlib::compress_gzip(data, data2);
+                data = std::move(data2);
+            }
         }
         return data;
     };

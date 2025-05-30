@@ -5,6 +5,8 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include <amulet/zlib/zlib.hpp>
+
 #include <amulet/nbt/nbt_encoding/binary.hpp>
 #include <amulet/nbt/nbt_encoding/string.hpp>
 #include <amulet/nbt/string_encoding/encoding.py.hpp>
@@ -133,7 +135,6 @@ void init_float(py::module& m)
 {
     py::object mutf8_encoding = m.attr("mutf8_encoding");
     py::object java_encoding = m.attr("java_encoding");
-    py::object compress = py::module::import("gzip").attr("compress");
     PyFloat(float, FloatTag, single, 5)
         PyFloat(double, DoubleTag, double, 6)
 }

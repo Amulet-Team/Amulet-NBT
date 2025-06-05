@@ -17,7 +17,7 @@ from amulet_nbt import (
     load as load_nbt,
 )
 
-from tests.tags.abstract_base_tag import TestWrapper
+from tags.abstract_base_tag import TestWrapper
 
 
 class TestFloat(TestWrapper.AbstractBaseTagTest):

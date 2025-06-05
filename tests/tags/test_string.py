@@ -16,7 +16,7 @@ from amulet_nbt import (
     NBTFormatError,
 )
 
-from tests.tags.abstract_base_tag import TestWrapper
+from tags.abstract_base_tag import TestWrapper
 
 
 class TestString(TestWrapper.AbstractBaseTagTest):

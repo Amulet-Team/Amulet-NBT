@@ -12,7 +12,7 @@ from amulet_nbt import (
     ByteTag,
 )
 
-from tests.tags.abstract_base_tag import TestWrapper, TagNameMap
+from tags.abstract_base_tag import TestWrapper, TagNameMap
 
 
 class NBTTests(TestWrapper.AbstractBaseTest):

@@ -27,7 +27,7 @@ from amulet_nbt import (
     load as load_nbt,
 )
 
-from tests.tags.abstract_base_tag import TestWrapper, TagNameMap
+from tags.abstract_base_tag import TestWrapper, TagNameMap
 
 FullCompound = CompoundTag(
     byte=ByteTag(),

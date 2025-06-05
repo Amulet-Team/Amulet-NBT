@@ -2,7 +2,7 @@ import unittest
 from copy import copy
 
 import amulet_nbt
-from tests.binary_data import binary_data_tuple
+from binary_data import binary_data_tuple
 
 
 class NBTTests(unittest.TestCase):

@@ -25,7 +25,7 @@ from amulet_nbt import (
     NBTFormatError,
 )
 
-from tests.tags.abstract_base_tag import TestWrapper
+from tags.abstract_base_tag import TestWrapper
 
 
 def is_iterable(obj):

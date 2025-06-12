@@ -20,6 +20,16 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - name: Validate Inputs
+      shell: bash
+      run: |
+        [ -z "${{ inputs.twine-username }}" ] && echo "Missing input: twine-username" && exit 1
+        [ -z "${{ inputs.twine-password }}" ] && echo "Missing input: twine-password" && exit 1
+        [ -z "${{ inputs.compiler-specifier }}" ] && echo "Missing input: compiler-specifier" && exit 1
+        [ -z "${{ inputs.io-specifier }}" ] && echo "Missing input: io-specifier" && exit 1
+        [ -z "${{ inputs.zlib-specifier }}" ] && echo "Missing input: zlib-specifier" && exit 1
+        [ -z "${{ inputs.nbt-specifier }}" ] && echo "Missing input: nbt-specifier" && exit 1
+
     - name: Install Prebuilt
       id: install
       shell: bash

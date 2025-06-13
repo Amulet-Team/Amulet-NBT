@@ -3,14 +3,19 @@ description: 'Build if needed and install the library dependencies'
 inputs:
   python-version:
     description: 'The version of Python to install.'
+    required: true
   username:
     description: 'The pypi username'
+    required: true
   compiler-version-password:
     description: 'The password for the compiler-version library'
+    required: true
   zlib-password:
     description: 'The password for the zlib library'
+    required: true
   rest-token:
     description: 'The Github authentication token to use to access the REST API.'
+    required: true
 runs:
   using: "composite"
   steps:

@@ -17,7 +17,10 @@ runs:
     - name: Validate Inputs
       shell: bash
       run: |
-        [ -z "${{ inputs.python-version }}" ] && echo "Missing input: python-version" && exit 1
+        if [ -z "${{ inputs.python-version }}" ]; then
+          echo "Missing input: python-version"
+          exit 1
+        fi
 
     - name: Set up Python ${{ inputs.python-version }}
       uses: actions/setup-python@v5

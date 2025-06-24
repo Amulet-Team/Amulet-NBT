@@ -80,8 +80,8 @@ runs:
         python -c "import sys; sys.path.append(r'${{ github.action_path }}'); import dependency_resolver; import requirements; dependency_resolver.find_and_save_compatible_libraries([('amulet-zlib', 'Amulet-Team/Amulet-zlib')], requirements.get_runtime_dependencies())"
         pybind11=$(python -c "import os; f = open(os.path.join(r'${{ github.action_path }}', 'libraries.json'), encoding='utf-8'); import json; print(json.load(f)['pybind11'])")
         echo "pybind11=$pybind11" >> "$GITHUB_OUTPUT"
-        pybind11-extensions=$(python -c "import os; f = open(os.path.join(r'${{ github.action_path }}', 'libraries.json'), encoding='utf-8'); import json; print(json.load(f)['amulet-pybind11-extensions'])")
-        echo "pybind11-extensions=$pybind11-extensions" >> "$GITHUB_OUTPUT"
+        pybind11_extensions=$(python -c "import os; f = open(os.path.join(r'${{ github.action_path }}', 'libraries.json'), encoding='utf-8'); import json; print(json.load(f)['amulet-pybind11-extensions'])")
+        echo "pybind11_extensions=$pybind11_extensions" >> "$GITHUB_OUTPUT"
         io=$(python -c "import os; f = open(os.path.join(r'${{ github.action_path }}', 'libraries.json'), encoding='utf-8'); import json; print(json.load(f)['amulet-io'])")
         echo "io=$io" >> "$GITHUB_OUTPUT"
         zlib=$(python -c "import os; f = open(os.path.join(r'${{ github.action_path }}', 'libraries.json'), encoding='utf-8'); import json; print(json.load(f)['amulet-zlib'])")
@@ -93,8 +93,8 @@ runs:
       run: |
         pybind11=$(python -c "import requirements; print(requirements.get_specifier_set('${{ steps.dep.outputs.pybind11 }}'))")
         echo "pybind11=$pybind11" >> "$GITHUB_OUTPUT"
-        pybind11-extensions=$(python -c "import requirements; print(requirements.get_specifier_set('${{ steps.dep.outputs.pybind11-extensions }}'))")
-        echo "pybind11-extensions=$pybind11-extensions" >> "$GITHUB_OUTPUT"
+        pybind11_extensions=$(python -c "import requirements; print(requirements.get_specifier_set('${{ steps.dep.outputs.pybind11_extensions }}'))")
+        echo "pybind11_extensions=$pybind11_extensions" >> "$GITHUB_OUTPUT"
         io=$(python -c "import requirements; print(requirements.get_specifier_set('${{ steps.dep.outputs.io }}'))")
         echo "io=$io" >> "$GITHUB_OUTPUT"
         zlib=$(python -c "import requirements; print(requirements.get_specifier_set('${{ steps.dep.outputs.zlib }}'))")
@@ -116,6 +116,6 @@ runs:
         twine-password: ${{ inputs.zlib-password }}
         compiler-specifier: '==${{ steps.compiler.outputs.version }}'
         pybind11-specifier: ${{ steps.dep2.outputs.pybind11 }}
-        pybind11-extensions-specifier: ${{ steps.dep2.outputs.pybind11-extensions }}
+        pybind11-extensions-specifier: ${{ steps.dep2.outputs.pybind11_extensions }}
         zlib-specifier: ${{ steps.dep2.outputs.zlib }}
 

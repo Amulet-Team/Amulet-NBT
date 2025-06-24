@@ -1,6 +1,7 @@
 import unittest
 import numpy
 import os
+from tempfile import TemporaryDirectory
 from amulet.nbt import (
     ByteTag,
     ShortTag,
@@ -131,29 +132,29 @@ class MassiveNBTTests(unittest.TestCase):
 
         # save then load back up and check the data matches
 
-        os.makedirs("temp", exist_ok=True)
-        named_compound.save_to(
-            os.path.join("temp", "massive_nbt_test_big_endian.nbt"),
-            compressed=False,
-        )
-        named_compound.save_to(
-            os.path.join("temp", "massive_nbt_test_big_endian_compressed.nbt"),
-            compressed=True,
-        )
-        named_compound.save_to(
-            os.path.join("temp", "massive_nbt_test_little_endian.nbt"),
-            compressed=False,
-            little_endian=True,
-        )
+        with TemporaryDirectory() as temp_dir:
+            named_compound.save_to(
+                os.path.join(temp_dir, "massive_nbt_test_big_endian.nbt"),
+                compressed=False,
+            )
+            named_compound.save_to(
+                os.path.join(temp_dir, "massive_nbt_test_big_endian_compressed.nbt"),
+                compressed=True,
+            )
+            named_compound.save_to(
+                os.path.join(temp_dir, "massive_nbt_test_little_endian.nbt"),
+                compressed=False,
+                little_endian=True,
+            )
 
-        test_be = read_nbt(os.path.join("temp", "massive_nbt_test_big_endian.nbt"))
-        test_be_compressed = read_nbt(
-            os.path.join("temp", "massive_nbt_test_big_endian_compressed.nbt")
-        )
-        test_le = read_nbt(
-            os.path.join("temp", "massive_nbt_test_little_endian.nbt"),
-            little_endian=True,
-        )
+            test_be = read_nbt(os.path.join(temp_dir, "massive_nbt_test_big_endian.nbt"))
+            test_be_compressed = read_nbt(
+                os.path.join(temp_dir, "massive_nbt_test_big_endian_compressed.nbt")
+            )
+            test_le = read_nbt(
+                os.path.join(temp_dir, "massive_nbt_test_little_endian.nbt"),
+                little_endian=True,
+            )
 
         self.assertEqual(test_be, named_compound)
         self.assertEqual(test_be_compressed, named_compound)

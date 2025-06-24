@@ -1,7 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from . import _version
+import logging as _logging
 import re
+
+from . import _version
+
+# init a default logger
+_logging.basicConfig(level=_logging.INFO, format="%(levelname)s - %(message)s")
 
 if TYPE_CHECKING:
     from typing import (

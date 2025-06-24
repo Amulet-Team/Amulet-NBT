@@ -6,27 +6,24 @@ name: Stylecheck
 on:
   push:
     branches:
+      - master
+      - main
       - '[0-9]+.[0-9]+'
       - '[0-9]+.[0-9]+.[0-9]+'
   pull_request:
 
 jobs:
   stylecheck:
-    strategy:
-      matrix:
-        python-version: ['3.12']
-        os: [ubuntu-latest]
-
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
     steps:
-    - name: Clone Amulet-NBT.
+    - name: Clone
       uses: actions/checkout@v4
 
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: 3.12
 
     - name: Install dependencies
       run: |
@@ -35,5 +32,4 @@ jobs:
 
     - name: run stylecheck
       run: |
-        python -m black --check --diff src
-        python -m black --check --diff tests
+        python -m black --check --diff .

@@ -23,8 +23,7 @@ find_package(amulet_pybind11_extensions CONFIG REQUIRED)
 find_package(amulet_nbt CONFIG REQUIRED)
 
 # Find sources
-file(REAL_PATH test_amulet_nbt SOURCE_PATH)
-file(GLOB_RECURSE SOURCES LIST_DIRECTORIES false ${SOURCE_PATH}/*.py.cpp)
+file(GLOB_RECURSE SOURCES LIST_DIRECTORIES false "${CMAKE_CURRENT_LIST_DIR}/*.py.cpp")
 
 pybind11_add_module(_test_amulet_nbt)
 target_compile_definitions(_test_amulet_nbt PRIVATE PYBIND11_DETAILED_ERROR_MESSAGES)
@@ -34,5 +33,12 @@ target_compile_definitions(_test_amulet_nbt PRIVATE COMPILER_VERSION="${CMAKE_CX
 target_link_libraries(_test_amulet_nbt PRIVATE amulet_pybind11_extensions)
 target_link_libraries(_test_amulet_nbt PRIVATE amulet_nbt)
 target_sources(_test_amulet_nbt PRIVATE ${SOURCES})
+foreach(FILE ${SOURCES})
+    file(RELATIVE_PATH REL_PATH ${CMAKE_CURRENT_LIST_DIR} ${FILE})
+    get_filename_component(GROUP ${REL_PATH} DIRECTORY)
+    string(REPLACE "/" "\\" GROUP "${GROUP}")
+    source_group(${GROUP} FILES ${FILE})
+endforeach()
 
-install(TARGETS _test_amulet_nbt DESTINATION ${TEST_AMULET_NBT_DIR})
+# Install
+install(TARGETS _test_amulet_nbt DESTINATION "${CMAKE_CURRENT_LIST_DIR}/test_amulet_nbt")

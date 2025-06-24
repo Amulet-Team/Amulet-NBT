@@ -6,12 +6,16 @@ name: Unittests
 on:
   push:
     branches:
+      - master
+      - main
       - '[0-9]+.[0-9]+'
       - '[0-9]+.[0-9]+.[0-9]+'
   pull_request:
 
 jobs:
   unittests-first:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+  
     strategy:
       fail-fast: false
       matrix:
@@ -19,6 +23,7 @@ jobs:
         os: [ macos-latest, windows-latest ]
 
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
     defaults:
       run:
         shell: bash
@@ -36,9 +41,11 @@ jobs:
         zlib-password: ${{ secrets.AMULET_ZLIB_PYPI_PASSWORD }}
         rest-token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Install dependencies
+    - name: Install
+      env:
+        AMULET_FREEZE_COMPILER: 1
       run: |
-        pip install -vv .[dev]
+        pip install -v .[dev]
         python tools/compile_tests.py
 
     - name: Test with unittest

@@ -1,7 +1,6 @@
 #include <pybind11/pybind11.h>
 
 #include <exception>
-#include <iostream>
 
 #include <amulet/pybind11_extensions/compatibility.hpp>
 
@@ -25,7 +24,7 @@ void init_named_tag(py::module&);
 void init_bnbt(py::module& m);
 void init_snbt(py::module& m);
 
-void init_module(py::module& m)
+void init_module(py::module m)
 {
     pyext::init_compiler_config(m);
     pyext::check_compatibility(py::module::import("amulet.zlib"), m);
@@ -82,5 +81,8 @@ void init_module(py::module& m)
 
 PYBIND11_MODULE(_amulet_nbt, m)
 {
-    m.def("init", &init_module);
+    py::options options;
+    options.disable_function_signatures();
+    m.def("init", &init_module, py::doc("init(arg0: types.ModuleType) -> None"));
+    options.enable_function_signatures();
 }

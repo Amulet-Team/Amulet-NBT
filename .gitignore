@@ -3,11 +3,6 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# C extensions
-*.dll
-*.so
-*.dylib
-
 # Distribution / packaging
 .Python
 build/
@@ -55,7 +50,6 @@ coverage.xml
 *.pot
 
 # Django stuff:
-*.log
 local_settings.py
 db.sqlite3
 
@@ -112,14 +106,16 @@ venv*
 # mypy
 .mypy_cache/
 
-temp
-
-# visual studio files
-*.vs/
-*.vcxproj*
-*.sln
-*.ilk
-*.exp
+# Visual Studio
+/install/
+.vs
+*.dll
+*.so
+*.dylib
 *.lib
+*.exp
 *.pdb
-/install
+*.ilk
+
+/amulet_nbt-*
+/.github/actions/install-dependencies/*.json

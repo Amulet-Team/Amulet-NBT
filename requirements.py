@@ -70,7 +70,7 @@ def get_build_dependencies() -> list:
         f"amulet-pybind11-extensions{AMULET_PYBIND11_EXTENSIONS_REQUIREMENT}",
         f"amulet-io{AMULET_IO_REQUIREMENT}",
         f"amulet-zlib{AMULET_ZLIB_REQUIREMENT}",
-    ]
+    ] * (not os.environ.get("AMULET_SKIP_COMPILE", None))
 
 
 def get_runtime_dependencies() -> list[str]:

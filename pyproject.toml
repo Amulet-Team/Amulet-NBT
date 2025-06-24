@@ -31,14 +31,15 @@ docs = [
 dev = [
     "setuptools>=42",
     "versioneer",
+    "packaging",
     "wheel",
-    "pybind11==2.13.6",
     "amulet_pybind11_extensions~=1.0",
+    "pybind11_stubgen>=2.5.4",
     "black>=22.3",
-    "pre_commit>=1.11.1",
+    "isort",
+    "autoflake",
     "mypy",
     "types-pyinstaller",
-    "packaging",
 ]
 
 [project.urls]

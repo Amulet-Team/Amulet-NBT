@@ -4,9 +4,9 @@ import os
 import shutil
 
 import pybind11
+import amulet.pybind11_extensions
 import amulet.io
 import amulet.zlib
-import amulet.pybind11_extensions
 
 
 def fix_path(path: str) -> str:
@@ -29,6 +29,8 @@ def main():
     os.chdir(RootDir)
     shutil.rmtree(os.path.join(RootDir, "build", "CMakeFiles"), ignore_errors=True)
 
+    if subprocess.run(["cmake", "--version"]).returncode:
+        raise RuntimeError("Could not find cmake")
     if subprocess.run(
         [
             "cmake",
@@ -40,12 +42,12 @@ def main():
             f"-Damulet_zlib_DIR={fix_path(amulet.zlib.__path__[0])}",
             f"-Damulet_nbt_DIR={fix_path(os.path.join(RootDir, 'src', 'amulet', 'nbt'))}",
             f"-DCMAKE_INSTALL_PREFIX=install",
-            f"-DTEST_AMULET_NBT_DIR={os.path.join(RootDir, 'tests', 'test_amulet_nbt')}",
+            f"-DBUILD_AMULET_NBT_TESTS=",
             "-B",
             "build",
         ]
     ).returncode:
-        raise RuntimeError("Error configuring amulet_nbt_tests")
+        raise RuntimeError("Error configuring amulet-nbt")
 
 
 if __name__ == "__main__":

@@ -147,7 +147,9 @@ class MassiveNBTTests(unittest.TestCase):
                 little_endian=True,
             )
 
-            test_be = read_nbt(os.path.join(temp_dir, "massive_nbt_test_big_endian.nbt"))
+            test_be = read_nbt(
+                os.path.join(temp_dir, "massive_nbt_test_big_endian.nbt")
+            )
             test_be_compressed = read_nbt(
                 os.path.join(temp_dir, "massive_nbt_test_big_endian_compressed.nbt")
             )

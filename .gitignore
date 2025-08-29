@@ -118,4 +118,3 @@ venv*
 *.ilk
 
 /amulet_nbt-*
-/.github/actions/install-dependencies/*.json

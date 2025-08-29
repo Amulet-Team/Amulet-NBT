@@ -109,9 +109,9 @@ runs:
       run: |
         twine upload "${{ github.action_path }}"/../../../dist/* --skip-existing
     
-    - name: Sleep for 10 seconds
+    - name: Sleep for 30 seconds
       if: steps.install.outcome == 'failure'
-      run: Start-Sleep -s 10
+      run: Start-Sleep -s 30
       shell: powershell
 
     - name: Install

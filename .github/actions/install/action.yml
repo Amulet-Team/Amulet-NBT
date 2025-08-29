@@ -108,6 +108,11 @@ runs:
         TWINE_PASSWORD: ${{ inputs.twine-password }}
       run: |
         twine upload "${{ github.action_path }}"/../../../dist/* --skip-existing
+    
+    - name: Sleep for 10 seconds
+      if: steps.install.outcome == 'failure'
+      run: Start-Sleep -s 10
+      shell: powershell
 
     - name: Install
       if: steps.install.outcome == 'failure'

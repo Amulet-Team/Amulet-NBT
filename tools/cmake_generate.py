@@ -42,7 +42,7 @@ def main():
             f"-Damulet_zlib_DIR={fix_path(amulet.zlib.__path__[0])}",
             f"-Damulet_nbt_DIR={fix_path(os.path.join(RootDir, 'src', 'amulet', 'nbt'))}",
             f"-DCMAKE_INSTALL_PREFIX=install",
-            f"-DBUILD_AMULET_NBT_TESTS=",
+            f"-DBUILD_AMULET_NBT_TESTS=ON",
             "-B",
             "build",
         ]

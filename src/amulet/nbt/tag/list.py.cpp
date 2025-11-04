@@ -318,7 +318,7 @@ void init_list(py::module& m)
     };
     ListTag.def_property_readonly(
         "element_class",
-        [&NBTClasses](const Amulet::NBT::ListTag& self) {
+        [NBTClasses](const Amulet::NBT::ListTag& self) {
             return NBTClasses[self.index()];
         });
     ListTag.def(

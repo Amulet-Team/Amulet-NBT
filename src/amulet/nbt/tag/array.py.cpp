@@ -25,7 +25,7 @@
 namespace py = pybind11;
 
 #define PyArray(CLSNAME, ELEMENTCLS, BITCOUNT, TAGID)                                                                                         \
-    py::class_<Amulet::NBT::CLSNAME, std::shared_ptr<Amulet::NBT::CLSNAME>> CLSNAME(m, #CLSNAME, AbstractBaseArrayTag, py::buffer_protocol(), \
+    py::classh<Amulet::NBT::CLSNAME> CLSNAME(m, #CLSNAME, AbstractBaseArrayTag, py::buffer_protocol(), \
         "This class stores a fixed size signed " #BITCOUNT " bit vector.");                                                                   \
     CLSNAME.def_property_readonly_static("tag_id", [](py::object) { return TAGID; });                                                         \
     CLSNAME.def(                                                                                                                              \

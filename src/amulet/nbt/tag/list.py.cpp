@@ -151,7 +151,7 @@ void ListTag_del_slice(std::vector<tagT>& self, const py::slice& slice)
 
 void init_list(py::module& m)
 {
-    py::class_<Amulet::NBT::ListTagIterator, std::shared_ptr<Amulet::NBT::ListTagIterator>> ListTagIterator(m, "ListTagIterator");
+    py::classh<Amulet::NBT::ListTagIterator> ListTagIterator(m, "ListTagIterator");
     ListTagIterator.def(
         "__next__",
         [](Amulet::NBT::ListTagIterator& self) {
@@ -170,9 +170,7 @@ void init_list(py::module& m)
     py::object java_encoding = m.attr("java_encoding");
     py::object AbstractBaseMutableTag = m.attr("AbstractBaseMutableTag");
 
-    // py::class_<Amulet::NBT::ListTag, Amulet::NBT::AbstractBaseMutableTag, std::shared_ptr<Amulet::NBT::ListTag>> ListTag(m, "ListTag",
-    py::class_<Amulet::NBT::ListTag, std::shared_ptr<Amulet::NBT::ListTag>> ListTag(m, "ListTag", AbstractBaseMutableTag,
-        // py::class_<Amulet::NBT::ListTag, std::shared_ptr<Amulet::NBT::ListTag>> ListTag(m, "ListTag",
+    py::classh<Amulet::NBT::ListTag> ListTag(m, "ListTag", AbstractBaseMutableTag,
         "A Python wrapper around a C++ vector.\n"
         "\n"
         "All contained data must be of the same NBT data type.");

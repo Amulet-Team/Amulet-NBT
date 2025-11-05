@@ -91,7 +91,7 @@ T new_tag()
 
 void init_compound(py::module& m)
 {
-    py::class_<Amulet::NBT::CompoundTagIterator> CompoundTagIterator(m, "CompoundTagIterator");
+    py::classh<Amulet::NBT::CompoundTagIterator> CompoundTagIterator(m, "CompoundTagIterator");
     CompoundTagIterator.def(
         "__next__",
         [](Amulet::NBT::CompoundTagIterator& self) -> py::object {
@@ -117,8 +117,7 @@ void init_compound(py::module& m)
     py::object mutf8_encoding = m.attr("mutf8_encoding");
     py::object java_encoding = m.attr("java_encoding");
 
-    // py::class_<Amulet::NBT::CompoundTag, Amulet::NBT::AbstractBaseMutableTag, std::shared_ptr<Amulet::NBT::CompoundTag>> CompoundTag(m, "CompoundTag",
-    py::class_<Amulet::NBT::CompoundTag, std::shared_ptr<Amulet::NBT::CompoundTag>> CompoundTag(m, "CompoundTag", AbstractBaseMutableTag,
+    py::classh<Amulet::NBT::CompoundTag> CompoundTag(m, "CompoundTag", AbstractBaseMutableTag,
         "A Python wrapper around a C++ unordered map.\n"
         "\n"
         "Note that this class is not thread safe and inherits all the limitations of a C++ unordered_map.");

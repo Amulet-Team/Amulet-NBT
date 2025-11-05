@@ -18,7 +18,7 @@
 namespace py = pybind11;
 
 #define PyInt(NATIVE, CLSNAME, BYTEWIDTH, BITPOW, SIGNBIT, MAGBITS, TAGID)                                                 \
-    py::class_<Amulet::NBT::CLSNAME, Amulet::NBT::AbstractBaseIntTag> CLSNAME(m, #CLSNAME,                                 \
+    py::classh<Amulet::NBT::CLSNAME, Amulet::NBT::AbstractBaseIntTag> CLSNAME(m, #CLSNAME,                                 \
         "A " #BYTEWIDTH " byte integer class.\n"                                                                           \
         "\n"                                                                                                               \
         "Can Store numbers between -(2^" #BITPOW ") and (2^" #BITPOW " - 1)");                                             \

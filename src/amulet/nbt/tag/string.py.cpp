@@ -24,7 +24,7 @@ void init_string(py::module& m)
     py::object mutf8_encoding = m.attr("mutf8_encoding");
     py::object java_encoding = m.attr("java_encoding");
 
-    py::class_<Amulet::NBT::StringTag, Amulet::NBT::AbstractBaseImmutableTag> StringTag(m, "StringTag",
+    py::classh<Amulet::NBT::StringTag, Amulet::NBT::AbstractBaseImmutableTag> StringTag(m, "StringTag",
         "A class that behaves like a string.");
     StringTag.def_property_readonly_static("tag_id", [](py::object) { return 8; });
     StringTag.def(

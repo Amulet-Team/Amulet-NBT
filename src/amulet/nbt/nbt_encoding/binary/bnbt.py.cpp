@@ -29,7 +29,7 @@ namespace NBT {
 
 void init_bnbt(py::module& m)
 {
-    py::class_<Amulet::NBT::ReadOffset> ReadOffset(m, "ReadOffset");
+    py::classh<Amulet::NBT::ReadOffset> ReadOffset(m, "ReadOffset");
     ReadOffset.def(
         py::init<const size_t>(),
         py::arg("offset") = 0);

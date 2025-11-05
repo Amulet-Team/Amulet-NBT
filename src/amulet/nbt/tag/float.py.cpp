@@ -18,7 +18,7 @@
 namespace py = pybind11;
 
 #define PyFloat(NATIVE, CLSNAME, PRECISION, TAGID)                                                                         \
-    py::class_<Amulet::NBT::CLSNAME, Amulet::NBT::AbstractBaseFloatTag> CLSNAME(m, #CLSNAME,                               \
+    py::classh<Amulet::NBT::CLSNAME, Amulet::NBT::AbstractBaseFloatTag> CLSNAME(m, #CLSNAME,                               \
         "A " #PRECISION " precision float class.");                                                                        \
     CLSNAME.def_property_readonly_static("tag_id", [](py::object) { return TAGID; });                                      \
     CLSNAME.def(                                                                                                           \

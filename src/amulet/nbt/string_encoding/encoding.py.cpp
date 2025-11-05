@@ -12,7 +12,7 @@ namespace py = pybind11;
 
 void init_encoding(py::module& m)
 {
-    py::class_<Amulet::NBT::StringEncoding> StringEncoding(m, "StringEncoding");
+    py::classh<Amulet::NBT::StringEncoding> StringEncoding(m, "StringEncoding");
     StringEncoding.def(
         "encode",
         [](const Amulet::NBT::StringEncoding& self, py::bytes data) -> py::bytes {
@@ -32,7 +32,7 @@ void init_encoding(py::module& m)
     m.attr("utf8_escape_encoding") = utf8_escape_encoding;
     m.attr("mutf8_encoding") = mutf8_encoding;
 
-    py::class_<Amulet::NBT::EncodingPreset> EncodingPreset(m, "EncodingPreset");
+    py::classh<Amulet::NBT::EncodingPreset> EncodingPreset(m, "EncodingPreset");
     EncodingPreset.def_readonly(
         "compressed",
         &Amulet::NBT::EncodingPreset::compressed);

@@ -55,7 +55,7 @@ void init_named_tag(py::module& m)
     py::object mutf8_encoding = m.attr("mutf8_encoding");
     py::object java_encoding = m.attr("java_encoding");
 
-    py::class_<AmuletPy::NamedTagIterator> NamedTagIterator(m, "NamedTagIterator");
+    py::classh<AmuletPy::NamedTagIterator> NamedTagIterator(m, "NamedTagIterator");
     NamedTagIterator.def(
         "__next__",
         &AmuletPy::NamedTagIterator::next);
@@ -65,7 +65,7 @@ void init_named_tag(py::module& m)
             return self;
         });
 
-    py::class_<Amulet::NBT::NamedTag, std::shared_ptr<Amulet::NBT::NamedTag>> NamedTag(m, "NamedTag");
+    py::classh<Amulet::NBT::NamedTag> NamedTag(m, "NamedTag");
     NamedTag.def(
         py::init([](std::variant<std::monostate, Amulet::NBT::TagNode> value, std::string name) {
             return std::visit([&name](auto&& tag) {

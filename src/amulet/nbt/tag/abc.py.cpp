@@ -25,7 +25,7 @@ void init_abc(py::module& m)
     py::object mutf8_encoding = m.attr("mutf8_encoding");
     py::object java_encoding = m.attr("java_encoding");
 
-    py::class_<Amulet::NBT::AbstractBaseTag> AbstractBaseTag(m, "AbstractBaseTag",
+    py::classh<Amulet::NBT::AbstractBaseTag> AbstractBaseTag(m, "AbstractBaseTag",
         "Abstract Base Class for all tag classes");
     AbstractBaseTag.def_property_readonly_static(
         "tag_id",
@@ -131,14 +131,14 @@ void init_abc(py::module& m)
         abstract_method<const Amulet::NBT::AbstractBaseTag&>,
         "A string representation of the object.");
 
-    py::class_<Amulet::NBT::AbstractBaseImmutableTag, Amulet::NBT::AbstractBaseTag> AbstractBaseImmutableTag(m, "AbstractBaseImmutableTag",
+    py::classh<Amulet::NBT::AbstractBaseImmutableTag, Amulet::NBT::AbstractBaseTag> AbstractBaseImmutableTag(m, "AbstractBaseImmutableTag",
         "Abstract Base Class for all tag classes");
     AbstractBaseImmutableTag.def(
         "__hash__",
         abstract_method<const Amulet::NBT::AbstractBaseImmutableTag&>,
         "A hash of the data in the class.");
 
-    py::class_<Amulet::NBT::AbstractBaseNumericTag, Amulet::NBT::AbstractBaseImmutableTag> AbstractBaseNumericTag(m, "AbstractBaseNumericTag",
+    py::classh<Amulet::NBT::AbstractBaseNumericTag, Amulet::NBT::AbstractBaseImmutableTag> AbstractBaseNumericTag(m, "AbstractBaseNumericTag",
         "Abstract Base Class for all numeric tag classes");
     AbstractBaseNumericTag.def(
         "__int__",
@@ -153,7 +153,7 @@ void init_abc(py::module& m)
         abstract_method<const Amulet::NBT::AbstractBaseNumericTag&>,
         "Get a python bool representation of the class.");
 
-    py::class_<Amulet::NBT::AbstractBaseIntTag, Amulet::NBT::AbstractBaseNumericTag> AbstractBaseIntTag(m, "AbstractBaseIntTag",
+    py::classh<Amulet::NBT::AbstractBaseIntTag, Amulet::NBT::AbstractBaseNumericTag> AbstractBaseIntTag(m, "AbstractBaseIntTag",
         "Abstract Base Class for all int tag classes");
     AbstractBaseIntTag.def_property_readonly(
         "py_int",
@@ -162,7 +162,7 @@ void init_abc(py::module& m)
         "\n"
         "The returned data is immutable so changes will not mirror the instance.");
 
-    py::class_<Amulet::NBT::AbstractBaseFloatTag, Amulet::NBT::AbstractBaseNumericTag> AbstractBaseFloatTag(m, "AbstractBaseFloatTag",
+    py::classh<Amulet::NBT::AbstractBaseFloatTag, Amulet::NBT::AbstractBaseNumericTag> AbstractBaseFloatTag(m, "AbstractBaseFloatTag",
         "Abstract Base Class for all float tag classes.");
     AbstractBaseFloatTag.def_property_readonly(
         "py_float",
@@ -171,10 +171,10 @@ void init_abc(py::module& m)
         "\n"
         "The returned data is immutable so changes will not mirror the instance.");
 
-    py::class_<Amulet::NBT::AbstractBaseMutableTag, Amulet::NBT::AbstractBaseTag> AbstractBaseMutableTag(m, "AbstractBaseMutableTag",
+    py::classh<Amulet::NBT::AbstractBaseMutableTag, Amulet::NBT::AbstractBaseTag> AbstractBaseMutableTag(m, "AbstractBaseMutableTag",
         "Abstract Base Class for all mutable tags.");
     AbstractBaseMutableTag.attr("__hash__") = py::none();
 
-    py::class_<Amulet::NBT::AbstractBaseArrayTag, Amulet::NBT::AbstractBaseMutableTag> AbstractBaseArrayTag(m, "AbstractBaseArrayTag",
+    py::classh<Amulet::NBT::AbstractBaseArrayTag, Amulet::NBT::AbstractBaseMutableTag> AbstractBaseArrayTag(m, "AbstractBaseArrayTag",
         "Abstract Base Class for all array tag classes.");
 }

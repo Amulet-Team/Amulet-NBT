@@ -29,9 +29,9 @@ class ArrayTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 cls([1, 2, 3])
                 cls(numpy.array([1, 2, 3]))
                 with self.assertRaises(TypeError):
-                    cls(None)
+                    cls(None)  # type: ignore
                 with self.assertRaises(ValueError):
-                    cls("test")
+                    cls("test")  # type: ignore
 
             for cls2 in self.array_types:
                 with self.subTest(cls=cls, cls2=cls2):

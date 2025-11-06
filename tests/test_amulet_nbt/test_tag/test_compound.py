@@ -48,23 +48,23 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 CompoundTag(CompoundTag((("key", cls()),)))
 
                 with self.assertRaises(TypeError):
-                    CompoundTag(None)
+                    CompoundTag(None)  # type: ignore
 
             for key in (None, 0, cls()):
                 with self.subTest("Key test", cls=cls, key=key):
                     with self.assertRaises(TypeError):
-                        CompoundTag({key: cls()})
+                        CompoundTag({key: cls()})  # type: ignore
                     with self.assertRaises(TypeError):
-                        CompoundTag(((key, cls()),))
+                        CompoundTag(((key, cls()),))  # type: ignore
 
             for val in (None, 0, "val"):
                 with self.subTest("Value test", cls=cls, val=val):
                     with self.assertRaises(TypeError):
-                        CompoundTag({"key": val})
+                        CompoundTag({"key": val})  # type: ignore
                     with self.assertRaises(TypeError):
-                        CompoundTag(key=val)
+                        CompoundTag(key=val)  # type: ignore
                     with self.assertRaises(TypeError):
-                        CompoundTag((("key", val),))
+                        CompoundTag((("key", val),))  # type: ignore
 
     def test_equal(self) -> None:
         for cls1, cls2 in itertools.product(self.array_types, repeat=2):
@@ -359,11 +359,11 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
             CompoundTag({"a": StringTag("test"), "b": StringTag("test")}), tag
         )
         with self.assertRaises(TypeError):
-            CompoundTag.fromkeys((1, 2), StringTag("test"))
+            CompoundTag.fromkeys((1, 2), StringTag("test"))  # type: ignore
         with self.assertRaises(TypeError):
-            CompoundTag.fromkeys((None, None), StringTag("test"))
+            CompoundTag.fromkeys((None, None), StringTag("test"))  # type: ignore
         with self.assertRaises(TypeError):
-            CompoundTag.fromkeys(("a", "b"), None)
+            CompoundTag.fromkeys(("a", "b"), None)  # type: ignore
 
     def test_clear(self) -> None:
         c = CompoundTag({TagNameMap[tag_cls]: tag_cls() for tag_cls in self.nbt_types})
@@ -553,9 +553,9 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
 
         # invalid keys
         with self.assertRaises(TypeError):
-            c.setdefault(None, StringTag("val1"))
+            c.setdefault(None, StringTag("val1"))  # type: ignore
         with self.assertRaises(TypeError):
-            c.setdefault(StringTag("key2"), StringTag("val1"))
+            c.setdefault(StringTag("key2"), StringTag("val1"))  # type: ignore
 
         # invalid values
         with self.assertRaises(TypeError):
@@ -563,7 +563,7 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         with self.assertRaises(TypeError):
             c.setdefault("key2", None)
         with self.assertRaises(TypeError):
-            c.setdefault("key2", "val1")
+            c.setdefault("key2", "val1")  # type: ignore
 
         self.assertEqual(StringTag("val1"), c.setdefault("key1"))
         self.assertEqual(StringTag("val1"), c.setdefault("key1", StringTag("val2")))
@@ -609,13 +609,13 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
     def test_update(self) -> None:
         c = CompoundTag()
         with self.assertRaises(TypeError):
-            c.update({None: StringTag("val")})
+            c.update({None: StringTag("val")})  # type: ignore
         with self.assertRaises(TypeError):
-            c.update({"key": None})
+            c.update({"key": None})  # type: ignore
         with self.assertRaises(TypeError):
-            c.update(None)
+            c.update(None)  # type: ignore
         with self.assertRaises(TypeError):
-            c.update(key=None)
+            c.update(key=None)  # type: ignore
 
         d = {
             "key1": StringTag("val1"),

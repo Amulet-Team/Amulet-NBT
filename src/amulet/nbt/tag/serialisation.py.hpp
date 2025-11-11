@@ -1,3 +1,5 @@
+#pragma once
+
 #define SerialiseTag(CLSNAME)                                                                                                     \
     auto to_nbt_##CLSNAME = [](                                                                                                   \
                                 const Amulet::NBT::CLSNAME& self,                                                                 \

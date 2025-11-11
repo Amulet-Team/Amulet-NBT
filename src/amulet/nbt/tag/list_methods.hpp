@@ -1,3 +1,5 @@
+#pragma once
+
 #include <amulet/nbt/tag/compound.hpp>
 #include <amulet/nbt/tag/list.hpp>
 

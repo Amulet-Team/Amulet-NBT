@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef AMULET_NBT_EXPORT
     #ifdef _WIN32
         #ifdef ExportAmuletNBT

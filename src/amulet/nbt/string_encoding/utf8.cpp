@@ -27,6 +27,7 @@ namespace NBT {
     CodePointVector _read_utf8(std::string_view src)
     {
         CodePointVector dst;
+        dst.reserve(src.size());
 
         for (size_t index = 0; index < src.size(); index++) {
             uint8_t b1 = src[index];
@@ -177,6 +178,7 @@ namespace NBT {
     template <bool escapeErrors>
     constexpr void _write_utf8(std::string& dst, const CodePointVector& src)
     {
+        dst.reserve(dst.size() + src.size());
         for (size_t index = 0; index < src.size(); index++) {
             const size_t& c = src[index];
             if (c <= 127) {

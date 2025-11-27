@@ -30,12 +30,12 @@ namespace NBT {
             std::is_same_v<T, ByteTag> || std::is_same_v<T, ShortTag> || std::is_same_v<T, IntTag> || std::is_same_v<T, LongTag> || std::is_same_v<T, FloatTag> || std::is_same_v<T, DoubleTag>,
             bool>
         = true>
-    inline void write_payload(BinaryWriter& writer, const T& value)
+    inline void write_payload(BaseBinaryWriter& writer, const T& value)
     {
         writer.write_numeric<typename T::native_type>(value);
     };
 
-    inline void write_string(BinaryWriter& writer, const std::string& value)
+    inline void write_string(BaseBinaryWriter& writer, const std::string& value)
     {
         std::string encoded_string = writer.encode_string(value);
         if (encoded_string.size() > static_cast<size_t>(std::numeric_limits<std::uint16_t>::max())) {
@@ -51,7 +51,7 @@ namespace NBT {
             std::is_same_v<T, StringTag>,
             bool>
         = true>
-    inline void write_payload(BinaryWriter& writer, const T& value)
+    inline void write_payload(BaseBinaryWriter& writer, const T& value)
     {
         write_string(writer, value);
     };
@@ -62,7 +62,7 @@ namespace NBT {
             std::is_same_v<T, ByteArrayTag> || std::is_same_v<T, IntArrayTag> || std::is_same_v<T, LongArrayTag>,
             bool>
         = true>
-    inline void write_payload(BinaryWriter& writer, const T& value)
+    inline void write_payload(BaseBinaryWriter& writer, const T& value)
     {
         if (value.size() > static_cast<size_t>(std::numeric_limits<std::int32_t>::max())) {
             throw std::overflow_error("Array of length " + std::to_string(value.size()) + " is too long.");
@@ -77,12 +77,12 @@ namespace NBT {
     template <
         class T,
         std::enable_if_t<std::is_same_v<T, ListTag>, bool> = true>
-    inline void write_payload(BinaryWriter& writer, const T& value);
+    inline void write_payload(BaseBinaryWriter& writer, const T& value);
 
     template <
         class T,
         std::enable_if_t<std::is_same_v<T, CompoundTag>, bool> = true>
-    inline void write_payload(BinaryWriter& writer, const T& value);
+    inline void write_payload(BaseBinaryWriter& writer, const T& value);
 
     template <
         class T,
@@ -90,7 +90,7 @@ namespace NBT {
             std::is_same_v<T, ListTagPtr> || std::is_same_v<T, CompoundTagPtr> || std::is_same_v<T, ByteArrayTagPtr> || std::is_same_v<T, IntArrayTagPtr> || std::is_same_v<T, LongArrayTagPtr>,
             bool>
         = true>
-    inline void write_payload(BinaryWriter& writer, const T value)
+    inline void write_payload(BaseBinaryWriter& writer, const T value)
     {
         write_payload(writer, *value);
     }
@@ -101,7 +101,7 @@ namespace NBT {
             std::is_same_v<T, ByteTag> || std::is_same_v<T, ShortTag> || std::is_same_v<T, IntTag> || std::is_same_v<T, LongTag> || std::is_same_v<T, FloatTag> || std::is_same_v<T, DoubleTag> || std::is_same_v<T, ByteArrayTagPtr> || std::is_same_v<T, StringTag> || std::is_same_v<T, ListTagPtr> || std::is_same_v<T, CompoundTagPtr> || std::is_same_v<T, IntArrayTagPtr> || std::is_same_v<T, LongArrayTagPtr>,
             bool>
         = true>
-    inline void write_list_tag_payload(BinaryWriter& writer, const std::vector<T>& list)
+    inline void write_list_tag_payload(BaseBinaryWriter& writer, const std::vector<T>& list)
     {
         if (list.size() > static_cast<size_t>(std::numeric_limits<std::int32_t>::max())) {
             throw std::overflow_error("List of length " + std::to_string(list.size()) + " is too long.");
@@ -114,7 +114,7 @@ namespace NBT {
     }
 
     template <>
-    inline void write_payload<ListTag>(BinaryWriter& writer, const ListTag& value)
+    inline void write_payload<ListTag>(BaseBinaryWriter& writer, const ListTag& value)
     {
         std::visit([&writer](auto&& tag) {
             using T = std::decay_t<decltype(tag)>;
@@ -134,7 +134,7 @@ namespace NBT {
             std::is_same_v<T, ByteTag> || std::is_same_v<T, ShortTag> || std::is_same_v<T, IntTag> || std::is_same_v<T, LongTag> || std::is_same_v<T, FloatTag> || std::is_same_v<T, DoubleTag> || std::is_same_v<T, ByteArrayTag> || std::is_same_v<T, StringTag> || std::is_same_v<T, ListTag> || std::is_same_v<T, CompoundTag> || std::is_same_v<T, IntArrayTag> || std::is_same_v<T, LongArrayTag>,
             bool>
         = true>
-    inline void write_name_and_tag(BinaryWriter& writer, const std::optional<std::string>& name, const T& tag)
+    inline void write_name_and_tag(BaseBinaryWriter& writer, const std::optional<std::string>& name, const T& tag)
     {
         writer.write_numeric<std::uint8_t>(tag_id_v<T>);
         if (name)
@@ -148,7 +148,7 @@ namespace NBT {
             std::is_same_v<T, ByteArrayTagPtr> || std::is_same_v<T, ListTagPtr> || std::is_same_v<T, CompoundTagPtr> || std::is_same_v<T, IntArrayTagPtr> || std::is_same_v<T, LongArrayTagPtr>,
             bool>
         = true>
-    inline void write_name_and_tag(BinaryWriter& writer, const std::optional<std::string>& name, const T tag)
+    inline void write_name_and_tag(BaseBinaryWriter& writer, const std::optional<std::string>& name, const T tag)
     {
         write_name_and_tag<typename T::element_type>(writer, name, *tag);
     }
@@ -156,7 +156,7 @@ namespace NBT {
     template <
         typename T,
         std::enable_if_t<std::is_same_v<T, TagNode>, bool> = true>
-    inline void write_name_and_tag(BinaryWriter& writer, const std::optional<std::string>& name, const TagNode& node)
+    inline void write_name_and_tag(BaseBinaryWriter& writer, const std::optional<std::string>& name, const TagNode& node)
     {
         std::visit([&writer, &name](auto&& tag) {
             using tagT = std::decay_t<decltype(tag)>;
@@ -166,7 +166,7 @@ namespace NBT {
     }
 
     template <>
-    inline void write_payload<CompoundTag>(BinaryWriter& writer, const CompoundTag& value)
+    inline void write_payload<CompoundTag>(BaseBinaryWriter& writer, const CompoundTag& value)
     {
         for (auto it = value.begin(); it != value.end(); it++) {
             write_name_and_tag<TagNode>(writer, it->first, it->second);
@@ -177,64 +177,65 @@ namespace NBT {
     template <typename T>
     inline std::string _encode_nbt(const std::optional<std::string>& name, const T& tag, std::endian endianness, Amulet::StringEncoder string_encode)
     {
-        BinaryWriter writer(endianness, string_encode);
+        std::string buffer;
+        BaseBinaryWriter writer(buffer, endianness, string_encode);
         write_name_and_tag<T>(writer, name, tag);
-        return writer.get_buffer();
+        return buffer;
     }
 
-    void encode_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const ByteTag& tag)
+    void encode_nbt(BaseBinaryWriter& writer, const std::optional<std::string>& name, const ByteTag& tag)
     {
         write_name_and_tag<ByteTag>(writer, name, tag);
     }
-    void encode_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const ShortTag& tag)
+    void encode_nbt(BaseBinaryWriter& writer, const std::optional<std::string>& name, const ShortTag& tag)
     {
         write_name_and_tag<ShortTag>(writer, name, tag);
     }
-    void encode_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const IntTag& tag)
+    void encode_nbt(BaseBinaryWriter& writer, const std::optional<std::string>& name, const IntTag& tag)
     {
         write_name_and_tag<IntTag>(writer, name, tag);
     }
-    void encode_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const LongTag& tag)
+    void encode_nbt(BaseBinaryWriter& writer, const std::optional<std::string>& name, const LongTag& tag)
     {
         write_name_and_tag<LongTag>(writer, name, tag);
     }
-    void encode_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const FloatTag& tag)
+    void encode_nbt(BaseBinaryWriter& writer, const std::optional<std::string>& name, const FloatTag& tag)
     {
         write_name_and_tag<FloatTag>(writer, name, tag);
     }
-    void encode_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const DoubleTag& tag)
+    void encode_nbt(BaseBinaryWriter& writer, const std::optional<std::string>& name, const DoubleTag& tag)
     {
         write_name_and_tag<DoubleTag>(writer, name, tag);
     }
-    void encode_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const ByteArrayTag& tag)
+    void encode_nbt(BaseBinaryWriter& writer, const std::optional<std::string>& name, const ByteArrayTag& tag)
     {
         write_name_and_tag<ByteArrayTag>(writer, name, tag);
     }
-    void encode_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const StringTag& tag)
+    void encode_nbt(BaseBinaryWriter& writer, const std::optional<std::string>& name, const StringTag& tag)
     {
         write_name_and_tag<StringTag>(writer, name, tag);
     }
-    void encode_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const ListTag& tag)
+    void encode_nbt(BaseBinaryWriter& writer, const std::optional<std::string>& name, const ListTag& tag)
     {
         write_name_and_tag<ListTag>(writer, name, tag);
     }
-    void encode_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const CompoundTag& tag)
+    void encode_nbt(BaseBinaryWriter& writer, const std::optional<std::string>& name, const CompoundTag& tag)
     {
         write_name_and_tag<CompoundTag>(writer, name, tag);
     }
-    void encode_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const IntArrayTag& tag)
+    void encode_nbt(BaseBinaryWriter& writer, const std::optional<std::string>& name, const IntArrayTag& tag)
     {
         write_name_and_tag<IntArrayTag>(writer, name, tag);
     }
-    void encode_nbt(BinaryWriter& writer, const std::optional<std::string>& name, const LongArrayTag& tag)
+    void encode_nbt(BaseBinaryWriter& writer, const std::optional<std::string>& name, const LongArrayTag& tag)
     {
         write_name_and_tag<LongArrayTag>(writer, name, tag);
     }
-    void encode_nbt(BinaryWriter& writer, const std::string& name, const TagNode& tag)
+    void encode_nbt(BaseBinaryWriter& writer, const std::string& name, const TagNode& tag)
     {
         write_name_and_tag<TagNode>(writer, name, tag);
     }
-    void encode_nbt(BinaryWriter& writer, const NamedTag& tag)
+    void encode_nbt(BaseBinaryWriter& writer, const NamedTag& tag)
     {
         write_name_and_tag<TagNode>(writer, tag.name, tag.tag_node);
     }

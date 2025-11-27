@@ -190,7 +190,9 @@ namespace NBT {
     NamedTag decode_nbt(std::string_view raw, std::endian endianness, Amulet::StringDecoder string_decode, size_t& offset, bool named)
     {
         BinaryReader reader(raw, offset, endianness, string_decode);
-        return decode_nbt(reader, named);
+        auto tag = decode_nbt(reader, named);
+        offset = reader.get_position();
+        return tag;
     }
 
     // Read one (un)named tag from the string.
@@ -208,6 +210,7 @@ namespace NBT {
         for (size_t i = 0; i < count; i++) {
             out.push_back(decode_nbt(reader, named));
         }
+        offset = reader.get_position();
         return out;
     }
 
@@ -219,6 +222,7 @@ namespace NBT {
         while (reader.has_more_data()) {
             out.push_back(decode_nbt(reader, named));
         }
+        offset = reader.get_position();
         return out;
     }
 } // namespace NBT

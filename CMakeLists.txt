@@ -51,6 +51,7 @@ list(REMOVE_ITEM HEADERS ${EXTENSION_HEADERS})
 
 # Add implementation
 add_library(amulet_nbt SHARED)
+set_target_properties(amulet_nbt PROPERTIES FOLDER "CPP")
 target_compile_definitions(amulet_nbt PRIVATE ExportAmuletNBT)
 target_link_libraries(amulet_nbt PUBLIC amulet_io)
 target_include_directories(amulet_nbt PUBLIC ${SOURCE_PATH})
@@ -64,6 +65,7 @@ endforeach()
 
 # Add python extension
 pybind11_add_module(_amulet_nbt)
+set_target_properties(_amulet_nbt PROPERTIES FOLDER "Python")
 target_link_libraries(_amulet_nbt PRIVATE amulet_pybind11_extensions)
 target_link_libraries(_amulet_nbt PRIVATE amulet_zlib)
 target_link_libraries(_amulet_nbt PRIVATE amulet_nbt)

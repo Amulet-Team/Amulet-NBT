@@ -223,7 +223,10 @@ namespace NBT {
 
     inline void write_key(std::string& snbt, const StringTag& key)
     {
-        if (std::all_of(key.begin(), key.end(), [](char c) {
+        if (key.empty()) {
+            snbt.append("\"\"");
+        } else if (
+            std::all_of(key.begin(), key.end(), [](char c) {
                 return std::isalnum(c) || c == '.' || c == '_' || c == '+' || c == '-';
             })) {
             snbt.append(key);

@@ -8,7 +8,6 @@ from typing import List, Optional
 
 from Cython import Tempita as tempita
 
-
 TEMPLATE_ROOT_PATH = os.path.dirname(pkgutil.get_loader("template").get_filename())
 TEMPLATES_PATH = os.path.join(TEMPLATE_ROOT_PATH, "templates")
 SRC_PATH = os.path.join(TEMPLATE_ROOT_PATH, "src")

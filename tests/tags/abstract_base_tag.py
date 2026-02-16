@@ -16,7 +16,6 @@ from amulet_nbt import (
     CompoundTag,
 )
 
-
 TagNameMap = {
     ByteTag: "byte",
     ShortTag: "short",

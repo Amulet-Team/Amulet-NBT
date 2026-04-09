@@ -33,6 +33,12 @@ jobs:
         python-version: ${{ matrix.cfg.python-version }}
         architecture: ${{ matrix.cfg.architecture }}
 
+    - name: Setup MSVC
+      if: matrix.cfg.os == 'windows-11-arm'
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: arm64
+
     - name: Install dependencies
       run: |
         pip install build twine

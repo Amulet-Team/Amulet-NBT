@@ -37,6 +37,13 @@ jobs:
       run: |
         pip install build twine
 
+    - name: Install Numpy
+      if: matrix.cfg.os == 'windows-11-arm'
+      run: |
+        set CC=cl
+        set CXX=cl
+        pip install numpy~=1.17
+
     - name: Build
       run: |
         python -m build

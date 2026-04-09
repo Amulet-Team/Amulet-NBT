@@ -26,7 +26,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install black cython
+        pip install black cython~=3.0 numpy~=1.17
 
     - name: Run Stylecheck
       run: |

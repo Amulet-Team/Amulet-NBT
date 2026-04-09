@@ -3,16 +3,13 @@ This bakes the template files into real cython files."""
 
 import glob
 import os
-import pkgutil
 from typing import List, Optional
 
 from Cython import Tempita as tempita
 
-TEMPLATE_ROOT_PATH = os.path.dirname(pkgutil.get_loader("template").get_filename())
-TEMPLATES_PATH = os.path.join(TEMPLATE_ROOT_PATH, "templates")
-SRC_PATH = os.path.join(TEMPLATE_ROOT_PATH, "src")
-
-NBT_ROOT_PATH = os.path.dirname(pkgutil.get_loader("amulet_nbt").get_filename())
+TEMPLATES_PATH = "template/templates"
+TEMPLATE_SRC_PATH = "template/src"
+NBT_ROOT_PATH = "src/amulet_nbt"
 
 
 def include(rel_path, **kwargs):
@@ -29,8 +26,8 @@ def include(rel_path, **kwargs):
 class TempitaManager:
     def __init__(self):
         self.files: List[TempitaFile] = []
-        for path in glob.glob(os.path.join(SRC_PATH, "**", "*.*"), recursive=True):
-            rel_path = os.path.relpath(path, SRC_PATH)
+        for path in glob.glob(os.path.join(TEMPLATE_SRC_PATH, "**", "*.*"), recursive=True):
+            rel_path = os.path.relpath(path, TEMPLATE_SRC_PATH)
             save_path = os.path.join(NBT_ROOT_PATH, rel_path)
             self.files.append(TempitaFile(path, rel_path, save_path))
 
@@ -40,6 +37,13 @@ class TempitaManager:
     def build(self):
         for file in self.files:
             file.build()
+
+    def check(self):
+        for file in self.files:
+            if file.changed:
+                raise self.failureException(
+                    f"Tempita file {file.rel_path} has not been compiled."
+                )
 
 
 class TempitaFile:

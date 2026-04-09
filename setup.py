@@ -5,7 +5,7 @@ import numpy
 
 # Note this will error if no pyx files are present
 ext = cythonize(
-    f"amulet_nbt/**/*.pyx",
+    f"src/amulet_nbt/**/*.pyx",
     language_level=3,
 )
 

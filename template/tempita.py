@@ -26,7 +26,9 @@ def include(rel_path, **kwargs):
 class TempitaManager:
     def __init__(self):
         self.files: List[TempitaFile] = []
-        for path in glob.glob(os.path.join(TEMPLATE_SRC_PATH, "**", "*.*"), recursive=True):
+        for path in glob.glob(
+            os.path.join(TEMPLATE_SRC_PATH, "**", "*.*"), recursive=True
+        ):
             rel_path = os.path.relpath(path, TEMPLATE_SRC_PATH)
             save_path = os.path.join(NBT_ROOT_PATH, rel_path)
             self.files.append(TempitaFile(path, rel_path, save_path))

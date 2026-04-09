@@ -37,12 +37,11 @@ jobs:
         python-version: ${{ matrix.cfg.python-version }}
         architecture: ${{ matrix.cfg.architecture }}
 
-    - name: Install Numpy
+    - name: Setup MSVC
       if: matrix.cfg.os == 'windows-11-arm'
-      run: |
-        set CC=cl
-        set CXX=cl
-        pip install numpy~=1.17
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: arm64
 
     - name: Build
       run: |

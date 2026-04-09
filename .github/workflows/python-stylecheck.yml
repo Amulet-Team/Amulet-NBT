@@ -10,9 +10,6 @@ on:
 jobs:
   stylecheck:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ['3.12']
 
     steps:
     - name: Clone
@@ -21,8 +18,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v6
       with:
-        python-version: ${{ matrix.cfg.python-version }}
-        architecture: ${{ matrix.cfg.architecture }}
+        python-version: '3.12'
 
     - name: Install dependencies
       run: |
@@ -30,6 +26,5 @@ jobs:
 
     - name: Run Stylecheck
       run: |
-        python -m black --check --diff src
-        python -m black --check --diff tests
+        python -m black --check --diff .
         python -m template check

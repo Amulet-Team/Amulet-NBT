@@ -26,9 +26,10 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install black
+        pip install black cython
 
     - name: Run Stylecheck
       run: |
         python -m black --check --diff amulet_nbt
         python -m black --check --diff tests
+        python -m template check

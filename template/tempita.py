@@ -41,6 +41,13 @@ class TempitaManager:
         for file in self.files:
             file.build()
 
+    def check(self):
+        for file in self.files:
+            if file.changed:
+                raise self.failureException(
+                    f"Tempita file {file.rel_path} has not been compiled."
+                )
+
 
 class TempitaFile:
     def __init__(self, src_path: str, rel_path: str, save_path: str):

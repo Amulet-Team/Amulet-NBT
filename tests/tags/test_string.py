@@ -166,7 +166,7 @@ class TestString(TestWrapper.AbstractBaseTagTest):
         )
         # default string encoder is the Java Modified UTF-8 encoder
         self.assertEqual(
-            b"\x08\x00\x00\x00\x06\xed\xa1\xbc\xed\xbf\xb9",
+            b"\x08\x00\x00\x00\x06\xed\xa0\xbc\xed\xbf\xb9",
             StringTag("🏹").to_nbt(compressed=False, little_endian=False),
         )
         self.assertEqual(
@@ -225,7 +225,7 @@ class TestString(TestWrapper.AbstractBaseTagTest):
         self.assertStrictEqual(
             StringTag("🏹"),
             load_nbt(
-                b"\x08\x00\x00\x00\x06\xed\xa1\xbc\xed\xbf\xb9",
+                b"\x08\x00\x00\x00\x06\xed\xa0\xbc\xed\xbf\xb9",
                 compressed=False,
                 little_endian=False,
             ).string,

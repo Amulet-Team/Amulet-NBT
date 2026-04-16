@@ -23,7 +23,6 @@ from numpy.typing import NDArray, ArrayLike
 _T = TypeVar("_T")
 
 __version__: str
-__major__: int
 __all__ = [
     "AbstractBaseTag",
     "AbstractBaseImmutableTag",

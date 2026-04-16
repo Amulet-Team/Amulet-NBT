@@ -5,12 +5,10 @@ import re
 
 from . import _version
 
+__version__ = _version.get_versions()["version"]
+
 # init a default logger
 _logging.basicConfig(level=_logging.INFO, format="%(levelname)s - %(message)s")
-
-
-__version__ = _version.get_versions()["version"]
-__major__ = int(re.match(r"\d+", __version__).group())
 
 
 def _init() -> None:

@@ -1,7 +1,4 @@
-from __future__ import annotations
-from typing import TYPE_CHECKING
 import logging as _logging
-import re
 
 from . import _version
 

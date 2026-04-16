@@ -15,7 +15,7 @@ authors = [
 ]
 description = "Read and write Minecraft NBT and SNBT data."
 dynamic = ["version", "readme", "dependencies"]
-requires-python = ">=3.11"
+requires-python = ">=3.14"
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",

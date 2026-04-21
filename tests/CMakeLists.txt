@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 4.1)
 
 project(amulet_nbt_tests LANGUAGES CXX)
 
@@ -19,6 +19,8 @@ else()
     message( FATAL_ERROR "Unsupported platform. Please submit a pull request to support this platform." )
 endif()
 
+find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
+
 # Find dependencies
 if (NOT TARGET pybind11::module)
     find_package(pybind11 CONFIG REQUIRED)
@@ -34,6 +36,7 @@ endif()
 file(GLOB_RECURSE SOURCES LIST_DIRECTORIES false "${CMAKE_CURRENT_LIST_DIR}/*.py.cpp")
 
 pybind11_add_module(_test_amulet_nbt)
+set_target_properties(_test_amulet_nbt PROPERTIES CXX_VISIBILITY_PRESET hidden)
 set_target_properties(_test_amulet_nbt PROPERTIES FOLDER "Tests")
 target_compile_definitions(_test_amulet_nbt PRIVATE PYBIND11_DETAILED_ERROR_MESSAGES)
 target_compile_definitions(_test_amulet_nbt PRIVATE PYBIND11_VERSION="${pybind11_VERSION}")

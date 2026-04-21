@@ -21,7 +21,6 @@ from amulet.nbt import (
     IntTag,
 )
 
-
 ToSNBTData: list[tuple[float, str, str]] = [
     (float("-inf"), "-Infinityf", "-Infinityd"),
     (-9999999999999999, "-1.00000003e+16f", "-10000000000000000d"),

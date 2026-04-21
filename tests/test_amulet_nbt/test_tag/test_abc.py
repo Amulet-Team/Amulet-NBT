@@ -24,7 +24,6 @@ from amulet.nbt import (
     LongArrayTag,
 )
 
-
 TagNameMap = {
     ByteTag: "byte",
     ShortTag: "short",

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 4.1)
 
 project(amulet_nbt LANGUAGES CXX)
 
@@ -26,6 +26,8 @@ if (MSVC)
     add_definitions("/MP")
 endif()
 
+find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
+
 # Find libraries
 if (NOT TARGET pybind11::module)
     find_package(pybind11 CONFIG REQUIRED)
@@ -51,6 +53,7 @@ list(REMOVE_ITEM HEADERS ${EXTENSION_HEADERS})
 
 # Add implementation
 add_library(amulet_nbt SHARED)
+set_target_properties(amulet_nbt PROPERTIES CXX_VISIBILITY_PRESET hidden)
 set_target_properties(amulet_nbt PROPERTIES FOLDER "CPP")
 target_compile_definitions(amulet_nbt PRIVATE ExportAmuletNBT)
 target_link_libraries(amulet_nbt PUBLIC amulet_io)
@@ -65,6 +68,7 @@ endforeach()
 
 # Add python extension
 pybind11_add_module(_amulet_nbt)
+set_target_properties(_amulet_nbt PROPERTIES CXX_VISIBILITY_PRESET hidden)
 set_target_properties(_amulet_nbt PROPERTIES FOLDER "Python")
 target_link_libraries(_amulet_nbt PRIVATE amulet_pybind11_extensions)
 target_link_libraries(_amulet_nbt PRIVATE amulet_zlib)

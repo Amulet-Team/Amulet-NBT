@@ -26,14 +26,18 @@ struct is_shared_ptr<std::shared_ptr<T>> : std::true_type {};
 
 namespace Amulet {
 namespace NBT {
-    class AMULET_NBT_EXPORT_EXCEPTION type_error : public std::runtime_error {
+
+    class AMULET_NBT_EXPORT type_error : public std::runtime_error {
     public:
         using std::runtime_error::runtime_error;
+        ~type_error() noexcept override;
     };
+
     template<typename T>
     struct tag_id;
 
     template<typename T>
     inline constexpr std::uint8_t tag_id_v = tag_id<T>::value;
+
 } // namespace NBT
 } // namespace Amulet

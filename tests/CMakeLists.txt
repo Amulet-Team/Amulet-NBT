@@ -36,6 +36,7 @@ endif()
 file(GLOB_RECURSE SOURCES LIST_DIRECTORIES false "${CMAKE_CURRENT_LIST_DIR}/*.py.cpp")
 
 pybind11_add_module(_test_amulet_nbt)
+set_target_properties(_test_amulet_nbt PROPERTIES CXX_VISIBILITY_PRESET hidden)
 set_target_properties(_test_amulet_nbt PROPERTIES FOLDER "Tests")
 target_compile_definitions(_test_amulet_nbt PRIVATE PYBIND11_DETAILED_ERROR_MESSAGES)
 target_compile_definitions(_test_amulet_nbt PRIVATE PYBIND11_VERSION="${pybind11_VERSION}")

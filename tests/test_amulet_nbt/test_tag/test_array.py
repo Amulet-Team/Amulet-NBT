@@ -37,6 +37,16 @@ class ArrayTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 with self.subTest(cls=cls, cls2=cls2):
                     cls(cls2([1, 2, 3]))
 
+        self.assertEqual(
+            ByteArrayTag([-(2**7), 2**7 - 1]), ByteArrayTag([2**7, -(2**7) - 1])
+        )
+        self.assertEqual(
+            IntArrayTag([-(2**31), 2**31 - 1]), IntArrayTag([2**31, -(2**31) - 1])
+        )
+        self.assertEqual(
+            LongArrayTag([-(2**63), 2**63 - 1]), LongArrayTag([2**63, -(2**63) - 1])
+        )
+
     def test_equal(self) -> None:
         for cls1, cls2 in itertools.product(self.array_types, repeat=2):
             for arg1, arg2 in itertools.product(([], [1, 2, 3], [4, 5, 6]), repeat=2):

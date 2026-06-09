@@ -19,6 +19,14 @@ namespace NBT {
     public:
         // only methods that do not change the buffer size should be exposed here
         using std::vector<T>::vector;
+        ArrayTagTemplate(const std::vector<T>& other)
+            : std::vector<T>(other)
+        {
+        }
+        ArrayTagTemplate(std::vector<T>&& other)
+            : std::vector<T>(std::move(other))
+        {
+        }
 
         // Member types
         using typename std::vector<T>::value_type;

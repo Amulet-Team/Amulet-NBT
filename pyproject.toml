@@ -89,7 +89,7 @@ before-all = "yum install -y cmake"
 repair-wheel-command = "auditwheel repair --exclude libamulet_zlib.so -w {dest_dir} {wheel}"
 
 [tool.cibuildwheel.macos]
-repair-wheel-command = "delocate-wheel --require-archs {delocate_archs} --exclude libamulet_zlib.so -w {dest_dir} -v {wheel}"
+repair-wheel-command = "delocate-wheel --require-archs {delocate_archs} --exclude libamulet_zlib.dylib -w {dest_dir} -v {wheel}"
 
 [tool.cibuildwheel.windows]
 repair-wheel-command = "delvewheel repair --ignore-existing --exclude \"msvcp140.dll;amulet_zlib.dll\" -w {dest_dir} -v {wheel}"

@@ -86,9 +86,19 @@ manylinux-x86_64-image = "manylinux_2_34"
 
 [tool.cibuildwheel.linux]
 before-all = "yum install -y cmake"
+repair-wheel-command = """
+LD_LIBRARY_PATH=$(python -c "import amulet.zlib, os; print(os.path.dirname(amulet.zlib.__file__))"):$LD_LIBRARY_PATH \
+auditwheel repair -w {dest_dir} {wheel}
+"""
+
+[tool.cibuildwheel.macos]
+repair-wheel-command = """
+DYLD_LIBRARY_PATH=$(python -c "import amulet.zlib, os; print(os.path.dirname(amulet.zlib.__file__))"):$DYLD_LIBRARY_PATH \
+delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}
+"""
 
 [tool.cibuildwheel.windows]
-repair-wheel-command = "delvewheel repair --ignore-existing --exclude msvcp140.dll -w {dest_dir} -v {wheel}"
+repair-wheel-command = "delvewheel repair --ignore-existing --exclude \"msvcp140.dll;amulet_zlib.dll\" -w {dest_dir} -v {wheel}"
 test-command = [
     "python -m venv venv_build",
     "venv_build\\Scripts\\pip install {wheel}[dev]",

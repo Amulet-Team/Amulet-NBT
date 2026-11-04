@@ -1,425 +1,1103 @@
 from __future__ import annotations
-from typing import (
-    Union,
-    Any,
-    SupportsInt,
-    SupportsFloat,
-    Iterator,
-    Iterable,
-    overload,
-    TypeVar,
-    Self,
-    Type,
-    Mapping,
-    Literal,
-    TypeAlias,
-    ClassVar,
-    Protocol,
-)
-from collections.abc import MutableSequence, MutableMapping
-import numpy
-from numpy.typing import NDArray, ArrayLike
 
-_T = TypeVar("_T")
+import collections.abc
+import types
+import typing
+from builtins import str as SNBTType
 
-__version__: str
-__all__ = [
-    "AbstractBaseTag",
+from . import _amulet_nbt, _version
+
+__all__: list[str] = [
+    "AbstractBaseArrayTag",
+    "AbstractBaseFloatTag",
     "AbstractBaseImmutableTag",
+    "AbstractBaseIntTag",
     "AbstractBaseMutableTag",
     "AbstractBaseNumericTag",
-    "AbstractBaseIntTag",
-    "ByteTag",
-    "TAG_Byte",
-    "ShortTag",
-    "TAG_Short",
-    "IntTag",
-    "TAG_Int",
-    "LongTag",
-    "TAG_Long",
-    "AbstractBaseFloatTag",
-    "FloatTag",
-    "TAG_Float",
-    "DoubleTag",
-    "TAG_Double",
-    "AbstractBaseArrayTag",
+    "AbstractBaseTag",
+    "AnyNBT",
+    "ArrayType",
     "ByteArrayTag",
-    "TAG_Byte_Array",
-    "IntArrayTag",
-    "TAG_Int_Array",
-    "LongArrayTag",
-    "TAG_Long_Array",
-    "StringTag",
-    "TAG_String",
-    "ListTag",
-    "TAG_List",
+    "ByteTag",
     "CompoundTag",
-    "TAG_Compound",
+    "CompoundTagIterator",
+    "DoubleTag",
+    "EncodingPreset",
+    "FloatTag",
+    "FloatType",
+    "IntArrayTag",
+    "IntTag",
+    "IntType",
+    "ListTag",
+    "ListTagIterator",
+    "LongArrayTag",
+    "LongTag",
     "NamedTag",
+    "NamedTagIterator",
+    "NumberType",
+    "ReadOffset",
+    "SNBTType",
+    "ShortTag",
+    "StringEncoding",
+    "StringTag",
+    "TAG_Byte",
+    "TAG_Byte_Array",
+    "TAG_Compound",
+    "TAG_Double",
+    "TAG_Float",
+    "TAG_Int",
+    "TAG_Int_Array",
+    "TAG_List",
+    "TAG_Long",
+    "TAG_Long_Array",
+    "TAG_Short",
+    "TAG_String",
+    "bedrock_encoding",
+    "compiler_config",
+    "java_encoding",
+    "mutf8_encoding",
     "read_nbt",
     "read_nbt_array",
-    "ReadOffset",
     "read_snbt",
-    "SNBTType",
-    "IntType",
-    "FloatType",
-    "NumberType",
-    "ArrayType",
-    "AnyNBT",
-    "StringEncoding",
-    "mutf8_encoding",
     "utf8_encoding",
     "utf8_escape_encoding",
-    "EncodingPreset",
-    "java_encoding",
-    "bedrock_encoding",
 ]
 
-class _Readable(Protocol):
-    def read(self) -> bytes: ...
-
-class _Writeable(Protocol):
-    def write(self, s: bytes) -> Any: ...
-
 class StringEncoding:
-    def encode(self, data: bytes) -> bytes: ...
-    def decode(self, data: bytes) -> bytes: ...
-
-mutf8_encoding: StringEncoding
-utf8_encoding: StringEncoding
-utf8_escape_encoding: StringEncoding
+    def decode(self, arg0: bytes) -> bytes: ...
+    def encode(self, arg0: bytes) -> bytes: ...
 
 class EncodingPreset:
-    pass
-
-java_encoding: EncodingPreset
-bedrock_encoding: EncodingPreset
+    @property
+    def compressed(self) -> bool: ...
+    @property
+    def little_endian(self) -> bool: ...
+    @property
+    def string_encoding(self) -> StringEncoding: ...
 
 class AbstractBaseTag:
-    """Abstract Base Class for all Tag classes"""
+    """
+    Abstract Base Class for all tag classes
+    """
 
-    tag_id: ClassVar[int]
+    __hash__: typing.ClassVar[None] = None  # type: ignore
+    tag_id: typing.ClassVar[int] = -1
+    def __copy__(self, *args, **kwargs: typing.Any) -> None:
+        """
+        A string representation of the object.
+        """
 
+    def __deepcopy__(self, *args, **kwargs: typing.Any) -> None:
+        """
+        A string representation of the object.
+        """
+
+    def __eq__(self, *args, **kwargs: typing.Any) -> None:
+        """
+        Check if the instance is equal to another instance.
+
+        This will only return True if the tag type is the same and the data contained is the same.
+        """
+
+    def __repr__(self, *args, **kwargs: typing.Any) -> None:
+        """
+        A string representation of the object to show how it can be constructed.
+        """
+
+    def __str__(self, *args, **kwargs: typing.Any) -> None:
+        """
+        A string representation of the object.
+        """
+
+    @typing.overload
+    def save_to(
+        self,
+        filepath_or_writable: typing.Any = None,
+        /,
+        *,
+        preset: EncodingPreset = ...,
+        name: str | None = "",
+    ) -> None: ...
+    @typing.overload
+    def save_to(
+        self,
+        filepath_or_writable: typing.Any = None,
+        /,
+        *,
+        compressed: bool = True,
+        little_endian: bool = False,
+        string_encoding: StringEncoding = ...,
+        name: str | None = "",
+    ) -> None: ...
+    @typing.overload
+    def to_nbt(
+        self, *, preset: EncodingPreset = ..., name: str | None = ""
+    ) -> None: ...
+    @typing.overload
+    def to_nbt(
+        self,
+        *,
+        compressed: bool = True,
+        little_endian: bool = False,
+        string_encoding: StringEncoding = ...,
+        name: str | None = "",
+    ) -> None: ...
+    def to_snbt(self, indent: typing.Any = None) -> None: ...
     @property
-    def py_data(self) -> Any:
-        """A python representation of the class. Note that the return type is undefined and may change in the future.
+    def py_data(self, *args, **kwargs: typing.Any) -> None:
+        """
+        A python representation of the class. Note that the return type is undefined and may change in the future.
 
         You would be better off using the py_{type} or np_array properties if you require a fixed type.
         This is here for convenience to get a python representation under the same property name.
         """
 
-    def to_nbt(
-        self,
-        *,
-        preset: EncodingPreset | None = None,
-        compressed: bool = True,
-        little_endian: bool = False,
-        string_encoding: StringEncoding = mutf8_encoding,
-        name: str | bytes | None = b"",
-    ) -> bytes:
-        """Get the data in binary NBT format.
-
-        :param preset: A class containing endianness and encoding presets.
-        :param compressed: Should the bytes be compressed with gzip.
-        :param little_endian: Should the bytes be saved in little endian format. Ignored if preset is defined.
-        :param string_encoding: The StringEncoding to use. Ignored if preset is defined.
-        :param name: The root tag name, or `None` for unnamed tag.
-        :return: The binary NBT representation of the class.
-        """
-
-    def save_to(
-        self,
-        filepath_or_buffer: str | _Writeable | None = None,
-        *,
-        preset: EncodingPreset | None = None,
-        compressed: bool = True,
-        little_endian: bool = False,
-        string_encoding: StringEncoding = mutf8_encoding,
-        name: str | bytes | None = b"",
-    ) -> bytes:
-        """Convert the data to the binary NBT format. Optionally write to a file.
-
-        If filepath_or_buffer is a valid file path in string form the data will be written to that file.
-
-        If filepath_or_buffer is a file like object the bytes will be written to it using .write method.
-
-        :param filepath_or_buffer: A path or writeable object to write the data to.
-        :param preset: A class containing endianness and encoding presets.
-        :param compressed: Should the bytes be compressed with gzip.
-        :param little_endian: Should the bytes be saved in little endian format. Ignored if preset is defined.
-        :param string_encoding: The StringEncoding to use. Ignored if preset is defined.
-        :param name: The root tag name, or `None` for unnamed tag.
-        :return: The binary NBT representation of the class.
-        """
-
-    def to_snbt(self, indent: None | str | int = None) -> str:
-        """Convert the data to the Stringified NBT format.
-
-        :param indent:
-            If None (the default) the SNBT will be on one line.
-            If an int will be multi-line SNBT with this many spaces per indentation.
-            If a string will be multi-line SNBT with this string as the indentation.
-        :return: The SNBT string.
-        """
-
-    def __eq__(self, other: Any) -> bool:
-        """Check if the instance is equal to another instance.
-
-        This will only return True if the tag type is the same and the data contained is the same.
-
-        >>> from amulet.nbt import ByteTag, ShortTag
-        >>> tag1 = ByteTag(1)
-        >>> tag2 = ByteTag(2)
-        >>> tag3 = ShortTag(1)
-        >>> tag1 == tag1  # True
-        >>> tag1 == tag2  # False
-        >>> tag1 == tag3  # False
-        """
-
-    def __repr__(self) -> str:
-        """A string representation of the object to show how it can be constructed.
-
-        >>> from amulet.nbt import ByteTag
-        >>> tag = ByteTag(1)
-        >>> repr(tag)  # "ByteTag(1)"
-        """
-
-    def __str__(self) -> str:
-        """A string representation of the object."""
-
-    def __reduce__(self) -> Any: ...
-    def copy(self) -> Self:
-        """Return a shallow copy of the class"""
-
-    def __copy__(self) -> Self:
-        """A shallow copy of the class
-
-        >>> import copy
-        >>> from amulet.nbt import ListTag
-        >>> tag = ListTag()
-        >>> tag2 = copy.copy(tag)
-        """
-
-    def __deepcopy__(self, memo: dict[int, object] | None = None) -> Self:
-        """A deep copy of the class
-
-        >>> import copy
-        >>> from amulet.nbt import ListTag
-        >>> tag = ListTag()
-        >>> tag2 = copy.deepcopy(tag)
-        """
-
 class AbstractBaseImmutableTag(AbstractBaseTag):
-    """Abstract Base Class for all immutable Tag classes"""
+    """
+    Abstract Base Class for all tag classes
+    """
 
-    def __hash__(self) -> int:
-        """A hash of the data in the class."""
-
-class AbstractBaseMutableTag(AbstractBaseTag):
-    """Abstract Base Class for all mutable Tag classes"""
-
-    __hash__ = None  # type: ignore
+    def __hash__(self, *args, **kwargs: typing.Any) -> None:
+        """
+        A hash of the data in the class.
+        """
 
 class AbstractBaseNumericTag(AbstractBaseImmutableTag):
-    """Abstract Base Class for all numeric Tag classes"""
+    """
+    Abstract Base Class for all numeric tag classes
+    """
 
-    def __int__(self) -> int:
-        """Get a python int representation of the class."""
+    def __bool__(self, *args, **kwargs: typing.Any) -> None:
+        """
+        Get a python bool representation of the class.
+        """
 
-    def __float__(self) -> float:
-        """Get a python float representation of the class."""
+    def __float__(self, *args, **kwargs: typing.Any) -> None:
+        """
+        Get a python float representation of the class.
+        """
 
-    def __bool__(self) -> bool:
-        """Get a python bool representation of the class."""
+    def __int__(self, *args, **kwargs: typing.Any) -> None:
+        """
+        Get a python int representation of the class.
+        """
 
-    def __ge__(self, other: Any) -> bool:
-        """Check if the tag is greater than or equal to another tag."""
-
-    def __gt__(self, other: Any) -> bool:
-        """Check if the tag is greater than another tag."""
-
-    def __le__(self, other: Any) -> bool:
-        """Check if the tag is less than or equal to another tag."""
-
-    def __lt__(self, other: Any) -> bool:
-        """Check if the tag is less than another tag."""
-
-# Types
 class AbstractBaseIntTag(AbstractBaseNumericTag):
-    def __init__(self, value: SupportsInt = 0) -> None: ...
+    """
+    Abstract Base Class for all int tag classes
+    """
+
     @property
-    def py_int(self) -> int:
-        """A python int representation of the class.
+    def py_int(self, *args, **kwargs: typing.Any) -> None:
+        """
+        A python int representation of the class.
 
         The returned data is immutable so changes will not mirror the instance.
         """
 
+class AbstractBaseFloatTag(AbstractBaseNumericTag):
+    """
+    Abstract Base Class for all float tag classes.
+    """
+
+    @property
+    def py_float(self, *args, **kwargs: typing.Any) -> None:
+        """
+        A python float representation of the class.
+
+        The returned data is immutable so changes will not mirror the instance.
+        """
+
+class AbstractBaseMutableTag(AbstractBaseTag):
+    """
+    Abstract Base Class for all mutable tags.
+    """
+
+    __hash__: typing.ClassVar[None] = None  # type: ignore
+
+class AbstractBaseArrayTag(AbstractBaseMutableTag):
+    """
+    Abstract Base Class for all array tag classes.
+    """
+
 class ByteTag(AbstractBaseIntTag):
     """
     A 1 byte integer class.
+
     Can Store numbers between -(2^7) and (2^7 - 1)
     """
+
+    tag_id: typing.ClassVar[int] = 1
+    def __bool__(self) -> bool: ...
+    def __copy__(self) -> ByteTag: ...
+    def __deepcopy__(self, memo: dict) -> ByteTag: ...
+    @typing.overload
+    def __eq__(self, other: ByteTag) -> bool: ...
+    @typing.overload
+    def __eq__(self, other: typing.Any) -> bool | types.NotImplementedType: ...
+    def __float__(self) -> float: ...
+    def __ge__(self, arg0: ByteTag) -> bool: ...
+    def __gt__(self, arg0: ByteTag) -> bool: ...
+    def __hash__(self) -> int: ...
+    def __init__(self, value: typing.Any = 0) -> None:
+        """
+        __init__(self: amulet.nbt.ByteTag, value: typing.SupportsInt) -> None
+        """
+
+    def __int__(self) -> int: ...
+    def __le__(self, arg0: ByteTag) -> bool: ...
+    def __lt__(self, arg0: ByteTag) -> bool: ...
+    def __repr__(self) -> str: ...
+    def __str__(self) -> str: ...
+    @typing.overload
+    def save_to(
+        self,
+        filepath_or_writable: typing.Any = None,
+        /,
+        *,
+        preset: EncodingPreset = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    @typing.overload
+    def save_to(
+        self,
+        filepath_or_writable: typing.Any = None,
+        /,
+        *,
+        compressed: bool = True,
+        little_endian: bool = False,
+        string_encoding: StringEncoding = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    @typing.overload
+    def to_nbt(
+        self, *, preset: EncodingPreset = ..., name: str | None = ""
+    ) -> bytes: ...
+    @typing.overload
+    def to_nbt(
+        self,
+        *,
+        compressed: bool = True,
+        little_endian: bool = False,
+        string_encoding: StringEncoding = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    def to_snbt(self, indent: typing.Any = None) -> str: ...
+    @property
+    def py_data(self) -> int:
+        """
+        A python representation of the class. Note that the return type is undefined and may change in the future.
+
+        You would be better off using the py_{type} or np_array properties if you require a fixed type.
+        This is here for convenience to get a python representation under the same property name.
+        """
+
+    @property
+    def py_int(self) -> int:
+        """
+        A python int representation of the class.
+
+        The returned data is immutable so changes will not mirror the instance.
+        """
 
 class ShortTag(AbstractBaseIntTag):
     """
     A 2 byte integer class.
+
     Can Store numbers between -(2^15) and (2^15 - 1)
     """
+
+    tag_id: typing.ClassVar[int] = 2
+    def __bool__(self) -> bool: ...
+    def __copy__(self) -> ShortTag: ...
+    def __deepcopy__(self, memo: dict) -> ShortTag: ...
+    @typing.overload
+    def __eq__(self, other: ShortTag) -> bool: ...
+    @typing.overload
+    def __eq__(self, other: typing.Any) -> bool | types.NotImplementedType: ...
+    def __float__(self) -> float: ...
+    def __ge__(self, arg0: ShortTag) -> bool: ...
+    def __gt__(self, arg0: ShortTag) -> bool: ...
+    def __hash__(self) -> int: ...
+    def __init__(self, value: typing.Any = 0) -> None:
+        """
+        __init__(self: amulet.nbt.ShortTag, value: typing.SupportsInt) -> None
+        """
+
+    def __int__(self) -> int: ...
+    def __le__(self, arg0: ShortTag) -> bool: ...
+    def __lt__(self, arg0: ShortTag) -> bool: ...
+    def __repr__(self) -> str: ...
+    def __str__(self) -> str: ...
+    @typing.overload
+    def save_to(
+        self,
+        filepath_or_writable: typing.Any = None,
+        /,
+        *,
+        preset: EncodingPreset = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    @typing.overload
+    def save_to(
+        self,
+        filepath_or_writable: typing.Any = None,
+        /,
+        *,
+        compressed: bool = True,
+        little_endian: bool = False,
+        string_encoding: StringEncoding = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    @typing.overload
+    def to_nbt(
+        self, *, preset: EncodingPreset = ..., name: str | None = ""
+    ) -> bytes: ...
+    @typing.overload
+    def to_nbt(
+        self,
+        *,
+        compressed: bool = True,
+        little_endian: bool = False,
+        string_encoding: StringEncoding = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    def to_snbt(self, indent: typing.Any = None) -> str: ...
+    @property
+    def py_data(self) -> int:
+        """
+        A python representation of the class. Note that the return type is undefined and may change in the future.
+
+        You would be better off using the py_{type} or np_array properties if you require a fixed type.
+        This is here for convenience to get a python representation under the same property name.
+        """
+
+    @property
+    def py_int(self) -> int:
+        """
+        A python int representation of the class.
+
+        The returned data is immutable so changes will not mirror the instance.
+        """
 
 class IntTag(AbstractBaseIntTag):
     """
     A 4 byte integer class.
+
     Can Store numbers between -(2^31) and (2^31 - 1)
     """
 
+    tag_id: typing.ClassVar[int] = 3
+    def __bool__(self) -> bool: ...
+    def __copy__(self) -> IntTag: ...
+    def __deepcopy__(self, memo: dict) -> IntTag: ...
+    @typing.overload
+    def __eq__(self, other: IntTag) -> bool: ...
+    @typing.overload
+    def __eq__(self, other: typing.Any) -> bool | types.NotImplementedType: ...
+    def __float__(self) -> float: ...
+    def __ge__(self, arg0: IntTag) -> bool: ...
+    def __gt__(self, arg0: IntTag) -> bool: ...
+    def __hash__(self) -> int: ...
+    def __init__(self, value: typing.Any = 0) -> None:
+        """
+        __init__(self: amulet.nbt.IntTag, value: typing.SupportsInt) -> None
+        """
+
+    def __int__(self) -> int: ...
+    def __le__(self, arg0: IntTag) -> bool: ...
+    def __lt__(self, arg0: IntTag) -> bool: ...
+    def __repr__(self) -> str: ...
+    def __str__(self) -> str: ...
+    @typing.overload
+    def save_to(
+        self,
+        filepath_or_writable: typing.Any = None,
+        /,
+        *,
+        preset: EncodingPreset = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    @typing.overload
+    def save_to(
+        self,
+        filepath_or_writable: typing.Any = None,
+        /,
+        *,
+        compressed: bool = True,
+        little_endian: bool = False,
+        string_encoding: StringEncoding = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    @typing.overload
+    def to_nbt(
+        self, *, preset: EncodingPreset = ..., name: str | None = ""
+    ) -> bytes: ...
+    @typing.overload
+    def to_nbt(
+        self,
+        *,
+        compressed: bool = True,
+        little_endian: bool = False,
+        string_encoding: StringEncoding = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    def to_snbt(self, indent: typing.Any = None) -> str: ...
+    @property
+    def py_data(self) -> int:
+        """
+        A python representation of the class. Note that the return type is undefined and may change in the future.
+
+        You would be better off using the py_{type} or np_array properties if you require a fixed type.
+        This is here for convenience to get a python representation under the same property name.
+        """
+
+    @property
+    def py_int(self) -> int:
+        """
+        A python int representation of the class.
+
+        The returned data is immutable so changes will not mirror the instance.
+        """
+
 class LongTag(AbstractBaseIntTag):
     """
-    An 8 byte integer class.
+    A 8 byte integer class.
+
     Can Store numbers between -(2^63) and (2^63 - 1)
     """
 
-class AbstractBaseFloatTag(AbstractBaseNumericTag):
-    def __init__(self, value: SupportsFloat = 0): ...
+    tag_id: typing.ClassVar[int] = 4
+    def __bool__(self) -> bool: ...
+    def __copy__(self) -> LongTag: ...
+    def __deepcopy__(self, memo: dict) -> LongTag: ...
+    @typing.overload
+    def __eq__(self, other: LongTag) -> bool: ...
+    @typing.overload
+    def __eq__(self, other: typing.Any) -> bool | types.NotImplementedType: ...
+    def __float__(self) -> float: ...
+    def __ge__(self, arg0: LongTag) -> bool: ...
+    def __gt__(self, arg0: LongTag) -> bool: ...
+    def __hash__(self) -> int: ...
+    def __init__(self, value: typing.Any = 0) -> None:
+        """
+        __init__(self: amulet.nbt.LongTag, value: typing.SupportsInt) -> None
+        """
+
+    def __int__(self) -> int: ...
+    def __le__(self, arg0: LongTag) -> bool: ...
+    def __lt__(self, arg0: LongTag) -> bool: ...
+    def __repr__(self) -> str: ...
+    def __str__(self) -> str: ...
+    @typing.overload
+    def save_to(
+        self,
+        filepath_or_writable: typing.Any = None,
+        /,
+        *,
+        preset: EncodingPreset = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    @typing.overload
+    def save_to(
+        self,
+        filepath_or_writable: typing.Any = None,
+        /,
+        *,
+        compressed: bool = True,
+        little_endian: bool = False,
+        string_encoding: StringEncoding = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    @typing.overload
+    def to_nbt(
+        self, *, preset: EncodingPreset = ..., name: str | None = ""
+    ) -> bytes: ...
+    @typing.overload
+    def to_nbt(
+        self,
+        *,
+        compressed: bool = True,
+        little_endian: bool = False,
+        string_encoding: StringEncoding = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    def to_snbt(self, indent: typing.Any = None) -> str: ...
     @property
-    def py_float(self) -> float:
-        """A python float representation of the class.
+    def py_data(self) -> int:
+        """
+        A python representation of the class. Note that the return type is undefined and may change in the future.
+
+        You would be better off using the py_{type} or np_array properties if you require a fixed type.
+        This is here for convenience to get a python representation under the same property name.
+        """
+
+    @property
+    def py_int(self) -> int:
+        """
+        A python int representation of the class.
 
         The returned data is immutable so changes will not mirror the instance.
         """
 
 class FloatTag(AbstractBaseFloatTag):
-    """A single precision float class."""
+    """
+    A single precision float class.
+    """
+
+    tag_id: typing.ClassVar[int] = 5
+    def __bool__(self) -> bool: ...
+    def __copy__(self) -> FloatTag: ...
+    def __deepcopy__(self, memo: dict) -> FloatTag: ...
+    @typing.overload
+    def __eq__(self, other: FloatTag) -> bool: ...
+    @typing.overload
+    def __eq__(self, other: typing.Any) -> bool | types.NotImplementedType: ...
+    def __float__(self) -> float: ...
+    def __ge__(self, arg0: FloatTag) -> bool: ...
+    def __gt__(self, arg0: FloatTag) -> bool: ...
+    def __hash__(self) -> int: ...
+    def __init__(self, value: typing.Any = 0.0) -> None:
+        """
+        __init__(self: amulet.nbt.FloatTag, value: typing.SupportsFloat) -> None
+        """
+
+    def __int__(self) -> int: ...
+    def __le__(self, arg0: FloatTag) -> bool: ...
+    def __lt__(self, arg0: FloatTag) -> bool: ...
+    def __repr__(self) -> str: ...
+    def __str__(self) -> str: ...
+    @typing.overload
+    def save_to(
+        self,
+        filepath_or_writable: typing.Any = None,
+        /,
+        *,
+        preset: EncodingPreset = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    @typing.overload
+    def save_to(
+        self,
+        filepath_or_writable: typing.Any = None,
+        /,
+        *,
+        compressed: bool = True,
+        little_endian: bool = False,
+        string_encoding: StringEncoding = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    @typing.overload
+    def to_nbt(
+        self, *, preset: EncodingPreset = ..., name: str | None = ""
+    ) -> bytes: ...
+    @typing.overload
+    def to_nbt(
+        self,
+        *,
+        compressed: bool = True,
+        little_endian: bool = False,
+        string_encoding: StringEncoding = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    def to_snbt(self, indent: typing.Any = None) -> str: ...
+    @property
+    def py_data(self) -> float:
+        """
+        A python representation of the class. Note that the return type is undefined and may change in the future.
+
+        You would be better off using the py_{type} or np_array properties if you require a fixed type.
+        This is here for convenience to get a python representation under the same property name.
+        """
+
+    @property
+    def py_float(self) -> float:
+        """
+        A python float representation of the class.
+
+        The returned data is immutable so changes will not mirror the instance.
+        """
 
 class DoubleTag(AbstractBaseFloatTag):
-    """A double precision float class."""
+    """
+    A double precision float class.
+    """
+
+    tag_id: typing.ClassVar[int] = 6
+    def __bool__(self) -> bool: ...
+    def __copy__(self) -> DoubleTag: ...
+    def __deepcopy__(self, memo: dict) -> DoubleTag: ...
+    @typing.overload
+    def __eq__(self, other: DoubleTag) -> bool: ...
+    @typing.overload
+    def __eq__(self, other: typing.Any) -> bool | types.NotImplementedType: ...
+    def __float__(self) -> float: ...
+    def __ge__(self, arg0: DoubleTag) -> bool: ...
+    def __gt__(self, arg0: DoubleTag) -> bool: ...
+    def __hash__(self) -> int: ...
+    def __init__(self, value: typing.Any = 0.0) -> None:
+        """
+        __init__(self: amulet.nbt.DoubleTag, value: typing.SupportsFloat) -> None
+        """
+
+    def __int__(self) -> int: ...
+    def __le__(self, arg0: DoubleTag) -> bool: ...
+    def __lt__(self, arg0: DoubleTag) -> bool: ...
+    def __repr__(self) -> str: ...
+    def __str__(self) -> str: ...
+    @typing.overload
+    def save_to(
+        self,
+        filepath_or_writable: typing.Any = None,
+        /,
+        *,
+        preset: EncodingPreset = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    @typing.overload
+    def save_to(
+        self,
+        filepath_or_writable: typing.Any = None,
+        /,
+        *,
+        compressed: bool = True,
+        little_endian: bool = False,
+        string_encoding: StringEncoding = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    @typing.overload
+    def to_nbt(
+        self, *, preset: EncodingPreset = ..., name: str | None = ""
+    ) -> bytes: ...
+    @typing.overload
+    def to_nbt(
+        self,
+        *,
+        compressed: bool = True,
+        little_endian: bool = False,
+        string_encoding: StringEncoding = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    def to_snbt(self, indent: typing.Any = None) -> str: ...
+    @property
+    def py_data(self) -> float:
+        """
+        A python representation of the class. Note that the return type is undefined and may change in the future.
+
+        You would be better off using the py_{type} or np_array properties if you require a fixed type.
+        This is here for convenience to get a python representation under the same property name.
+        """
+
+    @property
+    def py_float(self) -> float:
+        """
+        A python float representation of the class.
+
+        The returned data is immutable so changes will not mirror the instance.
+        """
 
 class StringTag(AbstractBaseImmutableTag):
-    def __init__(self, value: str | bytes | Any = "") -> None: ...
+    """
+    A class that behaves like a string.
+    """
+
+    tag_id: typing.ClassVar[int] = 8
+    def __bool__(self) -> bool: ...
+    def __bytes__(self) -> bytes: ...
+    def __copy__(self) -> StringTag: ...
+    def __deepcopy__(self, memo: dict) -> StringTag: ...
+    @typing.overload
+    def __eq__(self, other: StringTag) -> bool: ...
+    @typing.overload
+    def __eq__(self, other: typing.Any) -> bool | types.NotImplementedType: ...
+    def __ge__(self, arg0: StringTag) -> bool: ...
+    def __gt__(self, arg0: StringTag) -> bool: ...
+    def __hash__(self) -> int: ...
+    def __init__(self, value: typing.Any = "") -> None:
+        """
+        __init__(self: amulet.nbt.StringTag, value: str | bytes) -> None
+        """
+
+    def __le__(self, arg0: StringTag) -> bool: ...
+    def __lt__(self, arg0: StringTag) -> bool: ...
+    def __repr__(self) -> str: ...
+    def __str__(self) -> str: ...
+    @typing.overload
+    def save_to(
+        self,
+        filepath_or_writable: typing.Any = None,
+        /,
+        *,
+        preset: EncodingPreset = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    @typing.overload
+    def save_to(
+        self,
+        filepath_or_writable: typing.Any = None,
+        /,
+        *,
+        compressed: bool = True,
+        little_endian: bool = False,
+        string_encoding: StringEncoding = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    @typing.overload
+    def to_nbt(
+        self, *, preset: EncodingPreset = ..., name: str | None = ""
+    ) -> bytes: ...
+    @typing.overload
+    def to_nbt(
+        self,
+        *,
+        compressed: bool = True,
+        little_endian: bool = False,
+        string_encoding: StringEncoding = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    def to_snbt(self, indent: typing.Any = None) -> str: ...
+    @property
+    def py_bytes(self) -> bytes:
+        """
+        The bytes stored in the class.
+        """
+
+    @property
+    def py_data(self) -> bytes:
+        """
+        A python representation of the class. Note that the return type is undefined and may change in the future.
+
+        You would be better off using the py_{type} or np_array properties if you require a fixed type.
+        This is here for convenience to get a python representation under the same property name.
+        """
+
     @property
     def py_str(self) -> str:
-        """The data stored in the class as a python string.
+        """
+        The data stored in the class as a python string.
 
         In some rare cases the data cannot be decoded to a string and this will raise a UnicodeDecodeError.
         """
 
     @property
-    def py_bytes(self) -> bytes:
-        """The bytes stored in the class."""
-
-    @property
     def py_str_or_bytes(self) -> str | bytes:
-        """If the payload is UTF-8 returns a string else returns bytes."""
+        """
+        If the payload is UTF-8 returns a string else returns bytes.
+        """
 
-    def __ge__(self, other: Any) -> bool:
-        """Check if the tag is greater than or equal to another tag."""
+class ByteArrayTag(AbstractBaseArrayTag):
+    """
+    This class stores a fixed size signed 8 bit vector.
+    """
 
-    def __gt__(self, other: Any) -> bool:
-        """Check if the tag is greater than another tag."""
-
-    def __le__(self, other: Any) -> bool:
-        """Check if the tag is less than or equal to another tag."""
-
-    def __lt__(self, other: Any) -> bool:
-        """Check if the tag is less than another tag."""
-
-AnyNBTT = TypeVar("AnyNBTT", bound=AbstractBaseTag)
-
-class ListTag(AbstractBaseMutableTag, MutableSequence[AnyNBTT]):
-    @overload
-    def __init__(self, value: Iterable[AnyNBTT] = ()) -> None: ...
-    @overload
+    __hash__: typing.ClassVar[None] = None  # type: ignore
+    tag_id: typing.ClassVar[int] = 7
+    def __contains__(self, arg0: typing.Any) -> None: ...
+    def __copy__(self) -> ByteArrayTag: ...
+    def __deepcopy__(self, memo: dict) -> ByteArrayTag: ...
+    @typing.overload
+    def __eq__(self, other: ByteArrayTag) -> bool: ...
+    @typing.overload
+    def __eq__(self, other: typing.Any) -> bool | types.NotImplementedType: ...
+    def __getitem__(self, arg0: typing.Any) -> typing.Any: ...
     def __init__(
-        self, value: Iterable[AnyNBTT] = (), element_tag_id: int = 1
+        self,
+        value: collections.abc.Iterable[typing.SupportsInt | typing.SupportsIndex] = (),
     ) -> None: ...
-    @property
-    def py_list(self) -> list[AnyNBTT]:
-        """A python list representation of the class.
-
-        The returned list is a shallow copy of the class, meaning changes will not mirror the instance.
-        Use the public API to modify the internal data.
-        """
-
-    @property
-    def element_tag_id(self) -> int:
-        """The numerical id of the element type in this list.
-
-        Will be an int in the range 0-12.
-        """
-
-    @property
-    def element_class(
+    def __iter__(self) -> collections.abc.Iterator[int]: ...
+    def __len__(self) -> int: ...
+    def __repr__(self) -> str: ...
+    def __reversed__(self) -> collections.abc.Iterator[int]: ...
+    def __setitem__(self, arg0: typing.Any, arg1: typing.Any) -> None: ...
+    def __str__(self) -> str: ...
+    @typing.overload
+    def save_to(
         self,
-    ) -> (
-        None
-        | Type[ByteTag]
-        | Type[ShortTag]
-        | Type[IntTag]
-        | Type[LongTag]
-        | Type[FloatTag]
-        | Type[DoubleTag]
-        | Type[StringTag]
-        | Type[ByteArrayTag]
-        | Type[ListTag]
-        | Type[CompoundTag]
-        | Type[IntArrayTag]
-        | Type[LongArrayTag]
-    ):
-        """The python class for the tag type contained in this list or None if the list tag is in the 0 state."""
+        filepath_or_writable: typing.Any = None,
+        /,
+        *,
+        preset: EncodingPreset = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    @typing.overload
+    def save_to(
+        self,
+        filepath_or_writable: typing.Any = None,
+        /,
+        *,
+        compressed: bool = True,
+        little_endian: bool = False,
+        string_encoding: StringEncoding = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    @typing.overload
+    def to_nbt(
+        self, *, preset: EncodingPreset = ..., name: str | None = ""
+    ) -> bytes: ...
+    @typing.overload
+    def to_nbt(
+        self,
+        *,
+        compressed: bool = True,
+        little_endian: bool = False,
+        string_encoding: StringEncoding = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    def to_snbt(self, indent: typing.Any = None) -> str: ...
+    @property
+    def np_array(self) -> typing.Any:
+        """
+        A numpy array holding the same internal data.
 
-    def get_byte(self, index: int) -> ByteTag: ...
-    def get_short(self, index: int) -> ShortTag: ...
-    def get_int(self, index: int) -> IntTag: ...
-    def get_long(self, index: int) -> LongTag: ...
-    def get_float(self, index: int) -> FloatTag: ...
-    def get_double(self, index: int) -> DoubleTag: ...
-    def get_string(self, index: int) -> StringTag: ...
-    def get_list(self, index: int) -> ListTag: ...
-    def get_compound(self, index: int) -> CompoundTag: ...
-    def get_byte_array(self, index: int) -> ByteArrayTag: ...
-    def get_int_array(self, index: int) -> IntArrayTag: ...
-    def get_long_array(self, index: int) -> LongArrayTag: ...
-    def insert(self, index: int, value: AnyNBTT) -> None: ...
-    @overload
-    def __getitem__(self, index: int) -> AnyNBTT: ...
-    @overload
-    def __getitem__(self, index: slice) -> list[AnyNBTT]: ...
-    @overload
-    def __setitem__(self, index: int, value: AnyNBTT) -> None: ...
-    @overload
-    def __setitem__(self, index: slice, value: Iterable[AbstractBaseTag]) -> None: ...
-    @overload
-    def __delitem__(self, index: int) -> None: ...
-    @overload
-    def __delitem__(self, index: slice) -> None: ...
-    def __len__(self) -> int:
-        pass
+        Changes to the array will also modify the internal state.
+        """
 
-_TagT = TypeVar("_TagT", bound=AbstractBaseTag)
+    @property
+    def py_data(self) -> typing.Any:
+        """
+        A python representation of the class. Note that the return type is undefined and may change in the future.
 
-class CompoundTag(AbstractBaseMutableTag, MutableMapping[str | bytes, AnyNBT]):
+        You would be better off using the py_{type} or np_array properties if you require a fixed type.
+        This is here for convenience to get a python representation under the same property name.
+        """
+
+class IntArrayTag(AbstractBaseArrayTag):
+    """
+    This class stores a fixed size signed 32 bit vector.
+    """
+
+    __hash__: typing.ClassVar[None] = None  # type: ignore
+    tag_id: typing.ClassVar[int] = 11
+    def __contains__(self, arg0: typing.Any) -> None: ...
+    def __copy__(self) -> IntArrayTag: ...
+    def __deepcopy__(self, memo: dict) -> IntArrayTag: ...
+    @typing.overload
+    def __eq__(self, other: IntArrayTag) -> bool: ...
+    @typing.overload
+    def __eq__(self, other: typing.Any) -> bool | types.NotImplementedType: ...
+    def __getitem__(self, arg0: typing.Any) -> typing.Any: ...
     def __init__(
         self,
-        value: (
-            Mapping[str | bytes, AnyNBT | AbstractBaseTag]
-            | Iterable[tuple[str | bytes, AnyNBT | AbstractBaseTag]]
-            | Mapping[str, AnyNBT | AbstractBaseTag]
-            | Mapping[bytes, AnyNBT | AbstractBaseTag]
-        ) = (),
-        **kwvals: AnyNBT,
-    ): ...
+        value: collections.abc.Iterable[typing.SupportsInt | typing.SupportsIndex] = (),
+    ) -> None: ...
+    def __iter__(self) -> collections.abc.Iterator[int]: ...
+    def __len__(self) -> int: ...
+    def __repr__(self) -> str: ...
+    def __reversed__(self) -> collections.abc.Iterator[int]: ...
+    def __setitem__(self, arg0: typing.Any, arg1: typing.Any) -> None: ...
+    def __str__(self) -> str: ...
+    @typing.overload
+    def save_to(
+        self,
+        filepath_or_writable: typing.Any = None,
+        /,
+        *,
+        preset: EncodingPreset = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    @typing.overload
+    def save_to(
+        self,
+        filepath_or_writable: typing.Any = None,
+        /,
+        *,
+        compressed: bool = True,
+        little_endian: bool = False,
+        string_encoding: StringEncoding = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    @typing.overload
+    def to_nbt(
+        self, *, preset: EncodingPreset = ..., name: str | None = ""
+    ) -> bytes: ...
+    @typing.overload
+    def to_nbt(
+        self,
+        *,
+        compressed: bool = True,
+        little_endian: bool = False,
+        string_encoding: StringEncoding = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    def to_snbt(self, indent: typing.Any = None) -> str: ...
     @property
-    def py_dict(self) -> dict[str, AnyNBT]:
-        """A shallow copy of the CompoundTag as a python dictionary."""
+    def np_array(self) -> typing.Any:
+        """
+        A numpy array holding the same internal data.
 
-    @overload
-    def get(self, key: str | bytes) -> AnyNBT | None: ...
-    @overload
-    def get(self, key: str | bytes, default: _T) -> AnyNBT | _T: ...
-    @overload
-    def get(self, key: str | bytes, *, cls: Type[_TagT]) -> _TagT | None: ...
-    @overload
-    def get(self, key: str | bytes, default: _T, cls: Type[_TagT]) -> _TagT | _T:
-        """Get an item from the CompoundTag.
+        Changes to the array will also modify the internal state.
+        """
+
+    @property
+    def py_data(self) -> typing.Any:
+        """
+        A python representation of the class. Note that the return type is undefined and may change in the future.
+
+        You would be better off using the py_{type} or np_array properties if you require a fixed type.
+        This is here for convenience to get a python representation under the same property name.
+        """
+
+class LongArrayTag(AbstractBaseArrayTag):
+    """
+    This class stores a fixed size signed 64 bit vector.
+    """
+
+    __hash__: typing.ClassVar[None] = None  # type: ignore
+    tag_id: typing.ClassVar[int] = 12
+    def __contains__(self, arg0: typing.Any) -> None: ...
+    def __copy__(self) -> LongArrayTag: ...
+    def __deepcopy__(self, memo: dict) -> LongArrayTag: ...
+    @typing.overload
+    def __eq__(self, other: LongArrayTag) -> bool: ...
+    @typing.overload
+    def __eq__(self, other: typing.Any) -> bool | types.NotImplementedType: ...
+    def __getitem__(self, arg0: typing.Any) -> typing.Any: ...
+    def __init__(
+        self,
+        value: collections.abc.Iterable[typing.SupportsInt | typing.SupportsIndex] = (),
+    ) -> None: ...
+    def __iter__(self) -> collections.abc.Iterator[int]: ...
+    def __len__(self) -> int: ...
+    def __repr__(self) -> str: ...
+    def __reversed__(self) -> collections.abc.Iterator[int]: ...
+    def __setitem__(self, arg0: typing.Any, arg1: typing.Any) -> None: ...
+    def __str__(self) -> str: ...
+    @typing.overload
+    def save_to(
+        self,
+        filepath_or_writable: typing.Any = None,
+        /,
+        *,
+        preset: EncodingPreset = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    @typing.overload
+    def save_to(
+        self,
+        filepath_or_writable: typing.Any = None,
+        /,
+        *,
+        compressed: bool = True,
+        little_endian: bool = False,
+        string_encoding: StringEncoding = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    @typing.overload
+    def to_nbt(
+        self, *, preset: EncodingPreset = ..., name: str | None = ""
+    ) -> bytes: ...
+    @typing.overload
+    def to_nbt(
+        self,
+        *,
+        compressed: bool = True,
+        little_endian: bool = False,
+        string_encoding: StringEncoding = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    def to_snbt(self, indent: typing.Any = None) -> str: ...
+    @property
+    def np_array(self) -> typing.Any:
+        """
+        A numpy array holding the same internal data.
+
+        Changes to the array will also modify the internal state.
+        """
+
+    @property
+    def py_data(self) -> typing.Any:
+        """
+        A python representation of the class. Note that the return type is undefined and may change in the future.
+
+        You would be better off using the py_{type} or np_array properties if you require a fixed type.
+        This is here for convenience to get a python representation under the same property name.
+        """
+
+class CompoundTagIterator:
+    def __iter__(self) -> CompoundTagIterator: ...
+    def __next__(self) -> typing.Any: ...
+
+class CompoundTag(AbstractBaseMutableTag):
+    """
+    A Python wrapper around a C++ unordered map.
+
+    Note that this class is not thread safe and inherits all the limitations of a C++ unordered_map.
+    """
+
+    __hash__: typing.ClassVar[None] = None  # type: ignore
+    tag_id: typing.ClassVar[int] = 10
+    @staticmethod
+    def fromkeys(
+        arg0: typing.Any,
+        arg1: (
+            ByteTag
+            | ShortTag
+            | IntTag
+            | LongTag
+            | FloatTag
+            | DoubleTag
+            | ByteArrayTag
+            | StringTag
+            | ...
+            | CompoundTag
+            | IntArrayTag
+            | LongArrayTag
+        ),
+    ) -> CompoundTag: ...
+    def __bool__(self) -> bool: ...
+    def __contains__(self, arg0: str) -> bool: ...
+    def __copy__(self) -> CompoundTag: ...
+    def __deepcopy__(self, memo: dict) -> CompoundTag: ...
+    def __delitem__(self, arg0: str) -> None: ...
+    @typing.overload
+    def __eq__(self, other: CompoundTag) -> bool: ...
+    @typing.overload
+    def __eq__(self, other: typing.Any) -> bool | types.NotImplementedType: ...
+    def __getitem__(
+        self, arg0: str
+    ) -> (
+        ByteTag
+        | ShortTag
+        | IntTag
+        | LongTag
+        | FloatTag
+        | DoubleTag
+        | ByteArrayTag
+        | StringTag
+        | ...
+        | CompoundTag
+        | IntArrayTag
+        | LongArrayTag
+    ): ...
+    def __init__(self, value: typing.Any = (), **kwargs: typing.Any) -> None: ...
+    def __iter__(self) -> CompoundTagIterator: ...
+    def __len__(self) -> int: ...
+    def __repr__(self) -> str: ...
+    def __setitem__(
+        self,
+        arg0: str,
+        arg1: (
+            ByteTag
+            | ShortTag
+            | IntTag
+            | LongTag
+            | FloatTag
+            | DoubleTag
+            | ByteArrayTag
+            | StringTag
+            | ...
+            | CompoundTag
+            | IntArrayTag
+            | LongArrayTag
+        ),
+    ) -> None: ...
+    def __str__(self) -> str: ...
+    def clear(self) -> None: ...
+    def get(
+        self, key: str, default: typing.Any = None, cls: typing.Any = ...
+    ) -> typing.Any:
+        """
+        Get an item from the CompoundTag.
 
         :param key: The key to get
         :param default: The value to return if the key does not exist or the type is wrong.
@@ -429,1170 +1107,1227 @@ class CompoundTag(AbstractBaseMutableTag, MutableMapping[str | bytes, AnyNBT]):
         :raises: TypeError if the stored type is not a subclass of cls.
         """
 
-    @classmethod
-    def fromkeys(cls, keys: Iterable[str | bytes], value: AnyNBT) -> Self: ...
-    @overload
-    def get_byte(self, key: str | bytes) -> ByteTag | None: ...
-    @overload
-    def get_byte(self, key: str | bytes, default: None) -> ByteTag | None: ...
-    @overload
-    def get_byte(self, key: str | bytes, default: ByteTag) -> ByteTag: ...
-    @overload
     def get_byte(
-        self, key: str | bytes, default: None, raise_errors: Literal[False]
-    ) -> ByteTag | None: ...
-    @overload
-    def get_byte(
-        self, key: str | bytes, default: ByteTag, raise_errors: Literal[False]
-    ) -> ByteTag: ...
-    @overload
-    def get_byte(
-        self, key: str | bytes, default: ByteTag | None, raise_errors: Literal[True]
-    ) -> ByteTag: ...
-    @overload
-    def get_byte(
-        self, key: str | bytes, *, raise_errors: Literal[False]
-    ) -> ByteTag | None: ...
-    @overload
-    def get_byte(self, key: str | bytes, *, raise_errors: Literal[True]) -> ByteTag: ...
-    @overload
-    def get_short(self, key: str | bytes) -> ShortTag | None: ...
-    @overload
-    def get_short(self, key: str | bytes, default: None) -> ShortTag | None: ...
-    @overload
-    def get_short(self, key: str | bytes, default: ShortTag) -> ShortTag: ...
-    @overload
-    def get_short(
-        self, key: str | bytes, default: None, raise_errors: Literal[False]
-    ) -> ShortTag | None: ...
-    @overload
-    def get_short(
-        self, key: str | bytes, default: ShortTag, raise_errors: Literal[False]
-    ) -> ShortTag: ...
-    @overload
-    def get_short(
-        self, key: str | bytes, default: ShortTag | None, raise_errors: Literal[True]
-    ) -> ShortTag: ...
-    @overload
-    def get_short(
-        self, key: str | bytes, *, raise_errors: Literal[False]
-    ) -> ShortTag | None: ...
-    @overload
-    def get_short(
-        self, key: str | bytes, *, raise_errors: Literal[True]
-    ) -> ShortTag: ...
-    @overload
-    def get_int(self, key: str | bytes) -> IntTag | None: ...
-    @overload
-    def get_int(self, key: str | bytes, default: None) -> IntTag | None: ...
-    @overload
-    def get_int(self, key: str | bytes, default: IntTag) -> IntTag: ...
-    @overload
+        self, key: str, default: None | ByteTag = None, raise_errors: bool = False
+    ) -> None | ByteTag:
+        """
+        Get the tag stored in key if it is a ByteTag.
+
+        :param key: The key to get
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The ByteTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a ByteTag and raise_errors is True.
+        """
+
+    def get_byte_array(
+        self, key: str, default: None | ByteArrayTag = None, raise_errors: bool = False
+    ) -> None | ByteArrayTag:
+        """
+        Get the tag stored in key if it is a ByteArrayTag.
+
+        :param key: The key to get
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The ByteArrayTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a ByteArrayTag and raise_errors is True.
+        """
+
+    def get_compound(
+        self, key: str, default: None | CompoundTag = None, raise_errors: bool = False
+    ) -> None | CompoundTag:
+        """
+        Get the tag stored in key if it is a CompoundTag.
+
+        :param key: The key to get
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The CompoundTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a CompoundTag and raise_errors is True.
+        """
+
+    def get_double(
+        self, key: str, default: None | DoubleTag = None, raise_errors: bool = False
+    ) -> None | DoubleTag:
+        """
+        Get the tag stored in key if it is a DoubleTag.
+
+        :param key: The key to get
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The DoubleTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a DoubleTag and raise_errors is True.
+        """
+
+    def get_float(
+        self, key: str, default: None | FloatTag = None, raise_errors: bool = False
+    ) -> None | FloatTag:
+        """
+        Get the tag stored in key if it is a FloatTag.
+
+        :param key: The key to get
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The FloatTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a FloatTag and raise_errors is True.
+        """
+
     def get_int(
-        self, key: str | bytes, default: None, raise_errors: Literal[False]
-    ) -> IntTag | None: ...
-    @overload
-    def get_int(
-        self, key: str | bytes, default: IntTag, raise_errors: Literal[False]
-    ) -> IntTag: ...
-    @overload
-    def get_int(
-        self, key: str | bytes, default: IntTag | None, raise_errors: Literal[True]
-    ) -> IntTag: ...
-    @overload
-    def get_int(
-        self, key: str | bytes, *, raise_errors: Literal[False]
-    ) -> IntTag | None: ...
-    @overload
-    def get_int(self, key: str | bytes, *, raise_errors: Literal[True]) -> IntTag: ...
-    @overload
-    def get_long(self, key: str | bytes) -> LongTag | None: ...
-    @overload
-    def get_long(self, key: str | bytes, default: None) -> LongTag | None: ...
-    @overload
-    def get_long(self, key: str | bytes, default: LongTag) -> LongTag: ...
-    @overload
+        self, key: str, default: None | IntTag = None, raise_errors: bool = False
+    ) -> None | IntTag:
+        """
+        Get the tag stored in key if it is a IntTag.
+
+        :param key: The key to get
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The IntTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a IntTag and raise_errors is True.
+        """
+
+    def get_int_array(
+        self, key: str, default: None | IntArrayTag = None, raise_errors: bool = False
+    ) -> None | IntArrayTag:
+        """
+        Get the tag stored in key if it is a IntArrayTag.
+
+        :param key: The key to get
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The IntArrayTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a IntArrayTag and raise_errors is True.
+        """
+
+    def get_list(
+        self, key: str, default: None | ... = None, raise_errors: bool = False
+    ) -> None | ...:
+        """
+        Get the tag stored in key if it is a ListTag.
+
+        :param key: The key to get
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The ListTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a ListTag and raise_errors is True.
+        """
+
     def get_long(
-        self, key: str | bytes, default: None, raise_errors: Literal[False]
-    ) -> LongTag | None: ...
-    @overload
-    def get_long(
-        self, key: str | bytes, default: LongTag, raise_errors: Literal[False]
-    ) -> LongTag: ...
-    @overload
-    def get_long(
-        self, key: str | bytes, default: LongTag | None, raise_errors: Literal[True]
-    ) -> LongTag: ...
-    @overload
-    def get_long(
-        self, key: str | bytes, *, raise_errors: Literal[False]
-    ) -> LongTag | None: ...
-    @overload
-    def get_long(self, key: str | bytes, *, raise_errors: Literal[True]) -> LongTag: ...
-    @overload
-    def get_float(self, key: str | bytes) -> FloatTag | None: ...
-    @overload
-    def get_float(self, key: str | bytes, default: None) -> FloatTag | None: ...
-    @overload
-    def get_float(self, key: str | bytes, default: FloatTag) -> FloatTag: ...
-    @overload
-    def get_float(
-        self, key: str | bytes, default: None, raise_errors: Literal[False]
-    ) -> FloatTag | None: ...
-    @overload
-    def get_float(
-        self, key: str | bytes, default: FloatTag, raise_errors: Literal[False]
-    ) -> FloatTag: ...
-    @overload
-    def get_float(
-        self, key: str | bytes, default: FloatTag | None, raise_errors: Literal[True]
-    ) -> FloatTag: ...
-    @overload
-    def get_float(
-        self, key: str | bytes, *, raise_errors: Literal[False]
-    ) -> FloatTag | None: ...
-    @overload
-    def get_float(
-        self, key: str | bytes, *, raise_errors: Literal[True]
-    ) -> FloatTag: ...
-    @overload
-    def get_double(self, key: str | bytes) -> DoubleTag | None: ...
-    @overload
-    def get_double(self, key: str | bytes, default: None) -> DoubleTag | None: ...
-    @overload
-    def get_double(self, key: str | bytes, default: DoubleTag) -> DoubleTag: ...
-    @overload
-    def get_double(
-        self, key: str | bytes, default: None, raise_errors: Literal[False]
-    ) -> DoubleTag | None: ...
-    @overload
-    def get_double(
-        self, key: str | bytes, default: DoubleTag, raise_errors: Literal[False]
-    ) -> DoubleTag: ...
-    @overload
-    def get_double(
-        self, key: str | bytes, default: DoubleTag | None, raise_errors: Literal[True]
-    ) -> DoubleTag: ...
-    @overload
-    def get_double(
-        self, key: str | bytes, *, raise_errors: Literal[False]
-    ) -> DoubleTag | None: ...
-    @overload
-    def get_double(
-        self, key: str | bytes, *, raise_errors: Literal[True]
-    ) -> DoubleTag: ...
-    @overload
-    def get_byte_array(self, key: str | bytes) -> ByteArrayTag | None: ...
-    @overload
-    def get_byte_array(
-        self, key: str | bytes, default: None
-    ) -> ByteArrayTag | None: ...
-    @overload
-    def get_byte_array(
-        self, key: str | bytes, default: ByteArrayTag
-    ) -> ByteArrayTag: ...
-    @overload
-    def get_byte_array(
-        self, key: str | bytes, default: None, raise_errors: Literal[False]
-    ) -> ByteArrayTag | None: ...
-    @overload
-    def get_byte_array(
-        self, key: str | bytes, default: ByteArrayTag, raise_errors: Literal[False]
-    ) -> ByteArrayTag: ...
-    @overload
-    def get_byte_array(
+        self, key: str, default: None | LongTag = None, raise_errors: bool = False
+    ) -> None | LongTag:
+        """
+        Get the tag stored in key if it is a LongTag.
+
+        :param key: The key to get
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The LongTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a LongTag and raise_errors is True.
+        """
+
+    def get_long_array(
+        self, key: str, default: None | LongArrayTag = None, raise_errors: bool = False
+    ) -> None | LongArrayTag:
+        """
+        Get the tag stored in key if it is a LongArrayTag.
+
+        :param key: The key to get
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The LongArrayTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a LongArrayTag and raise_errors is True.
+        """
+
+    def get_short(
+        self, key: str, default: None | ShortTag = None, raise_errors: bool = False
+    ) -> None | ShortTag:
+        """
+        Get the tag stored in key if it is a ShortTag.
+
+        :param key: The key to get
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The ShortTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a ShortTag and raise_errors is True.
+        """
+
+    def get_string(
+        self, key: str, default: None | StringTag = None, raise_errors: bool = False
+    ) -> None | StringTag:
+        """
+        Get the tag stored in key if it is a StringTag.
+
+        :param key: The key to get
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The StringTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a StringTag and raise_errors is True.
+        """
+
+    def items(self) -> typing.Any: ...
+    def keys(self) -> typing.Any: ...
+    def pop(self, key: str, default: typing.Any = ...) -> typing.Any: ...
+    def pop_byte(
+        self, key: str, default: None | ByteTag = None, raise_errors: bool = False
+    ) -> None | ByteTag:
+        """
+        Remove the specified key and return the corresponding value if it is a ByteTag.
+
+        If the key exists but the type is incorrect, the value will not be removed.
+
+        :param key: The key to get and remove
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The ByteTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a ByteTag and raise_errors is True.
+        """
+
+    def pop_byte_array(
+        self, key: str, default: None | ByteArrayTag = None, raise_errors: bool = False
+    ) -> None | ByteArrayTag:
+        """
+        Remove the specified key and return the corresponding value if it is a ByteArrayTag.
+
+        If the key exists but the type is incorrect, the value will not be removed.
+
+        :param key: The key to get and remove
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The ByteArrayTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a ByteArrayTag and raise_errors is True.
+        """
+
+    def pop_compound(
+        self, key: str, default: None | CompoundTag = None, raise_errors: bool = False
+    ) -> None | CompoundTag:
+        """
+        Remove the specified key and return the corresponding value if it is a CompoundTag.
+
+        If the key exists but the type is incorrect, the value will not be removed.
+
+        :param key: The key to get and remove
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The CompoundTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a CompoundTag and raise_errors is True.
+        """
+
+    def pop_double(
+        self, key: str, default: None | DoubleTag = None, raise_errors: bool = False
+    ) -> None | DoubleTag:
+        """
+        Remove the specified key and return the corresponding value if it is a DoubleTag.
+
+        If the key exists but the type is incorrect, the value will not be removed.
+
+        :param key: The key to get and remove
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The DoubleTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a DoubleTag and raise_errors is True.
+        """
+
+    def pop_float(
+        self, key: str, default: None | FloatTag = None, raise_errors: bool = False
+    ) -> None | FloatTag:
+        """
+        Remove the specified key and return the corresponding value if it is a FloatTag.
+
+        If the key exists but the type is incorrect, the value will not be removed.
+
+        :param key: The key to get and remove
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The FloatTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a FloatTag and raise_errors is True.
+        """
+
+    def pop_int(
+        self, key: str, default: None | IntTag = None, raise_errors: bool = False
+    ) -> None | IntTag:
+        """
+        Remove the specified key and return the corresponding value if it is a IntTag.
+
+        If the key exists but the type is incorrect, the value will not be removed.
+
+        :param key: The key to get and remove
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The IntTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a IntTag and raise_errors is True.
+        """
+
+    def pop_int_array(
+        self, key: str, default: None | IntArrayTag = None, raise_errors: bool = False
+    ) -> None | IntArrayTag:
+        """
+        Remove the specified key and return the corresponding value if it is a IntArrayTag.
+
+        If the key exists but the type is incorrect, the value will not be removed.
+
+        :param key: The key to get and remove
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The IntArrayTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a IntArrayTag and raise_errors is True.
+        """
+
+    def pop_list(
+        self, key: str, default: None | ... = None, raise_errors: bool = False
+    ) -> None | ...:
+        """
+        Remove the specified key and return the corresponding value if it is a ListTag.
+
+        If the key exists but the type is incorrect, the value will not be removed.
+
+        :param key: The key to get and remove
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The ListTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a ListTag and raise_errors is True.
+        """
+
+    def pop_long(
+        self, key: str, default: None | LongTag = None, raise_errors: bool = False
+    ) -> None | LongTag:
+        """
+        Remove the specified key and return the corresponding value if it is a LongTag.
+
+        If the key exists but the type is incorrect, the value will not be removed.
+
+        :param key: The key to get and remove
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The LongTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a LongTag and raise_errors is True.
+        """
+
+    def pop_long_array(
+        self, key: str, default: None | LongArrayTag = None, raise_errors: bool = False
+    ) -> None | LongArrayTag:
+        """
+        Remove the specified key and return the corresponding value if it is a LongArrayTag.
+
+        If the key exists but the type is incorrect, the value will not be removed.
+
+        :param key: The key to get and remove
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The LongArrayTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a LongArrayTag and raise_errors is True.
+        """
+
+    def pop_short(
+        self, key: str, default: None | ShortTag = None, raise_errors: bool = False
+    ) -> None | ShortTag:
+        """
+        Remove the specified key and return the corresponding value if it is a ShortTag.
+
+        If the key exists but the type is incorrect, the value will not be removed.
+
+        :param key: The key to get and remove
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The ShortTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a ShortTag and raise_errors is True.
+        """
+
+    def pop_string(
+        self, key: str, default: None | StringTag = None, raise_errors: bool = False
+    ) -> None | StringTag:
+        """
+        Remove the specified key and return the corresponding value if it is a StringTag.
+
+        If the key exists but the type is incorrect, the value will not be removed.
+
+        :param key: The key to get and remove
+        :param default: The value to return if the key does not exist or the type is wrong.
+        :param raise_errors: If True, KeyError and TypeError are raise on error. If False, default is returned on error.
+        :return: The StringTag.
+        :raises: KeyError if the key does not exist and raise_errors is True.
+        :raises: TypeError if the stored type is not a StringTag and raise_errors is True.
+        """
+
+    def popitem(
         self,
-        key: str | bytes,
-        default: ByteArrayTag | None,
-        raise_errors: Literal[True],
-    ) -> ByteArrayTag: ...
-    @overload
-    def get_byte_array(
-        self, key: str | bytes, *, raise_errors: Literal[False]
-    ) -> ByteArrayTag | None: ...
-    @overload
-    def get_byte_array(
-        self, key: str | bytes, *, raise_errors: Literal[True]
-    ) -> ByteArrayTag: ...
-    @overload
-    def get_string(self, key: str | bytes) -> StringTag | None: ...
-    @overload
-    def get_string(self, key: str | bytes, default: None) -> StringTag | None: ...
-    @overload
-    def get_string(self, key: str | bytes, default: StringTag) -> StringTag: ...
-    @overload
-    def get_string(
-        self, key: str | bytes, default: None, raise_errors: Literal[False]
-    ) -> StringTag | None: ...
-    @overload
-    def get_string(
-        self, key: str | bytes, default: StringTag, raise_errors: Literal[False]
-    ) -> StringTag: ...
-    @overload
-    def get_string(
-        self, key: str | bytes, default: StringTag | None, raise_errors: Literal[True]
-    ) -> StringTag: ...
-    @overload
-    def get_string(
-        self, key: str | bytes, *, raise_errors: Literal[False]
-    ) -> StringTag | None: ...
-    @overload
-    def get_string(
-        self, key: str | bytes, *, raise_errors: Literal[True]
-    ) -> StringTag: ...
-    @overload
-    def get_list(self, key: str | bytes) -> ListTag | None: ...
-    @overload
-    def get_list(self, key: str | bytes, default: None) -> ListTag | None: ...
-    @overload
-    def get_list(self, key: str | bytes, default: ListTag) -> ListTag: ...
-    @overload
-    def get_list(
-        self, key: str | bytes, default: None, raise_errors: Literal[False]
-    ) -> ListTag | None: ...
-    @overload
-    def get_list(
-        self, key: str | bytes, default: ListTag, raise_errors: Literal[False]
-    ) -> ListTag: ...
-    @overload
-    def get_list(
-        self, key: str | bytes, default: ListTag | None, raise_errors: Literal[True]
-    ) -> ListTag: ...
-    @overload
-    def get_list(
-        self, key: str | bytes, *, raise_errors: Literal[False]
-    ) -> ListTag | None: ...
-    @overload
-    def get_list(self, key: str | bytes, *, raise_errors: Literal[True]) -> ListTag: ...
-    @overload
-    def get_compound(self, key: str | bytes) -> CompoundTag | None: ...
-    @overload
-    def get_compound(self, key: str | bytes, default: None) -> CompoundTag | None: ...
-    @overload
-    def get_compound(self, key: str | bytes, default: CompoundTag) -> CompoundTag: ...
-    @overload
-    def get_compound(
-        self, key: str | bytes, default: None, raise_errors: Literal[False]
-    ) -> CompoundTag | None: ...
-    @overload
-    def get_compound(
-        self, key: str | bytes, default: CompoundTag, raise_errors: Literal[False]
-    ) -> CompoundTag: ...
-    @overload
-    def get_compound(
-        self, key: str | bytes, default: CompoundTag | None, raise_errors: Literal[True]
-    ) -> CompoundTag: ...
-    @overload
-    def get_compound(
-        self, key: str | bytes, *, raise_errors: Literal[False]
-    ) -> CompoundTag | None: ...
-    @overload
-    def get_compound(
-        self, key: str | bytes, *, raise_errors: Literal[True]
-    ) -> CompoundTag: ...
-    @overload
-    def get_int_array(self, key: str | bytes) -> IntArrayTag | None: ...
-    @overload
-    def get_int_array(self, key: str | bytes, default: None) -> IntArrayTag | None: ...
-    @overload
-    def get_int_array(self, key: str | bytes, default: IntArrayTag) -> IntArrayTag: ...
-    @overload
-    def get_int_array(
-        self, key: str | bytes, default: None, raise_errors: Literal[False]
-    ) -> IntArrayTag | None: ...
-    @overload
-    def get_int_array(
-        self, key: str | bytes, default: IntArrayTag, raise_errors: Literal[False]
-    ) -> IntArrayTag: ...
-    @overload
-    def get_int_array(
-        self, key: str | bytes, default: IntArrayTag | None, raise_errors: Literal[True]
-    ) -> IntArrayTag: ...
-    @overload
-    def get_int_array(
-        self, key: str | bytes, *, raise_errors: Literal[False]
-    ) -> IntArrayTag | None: ...
-    @overload
-    def get_int_array(
-        self, key: str | bytes, *, raise_errors: Literal[True]
-    ) -> IntArrayTag: ...
-    @overload
-    def get_long_array(self, key: str | bytes) -> LongArrayTag | None: ...
-    @overload
-    def get_long_array(
-        self, key: str | bytes, default: None
-    ) -> LongArrayTag | None: ...
-    @overload
-    def get_long_array(
-        self, key: str | bytes, default: LongArrayTag
-    ) -> LongArrayTag: ...
-    @overload
-    def get_long_array(
-        self, key: str | bytes, default: None, raise_errors: Literal[False]
-    ) -> LongArrayTag | None: ...
-    @overload
-    def get_long_array(
-        self, key: str | bytes, default: LongArrayTag, raise_errors: Literal[False]
-    ) -> LongArrayTag: ...
-    @overload
-    def get_long_array(
+    ) -> tuple[
+        str | bytes,
+        ByteTag
+        | ShortTag
+        | IntTag
+        | LongTag
+        | FloatTag
+        | DoubleTag
+        | ByteArrayTag
+        | StringTag
+        | ...
+        | CompoundTag
+        | IntArrayTag
+        | LongArrayTag,
+    ]: ...
+    @typing.overload
+    def save_to(
         self,
-        key: str | bytes,
-        default: LongArrayTag | None,
-        raise_errors: Literal[True],
-    ) -> LongArrayTag: ...
-    @overload
-    def get_long_array(
-        self, key: str | bytes, *, raise_errors: Literal[False]
-    ) -> LongArrayTag | None: ...
-    @overload
-    def get_long_array(
-        self, key: str | bytes, *, raise_errors: Literal[True]
-    ) -> LongArrayTag: ...
+        filepath_or_writable: typing.Any = None,
+        /,
+        *,
+        preset: EncodingPreset = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    @typing.overload
+    def save_to(
+        self,
+        filepath_or_writable: typing.Any = None,
+        /,
+        *,
+        compressed: bool = True,
+        little_endian: bool = False,
+        string_encoding: StringEncoding = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    def setdefault(
+        self,
+        key: str,
+        tag: (
+            None
+            | ByteTag
+            | ShortTag
+            | IntTag
+            | LongTag
+            | FloatTag
+            | DoubleTag
+            | ByteArrayTag
+            | StringTag
+            | ...
+            | CompoundTag
+            | IntArrayTag
+            | LongArrayTag
+        ) = None,
+        cls: typing.Any = ...,
+    ) -> typing.Any: ...
     def setdefault_byte(
-        self, key: str | bytes, default: ByteTag | None = None
-    ) -> ByteTag: ...
-    def setdefault_short(
-        self, key: str | bytes, default: ShortTag | None = None
-    ) -> ShortTag: ...
-    def setdefault_int(
-        self, key: str | bytes, default: IntTag | None = None
-    ) -> IntTag: ...
-    def setdefault_long(
-        self, key: str | bytes, default: LongTag | None = None
-    ) -> LongTag: ...
-    def setdefault_float(
-        self, key: str | bytes, default: FloatTag | None = None
-    ) -> FloatTag: ...
-    def setdefault_double(
-        self, key: str | bytes, default: DoubleTag | None = None
-    ) -> DoubleTag: ...
-    def setdefault_string(
-        self, key: str | bytes, default: StringTag | None = None
-    ) -> StringTag: ...
-    def setdefault_list(
-        self, key: str | bytes, default: ListTag | None = None
-    ) -> ListTag: ...
-    def setdefault_compound(
-        self, key: str | bytes, default: CompoundTag | None = None
-    ) -> CompoundTag: ...
+        self, key: str, default: None | ByteTag = None
+    ) -> None | ByteTag:
+        """
+        Populate key if not defined or value is not ByteTag. Return the value stored
+        .
+        If default is a ByteTag then it will be stored under key else a default instance will be created.
+
+        :param key: The key to populate and get
+        :param default: The default value to use. If None, the default ByteTag is used.
+        :return: The ByteTag stored in key
+        """
+
     def setdefault_byte_array(
-        self, key: str | bytes, default: ByteArrayTag | None = None
-    ) -> ByteArrayTag: ...
+        self, key: str, default: None | ByteArrayTag = None
+    ) -> None | ByteArrayTag:
+        """
+        Populate key if not defined or value is not ByteArrayTag. Return the value stored
+        .
+        If default is a ByteArrayTag then it will be stored under key else a default instance will be created.
+
+        :param key: The key to populate and get
+        :param default: The default value to use. If None, the default ByteArrayTag is used.
+        :return: The ByteArrayTag stored in key
+        """
+
+    def setdefault_compound(
+        self, key: str, default: None | CompoundTag = None
+    ) -> None | CompoundTag:
+        """
+        Populate key if not defined or value is not CompoundTag. Return the value stored
+        .
+        If default is a CompoundTag then it will be stored under key else a default instance will be created.
+
+        :param key: The key to populate and get
+        :param default: The default value to use. If None, the default CompoundTag is used.
+        :return: The CompoundTag stored in key
+        """
+
+    def setdefault_double(
+        self, key: str, default: None | DoubleTag = None
+    ) -> None | DoubleTag:
+        """
+        Populate key if not defined or value is not DoubleTag. Return the value stored
+        .
+        If default is a DoubleTag then it will be stored under key else a default instance will be created.
+
+        :param key: The key to populate and get
+        :param default: The default value to use. If None, the default DoubleTag is used.
+        :return: The DoubleTag stored in key
+        """
+
+    def setdefault_float(
+        self, key: str, default: None | FloatTag = None
+    ) -> None | FloatTag:
+        """
+        Populate key if not defined or value is not FloatTag. Return the value stored
+        .
+        If default is a FloatTag then it will be stored under key else a default instance will be created.
+
+        :param key: The key to populate and get
+        :param default: The default value to use. If None, the default FloatTag is used.
+        :return: The FloatTag stored in key
+        """
+
+    def setdefault_int(self, key: str, default: None | IntTag = None) -> None | IntTag:
+        """
+        Populate key if not defined or value is not IntTag. Return the value stored
+        .
+        If default is a IntTag then it will be stored under key else a default instance will be created.
+
+        :param key: The key to populate and get
+        :param default: The default value to use. If None, the default IntTag is used.
+        :return: The IntTag stored in key
+        """
+
     def setdefault_int_array(
-        self, key: str | bytes, default: IntArrayTag | None = None
-    ) -> IntArrayTag: ...
+        self, key: str, default: None | IntArrayTag = None
+    ) -> None | IntArrayTag:
+        """
+        Populate key if not defined or value is not IntArrayTag. Return the value stored
+        .
+        If default is a IntArrayTag then it will be stored under key else a default instance will be created.
+
+        :param key: The key to populate and get
+        :param default: The default value to use. If None, the default IntArrayTag is used.
+        :return: The IntArrayTag stored in key
+        """
+
+    def setdefault_list(self, key: str, default: None | ... = None) -> None | ...:
+        """
+        Populate key if not defined or value is not ListTag. Return the value stored
+        .
+        If default is a ListTag then it will be stored under key else a default instance will be created.
+
+        :param key: The key to populate and get
+        :param default: The default value to use. If None, the default ListTag is used.
+        :return: The ListTag stored in key
+        """
+
+    def setdefault_long(
+        self, key: str, default: None | LongTag = None
+    ) -> None | LongTag:
+        """
+        Populate key if not defined or value is not LongTag. Return the value stored
+        .
+        If default is a LongTag then it will be stored under key else a default instance will be created.
+
+        :param key: The key to populate and get
+        :param default: The default value to use. If None, the default LongTag is used.
+        :return: The LongTag stored in key
+        """
+
     def setdefault_long_array(
-        self, key: str | bytes, default: LongArrayTag | None = None
-    ) -> LongArrayTag: ...
-    @overload
-    def pop_byte(self, key: str | bytes) -> ByteTag | None: ...
-    @overload
-    def pop_byte(self, key: str | bytes, default: None) -> ByteTag | None: ...
-    @overload
-    def pop_byte(self, key: str | bytes, default: ByteTag) -> ByteTag: ...
-    @overload
-    def pop_byte(
-        self, key: str | bytes, default: None, raise_errors: Literal[False]
-    ) -> ByteTag | None: ...
-    @overload
-    def pop_byte(
-        self, key: str | bytes, default: ByteTag, raise_errors: Literal[False]
-    ) -> ByteTag: ...
-    @overload
-    def pop_byte(
-        self, key: str | bytes, default: ByteTag | None, raise_errors: Literal[True]
-    ) -> ByteTag: ...
-    @overload
-    def pop_byte(
-        self, key: str | bytes, *, raise_errors: Literal[False]
-    ) -> ByteTag | None: ...
-    @overload
-    def pop_byte(self, key: str | bytes, *, raise_errors: Literal[True]) -> ByteTag: ...
-    @overload
-    def pop_short(self, key: str | bytes) -> ShortTag | None: ...
-    @overload
-    def pop_short(self, key: str | bytes, default: None) -> ShortTag | None: ...
-    @overload
-    def pop_short(self, key: str | bytes, default: ShortTag) -> ShortTag: ...
-    @overload
-    def pop_short(
-        self, key: str | bytes, default: None, raise_errors: Literal[False]
-    ) -> ShortTag | None: ...
-    @overload
-    def pop_short(
-        self, key: str | bytes, default: ShortTag, raise_errors: Literal[False]
-    ) -> ShortTag: ...
-    @overload
-    def pop_short(
-        self, key: str | bytes, default: ShortTag | None, raise_errors: Literal[True]
-    ) -> ShortTag: ...
-    @overload
-    def pop_short(
-        self, key: str | bytes, *, raise_errors: Literal[False]
-    ) -> ShortTag | None: ...
-    @overload
-    def pop_short(
-        self, key: str | bytes, *, raise_errors: Literal[True]
-    ) -> ShortTag: ...
-    @overload
-    def pop_int(self, key: str | bytes) -> IntTag | None: ...
-    @overload
-    def pop_int(self, key: str | bytes, default: None) -> IntTag | None: ...
-    @overload
-    def pop_int(self, key: str | bytes, default: IntTag) -> IntTag: ...
-    @overload
-    def pop_int(
-        self, key: str | bytes, default: None, raise_errors: Literal[False]
-    ) -> IntTag | None: ...
-    @overload
-    def pop_int(
-        self, key: str | bytes, default: IntTag, raise_errors: Literal[False]
-    ) -> IntTag: ...
-    @overload
-    def pop_int(
-        self, key: str | bytes, default: IntTag | None, raise_errors: Literal[True]
-    ) -> IntTag: ...
-    @overload
-    def pop_int(
-        self, key: str | bytes, *, raise_errors: Literal[False]
-    ) -> IntTag | None: ...
-    @overload
-    def pop_int(self, key: str | bytes, *, raise_errors: Literal[True]) -> IntTag: ...
-    @overload
-    def pop_long(self, key: str | bytes) -> LongTag | None: ...
-    @overload
-    def pop_long(self, key: str | bytes, default: None) -> LongTag | None: ...
-    @overload
-    def pop_long(self, key: str | bytes, default: LongTag) -> LongTag: ...
-    @overload
-    def pop_long(
-        self, key: str | bytes, default: None, raise_errors: Literal[False]
-    ) -> LongTag | None: ...
-    @overload
-    def pop_long(
-        self, key: str | bytes, default: LongTag, raise_errors: Literal[False]
-    ) -> LongTag: ...
-    @overload
-    def pop_long(
-        self, key: str | bytes, default: LongTag | None, raise_errors: Literal[True]
-    ) -> LongTag: ...
-    @overload
-    def pop_long(
-        self, key: str | bytes, *, raise_errors: Literal[False]
-    ) -> LongTag | None: ...
-    @overload
-    def pop_long(self, key: str | bytes, *, raise_errors: Literal[True]) -> LongTag: ...
-    @overload
-    def pop_float(self, key: str | bytes) -> FloatTag | None: ...
-    @overload
-    def pop_float(self, key: str | bytes, default: None) -> FloatTag | None: ...
-    @overload
-    def pop_float(self, key: str | bytes, default: FloatTag) -> FloatTag: ...
-    @overload
-    def pop_float(
-        self, key: str | bytes, default: None, raise_errors: Literal[False]
-    ) -> FloatTag | None: ...
-    @overload
-    def pop_float(
-        self, key: str | bytes, default: FloatTag, raise_errors: Literal[False]
-    ) -> FloatTag: ...
-    @overload
-    def pop_float(
-        self, key: str | bytes, default: FloatTag | None, raise_errors: Literal[True]
-    ) -> FloatTag: ...
-    @overload
-    def pop_float(
-        self, key: str | bytes, *, raise_errors: Literal[False]
-    ) -> FloatTag | None: ...
-    @overload
-    def pop_float(
-        self, key: str | bytes, *, raise_errors: Literal[True]
-    ) -> FloatTag: ...
-    @overload
-    def pop_double(self, key: str | bytes) -> DoubleTag | None: ...
-    @overload
-    def pop_double(self, key: str | bytes, default: None) -> DoubleTag | None: ...
-    @overload
-    def pop_double(self, key: str | bytes, default: DoubleTag) -> DoubleTag: ...
-    @overload
-    def pop_double(
-        self, key: str | bytes, default: None, raise_errors: Literal[False]
-    ) -> DoubleTag | None: ...
-    @overload
-    def pop_double(
-        self, key: str | bytes, default: DoubleTag, raise_errors: Literal[False]
-    ) -> DoubleTag: ...
-    @overload
-    def pop_double(
-        self, key: str | bytes, default: DoubleTag | None, raise_errors: Literal[True]
-    ) -> DoubleTag: ...
-    @overload
-    def pop_double(
-        self, key: str | bytes, *, raise_errors: Literal[False]
-    ) -> DoubleTag | None: ...
-    @overload
-    def pop_double(
-        self, key: str | bytes, *, raise_errors: Literal[True]
-    ) -> DoubleTag: ...
-    @overload
-    def pop_byte_array(self, key: str | bytes) -> ByteArrayTag | None: ...
-    @overload
-    def pop_byte_array(
-        self, key: str | bytes, default: None
-    ) -> ByteArrayTag | None: ...
-    @overload
-    def pop_byte_array(
-        self, key: str | bytes, default: ByteArrayTag
-    ) -> ByteArrayTag: ...
-    @overload
-    def pop_byte_array(
-        self, key: str | bytes, default: None, raise_errors: Literal[False]
-    ) -> ByteArrayTag | None: ...
-    @overload
-    def pop_byte_array(
-        self, key: str | bytes, default: ByteArrayTag, raise_errors: Literal[False]
-    ) -> ByteArrayTag: ...
-    @overload
-    def pop_byte_array(
-        self,
-        key: str | bytes,
-        default: ByteArrayTag | None,
-        raise_errors: Literal[True],
-    ) -> ByteArrayTag: ...
-    @overload
-    def pop_byte_array(
-        self, key: str | bytes, *, raise_errors: Literal[False]
-    ) -> ByteArrayTag | None: ...
-    @overload
-    def pop_byte_array(
-        self, key: str | bytes, *, raise_errors: Literal[True]
-    ) -> ByteArrayTag: ...
-    @overload
-    def pop_string(self, key: str | bytes) -> StringTag | None: ...
-    @overload
-    def pop_string(self, key: str | bytes, default: None) -> StringTag | None: ...
-    @overload
-    def pop_string(self, key: str | bytes, default: StringTag) -> StringTag: ...
-    @overload
-    def pop_string(
-        self, key: str | bytes, default: None, raise_errors: Literal[False]
-    ) -> StringTag | None: ...
-    @overload
-    def pop_string(
-        self, key: str | bytes, default: StringTag, raise_errors: Literal[False]
-    ) -> StringTag: ...
-    @overload
-    def pop_string(
-        self, key: str | bytes, default: StringTag | None, raise_errors: Literal[True]
-    ) -> StringTag: ...
-    @overload
-    def pop_string(
-        self, key: str | bytes, *, raise_errors: Literal[False]
-    ) -> StringTag | None: ...
-    @overload
-    def pop_string(
-        self, key: str | bytes, *, raise_errors: Literal[True]
-    ) -> StringTag: ...
-    @overload
-    def pop_list(self, key: str | bytes) -> ListTag | None: ...
-    @overload
-    def pop_list(self, key: str | bytes, default: None) -> ListTag | None: ...
-    @overload
-    def pop_list(self, key: str | bytes, default: ListTag) -> ListTag: ...
-    @overload
-    def pop_list(
-        self, key: str | bytes, default: None, raise_errors: Literal[False]
-    ) -> ListTag | None: ...
-    @overload
-    def pop_list(
-        self, key: str | bytes, default: ListTag, raise_errors: Literal[False]
-    ) -> ListTag: ...
-    @overload
-    def pop_list(
-        self, key: str | bytes, default: ListTag | None, raise_errors: Literal[True]
-    ) -> ListTag: ...
-    @overload
-    def pop_list(
-        self, key: str | bytes, *, raise_errors: Literal[False]
-    ) -> ListTag | None: ...
-    @overload
-    def pop_list(self, key: str | bytes, *, raise_errors: Literal[True]) -> ListTag: ...
-    @overload
-    def pop_compound(self, key: str | bytes) -> CompoundTag | None: ...
-    @overload
-    def pop_compound(self, key: str | bytes, default: None) -> CompoundTag | None: ...
-    @overload
-    def pop_compound(self, key: str | bytes, default: CompoundTag) -> CompoundTag: ...
-    @overload
-    def pop_compound(
-        self, key: str | bytes, default: None, raise_errors: Literal[False]
-    ) -> CompoundTag | None: ...
-    @overload
-    def pop_compound(
-        self, key: str | bytes, default: CompoundTag, raise_errors: Literal[False]
-    ) -> CompoundTag: ...
-    @overload
-    def pop_compound(
-        self, key: str | bytes, default: CompoundTag | None, raise_errors: Literal[True]
-    ) -> CompoundTag: ...
-    @overload
-    def pop_compound(
-        self, key: str | bytes, *, raise_errors: Literal[False]
-    ) -> CompoundTag | None: ...
-    @overload
-    def pop_compound(
-        self, key: str | bytes, *, raise_errors: Literal[True]
-    ) -> CompoundTag: ...
-    @overload
-    def pop_int_array(self, key: str | bytes) -> IntArrayTag | None: ...
-    @overload
-    def pop_int_array(self, key: str | bytes, default: None) -> IntArrayTag | None: ...
-    @overload
-    def pop_int_array(self, key: str | bytes, default: IntArrayTag) -> IntArrayTag: ...
-    @overload
-    def pop_int_array(
-        self, key: str | bytes, default: None, raise_errors: Literal[False]
-    ) -> IntArrayTag | None: ...
-    @overload
-    def pop_int_array(
-        self, key: str | bytes, default: IntArrayTag, raise_errors: Literal[False]
-    ) -> IntArrayTag: ...
-    @overload
-    def pop_int_array(
-        self, key: str | bytes, default: IntArrayTag | None, raise_errors: Literal[True]
-    ) -> IntArrayTag: ...
-    @overload
-    def pop_int_array(
-        self, key: str | bytes, *, raise_errors: Literal[False]
-    ) -> IntArrayTag | None: ...
-    @overload
-    def pop_int_array(
-        self, key: str | bytes, *, raise_errors: Literal[True]
-    ) -> IntArrayTag: ...
-    @overload
-    def pop_long_array(self, key: str | bytes) -> LongArrayTag | None: ...
-    @overload
-    def pop_long_array(
-        self, key: str | bytes, default: None
-    ) -> LongArrayTag | None: ...
-    @overload
-    def pop_long_array(
-        self, key: str | bytes, default: LongArrayTag
-    ) -> LongArrayTag: ...
-    @overload
-    def pop_long_array(
-        self, key: str | bytes, default: None, raise_errors: Literal[False]
-    ) -> LongArrayTag | None: ...
-    @overload
-    def pop_long_array(
-        self, key: str | bytes, default: LongArrayTag, raise_errors: Literal[False]
-    ) -> LongArrayTag: ...
-    @overload
-    def pop_long_array(
-        self,
-        key: str | bytes,
-        default: LongArrayTag | None,
-        raise_errors: Literal[True],
-    ) -> LongArrayTag: ...
-    @overload
-    def pop_long_array(
-        self, key: str | bytes, *, raise_errors: Literal[False]
-    ) -> LongArrayTag | None: ...
-    @overload
-    def pop_long_array(
-        self, key: str | bytes, *, raise_errors: Literal[True]
-    ) -> LongArrayTag: ...
-    def __setitem__(self, key: str | bytes, value: AnyNBT) -> None: ...
-    def __delitem__(self, key: str | bytes) -> None: ...
-    def __getitem__(self, key: str | bytes) -> AnyNBT: ...
-    def __len__(self) -> int: ...
-    def __iter__(self) -> Iterator[str | bytes]: ...
+        self, key: str, default: None | LongArrayTag = None
+    ) -> None | LongArrayTag:
+        """
+        Populate key if not defined or value is not LongArrayTag. Return the value stored
+        .
+        If default is a LongArrayTag then it will be stored under key else a default instance will be created.
 
-class AbstractBaseArrayTag(AbstractBaseMutableTag):
-    def __init__(self, value: Iterable[SupportsInt] = ()) -> None: ...
-    @property
-    def np_array(self) -> numpy.ndarray:
-        """A numpy array holding the same internal data.
-
-        Changes to the array will also modify the internal state.
+        :param key: The key to populate and get
+        :param default: The default value to use. If None, the default LongArrayTag is used.
+        :return: The LongArrayTag stored in key
         """
 
-    def __len__(self) -> int:
-        """The length of the array.
+    def setdefault_short(
+        self, key: str, default: None | ShortTag = None
+    ) -> None | ShortTag:
+        """
+        Populate key if not defined or value is not ShortTag. Return the value stored
+        .
+        If default is a ShortTag then it will be stored under key else a default instance will be created.
 
-        >>> from amulet.nbt import ByteArrayTag
-        >>> tag = ByteArrayTag([1, 2, 3])
-        >>> len(tag)  # 3
+        :param key: The key to populate and get
+        :param default: The default value to use. If None, the default ShortTag is used.
+        :return: The ShortTag stored in key
         """
 
-    @overload
-    def __getitem__(self, item: int) -> numpy.int8 | numpy.int32 | numpy.int64:
-        """Get item(s) from the array.
+    def setdefault_string(
+        self, key: str, default: None | StringTag = None
+    ) -> None | StringTag:
+        """
+        Populate key if not defined or value is not StringTag. Return the value stored
+        .
+        If default is a StringTag then it will be stored under key else a default instance will be created.
 
-        This supports the full numpy protocol.
-        If a numpy array is returned, the array data is the same as the data contained in this class.
-
-        >>> from amulet.nbt import ByteArrayTag
-        >>> import numpy
-        >>> tag = ByteArrayTag([1, 2, 3])
-        >>> tag[0]  # 1
-        >>> tag[:1]  # numpy.array([1], dtype=numpy.int8)
-        >>> tag[numpy.array([1, 2])]  # numpy.array([2, 3], dtype=int8)
+        :param key: The key to populate and get
+        :param default: The default value to use. If None, the default StringTag is used.
+        :return: The StringTag stored in key
         """
 
-    @overload
-    def __getitem__(
-        self, item: slice
-    ) -> NDArray[numpy.int8 | numpy.int32 | numpy.int64]: ...
-    @overload
-    def __getitem__(
-        self, item: NDArray[numpy.integer]
-    ) -> NDArray[numpy.int8 | numpy.int32 | numpy.int64]: ...
-    def __iter__(self) -> Iterator[numpy.int8 | numpy.int32 | numpy.int64]:
-        """Iterate through the items in the array.
-
-        >>> from amulet.nbt import ByteArrayTag
-        >>> tag = ByteArrayTag([1, 2, 3])
-        >>> for num in tag:
-        >>>     pass
-        >>> iter(tag)
-        """
-
-    def __reversed__(self) -> Iterator[numpy.int8 | numpy.int32 | numpy.int64]:
-        """Iterate through the items in the array in reverse order.
-
-        >>> from amulet.nbt import ByteArrayTag
-        >>> tag = ByteArrayTag([1, 2, 3])
-        >>> for num in reversed(tag):
-        >>>     pass
-        """
-
-    def __contains__(self, item: Any) -> bool:
-        """Check if an item is in the array.
-
-        >>> from amulet.nbt import ByteArrayTag
-        >>> tag = ByteArrayTag([1, 2, 3])
-        >>> 1 in tag  # True
-        """
-
-    @overload
-    def __setitem__(self, item: int, value: SupportsInt) -> None: ...
-    @overload
-    def __setitem__(
-        self,
-        item: slice,
-        value: Iterable[SupportsInt],
-    ) -> None: ...
-    @overload
-    def __setitem__(
-        self,
-        item: ArrayLike,
-        value: Iterable[SupportsInt],
-    ) -> None:
-        """Set item(s) in the array.
-
-        This supports the full numpy protocol.
-
-        >>> from amulet.nbt import ByteArrayTag
-        >>> import numpy
-        >>> tag = ByteArrayTag([1, 2, 3])
-        >>> tag[0] = 10  # [10, 2, 3]
-        >>> tag[:2] = [4, 5]  # [4, 5, 3]
-        >>> tag[numpy.array([1, 2])] = [6, 7]  # [4, 6, 7]
-        """
-
-    def __array__(
-        self, dtype: numpy.dtype | None = None
-    ) -> NDArray[numpy.int8 | numpy.int32 | numpy.int64]:
-        """Get a numpy array representation of the stored data.
-
-        >>> from amulet.nbt import ByteArrayTag
-        >>> import numpy
-        >>> tag = ByteArrayTag([1, 2, 3])
-        >>> arr = numpy.asarray(tag)
-        """
-
-class ByteArrayTag(AbstractBaseArrayTag):
-    @property
-    def np_array(self) -> NDArray[numpy.int8]: ...
-    def __len__(self) -> int:
-        """The length of the array.
-
-        >>> from amulet.nbt import ByteArrayTag
-        >>> tag = ByteArrayTag([1, 2, 3])
-        >>> len(tag)  # 3
-        """
-
-    @overload
-    def __getitem__(self, item: int) -> numpy.int8:
-        """Get item(s) from the array.
-
-        This supports the full numpy protocol.
-        If a numpy array is returned, the array data is the same as the data contained in this class.
-
-        >>> from amulet.nbt import ByteArrayTag
-        >>> import numpy
-        >>> tag = ByteArrayTag([1, 2, 3])
-        >>> tag[0]  # 1
-        >>> tag[:1]  # numpy.array([1], dtype=numpy.int8)
-        >>> tag[numpy.array([1, 2])]  # numpy.array([2, 3], dtype=int8)
-        """
-
-    @overload
-    def __getitem__(self, item: slice) -> NDArray[numpy.int8]: ...
-    @overload
-    def __getitem__(self, item: NDArray[numpy.integer]) -> NDArray[numpy.int8]: ...
-    def __iter__(self) -> Iterator[numpy.int8]:
-        """Iterate through the items in the array.
-
-        >>> from amulet.nbt import ByteArrayTag
-        >>> tag = ByteArrayTag([1, 2, 3])
-        >>> for num in tag:
-        >>>     pass
-        >>> iter(tag)
-        """
-
-    def __reversed__(self) -> Iterator[numpy.int8]:
-        """Iterate through the items in the array in reverse order.
-
-        >>> from amulet.nbt import ByteArrayTag
-        >>> tag = ByteArrayTag([1, 2, 3])
-        >>> for num in reversed(tag):
-        >>>     pass
-        """
-
-    def __contains__(self, value: int) -> bool:
-        """Check if an item is in the array.
-
-        >>> from amulet.nbt import ByteArrayTag
-        >>> tag = ByteArrayTag([1, 2, 3])
-        >>> 1 in tag  # True
-        """
-
-    @overload
-    def __setitem__(self, item: int, value: SupportsInt) -> None: ...
-    @overload
-    def __setitem__(self, item: slice, value: Iterable[SupportsInt]) -> None: ...
-    @overload
-    def __setitem__(self, item: ArrayLike, value: Iterable[SupportsInt]) -> None:
-        """Set item(s) in the array.
-
-        This supports the full numpy protocol.
-
-        >>> from amulet.nbt import ByteArrayTag
-        >>> import numpy
-        >>> tag = ByteArrayTag([1, 2, 3])
-        >>> tag[0] = 10  # [10, 2, 3]
-        >>> tag[:2] = [4, 5]  # [4, 5, 3]
-        >>> tag[numpy.array([1, 2])] = [6, 7]  # [4, 6, 7]
-        """
-
-    def __array__(self, dtype: numpy.dtype | None = None) -> NDArray[numpy.int8]:
-        """Get a numpy array representation of the stored data.
-
-        >>> from amulet.nbt import ByteArrayTag
-        >>> import numpy
-        >>> tag = ByteArrayTag([1, 2, 3])
-        >>> arr = numpy.asarray(tag)
-        """
-
-class IntArrayTag(AbstractBaseArrayTag):
-    @property
-    def np_array(self) -> NDArray[numpy.int32]: ...
-    def __len__(self) -> int:
-        """The length of the array.
-
-        >>> from amulet.nbt import IntArrayTag
-        >>> tag = IntArrayTag([1, 2, 3])
-        >>> len(tag)  # 3
-        """
-
-    @overload
-    def __getitem__(self, item: int) -> numpy.int32:
-        """Get item(s) from the array.
-
-        This supports the full numpy protocol.
-        If a numpy array is returned, the array data is the same as the data contained in this class.
-
-        >>> from amulet.nbt import IntArrayTag
-        >>> import numpy
-        >>> tag = IntArrayTag([1, 2, 3])
-        >>> tag[0]  # 1
-        >>> tag[:1]  # numpy.array([1], dtype=numpy.int32)
-        >>> tag[numpy.array([1, 2])]  # numpy.array([2, 3], dtype=int32)
-        """
-
-    @overload
-    def __getitem__(self, item: slice) -> NDArray[numpy.int32]: ...
-    @overload
-    def __getitem__(self, item: NDArray[numpy.integer]) -> NDArray[numpy.int32]: ...
-    def __iter__(self) -> Iterator[numpy.int32]:
-        """Iterate through the items in the array.
-
-        >>> from amulet.nbt import IntArrayTag
-        >>> tag = IntArrayTag([1, 2, 3])
-        >>> for num in tag:
-        >>>     pass
-        >>> iter(tag)
-        """
-
-    def __reversed__(self) -> Iterator[numpy.int32]:
-        """Iterate through the items in the array in reverse order.
-
-        >>> from amulet.nbt import IntArrayTag
-        >>> tag = IntArrayTag([1, 2, 3])
-        >>> for num in reversed(tag):
-        >>>     pass
-        """
-
-    def __contains__(self, value: int) -> bool:
-        """Check if an item is in the array.
-
-        >>> from amulet.nbt import IntArrayTag
-        >>> tag = IntArrayTag([1, 2, 3])
-        >>> 1 in tag  # True
-        """
-
-    @overload
-    def __setitem__(self, item: int, value: SupportsInt) -> None: ...
-    @overload
-    def __setitem__(self, item: slice, value: Iterable[SupportsInt]) -> None: ...
-    @overload
-    def __setitem__(self, item: ArrayLike, value: Iterable[SupportsInt]) -> None:
-        """Set item(s) in the array.
-
-        This supports the full numpy protocol.
-
-        >>> from amulet.nbt import IntArrayTag
-        >>> import numpy
-        >>> tag = IntArrayTag([1, 2, 3])
-        >>> tag[0] = 10  # [10, 2, 3]
-        >>> tag[:2] = [4, 5]  # [4, 5, 3]
-        >>> tag[numpy.array([1, 2])] = [6, 7]  # [4, 6, 7]
-        """
-
-    def __array__(self, dtype: numpy.dtype | None = None) -> NDArray[numpy.int32]:
-        """Get a numpy array representation of the stored data.
-
-        >>> from amulet.nbt import IntArrayTag
-        >>> import numpy
-        >>> tag = IntArrayTag([1, 2, 3])
-        >>> arr = numpy.asarray(tag)
-        """
-
-class LongArrayTag(AbstractBaseArrayTag):
-    @property
-    def np_array(self) -> NDArray[numpy.int64]: ...
-    def __len__(self) -> int:
-        """The length of the array.
-
-        >>> from amulet.nbt import LongArrayTag
-        >>> tag = LongArrayTag([1, 2, 3])
-        >>> len(tag)  # 3
-        """
-
-    @overload
-    def __getitem__(self, item: int) -> numpy.int64:
-        """Get item(s) from the array.
-
-        This supports the full numpy protocol.
-        If a numpy array is returned, the array data is the same as the data contained in this class.
-
-        >>> from amulet.nbt import LongArrayTag
-        >>> import numpy
-        >>> tag = LongArrayTag([1, 2, 3])
-        >>> tag[0]  # 1
-        >>> tag[:1]  # numpy.array([1], dtype=numpy.int64)
-        >>> tag[numpy.array([1, 2])]  # numpy.array([2, 3], dtype=int64)
-        """
-
-    @overload
-    def __getitem__(self, item: slice) -> NDArray[numpy.int64]: ...
-    @overload
-    def __getitem__(self, item: NDArray[numpy.integer]) -> NDArray[numpy.int64]: ...
-    def __iter__(self) -> Iterator[numpy.int64]:
-        """Iterate through the items in the array.
-
-        >>> from amulet.nbt import LongArrayTag
-        >>> tag = LongArrayTag([1, 2, 3])
-        >>> for num in tag:
-        >>>     pass
-        >>> iter(tag)
-        """
-
-    def __reversed__(self) -> Iterator[numpy.int64]:
-        """Iterate through the items in the array in reverse order.
-
-        >>> from amulet.nbt import LongArrayTag
-        >>> tag = LongArrayTag([1, 2, 3])
-        >>> for num in reversed(tag):
-        >>>     pass
-        """
-
-    def __contains__(self, value: int) -> bool:
-        """Check if an item is in the array.
-
-        >>> from amulet.nbt import LongArrayTag
-        >>> tag = LongArrayTag([1, 2, 3])
-        >>> 1 in tag  # True
-        """
-
-    @overload
-    def __setitem__(self, item: int, value: SupportsInt) -> None: ...
-    @overload
-    def __setitem__(self, item: slice, value: Iterable[SupportsInt]) -> None: ...
-    @overload
-    def __setitem__(self, item: ArrayLike, value: Iterable[SupportsInt]) -> None:
-        """Set item(s) in the array.
-
-        This supports the full numpy protocol.
-
-        >>> from amulet.nbt import LongArrayTag
-        >>> import numpy
-        >>> tag = LongArrayTag([1, 2, 3])
-        >>> tag[0] = 10  # [10, 2, 3]
-        >>> tag[:2] = [4, 5]  # [4, 5, 3]
-        >>> tag[numpy.array([1, 2])] = [6, 7]  # [4, 6, 7]
-        """
-
-    def __array__(self, dtype: numpy.dtype | None = None) -> NDArray[numpy.int64]:
-        """Get a numpy array representation of the stored data.
-
-        >>> from amulet.nbt import LongArrayTag
-        >>> import numpy
-        >>> tag = LongArrayTag([1, 2, 3])
-        >>> arr = numpy.asarray(tag)
-        """
-
-AnyNBT: TypeAlias = Union[
-    ByteTag,
-    ShortTag,
-    IntTag,
-    LongTag,
-    FloatTag,
-    DoubleTag,
-    ByteArrayTag,
-    StringTag,
-    ListTag,
-    CompoundTag,
-    IntArrayTag,
-    LongArrayTag,
-]
-
-# Alias
-TAG_Byte: TypeAlias = ByteTag
-TAG_Short: TypeAlias = ShortTag
-TAG_Int: TypeAlias = IntTag
-TAG_Long: TypeAlias = LongTag
-TAG_Float: TypeAlias = FloatTag
-TAG_Double: TypeAlias = DoubleTag
-TAG_String: TypeAlias = StringTag
-TAG_Byte_Array: TypeAlias = ByteArrayTag
-TAG_List: TypeAlias = ListTag
-TAG_Compound: TypeAlias = CompoundTag
-TAG_Int_Array: TypeAlias = IntArrayTag
-TAG_Long_Array: TypeAlias = LongArrayTag
-
-class NamedTag(tuple[str | bytes, AnyNBT]):
-    def __init__(
-        self, tag: AbstractBaseTag | AnyNBT | None = None, name: str | bytes = ""
-    ) -> None: ...
-    @property
-    def tag(self) -> AnyNBT: ...
-    @tag.setter
-    def tag(self, tag: AnyNBT) -> None: ...
-    @property
-    def name(self) -> str | bytes: ...
-    @name.setter
-    def name(self, name: str | bytes) -> None: ...
+    @typing.overload
+    def to_nbt(
+        self, *, preset: EncodingPreset = ..., name: str | None = ""
+    ) -> bytes: ...
+    @typing.overload
     def to_nbt(
         self,
         *,
-        preset: EncodingPreset | None = None,
         compressed: bool = True,
         little_endian: bool = False,
-        string_encoding: StringEncoding = mutf8_encoding,
-    ) -> bytes:
-        """Get the data in binary NBT format.
+        string_encoding: StringEncoding = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    def to_snbt(self, indent: typing.Any = None) -> str: ...
+    def update(self, other: typing.Any = (), /, **kwargs: typing.Any) -> None: ...
+    def values(self) -> typing.Any: ...
+    @property
+    def py_data(self) -> dict:
+        """
+        A python representation of the class. Note that the return type is undefined and may change in the future.
 
-        :param preset: A class containing endianness and encoding presets.
-        :param compressed: Should the bytes be compressed with gzip.
-        :param little_endian: Should the bytes be saved in little endian format. Ignored if preset is defined.
-        :param string_encoding: A function to encode strings to bytes. Ignored if preset is defined.
-        :return: The binary NBT representation of the class.
+        You would be better off using the py_{type} or np_array properties if you require a fixed type.
+        This is here for convenience to get a python representation under the same property name.
         """
 
+    @property
+    def py_dict(self) -> dict:
+        """
+        A shallow copy of the CompoundTag as a python dictionary.
+        """
+
+class ListTagIterator:
+    def __iter__(self) -> ListTagIterator: ...
+    def __next__(
+        self,
+    ) -> (
+        ByteTag
+        | ShortTag
+        | IntTag
+        | LongTag
+        | FloatTag
+        | DoubleTag
+        | ByteArrayTag
+        | StringTag
+        | ...
+        | CompoundTag
+        | IntArrayTag
+        | LongArrayTag
+    ): ...
+
+class ListTag(AbstractBaseMutableTag):
+    """
+    A Python wrapper around a C++ vector.
+
+    All contained data must be of the same NBT data type.
+    """
+
+    __hash__: typing.ClassVar[None] = None  # type: ignore
+    tag_id: typing.ClassVar[int] = 9
+    @staticmethod
+    def __class_getitem__(*args, **kwargs: typing.Any):
+        """
+        (arg0: type, *args) -> type
+        """
+
+    def __bool__(self) -> bool: ...
+    def __contains__(
+        self,
+        arg0: (
+            ByteTag
+            | ShortTag
+            | IntTag
+            | LongTag
+            | FloatTag
+            | DoubleTag
+            | ByteArrayTag
+            | StringTag
+            | ListTag
+            | CompoundTag
+            | IntArrayTag
+            | LongArrayTag
+        ),
+    ) -> bool: ...
+    def __copy__(self) -> ListTag: ...
+    def __deepcopy__(self, memo: dict) -> ListTag: ...
+    @typing.overload
+    def __delitem__(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> None: ...
+    @typing.overload
+    def __delitem__(self, arg0: slice) -> None: ...
+    @typing.overload
+    def __eq__(self, other: ListTag) -> bool: ...
+    @typing.overload
+    def __eq__(self, other: typing.Any) -> bool | types.NotImplementedType: ...
+    @typing.overload
+    def __getitem__(
+        self, arg0: typing.SupportsInt | typing.SupportsIndex
+    ) -> (
+        ByteTag
+        | ShortTag
+        | IntTag
+        | LongTag
+        | FloatTag
+        | DoubleTag
+        | ByteArrayTag
+        | StringTag
+        | ListTag
+        | CompoundTag
+        | IntArrayTag
+        | LongArrayTag
+    ): ...
+    @typing.overload
+    def __getitem__(self, arg0: slice) -> list: ...
+    def __iadd__(self, arg0: typing.Any) -> ListTag: ...
+    def __init__(
+        self,
+        value: typing.Any = (),
+        element_tag_id: typing.SupportsInt | typing.SupportsIndex = 1,
+    ) -> None:
+        """
+        __init__(self: amulet.nbt.ListTag, value: typing.Iterable[amulet.nbt.ByteTag] | typing.Iterable[amulet.nbt.ShortTag] | typing.Iterable[amulet.nbt.IntTag] | typing.Iterable[amulet.nbt.LongTag] | typing.Iterable[amulet.nbt.FloatTag] | typing.Iterable[amulet.nbt.DoubleTag] | typing.Iterable[amulet.nbt.ByteArrayTag] | typing.Iterable[amulet.nbt.StringTag] | typing.Iterable[amulet.nbt.ListTag] | typing.Iterable[amulet.nbt.CompoundTag] | typing.Iterable[amulet.nbt.IntArrayTag] | typing.Iterable[amulet.nbt.LongArrayTag] = (), element_tag_id = 1) -> None
+        """
+
+    def __iter__(self) -> ListTagIterator: ...
+    def __len__(self) -> int: ...
+    def __repr__(self) -> str: ...
+    def __reversed__(self) -> ListTagIterator: ...
+    @typing.overload
+    def __setitem__(
+        self,
+        arg0: typing.SupportsInt | typing.SupportsIndex,
+        arg1: (
+            ByteTag
+            | ShortTag
+            | IntTag
+            | LongTag
+            | FloatTag
+            | DoubleTag
+            | ByteArrayTag
+            | StringTag
+            | ListTag
+            | CompoundTag
+            | IntArrayTag
+            | LongArrayTag
+        ),
+    ) -> None: ...
+    @typing.overload
+    def __setitem__(self, arg0: slice, arg1: typing.Any) -> None: ...
+    def __str__(self) -> str: ...
+    def append(
+        self,
+        arg0: (
+            ByteTag
+            | ShortTag
+            | IntTag
+            | LongTag
+            | FloatTag
+            | DoubleTag
+            | ByteArrayTag
+            | StringTag
+            | ListTag
+            | CompoundTag
+            | IntArrayTag
+            | LongArrayTag
+        ),
+    ) -> None: ...
+    def clear(self) -> None: ...
+    def copy(self) -> ListTag: ...
+    def count(
+        self,
+        arg0: (
+            ByteTag
+            | ShortTag
+            | IntTag
+            | LongTag
+            | FloatTag
+            | DoubleTag
+            | ByteArrayTag
+            | StringTag
+            | ListTag
+            | CompoundTag
+            | IntArrayTag
+            | LongArrayTag
+        ),
+    ) -> int: ...
+    def extend(self, arg0: typing.Any) -> None: ...
+    def get_byte(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> ByteTag:
+        """
+        Get the tag at index if it is a ByteTag.
+
+        :param index: The index to get
+        :return: The ByteTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a ByteTag
+        """
+
+    def get_byte_array(
+        self, arg0: typing.SupportsInt | typing.SupportsIndex
+    ) -> ByteArrayTag:
+        """
+        Get the tag at index if it is a ByteArrayTag.
+
+        :param index: The index to get
+        :return: The ByteArrayTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a ByteArrayTag
+        """
+
+    def get_compound(
+        self, arg0: typing.SupportsInt | typing.SupportsIndex
+    ) -> CompoundTag:
+        """
+        Get the tag at index if it is a CompoundTag.
+
+        :param index: The index to get
+        :return: The CompoundTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a CompoundTag
+        """
+
+    def get_double(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> DoubleTag:
+        """
+        Get the tag at index if it is a DoubleTag.
+
+        :param index: The index to get
+        :return: The DoubleTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a DoubleTag
+        """
+
+    def get_float(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> FloatTag:
+        """
+        Get the tag at index if it is a FloatTag.
+
+        :param index: The index to get
+        :return: The FloatTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a FloatTag
+        """
+
+    def get_int(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> IntTag:
+        """
+        Get the tag at index if it is a IntTag.
+
+        :param index: The index to get
+        :return: The IntTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a IntTag
+        """
+
+    def get_int_array(
+        self, arg0: typing.SupportsInt | typing.SupportsIndex
+    ) -> IntArrayTag:
+        """
+        Get the tag at index if it is a IntArrayTag.
+
+        :param index: The index to get
+        :return: The IntArrayTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a IntArrayTag
+        """
+
+    def get_list(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> ListTag:
+        """
+        Get the tag at index if it is a ListTag.
+
+        :param index: The index to get
+        :return: The ListTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a ListTag
+        """
+
+    def get_long(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> LongTag:
+        """
+        Get the tag at index if it is a LongTag.
+
+        :param index: The index to get
+        :return: The LongTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a LongTag
+        """
+
+    def get_long_array(
+        self, arg0: typing.SupportsInt | typing.SupportsIndex
+    ) -> LongArrayTag:
+        """
+        Get the tag at index if it is a LongArrayTag.
+
+        :param index: The index to get
+        :return: The LongArrayTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a LongArrayTag
+        """
+
+    def get_short(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> ShortTag:
+        """
+        Get the tag at index if it is a ShortTag.
+
+        :param index: The index to get
+        :return: The ShortTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a ShortTag
+        """
+
+    def get_string(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> StringTag:
+        """
+        Get the tag at index if it is a StringTag.
+
+        :param index: The index to get
+        :return: The StringTag.
+        :raises: IndexError if the index is outside the list.
+        :raises: TypeError if the stored type is not a StringTag
+        """
+
+    def index(
+        self,
+        tag: (
+            ByteTag
+            | ShortTag
+            | IntTag
+            | LongTag
+            | FloatTag
+            | DoubleTag
+            | ByteArrayTag
+            | StringTag
+            | ListTag
+            | CompoundTag
+            | IntArrayTag
+            | LongArrayTag
+        ),
+        start: typing.SupportsInt | typing.SupportsIndex = 0,
+        stop: typing.SupportsInt | typing.SupportsIndex = 9223372036854775807,
+    ) -> int: ...
+    def insert(
+        self,
+        arg0: typing.SupportsInt | typing.SupportsIndex,
+        arg1: (
+            ByteTag
+            | ShortTag
+            | IntTag
+            | LongTag
+            | FloatTag
+            | DoubleTag
+            | ByteArrayTag
+            | StringTag
+            | ListTag
+            | CompoundTag
+            | IntArrayTag
+            | LongArrayTag
+        ),
+    ) -> None: ...
+    def pop(
+        self, item: typing.SupportsInt | typing.SupportsIndex = -1
+    ) -> (
+        ByteTag
+        | ShortTag
+        | IntTag
+        | LongTag
+        | FloatTag
+        | DoubleTag
+        | ByteArrayTag
+        | StringTag
+        | ListTag
+        | CompoundTag
+        | IntArrayTag
+        | LongArrayTag
+    ): ...
+    def remove(
+        self,
+        arg0: (
+            ByteTag
+            | ShortTag
+            | IntTag
+            | LongTag
+            | FloatTag
+            | DoubleTag
+            | ByteArrayTag
+            | StringTag
+            | ListTag
+            | CompoundTag
+            | IntArrayTag
+            | LongArrayTag
+        ),
+    ) -> None: ...
+    def reverse(self) -> None: ...
+    @typing.overload
     def save_to(
         self,
-        filepath_or_buffer: str | _Writeable | None = None,
+        filepath_or_writable: typing.Any = None,
+        /,
         *,
-        preset: EncodingPreset | None = None,
+        preset: EncodingPreset = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    @typing.overload
+    def save_to(
+        self,
+        filepath_or_writable: typing.Any = None,
+        /,
+        *,
         compressed: bool = True,
         little_endian: bool = False,
-        string_encoding: StringEncoding = mutf8_encoding,
-    ) -> bytes:
-        """Convert the data to the binary NBT format. Optionally write to a file.
+        string_encoding: StringEncoding = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    @typing.overload
+    def to_nbt(
+        self, *, preset: EncodingPreset = ..., name: str | None = ""
+    ) -> bytes: ...
+    @typing.overload
+    def to_nbt(
+        self,
+        *,
+        compressed: bool = True,
+        little_endian: bool = False,
+        string_encoding: StringEncoding = ...,
+        name: str | None = "",
+    ) -> bytes: ...
+    def to_snbt(self, indent: typing.Any = None) -> str: ...
+    @property
+    def element_class(self) -> typing.Any: ...
+    @property
+    def element_tag_id(self) -> int: ...
+    @property
+    def py_data(self) -> list:
+        """
+        A python representation of the class. Note that the return type is undefined and may change in the future.
 
-        If filepath_or_buffer is a valid file path in string form the data will be written to that file.
-
-        If filepath_or_buffer is a file like object the bytes will be written to it using .write method.
-
-        :param filepath_or_buffer: A path or writeable object to write the data to.
-        :param preset: A class containing endianness and encoding presets.
-        :param compressed: Should the bytes be compressed with gzip.
-        :param little_endian: Should the bytes be saved in little endian format. Ignored if preset is defined.
-        :param string_encoding: The StringEncoding to use. Ignored if preset is defined.
-        :return: The binary NBT representation of the class.
+        You would be better off using the py_{type} or np_array properties if you require a fixed type.
+        This is here for convenience to get a python representation under the same property name.
         """
 
-    def to_snbt(self, indent: None | str | int = None) -> str:
-        """Convert the data to the Stringified NBT format.
+    @property
+    def py_list(self) -> list:
+        """
+        A python list representation of the class.
 
-        :param indent:
-            If None (the default) the SNBT will be on one line.
-            If an int will be multi-line SNBT with this many spaces per indentation.
-            If a string will be multi-line SNBT with this string as the indentation.
-        :return: The SNBT string.
+        The returned list is a shallow copy of the class, meaning changes will not mirror the instance.
+        Use the public API to modify the internal data.
+        """
+
+class NamedTagIterator:
+    def __iter__(self) -> NamedTagIterator: ...
+    def __next__(self) -> typing.Any: ...
+
+class NamedTag:
+    __hash__: typing.ClassVar[None] = None  # type: ignore
+    tag: (
+        ByteTag
+        | ShortTag
+        | IntTag
+        | LongTag
+        | FloatTag
+        | DoubleTag
+        | ByteArrayTag
+        | StringTag
+        | ListTag
+        | CompoundTag
+        | IntArrayTag
+        | LongArrayTag
+    )
+    def __copy__(self) -> NamedTag: ...
+    def __deepcopy__(self, memo: dict) -> NamedTag: ...
+    @typing.overload
+    def __eq__(self, other: NamedTag) -> bool: ...
+    @typing.overload
+    def __eq__(self, other: typing.Any) -> bool | types.NotImplementedType: ...
+    def __getitem__(
+        self, arg0: typing.SupportsInt | typing.SupportsIndex
+    ) -> typing.Any: ...
+    def __init__(
+        self,
+        tag: (
+            None
+            | ByteTag
+            | ShortTag
+            | IntTag
+            | LongTag
+            | FloatTag
+            | DoubleTag
+            | ByteArrayTag
+            | StringTag
+            | ListTag
+            | CompoundTag
+            | IntArrayTag
+            | LongArrayTag
+        ) = None,
+        name: str = "",
+    ) -> None: ...
+    def __iter__(self) -> NamedTagIterator: ...
+    def __repr__(self) -> str: ...
+    @typing.overload
+    def save_to(
+        self,
+        filepath_or_writable: typing.Any = None,
+        /,
+        *,
+        preset: EncodingPreset = ...,
+    ) -> bytes: ...
+    @typing.overload
+    def save_to(
+        self,
+        filepath_or_writable: typing.Any = None,
+        /,
+        *,
+        compressed: bool = True,
+        little_endian: bool = False,
+        string_encoding: StringEncoding = ...,
+    ) -> bytes: ...
+    @typing.overload
+    def to_nbt(self, *, preset: EncodingPreset = ...) -> bytes: ...
+    @typing.overload
+    def to_nbt(
+        self,
+        *,
+        compressed: bool = True,
+        little_endian: bool = False,
+        string_encoding: StringEncoding = ...,
+    ) -> bytes: ...
+    def to_snbt(self, indent: typing.Any = None) -> str: ...
+    @property
+    def byte(self) -> ByteTag:
+        """
+        Get the tag if it is a ByteTag.
+
+        :return: The ByteTag.
+        :raises: TypeError if the stored type is not a ByteTag
         """
 
     @property
-    def byte(self) -> ByteTag: ...
+    def byte_array(self) -> ByteArrayTag:
+        """
+        Get the tag if it is a ByteArrayTag.
+
+        :return: The ByteArrayTag.
+        :raises: TypeError if the stored type is not a ByteArrayTag
+        """
+
     @property
-    def short(self) -> ShortTag: ...
+    def compound(self) -> CompoundTag:
+        """
+        Get the tag if it is a CompoundTag.
+
+        :return: The CompoundTag.
+        :raises: TypeError if the stored type is not a CompoundTag
+        """
+
     @property
-    def int(self) -> IntTag: ...
+    def double(self) -> DoubleTag:
+        """
+        Get the tag if it is a DoubleTag.
+
+        :return: The DoubleTag.
+        :raises: TypeError if the stored type is not a DoubleTag
+        """
+
     @property
-    def long(self) -> LongTag: ...
+    def float(self) -> FloatTag:
+        """
+        Get the tag if it is a FloatTag.
+
+        :return: The FloatTag.
+        :raises: TypeError if the stored type is not a FloatTag
+        """
+
     @property
-    def float(self) -> FloatTag: ...
+    def int(self) -> IntTag:
+        """
+        Get the tag if it is a IntTag.
+
+        :return: The IntTag.
+        :raises: TypeError if the stored type is not a IntTag
+        """
+
     @property
-    def double(self) -> DoubleTag: ...
+    def int_array(self) -> IntArrayTag:
+        """
+        Get the tag if it is a IntArrayTag.
+
+        :return: The IntArrayTag.
+        :raises: TypeError if the stored type is not a IntArrayTag
+        """
+
     @property
-    def string(self) -> StringTag: ...
+    def list(self) -> ListTag:
+        """
+        Get the tag if it is a ListTag.
+
+        :return: The ListTag.
+        :raises: TypeError if the stored type is not a ListTag
+        """
+
     @property
-    def list(self) -> ListTag: ...
+    def long(self) -> LongTag:
+        """
+        Get the tag if it is a LongTag.
+
+        :return: The LongTag.
+        :raises: TypeError if the stored type is not a LongTag
+        """
+
     @property
-    def compound(self) -> CompoundTag: ...
+    def long_array(self) -> LongArrayTag:
+        """
+        Get the tag if it is a LongArrayTag.
+
+        :return: The LongArrayTag.
+        :raises: TypeError if the stored type is not a LongArrayTag
+        """
+
     @property
-    def byte_array(self) -> ByteArrayTag: ...
+    def name(self) -> typing.Any: ...
+    @name.setter
+    def name(self, arg1: str) -> None: ...
     @property
-    def int_array(self) -> IntArrayTag: ...
+    def short(self) -> ShortTag:
+        """
+        Get the tag if it is a ShortTag.
+
+        :return: The ShortTag.
+        :raises: TypeError if the stored type is not a ShortTag
+        """
+
     @property
-    def long_array(self) -> LongArrayTag: ...
+    def string(self) -> StringTag:
+        """
+        Get the tag if it is a StringTag.
+
+        :return: The StringTag.
+        :raises: TypeError if the stored type is not a StringTag
+        """
 
 class ReadOffset:
-    offset: int
+    def __init__(
+        self, offset: typing.SupportsInt | typing.SupportsIndex = 0
+    ) -> None: ...
+    @property
+    def offset(self) -> int: ...
 
-@overload
+def __annotate__(format): ...
+@typing.overload
 def read_nbt(
-    filepath_or_buffer: str | bytes | memoryview | _Readable | None,
+    filepath_or_buffer: typing.Any,
     *,
-    preset: EncodingPreset | None = None,
+    preset: EncodingPreset = ...,
     named: bool = True,
-    read_offset: ReadOffset | None = None,
+    read_offset: typing.Any = None,
 ) -> NamedTag:
-    """Load one binary NBT object.
+    """
+    Load one binary NBT object.
 
     :param filepath_or_buffer: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.
     :param preset: The encoding preset. If this is defined little_endian and string_encoding have no effect.
@@ -1601,17 +2336,18 @@ def read_nbt(
     :raises: IndexError if the data is not long enough.
     """
 
-@overload
+@typing.overload
 def read_nbt(
-    filepath_or_buffer: str | bytes | memoryview | _Readable | None,
+    filepath_or_buffer: typing.Any,
     *,
     compressed: bool = True,
     little_endian: bool = False,
-    string_encoding: StringEncoding = mutf8_encoding,
+    string_encoding: StringEncoding = ...,
     named: bool = True,
-    read_offset: ReadOffset | None = None,
+    read_offset: typing.Any = None,
 ) -> NamedTag:
-    """Load one binary NBT object.
+    """
+    Load one binary NBT object.
 
     :param filepath_or_buffer: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.
     :param compressed: Is the binary data gzip compressed.
@@ -1622,16 +2358,17 @@ def read_nbt(
     :raises: IndexError if the data is not long enough.
     """
 
-@overload
+@typing.overload
 def read_nbt_array(
-    filepath_or_buffer: str | bytes | memoryview | _Readable | None,
+    filepath_or_buffer: typing.Any,
     *,
-    count: int = 1,
-    preset: EncodingPreset | None = None,
+    count: typing.SupportsInt | typing.SupportsIndex = 1,
+    preset: EncodingPreset = ...,
     named: bool = True,
-    read_offset: ReadOffset | None = None,
+    read_offset: typing.Any = None,
 ) -> list[NamedTag]:
-    """Load an array of binary NBT objects from a contiguous buffer.
+    """
+    Load an array of binary NBT objects from a contiguous buffer.
 
     :param filepath_or_buffer: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.
     :param count: The number of binary NBT objects to read. Use -1 to exhaust the buffer.
@@ -1641,18 +2378,19 @@ def read_nbt_array(
     :raises: IndexError if the data is not long enough.
     """
 
-@overload
+@typing.overload
 def read_nbt_array(
-    filepath_or_buffer: str | bytes | memoryview | _Readable | None,
+    filepath_or_buffer: typing.Any,
     *,
-    count: int = 1,
+    count: typing.SupportsInt | typing.SupportsIndex = 1,
     compressed: bool = True,
     little_endian: bool = False,
-    string_encoding: StringEncoding = mutf8_encoding,
+    string_encoding: StringEncoding = ...,
     named: bool = True,
-    read_offset: ReadOffset | None = None,
+    read_offset: typing.Any = None,
 ) -> list[NamedTag]:
-    """Load an array of binary NBT objects from a contiguous buffer.
+    """
+    Load an array of binary NBT objects from a contiguous buffer.
 
     :param filepath_or_buffer: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.
     :param count: The number of binary NBT objects to read. Use -1 to exhaust the buffer.
@@ -1664,17 +2402,68 @@ def read_nbt_array(
     :raises: IndexError if the data is not long enough.
     """
 
-def read_snbt(snbt: str) -> AnyNBT:
+def read_snbt(
+    snbt: str,
+) -> (
+    ByteTag
+    | ShortTag
+    | IntTag
+    | LongTag
+    | FloatTag
+    | DoubleTag
+    | ByteArrayTag
+    | StringTag
+    | ListTag
+    | CompoundTag
+    | IntArrayTag
+    | LongArrayTag
+):
     """
-    Load Stringified NBT into a tag.
+    Parse Stringified NBT.
+
+    :param snbt: The SNBT string to parse.
+    :return: The tag
+    :raises: ValueError if the SNBT format is invalid.
+    :raises: IndexError if the data overflows the given string.
     """
 
-SNBTType: TypeAlias = str
-
-IntType: TypeAlias = Union[ByteTag, ShortTag, IntTag, LongTag]
-
-FloatType: TypeAlias = Union[FloatTag, DoubleTag]
-
-NumberType: TypeAlias = Union[ByteTag, ShortTag, IntTag, LongTag, FloatTag, DoubleTag]
-
-ArrayType: TypeAlias = Union[ByteArrayTag, IntArrayTag, LongArrayTag]
+AnyNBT: typing.TypeAlias = (
+    ByteTag
+    | ShortTag
+    | IntTag
+    | LongTag
+    | FloatTag
+    | DoubleTag
+    | StringTag
+    | ListTag
+    | CompoundTag
+    | ByteArrayTag
+    | IntArrayTag
+    | LongArrayTag
+)
+ArrayType: typing.TypeAlias = ByteArrayTag | IntArrayTag | LongArrayTag
+FloatType: typing.TypeAlias = FloatTag | DoubleTag
+IntType: typing.TypeAlias = ByteTag | ShortTag | IntTag | LongTag
+NumberType: typing.TypeAlias = (
+    ByteTag | ShortTag | IntTag | LongTag | FloatTag | DoubleTag
+)
+__conditional_annotations__: set = {0, 1, 2, 3, 4, 5}
+__version__: str
+bedrock_encoding: EncodingPreset
+compiler_config: dict
+java_encoding: EncodingPreset
+mutf8_encoding: StringEncoding
+utf8_encoding: StringEncoding
+utf8_escape_encoding: StringEncoding
+TAG_Byte = ByteTag
+TAG_Short = ShortTag
+TAG_Int = IntTag
+TAG_Long = LongTag
+TAG_Float = FloatTag
+TAG_Double = DoubleTag
+TAG_Byte_Array = ByteArrayTag
+TAG_String = StringTag
+TAG_List = ListTag
+TAG_Compound = CompoundTag
+TAG_Int_Array = IntArrayTag
+TAG_Long_Array = LongArrayTag

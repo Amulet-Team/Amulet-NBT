@@ -1,3 +1,7 @@
-from types import ModuleType
+from __future__ import annotations
 
-def init(m: ModuleType) -> None: ...
+import types
+
+__all__: list[str] = ["init"]
+
+def init(m: types.ModuleType) -> None: ...

@@ -1,3 +1,7 @@
-from amulet.nbt import NamedTag
+from __future__ import annotations
 
-def encode_binary_nbt(tag: NamedTag) -> bytes: ...
+import amulet.nbt
+
+__all__: list[str] = ["encode_binary_nbt"]
+
+def encode_binary_nbt(tag: amulet.nbt.NamedTag) -> bytes: ...

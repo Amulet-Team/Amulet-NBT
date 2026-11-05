@@ -23,7 +23,7 @@
         "to_nbt",                                                                                                                 \
         [to_nbt_##CLSNAME](                                                                                                       \
             const Amulet::NBT::CLSNAME& self,                                                                                     \
-            Amulet::NBT::EncodingPreset preset,                                                                                   \
+            const Amulet::NBT::EncodingPreset& preset,                                                                                   \
             std::optional<std::string> name) {                                                                                    \
             return to_nbt_##CLSNAME(                                                                                              \
                 self,                                                                                                             \
@@ -41,7 +41,7 @@
             const Amulet::NBT::CLSNAME& self,                                                                                     \
             bool compressed,                                                                                                      \
             bool little_endian,                                                                                                   \
-            Amulet::NBT::StringEncoding string_encoding,                                                                          \
+            const Amulet::NBT::StringEncoding& string_encoding,                                                                          \
             std::optional<std::string> name) {                                                                                    \
             return to_nbt_##CLSNAME(                                                                                              \
                 self,                                                                                                             \
@@ -79,7 +79,7 @@
         [save_to_##CLSNAME](                                                                                                      \
             const Amulet::NBT::CLSNAME& self,                                                                                     \
             py::object filepath_or_writable,                                                                                      \
-            Amulet::NBT::EncodingPreset preset,                                                                                   \
+            const Amulet::NBT::EncodingPreset& preset,                                                                                   \
             std::optional<std::string> name) {                                                                                    \
             return save_to_##CLSNAME(                                                                                             \
                 self,                                                                                                             \
@@ -101,7 +101,7 @@
             py::object filepath_or_writable,                                                                                      \
             bool compressed,                                                                                                      \
             bool little_endian,                                                                                                   \
-            Amulet::NBT::StringEncoding string_encoding,                                                                          \
+            const Amulet::NBT::StringEncoding& string_encoding,                                                                          \
             std::optional<std::string> name) {                                                                                    \
             return save_to_##CLSNAME(                                                                                             \
                 self,                                                                                                             \

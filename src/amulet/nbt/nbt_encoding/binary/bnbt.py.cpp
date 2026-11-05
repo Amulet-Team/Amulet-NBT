@@ -104,7 +104,7 @@ void init_bnbt(py::module& m)
         "read_nbt",
         [read_nbt](
             py::object filepath_or_buffer,
-            Amulet::NBT::EncodingPreset preset,
+            const Amulet::NBT::EncodingPreset& preset,
             bool named,
             py::object read_offset) {
             return read_nbt(
@@ -134,7 +134,7 @@ void init_bnbt(py::module& m)
             py::object filepath_or_buffer,
             bool compressed,
             bool little_endian,
-            Amulet::NBT::StringEncoding string_encoding,
+            const Amulet::NBT::StringEncoding& string_encoding,
             bool named,
             py::object read_offset) {
             return read_nbt(
@@ -220,7 +220,7 @@ void init_bnbt(py::module& m)
         [read_nbt_array](
             py::object filepath_or_buffer,
             Py_ssize_t count,
-            Amulet::NBT::EncodingPreset preset,
+            const Amulet::NBT::EncodingPreset& preset,
             bool named,
             py::object read_offset) {
             return read_nbt_array(
@@ -255,7 +255,7 @@ void init_bnbt(py::module& m)
             Py_ssize_t count,
             bool compressed,
             bool little_endian,
-            Amulet::NBT::StringEncoding string_encoding,
+            const Amulet::NBT::StringEncoding& string_encoding,
             bool named,
             py::object read_offset) {
             return read_nbt_array(

@@ -2447,7 +2447,6 @@ IntType: typing.TypeAlias = ByteTag | ShortTag | IntTag | LongTag
 NumberType: typing.TypeAlias = (
     ByteTag | ShortTag | IntTag | LongTag | FloatTag | DoubleTag
 )
-__conditional_annotations__: set = {0, 1, 2, 3, 4, 5}
 __version__: str
 bedrock_encoding: EncodingPreset
 compiler_config: dict

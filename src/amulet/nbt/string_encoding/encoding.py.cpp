@@ -17,12 +17,12 @@ void init_encoding(py::module& m)
         "encode",
         [](const Amulet::NBT::StringEncoding& self, py::bytes data) -> py::bytes {
             return self.encode(data);
-        });
+        }, py::arg("data"));
     StringEncoding.def(
         "decode",
         [](const Amulet::NBT::StringEncoding& self, py::bytes data) -> py::bytes {
             return self.decode(data);
-        });
+        }, py::arg("data"));
 
     Amulet::NBT::StringEncoding utf8_encoding = Amulet::NBT::StringEncoding(Amulet::NBT::utf8_to_utf8, Amulet::NBT::utf8_to_utf8);
     Amulet::NBT::StringEncoding utf8_escape_encoding = Amulet::NBT::StringEncoding(Amulet::NBT::utf8_to_utf8_escape, Amulet::NBT::utf8_escape_to_utf8);

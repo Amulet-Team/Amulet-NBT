@@ -12,7 +12,14 @@ namespace py = pybind11;
 
 void init_encoding(py::module& m)
 {
+    std::string module_name = m.attr("__name__").cast<std::string>();
+
     py::classh<Amulet::NBT::StringEncoding> StringEncoding(m, "StringEncoding");
+    StringEncoding.def(
+        "__repr__",
+        [module_name](const Amulet::NBT::StringEncoding& self) {
+            return module_name + "." + self.var_name;
+        });
     StringEncoding.def(
         "encode",
         [](const Amulet::NBT::StringEncoding& self, py::bytes data) -> py::bytes {
@@ -24,15 +31,20 @@ void init_encoding(py::module& m)
             return self.decode(data);
         }, py::arg("data"));
 
-    Amulet::NBT::StringEncoding utf8_encoding = Amulet::NBT::StringEncoding(Amulet::NBT::utf8_to_utf8, Amulet::NBT::utf8_to_utf8);
-    Amulet::NBT::StringEncoding utf8_escape_encoding = Amulet::NBT::StringEncoding(Amulet::NBT::utf8_to_utf8_escape, Amulet::NBT::utf8_escape_to_utf8);
-    Amulet::NBT::StringEncoding mutf8_encoding = Amulet::NBT::StringEncoding(Amulet::NBT::utf8_to_mutf8, Amulet::NBT::mutf8_to_utf8);
+    Amulet::NBT::StringEncoding utf8_encoding = Amulet::NBT::StringEncoding("utf8_encoding", Amulet::NBT::utf8_to_utf8, Amulet::NBT::utf8_to_utf8);
+    Amulet::NBT::StringEncoding utf8_escape_encoding = Amulet::NBT::StringEncoding("utf8_escape_encoding", Amulet::NBT::utf8_to_utf8_escape, Amulet::NBT::utf8_escape_to_utf8);
+    Amulet::NBT::StringEncoding mutf8_encoding = Amulet::NBT::StringEncoding("mutf8_encoding", Amulet::NBT::utf8_to_mutf8, Amulet::NBT::mutf8_to_utf8);
 
     m.attr("utf8_encoding") = utf8_encoding;
     m.attr("utf8_escape_encoding") = utf8_escape_encoding;
     m.attr("mutf8_encoding") = mutf8_encoding;
 
     py::classh<Amulet::NBT::EncodingPreset> EncodingPreset(m, "EncodingPreset");
+    EncodingPreset.def(
+        "__repr__",
+        [module_name](const Amulet::NBT::EncodingPreset& self) {
+            return module_name + "." + self.var_name;
+        });
     EncodingPreset.def_readonly(
         "compressed",
         &Amulet::NBT::EncodingPreset::compressed);
@@ -45,8 +57,8 @@ void init_encoding(py::module& m)
         "string_encoding",
         &Amulet::NBT::EncodingPreset::string_encoding);
 
-    Amulet::NBT::EncodingPreset java_encoding = Amulet::NBT::EncodingPreset(true, std::endian::big, mutf8_encoding);
-    Amulet::NBT::EncodingPreset bedrock_encoding = Amulet::NBT::EncodingPreset(false, std::endian::little, utf8_escape_encoding);
+    Amulet::NBT::EncodingPreset java_encoding = Amulet::NBT::EncodingPreset("java_encoding", true, std::endian::big, mutf8_encoding);
+    Amulet::NBT::EncodingPreset bedrock_encoding = Amulet::NBT::EncodingPreset("bedrock_encoding", false, std::endian::little, utf8_escape_encoding);
 
     m.attr("java_encoding") = java_encoding;
     m.attr("bedrock_encoding") = bedrock_encoding;

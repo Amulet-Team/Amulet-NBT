@@ -64,10 +64,12 @@ __all__: list[str] = [
 ]
 
 class StringEncoding:
+    def __repr__(self) -> str: ...
     def decode(self, data: bytes) -> bytes: ...
     def encode(self, data: bytes) -> bytes: ...
 
 class EncodingPreset:
+    def __repr__(self) -> str: ...
     @property
     def compressed(self) -> bool: ...
     @property
@@ -115,7 +117,7 @@ class AbstractBaseTag:
         filepath_or_writable: typing.Any = None,
         /,
         *,
-        preset: EncodingPreset = ...,
+        preset: EncodingPreset = java_encoding,
         name: str | None = "",
     ) -> None: ...
     @typing.overload
@@ -126,7 +128,7 @@ class AbstractBaseTag:
         *,
         compressed: bool = True,
         little_endian: bool = False,
-        string_encoding: StringEncoding = ...,
+        string_encoding: StringEncoding = mutf8_encoding,
         name: str | None = "",
     ) -> None: ...
     @typing.overload
@@ -139,7 +141,7 @@ class AbstractBaseTag:
         *,
         compressed: bool = True,
         little_endian: bool = False,
-        string_encoding: StringEncoding = ...,
+        string_encoding: StringEncoding = mutf8_encoding,
         name: str | None = "",
     ) -> None: ...
     def to_snbt(self, indent: typing.Any = None) -> None: ...
@@ -255,7 +257,7 @@ class ByteTag(AbstractBaseIntTag):
         filepath_or_writable: typing.Any = None,
         /,
         *,
-        preset: EncodingPreset = ...,
+        preset: EncodingPreset = java_encoding,
         name: str | None = "",
     ) -> bytes: ...
     @typing.overload
@@ -266,12 +268,12 @@ class ByteTag(AbstractBaseIntTag):
         *,
         compressed: bool = True,
         little_endian: bool = False,
-        string_encoding: StringEncoding = ...,
+        string_encoding: StringEncoding = mutf8_encoding,
         name: str | None = "",
     ) -> bytes: ...
     @typing.overload
     def to_nbt(
-        self, *, preset: EncodingPreset = ..., name: str | None = ""
+        self, *, preset: EncodingPreset = java_encoding, name: str | None = ""
     ) -> bytes: ...
     @typing.overload
     def to_nbt(
@@ -279,7 +281,7 @@ class ByteTag(AbstractBaseIntTag):
         *,
         compressed: bool = True,
         little_endian: bool = False,
-        string_encoding: StringEncoding = ...,
+        string_encoding: StringEncoding = mutf8_encoding,
         name: str | None = "",
     ) -> bytes: ...
     def to_snbt(self, indent: typing.Any = None) -> str: ...
@@ -335,7 +337,7 @@ class ShortTag(AbstractBaseIntTag):
         filepath_or_writable: typing.Any = None,
         /,
         *,
-        preset: EncodingPreset = ...,
+        preset: EncodingPreset = java_encoding,
         name: str | None = "",
     ) -> bytes: ...
     @typing.overload
@@ -346,12 +348,12 @@ class ShortTag(AbstractBaseIntTag):
         *,
         compressed: bool = True,
         little_endian: bool = False,
-        string_encoding: StringEncoding = ...,
+        string_encoding: StringEncoding = mutf8_encoding,
         name: str | None = "",
     ) -> bytes: ...
     @typing.overload
     def to_nbt(
-        self, *, preset: EncodingPreset = ..., name: str | None = ""
+        self, *, preset: EncodingPreset = java_encoding, name: str | None = ""
     ) -> bytes: ...
     @typing.overload
     def to_nbt(
@@ -359,7 +361,7 @@ class ShortTag(AbstractBaseIntTag):
         *,
         compressed: bool = True,
         little_endian: bool = False,
-        string_encoding: StringEncoding = ...,
+        string_encoding: StringEncoding = mutf8_encoding,
         name: str | None = "",
     ) -> bytes: ...
     def to_snbt(self, indent: typing.Any = None) -> str: ...
@@ -415,7 +417,7 @@ class IntTag(AbstractBaseIntTag):
         filepath_or_writable: typing.Any = None,
         /,
         *,
-        preset: EncodingPreset = ...,
+        preset: EncodingPreset = java_encoding,
         name: str | None = "",
     ) -> bytes: ...
     @typing.overload
@@ -426,12 +428,12 @@ class IntTag(AbstractBaseIntTag):
         *,
         compressed: bool = True,
         little_endian: bool = False,
-        string_encoding: StringEncoding = ...,
+        string_encoding: StringEncoding = mutf8_encoding,
         name: str | None = "",
     ) -> bytes: ...
     @typing.overload
     def to_nbt(
-        self, *, preset: EncodingPreset = ..., name: str | None = ""
+        self, *, preset: EncodingPreset = java_encoding, name: str | None = ""
     ) -> bytes: ...
     @typing.overload
     def to_nbt(
@@ -439,7 +441,7 @@ class IntTag(AbstractBaseIntTag):
         *,
         compressed: bool = True,
         little_endian: bool = False,
-        string_encoding: StringEncoding = ...,
+        string_encoding: StringEncoding = mutf8_encoding,
         name: str | None = "",
     ) -> bytes: ...
     def to_snbt(self, indent: typing.Any = None) -> str: ...
@@ -495,7 +497,7 @@ class LongTag(AbstractBaseIntTag):
         filepath_or_writable: typing.Any = None,
         /,
         *,
-        preset: EncodingPreset = ...,
+        preset: EncodingPreset = java_encoding,
         name: str | None = "",
     ) -> bytes: ...
     @typing.overload
@@ -506,12 +508,12 @@ class LongTag(AbstractBaseIntTag):
         *,
         compressed: bool = True,
         little_endian: bool = False,
-        string_encoding: StringEncoding = ...,
+        string_encoding: StringEncoding = mutf8_encoding,
         name: str | None = "",
     ) -> bytes: ...
     @typing.overload
     def to_nbt(
-        self, *, preset: EncodingPreset = ..., name: str | None = ""
+        self, *, preset: EncodingPreset = java_encoding, name: str | None = ""
     ) -> bytes: ...
     @typing.overload
     def to_nbt(
@@ -519,7 +521,7 @@ class LongTag(AbstractBaseIntTag):
         *,
         compressed: bool = True,
         little_endian: bool = False,
-        string_encoding: StringEncoding = ...,
+        string_encoding: StringEncoding = mutf8_encoding,
         name: str | None = "",
     ) -> bytes: ...
     def to_snbt(self, indent: typing.Any = None) -> str: ...
@@ -573,7 +575,7 @@ class FloatTag(AbstractBaseFloatTag):
         filepath_or_writable: typing.Any = None,
         /,
         *,
-        preset: EncodingPreset = ...,
+        preset: EncodingPreset = java_encoding,
         name: str | None = "",
     ) -> bytes: ...
     @typing.overload
@@ -584,12 +586,12 @@ class FloatTag(AbstractBaseFloatTag):
         *,
         compressed: bool = True,
         little_endian: bool = False,
-        string_encoding: StringEncoding = ...,
+        string_encoding: StringEncoding = mutf8_encoding,
         name: str | None = "",
     ) -> bytes: ...
     @typing.overload
     def to_nbt(
-        self, *, preset: EncodingPreset = ..., name: str | None = ""
+        self, *, preset: EncodingPreset = java_encoding, name: str | None = ""
     ) -> bytes: ...
     @typing.overload
     def to_nbt(
@@ -597,7 +599,7 @@ class FloatTag(AbstractBaseFloatTag):
         *,
         compressed: bool = True,
         little_endian: bool = False,
-        string_encoding: StringEncoding = ...,
+        string_encoding: StringEncoding = mutf8_encoding,
         name: str | None = "",
     ) -> bytes: ...
     def to_snbt(self, indent: typing.Any = None) -> str: ...
@@ -651,7 +653,7 @@ class DoubleTag(AbstractBaseFloatTag):
         filepath_or_writable: typing.Any = None,
         /,
         *,
-        preset: EncodingPreset = ...,
+        preset: EncodingPreset = java_encoding,
         name: str | None = "",
     ) -> bytes: ...
     @typing.overload
@@ -662,12 +664,12 @@ class DoubleTag(AbstractBaseFloatTag):
         *,
         compressed: bool = True,
         little_endian: bool = False,
-        string_encoding: StringEncoding = ...,
+        string_encoding: StringEncoding = mutf8_encoding,
         name: str | None = "",
     ) -> bytes: ...
     @typing.overload
     def to_nbt(
-        self, *, preset: EncodingPreset = ..., name: str | None = ""
+        self, *, preset: EncodingPreset = java_encoding, name: str | None = ""
     ) -> bytes: ...
     @typing.overload
     def to_nbt(
@@ -675,7 +677,7 @@ class DoubleTag(AbstractBaseFloatTag):
         *,
         compressed: bool = True,
         little_endian: bool = False,
-        string_encoding: StringEncoding = ...,
+        string_encoding: StringEncoding = mutf8_encoding,
         name: str | None = "",
     ) -> bytes: ...
     def to_snbt(self, indent: typing.Any = None) -> str: ...
@@ -728,7 +730,7 @@ class StringTag(AbstractBaseImmutableTag):
         filepath_or_writable: typing.Any = None,
         /,
         *,
-        preset: EncodingPreset = ...,
+        preset: EncodingPreset = java_encoding,
         name: str | None = "",
     ) -> bytes: ...
     @typing.overload
@@ -739,12 +741,12 @@ class StringTag(AbstractBaseImmutableTag):
         *,
         compressed: bool = True,
         little_endian: bool = False,
-        string_encoding: StringEncoding = ...,
+        string_encoding: StringEncoding = mutf8_encoding,
         name: str | None = "",
     ) -> bytes: ...
     @typing.overload
     def to_nbt(
-        self, *, preset: EncodingPreset = ..., name: str | None = ""
+        self, *, preset: EncodingPreset = java_encoding, name: str | None = ""
     ) -> bytes: ...
     @typing.overload
     def to_nbt(
@@ -752,7 +754,7 @@ class StringTag(AbstractBaseImmutableTag):
         *,
         compressed: bool = True,
         little_endian: bool = False,
-        string_encoding: StringEncoding = ...,
+        string_encoding: StringEncoding = mutf8_encoding,
         name: str | None = "",
     ) -> bytes: ...
     def to_snbt(self, indent: typing.Any = None) -> str: ...
@@ -816,7 +818,7 @@ class ByteArrayTag(AbstractBaseArrayTag):
         filepath_or_writable: typing.Any = None,
         /,
         *,
-        preset: EncodingPreset = ...,
+        preset: EncodingPreset = java_encoding,
         name: str | None = "",
     ) -> bytes: ...
     @typing.overload
@@ -827,12 +829,12 @@ class ByteArrayTag(AbstractBaseArrayTag):
         *,
         compressed: bool = True,
         little_endian: bool = False,
-        string_encoding: StringEncoding = ...,
+        string_encoding: StringEncoding = mutf8_encoding,
         name: str | None = "",
     ) -> bytes: ...
     @typing.overload
     def to_nbt(
-        self, *, preset: EncodingPreset = ..., name: str | None = ""
+        self, *, preset: EncodingPreset = java_encoding, name: str | None = ""
     ) -> bytes: ...
     @typing.overload
     def to_nbt(
@@ -840,7 +842,7 @@ class ByteArrayTag(AbstractBaseArrayTag):
         *,
         compressed: bool = True,
         little_endian: bool = False,
-        string_encoding: StringEncoding = ...,
+        string_encoding: StringEncoding = mutf8_encoding,
         name: str | None = "",
     ) -> bytes: ...
     def to_snbt(self, indent: typing.Any = None) -> str: ...
@@ -892,7 +894,7 @@ class IntArrayTag(AbstractBaseArrayTag):
         filepath_or_writable: typing.Any = None,
         /,
         *,
-        preset: EncodingPreset = ...,
+        preset: EncodingPreset = java_encoding,
         name: str | None = "",
     ) -> bytes: ...
     @typing.overload
@@ -903,12 +905,12 @@ class IntArrayTag(AbstractBaseArrayTag):
         *,
         compressed: bool = True,
         little_endian: bool = False,
-        string_encoding: StringEncoding = ...,
+        string_encoding: StringEncoding = mutf8_encoding,
         name: str | None = "",
     ) -> bytes: ...
     @typing.overload
     def to_nbt(
-        self, *, preset: EncodingPreset = ..., name: str | None = ""
+        self, *, preset: EncodingPreset = java_encoding, name: str | None = ""
     ) -> bytes: ...
     @typing.overload
     def to_nbt(
@@ -916,7 +918,7 @@ class IntArrayTag(AbstractBaseArrayTag):
         *,
         compressed: bool = True,
         little_endian: bool = False,
-        string_encoding: StringEncoding = ...,
+        string_encoding: StringEncoding = mutf8_encoding,
         name: str | None = "",
     ) -> bytes: ...
     def to_snbt(self, indent: typing.Any = None) -> str: ...
@@ -968,7 +970,7 @@ class LongArrayTag(AbstractBaseArrayTag):
         filepath_or_writable: typing.Any = None,
         /,
         *,
-        preset: EncodingPreset = ...,
+        preset: EncodingPreset = java_encoding,
         name: str | None = "",
     ) -> bytes: ...
     @typing.overload
@@ -979,12 +981,12 @@ class LongArrayTag(AbstractBaseArrayTag):
         *,
         compressed: bool = True,
         little_endian: bool = False,
-        string_encoding: StringEncoding = ...,
+        string_encoding: StringEncoding = mutf8_encoding,
         name: str | None = "",
     ) -> bytes: ...
     @typing.overload
     def to_nbt(
-        self, *, preset: EncodingPreset = ..., name: str | None = ""
+        self, *, preset: EncodingPreset = java_encoding, name: str | None = ""
     ) -> bytes: ...
     @typing.overload
     def to_nbt(
@@ -992,7 +994,7 @@ class LongArrayTag(AbstractBaseArrayTag):
         *,
         compressed: bool = True,
         little_endian: bool = False,
-        string_encoding: StringEncoding = ...,
+        string_encoding: StringEncoding = mutf8_encoding,
         name: str | None = "",
     ) -> bytes: ...
     def to_snbt(self, indent: typing.Any = None) -> str: ...
@@ -1493,7 +1495,7 @@ class CompoundTag(AbstractBaseMutableTag):
         filepath_or_writable: typing.Any = None,
         /,
         *,
-        preset: EncodingPreset = ...,
+        preset: EncodingPreset = java_encoding,
         name: str | None = "",
     ) -> bytes: ...
     @typing.overload
@@ -1504,7 +1506,7 @@ class CompoundTag(AbstractBaseMutableTag):
         *,
         compressed: bool = True,
         little_endian: bool = False,
-        string_encoding: StringEncoding = ...,
+        string_encoding: StringEncoding = mutf8_encoding,
         name: str | None = "",
     ) -> bytes: ...
     def setdefault(
@@ -1681,7 +1683,7 @@ class CompoundTag(AbstractBaseMutableTag):
 
     @typing.overload
     def to_nbt(
-        self, *, preset: EncodingPreset = ..., name: str | None = ""
+        self, *, preset: EncodingPreset = java_encoding, name: str | None = ""
     ) -> bytes: ...
     @typing.overload
     def to_nbt(
@@ -1689,7 +1691,7 @@ class CompoundTag(AbstractBaseMutableTag):
         *,
         compressed: bool = True,
         little_endian: bool = False,
-        string_encoding: StringEncoding = ...,
+        string_encoding: StringEncoding = mutf8_encoding,
         name: str | None = "",
     ) -> bytes: ...
     def to_snbt(self, indent: typing.Any = None) -> str: ...
@@ -2069,7 +2071,7 @@ class ListTag(AbstractBaseMutableTag):
         filepath_or_writable: typing.Any = None,
         /,
         *,
-        preset: EncodingPreset = ...,
+        preset: EncodingPreset = java_encoding,
         name: str | None = "",
     ) -> bytes: ...
     @typing.overload
@@ -2080,12 +2082,12 @@ class ListTag(AbstractBaseMutableTag):
         *,
         compressed: bool = True,
         little_endian: bool = False,
-        string_encoding: StringEncoding = ...,
+        string_encoding: StringEncoding = mutf8_encoding,
         name: str | None = "",
     ) -> bytes: ...
     @typing.overload
     def to_nbt(
-        self, *, preset: EncodingPreset = ..., name: str | None = ""
+        self, *, preset: EncodingPreset = java_encoding, name: str | None = ""
     ) -> bytes: ...
     @typing.overload
     def to_nbt(
@@ -2093,7 +2095,7 @@ class ListTag(AbstractBaseMutableTag):
         *,
         compressed: bool = True,
         little_endian: bool = False,
-        string_encoding: StringEncoding = ...,
+        string_encoding: StringEncoding = mutf8_encoding,
         name: str | None = "",
     ) -> bytes: ...
     def to_snbt(self, indent: typing.Any = None) -> str: ...
@@ -2175,7 +2177,7 @@ class NamedTag:
         filepath_or_writable: typing.Any = None,
         /,
         *,
-        preset: EncodingPreset = ...,
+        preset: EncodingPreset = java_encoding,
     ) -> bytes: ...
     @typing.overload
     def save_to(
@@ -2185,17 +2187,17 @@ class NamedTag:
         *,
         compressed: bool = True,
         little_endian: bool = False,
-        string_encoding: StringEncoding = ...,
+        string_encoding: StringEncoding = mutf8_encoding,
     ) -> bytes: ...
     @typing.overload
-    def to_nbt(self, *, preset: EncodingPreset = ...) -> bytes: ...
+    def to_nbt(self, *, preset: EncodingPreset = java_encoding) -> bytes: ...
     @typing.overload
     def to_nbt(
         self,
         *,
         compressed: bool = True,
         little_endian: bool = False,
-        string_encoding: StringEncoding = ...,
+        string_encoding: StringEncoding = mutf8_encoding,
     ) -> bytes: ...
     def to_snbt(self, indent: typing.Any = None) -> str: ...
     @property
@@ -2323,7 +2325,7 @@ def read_nbt(
     filepath_or_readable: typing.Any,
     /,
     *,
-    preset: EncodingPreset = ...,
+    preset: EncodingPreset = java_encoding,
     named: bool = True,
     read_offset: typing.Any = None,
 ) -> NamedTag:
@@ -2344,7 +2346,7 @@ def read_nbt(
     *,
     compressed: bool = True,
     little_endian: bool = False,
-    string_encoding: StringEncoding = ...,
+    string_encoding: StringEncoding = mutf8_encoding,
     named: bool = True,
     read_offset: typing.Any = None,
 ) -> NamedTag:
@@ -2366,7 +2368,7 @@ def read_nbt_array(
     /,
     *,
     count: typing.SupportsInt | typing.SupportsIndex = 1,
-    preset: EncodingPreset = ...,
+    preset: EncodingPreset = java_encoding,
     named: bool = True,
     read_offset: typing.Any = None,
 ) -> list[NamedTag]:
@@ -2389,7 +2391,7 @@ def read_nbt_array(
     count: typing.SupportsInt | typing.SupportsIndex = 1,
     compressed: bool = True,
     little_endian: bool = False,
-    string_encoding: StringEncoding = ...,
+    string_encoding: StringEncoding = mutf8_encoding,
     named: bool = True,
     read_offset: typing.Any = None,
 ) -> list[NamedTag]:

@@ -2320,7 +2320,8 @@ class ReadOffset:
 def __annotate__(format): ...
 @typing.overload
 def read_nbt(
-    filepath_or_buffer: typing.Any,
+    filepath_or_readable: typing.Any,
+    /,
     *,
     preset: EncodingPreset = ...,
     named: bool = True,
@@ -2329,7 +2330,7 @@ def read_nbt(
     """
     Load one binary NBT object.
 
-    :param filepath_or_buffer: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.
+    :param filepath_or_readable: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.
     :param preset: The encoding preset. If this is defined little_endian and string_encoding have no effect.
     :param named: If the tag to read is named, if not, return NamedTag with empty name.
     :param read_offset: Optional ReadOffset object to get read end offset.
@@ -2338,7 +2339,8 @@ def read_nbt(
 
 @typing.overload
 def read_nbt(
-    filepath_or_buffer: typing.Any,
+    filepath_or_readable: typing.Any,
+    /,
     *,
     compressed: bool = True,
     little_endian: bool = False,
@@ -2349,7 +2351,7 @@ def read_nbt(
     """
     Load one binary NBT object.
 
-    :param filepath_or_buffer: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.
+    :param filepath_or_readable: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.
     :param compressed: Is the binary data gzip compressed.
     :param little_endian: Are the numerical values stored as little endian. True for Bedrock, False for Java.
     :param string_encoding: The bytes decoder function to parse strings. mutf8_encoding for Java, utf8_escape_encoding for Bedrock.
@@ -2360,7 +2362,8 @@ def read_nbt(
 
 @typing.overload
 def read_nbt_array(
-    filepath_or_buffer: typing.Any,
+    filepath_or_readable: typing.Any,
+    /,
     *,
     count: typing.SupportsInt | typing.SupportsIndex = 1,
     preset: EncodingPreset = ...,
@@ -2370,7 +2373,7 @@ def read_nbt_array(
     """
     Load an array of binary NBT objects from a contiguous buffer.
 
-    :param filepath_or_buffer: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.
+    :param filepath_or_readable: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.
     :param count: The number of binary NBT objects to read. Use -1 to exhaust the buffer.
     :param preset: The encoding preset. If this is defined little_endian and string_encoding have no effect.
     :param named: If the tags to read are named, if not, return NamedTags with empty name.
@@ -2380,7 +2383,8 @@ def read_nbt_array(
 
 @typing.overload
 def read_nbt_array(
-    filepath_or_buffer: typing.Any,
+    filepath_or_readable: typing.Any,
+    /,
     *,
     count: typing.SupportsInt | typing.SupportsIndex = 1,
     compressed: bool = True,
@@ -2392,7 +2396,7 @@ def read_nbt_array(
     """
     Load an array of binary NBT objects from a contiguous buffer.
 
-    :param filepath_or_buffer: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.
+    :param filepath_or_readable: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.
     :param count: The number of binary NBT objects to read. Use -1 to exhaust the buffer.
     :param compressed: Is the binary data gzip compressed. This only supports the whole buffer compressed as one.
     :param little_endian: Are the numerical values stored as little endian. True for Bedrock, False for Java.

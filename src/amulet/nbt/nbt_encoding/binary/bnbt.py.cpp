@@ -39,12 +39,12 @@ void init_bnbt(py::module& m)
     py::object java_encoding = m.attr("java_encoding");
 
     auto get_buffer = [](
-                          py::object filepath_or_buffer,
+                          py::object filepath_or_readable,
                           bool compressed) -> std::string {
         std::string data;
 
-        if (py::isinstance<py::str>(filepath_or_buffer)) {
-            std::string file_path = filepath_or_buffer.cast<std::string>();
+        if (py::isinstance<py::str>(filepath_or_readable)) {
+            std::string file_path = filepath_or_readable.cast<std::string>();
             std::ifstream file(file_path, std::ios::binary);
             if (!file) {
                 throw std::invalid_argument("Could not open file: " + file_path);
@@ -54,14 +54,14 @@ void init_bnbt(py::module& m)
             file.seekg(0, std::ios::beg);
             data.resize(file_size);
             file.read(&data[0], file_size);
-        } else if (py::isinstance<py::bytes>(filepath_or_buffer)) {
-            data = filepath_or_buffer.cast<std::string>();
-        } else if (py::isinstance<py::memoryview>(filepath_or_buffer)) {
-            data = filepath_or_buffer.attr("tobytes")().cast<std::string>();
-        } else if (py::hasattr(filepath_or_buffer, "read")) {
-            data = filepath_or_buffer.attr("read")().cast<std::string>();
+        } else if (py::isinstance<py::bytes>(filepath_or_readable)) {
+            data = filepath_or_readable.cast<std::string>();
+        } else if (py::isinstance<py::memoryview>(filepath_or_readable)) {
+            data = filepath_or_readable.attr("tobytes")().cast<std::string>();
+        } else if (py::hasattr(filepath_or_readable, "read")) {
+            data = filepath_or_readable.attr("read")().cast<std::string>();
         } else {
-            throw std::invalid_argument("filepath_or_buffer must be a path string, bytes, memory view or an object with a read method.");
+            throw std::invalid_argument("filepath_or_readable must be a path string, bytes, memory view or an object with a read method.");
         }
 
         if (compressed && data[0] == 0x1f) {
@@ -74,13 +74,13 @@ void init_bnbt(py::module& m)
     };
 
     auto read_nbt = [get_buffer](
-                        py::object filepath_or_buffer,
+                        py::object filepath_or_readable,
                         bool compressed,
                         std::endian endianness,
                         Amulet::StringDecoder string_decoder,
                         bool named,
                         py::object read_offset_py) {
-        std::string buffer = get_buffer(filepath_or_buffer, compressed);
+        std::string buffer = get_buffer(filepath_or_readable, compressed);
         if (py::isinstance<Amulet::NBT::ReadOffset>(read_offset_py)) {
             Amulet::NBT::ReadOffset& read_offset = read_offset_py.cast<Amulet::NBT::ReadOffset&>();
             return Amulet::NBT::decode_nbt(
@@ -103,19 +103,20 @@ void init_bnbt(py::module& m)
     m.def(
         "read_nbt",
         [read_nbt](
-            py::object filepath_or_buffer,
+            py::object filepath_or_readable,
             const Amulet::NBT::EncodingPreset& preset,
             bool named,
             py::object read_offset) {
             return read_nbt(
-                filepath_or_buffer,
+                filepath_or_readable,
                 preset.compressed,
                 preset.endianness,
                 preset.string_encoding.decode,
                 named,
                 read_offset);
         },
-        py::arg("filepath_or_buffer"),
+        py::arg("filepath_or_readable"),
+        py::pos_only(),
         py::kw_only(),
         py::arg("preset") = java_encoding,
         py::arg("named") = true,
@@ -123,7 +124,7 @@ void init_bnbt(py::module& m)
         py::doc(
             "Load one binary NBT object.\n"
             "\n"
-            ":param filepath_or_buffer: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.\n"
+            ":param filepath_or_readable: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.\n"
             ":param preset: The encoding preset. If this is defined little_endian and string_encoding have no effect.\n"
             ":param named: If the tag to read is named, if not, return NamedTag with empty name.\n"
             ":param read_offset: Optional ReadOffset object to get read end offset.\n"
@@ -131,21 +132,22 @@ void init_bnbt(py::module& m)
     m.def(
         "read_nbt",
         [read_nbt](
-            py::object filepath_or_buffer,
+            py::object filepath_or_readable,
             bool compressed,
             bool little_endian,
             const Amulet::NBT::StringEncoding& string_encoding,
             bool named,
             py::object read_offset) {
             return read_nbt(
-                filepath_or_buffer,
+                filepath_or_readable,
                 compressed,
                 little_endian ? std::endian::little : std::endian::big,
                 string_encoding.decode,
                 named,
                 read_offset);
         },
-        py::arg("filepath_or_buffer"),
+        py::arg("filepath_or_readable"),
+        py::pos_only(),
         py::kw_only(),
         py::arg("compressed") = true,
         py::arg("little_endian") = false,
@@ -155,7 +157,7 @@ void init_bnbt(py::module& m)
         py::doc(
             "Load one binary NBT object.\n"
             "\n"
-            ":param filepath_or_buffer: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.\n"
+            ":param filepath_or_readable: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.\n"
             ":param compressed: Is the binary data gzip compressed.\n"
             ":param little_endian: Are the numerical values stored as little endian. True for Bedrock, False for Java.\n"
             ":param string_encoding: The bytes decoder function to parse strings. mutf8_encoding for Java, utf8_escape_encoding for Bedrock.\n"
@@ -164,7 +166,7 @@ void init_bnbt(py::module& m)
             ":raises: IndexError if the data is not long enough."));
 
     auto read_nbt_array = [get_buffer](
-                              py::object filepath_or_buffer,
+                              py::object filepath_or_readable,
                               Py_ssize_t count,
                               bool compressed,
                               std::endian endianness,
@@ -174,7 +176,7 @@ void init_bnbt(py::module& m)
         if (count < -1) {
             throw std::invalid_argument("count must be -1 or higher");
         }
-        std::string buffer = get_buffer(filepath_or_buffer, compressed);
+        std::string buffer = get_buffer(filepath_or_readable, compressed);
         if (py::isinstance<Amulet::NBT::ReadOffset>(read_offset_py)) {
             Amulet::NBT::ReadOffset& read_offset = read_offset_py.cast<Amulet::NBT::ReadOffset&>();
             if (count == -1) {
@@ -218,13 +220,13 @@ void init_bnbt(py::module& m)
     m.def(
         "read_nbt_array",
         [read_nbt_array](
-            py::object filepath_or_buffer,
+            py::object filepath_or_readable,
             Py_ssize_t count,
             const Amulet::NBT::EncodingPreset& preset,
             bool named,
             py::object read_offset) {
             return read_nbt_array(
-                filepath_or_buffer,
+                filepath_or_readable,
                 count,
                 preset.compressed,
                 preset.endianness,
@@ -232,7 +234,8 @@ void init_bnbt(py::module& m)
                 named,
                 read_offset);
         },
-        py::arg("filepath_or_buffer"),
+        py::arg("filepath_or_readable"),
+        py::pos_only(),
         py::kw_only(),
         py::arg("count") = 1,
         py::arg("preset") = java_encoding,
@@ -241,7 +244,7 @@ void init_bnbt(py::module& m)
         py::doc(
             "Load an array of binary NBT objects from a contiguous buffer.\n"
             "\n"
-            ":param filepath_or_buffer: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.\n"
+            ":param filepath_or_readable: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.\n"
             ":param count: The number of binary NBT objects to read. Use -1 to exhaust the buffer.\n"
             ":param preset: The encoding preset. If this is defined little_endian and string_encoding have no effect.\n"
             ":param named: If the tags to read are named, if not, return NamedTags with empty name.\n"
@@ -251,7 +254,7 @@ void init_bnbt(py::module& m)
     m.def(
         "read_nbt_array",
         [read_nbt_array](
-            py::object filepath_or_buffer,
+            py::object filepath_or_readable,
             Py_ssize_t count,
             bool compressed,
             bool little_endian,
@@ -259,7 +262,7 @@ void init_bnbt(py::module& m)
             bool named,
             py::object read_offset) {
             return read_nbt_array(
-                filepath_or_buffer,
+                filepath_or_readable,
                 count,
                 compressed,
                 little_endian ? std::endian::little : std::endian::big,
@@ -267,7 +270,8 @@ void init_bnbt(py::module& m)
                 named,
                 read_offset);
         },
-        py::arg("filepath_or_buffer"),
+        py::arg("filepath_or_readable"),
+        py::pos_only(),
         py::kw_only(),
         py::arg("count") = 1,
         py::arg("compressed") = true,
@@ -278,7 +282,7 @@ void init_bnbt(py::module& m)
         py::doc(
             "Load an array of binary NBT objects from a contiguous buffer.\n"
             "\n"
-            ":param filepath_or_buffer: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.\n"
+            ":param filepath_or_readable: A string path to a file on disk, a bytes or memory view object containing the binary NBT or a file-like object to read the binary data from.\n"
             ":param count: The number of binary NBT objects to read. Use -1 to exhaust the buffer.\n"
             ":param compressed: Is the binary data gzip compressed. This only supports the whole buffer compressed as one.\n"
             ":param little_endian: Are the numerical values stored as little endian. True for Bedrock, False for Java.\n"

@@ -1,11 +1,12 @@
 from __future__ import annotations
-
-import collections.abc
 import types
-import typing
 from builtins import str as SNBTType
-
-from . import _amulet_nbt, _version
+import collections.abc
+import numpy
+import numpy.typing
+import typing
+from . import _version
+from . import _amulet_nbt
 
 __all__: list[str] = [
     "AbstractBaseArrayTag",
@@ -84,29 +85,51 @@ class AbstractBaseTag:
 
     __hash__: typing.ClassVar[None] = None  # type: ignore
     tag_id: typing.ClassVar[int] = -1
-    def __copy__(self, *args, **kwargs: typing.Any) -> None:
+    def __copy__(self) -> typing.Self:
         """
-        A string representation of the object.
+        A shallow copy of the class
+
+        >>> import copy
+        >>> from amulet.nbt import ListTag
+        >>> tag = ListTag()
+        >>> tag2 = copy.copy(tag)
         """
 
-    def __deepcopy__(self, *args, **kwargs: typing.Any) -> None:
+    def __deepcopy__(self, memo: dict[int, typing.Any] | None = None) -> typing.Self:
         """
-        A string representation of the object.
+        A deep copy of the class
+
+        >>> import copy
+        >>> from amulet.nbt import ListTag
+        >>> tag = ListTag()
+        >>> tag2 = copy.deepcopy(tag)
         """
 
-    def __eq__(self, *args, **kwargs: typing.Any) -> None:
+    def __eq__(self, other: typing.Any) -> bool:
         """
         Check if the instance is equal to another instance.
 
         This will only return True if the tag type is the same and the data contained is the same.
+
+        >>> from amulet.nbt import ByteTag, ShortTag
+        >>> tag1 = ByteTag(1)
+        >>> tag2 = ByteTag(2)
+        >>> tag3 = ShortTag(1)
+        >>> tag1 == tag1  # True
+        >>> tag1 == tag2  # False
+        >>> tag1 == tag3  # False
         """
 
-    def __repr__(self, *args, **kwargs: typing.Any) -> None:
+    def __repr__(self) -> str:
         """
         A string representation of the object to show how it can be constructed.
+
+        >>> from amulet.nbt import ByteTag
+        >>> tag = ByteTag(1)
+        >>> repr(tag)  # "ByteTag(1)"
         """
 
-    def __str__(self, *args, **kwargs: typing.Any) -> None:
+    def __str__(self) -> str:
         """
         A string representation of the object.
         """
@@ -119,7 +142,20 @@ class AbstractBaseTag:
         *,
         preset: EncodingPreset = java_encoding,
         name: str | None = "",
-    ) -> None: ...
+    ) -> bytes:
+        """
+        Convert the data to the binary NBT format. Optionally write to a file.
+
+        If filepath_or_writable is a valid file path in string form the data will be written to that file.
+
+        If filepath_or_writable is a file like object the bytes will be written to it using .write method.
+
+        :param filepath_or_writable: A path or writeable object to write the data to.
+        :param preset: A class containing endianness and encoding presets.
+        :param name: The root tag name, or `None` for unnamed tag.
+        :return: The binary NBT representation of the class.
+        """
+
     @typing.overload
     def save_to(
         self,
@@ -130,11 +166,34 @@ class AbstractBaseTag:
         little_endian: bool = False,
         string_encoding: StringEncoding = mutf8_encoding,
         name: str | None = "",
-    ) -> None: ...
+    ) -> bytes:
+        """
+        Convert the data to the binary NBT format. Optionally write to a file.
+
+        If filepath_or_writable is a valid file path in string form the data will be written to that file.
+
+        If filepath_or_writable is a file like object the bytes will be written to it using .write method.
+
+        :param filepath_or_writable: A path or writeable object to write the data to.
+        :param compressed: Should the bytes be compressed with gzip.
+        :param little_endian: Should the bytes be saved in little endian format. Ignored if preset is defined.
+        :param string_encoding: The StringEncoding to use. Ignored if preset is defined.
+        :param name: The root tag name, or `None` for unnamed tag.
+        :return: The binary NBT representation of the class.
+        """
+
     @typing.overload
     def to_nbt(
-        self, *, preset: EncodingPreset = ..., name: str | None = ""
-    ) -> None: ...
+        self, *, preset: EncodingPreset = java_encoding, name: str | None = ""
+    ) -> bytes:
+        """
+        Get the data in binary NBT format.
+
+        :param preset: A class containing endianness and encoding presets.
+        :param name: The root tag name, or `None` for unnamed tag.
+        :return: The binary NBT representation of the class.
+        """
+
     @typing.overload
     def to_nbt(
         self,
@@ -143,10 +202,30 @@ class AbstractBaseTag:
         little_endian: bool = False,
         string_encoding: StringEncoding = mutf8_encoding,
         name: str | None = "",
-    ) -> None: ...
-    def to_snbt(self, indent: typing.Any = None) -> None: ...
+    ) -> bytes:
+        """
+        Get the data in binary NBT format.
+
+        :param compressed: Should the bytes be compressed with gzip.
+        :param little_endian: Should the bytes be saved in little endian format. Ignored if preset is defined.
+        :param string_encoding: The StringEncoding to use. Ignored if preset is defined.
+        :param name: The root tag name, or `None` for unnamed tag.
+        :return: The binary NBT representation of the class.
+        """
+
+    def to_snbt(self, indent: None | str | int = None) -> str:
+        """
+        Convert the data to the Stringified NBT format.
+
+        :param indent:
+            If None (the default) the SNBT will be on one line.
+            If an int will be multi-line SNBT with this many spaces per indentation.
+            If a string will be multi-line SNBT with this string as the indentation.
+        :return: The SNBT string.
+        """
+
     @property
-    def py_data(self, *args, **kwargs: typing.Any) -> None:
+    def py_data(self) -> typing.Any:
         """
         A python representation of the class. Note that the return type is undefined and may change in the future.
 
@@ -156,10 +235,10 @@ class AbstractBaseTag:
 
 class AbstractBaseImmutableTag(AbstractBaseTag):
     """
-    Abstract Base Class for all tag classes
+    Abstract Base Class for all immutable tag classes
     """
 
-    def __hash__(self, *args, **kwargs: typing.Any) -> None:
+    def __hash__(self) -> int:
         """
         A hash of the data in the class.
         """
@@ -169,19 +248,39 @@ class AbstractBaseNumericTag(AbstractBaseImmutableTag):
     Abstract Base Class for all numeric tag classes
     """
 
-    def __bool__(self, *args, **kwargs: typing.Any) -> None:
+    def __bool__(self) -> bool:
         """
         Get a python bool representation of the class.
         """
 
-    def __float__(self, *args, **kwargs: typing.Any) -> None:
+    def __float__(self) -> float:
         """
         Get a python float representation of the class.
         """
 
-    def __int__(self, *args, **kwargs: typing.Any) -> None:
+    def __ge__(self, other: typing.Any) -> bool:
+        """
+        Check if the tag is greater than or equal to another tag.
+        """
+
+    def __gt__(self, other: typing.Any) -> bool:
+        """
+        Check if the tag is greater than another tag.
+        """
+
+    def __int__(self) -> int:
         """
         Get a python int representation of the class.
+        """
+
+    def __le__(self, other: typing.Any) -> bool:
+        """
+        Check if the tag is less than or equal to another tag.
+        """
+
+    def __lt__(self, other: typing.Any) -> bool:
+        """
+        Check if the tag is less than another tag.
         """
 
 class AbstractBaseIntTag(AbstractBaseNumericTag):
@@ -190,7 +289,7 @@ class AbstractBaseIntTag(AbstractBaseNumericTag):
     """
 
     @property
-    def py_int(self, *args, **kwargs: typing.Any) -> None:
+    def py_int(self) -> int:
         """
         A python int representation of the class.
 
@@ -203,7 +302,7 @@ class AbstractBaseFloatTag(AbstractBaseNumericTag):
     """
 
     @property
-    def py_float(self, *args, **kwargs: typing.Any) -> None:
+    def py_float(self) -> float:
         """
         A python float representation of the class.
 
@@ -212,7 +311,7 @@ class AbstractBaseFloatTag(AbstractBaseNumericTag):
 
 class AbstractBaseMutableTag(AbstractBaseTag):
     """
-    Abstract Base Class for all mutable tags.
+    Abstract Base Class for all mutable tag classes.
     """
 
     __hash__: typing.ClassVar[None] = None  # type: ignore
@@ -221,6 +320,97 @@ class AbstractBaseArrayTag(AbstractBaseMutableTag):
     """
     Abstract Base Class for all array tag classes.
     """
+
+    def __contains__(self, item: typing.Any) -> bool:
+        """
+        Check if an item is in the array.
+
+        >>> from amulet.nbt import ByteArrayTag
+        >>> tag = ByteArrayTag([1, 2, 3])
+        >>> 1 in tag  # True
+        """
+
+    @typing.overload
+    def __getitem__(self, item: int) -> numpy.int8 | numpy.int32 | numpy.int64:
+        """
+        Get item(s) from the array.
+
+        This supports the full numpy protocol.
+        If a numpy array is returned, the array data is the same as the data contained in this class.
+
+        >>> from amulet.nbt import ByteArrayTag
+        >>> import numpy
+        >>> tag = ByteArrayTag([1, 2, 3])
+        >>> tag[0]  # 1
+        >>> tag[:1]  # numpy.array([1], dtype=numpy.int8)
+        >>> tag[numpy.array([1, 2])]  # numpy.array([2, 3], dtype=int8)
+        """
+
+    @typing.overload
+    def __getitem__(
+        self, item: slice
+    ) -> (
+        numpy.typing.NDArray[numpy.int8]
+        | numpy.typing.NDArray[numpy.int32]
+        | numpy.typing.NDArray[numpy.int64]
+    ): ...
+    @typing.overload
+    def __getitem__(
+        self, item: numpy.typing.NDArray[numpy.integer]
+    ) -> (
+        numpy.typing.NDArray[numpy.int8]
+        | numpy.typing.NDArray[numpy.int32]
+        | numpy.typing.NDArray[numpy.int64]
+    ): ...
+    def __iter__(
+        self,
+    ) -> (
+        collections.abc.Iterable[numpy.int8]
+        | collections.abc.Iterable[numpy.int32]
+        | collections.abc.Iterable[numpy.int64]
+    ):
+        """
+        Iterate through the items in the array.
+
+        >>> from amulet.nbt import ByteArrayTag
+        >>> tag = ByteArrayTag([1, 2, 3])
+        >>> for num in tag:
+        >>>     pass
+        >>> iter(tag)
+        """
+
+    def __len__(self) -> int:
+        """
+        The length of the array.
+
+        >>> from amulet.nbt import ByteArrayTag
+        >>> tag = ByteArrayTag([1, 2, 3])
+        >>> len(tag)  # 3
+        """
+
+    def __reversed__(
+        self,
+    ) -> (
+        collections.abc.Iterable[numpy.int8]
+        | collections.abc.Iterable[numpy.int32]
+        | collections.abc.Iterable[numpy.int64]
+    ):
+        """
+        Iterate through the items in the array in reverse order.
+
+        >>> from amulet.nbt import ByteArrayTag
+        >>> tag = ByteArrayTag([1, 2, 3])
+        >>> for num in reversed(tag):
+        >>>     pass
+        """
+
+    @property
+    def np_array(self) -> numpy.ndarray:
+        """
+        A numpy array holding the same internal data.
+
+        Changes to the array will also modify the internal state.
+        """
 
 class ByteTag(AbstractBaseIntTag):
     """

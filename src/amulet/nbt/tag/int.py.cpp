@@ -142,8 +142,8 @@ void init_int(py::module& m)
     py::object PyIntCls = py::module::import("builtins").attr("int");
     py::object mutf8_encoding = m.attr("mutf8_encoding");
     py::object java_encoding = m.attr("java_encoding");
-    PyInt(std::int8_t, ByteTag, 1, 7, 0x80, 0x7F, 1)
-        PyInt(std::int16_t, ShortTag, 2, 15, 0x8000, 0x7FFF, 2)
-            PyInt(std::int32_t, IntTag, 4, 31, 0x80000000, 0x7FFFFFFF, 3)
-                PyInt(std::int64_t, LongTag, 8, 63, 0x8000000000000000, 0x7FFFFFFFFFFFFFFF, 4)
+    PyInt(std::int8_t, ByteTag, 1, 7, 0x80, 0x7F, 1);
+    PyInt(std::int16_t, ShortTag, 2, 15, 0x8000, 0x7FFF, 2);
+    PyInt(std::int32_t, IntTag, 4, 31, 0x80000000, 0x7FFFFFFF, 3);
+    PyInt(std::int64_t, LongTag, 8, 63, 0x8000000000000000, 0x7FFFFFFFFFFFFFFF, 4);
 };

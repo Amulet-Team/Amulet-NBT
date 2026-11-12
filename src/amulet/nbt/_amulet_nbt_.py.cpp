@@ -53,19 +53,46 @@ void init_amulet_nbt(py::module m)
     init_compound(m);
     init_list(m);
 
+    py::object ByteTag = m.attr("ByteTag");
+    py::object ShortTag = m.attr("ShortTag");
+    py::object IntTag = m.attr("IntTag");
+    py::object LongTag = m.attr("LongTag");
+    py::object FloatTag = m.attr("FloatTag");
+    py::object DoubleTag = m.attr("DoubleTag");
+    py::object ByteArrayTag = m.attr("ByteArrayTag");
+    py::object StringTag = m.attr("StringTag");
+    py::object ListTag = m.attr("ListTag");
+    py::object CompoundTag = m.attr("CompoundTag");
+    py::object IntArrayTag = m.attr("IntArrayTag");
+    py::object LongArrayTag = m.attr("LongArrayTag");
+
     // Tag Alias's
-    m.attr("TAG_Byte") = m.attr("ByteTag");
-    m.attr("TAG_Short") = m.attr("ShortTag");
-    m.attr("TAG_Int") = m.attr("IntTag");
-    m.attr("TAG_Long") = m.attr("LongTag");
-    m.attr("TAG_Float") = m.attr("FloatTag");
-    m.attr("TAG_Double") = m.attr("DoubleTag");
-    m.attr("TAG_Byte_Array") = m.attr("ByteArrayTag");
-    m.attr("TAG_String") = m.attr("StringTag");
-    m.attr("TAG_List") = m.attr("ListTag");
-    m.attr("TAG_Compound") = m.attr("CompoundTag");
-    m.attr("TAG_Int_Array") = m.attr("IntArrayTag");
-    m.attr("TAG_Long_Array") = m.attr("LongArrayTag");
+    m.attr("TAG_Byte") = ByteTag;
+    m.attr("TAG_Short") = ShortTag;
+    m.attr("TAG_Int") = IntTag;
+    m.attr("TAG_Long") = LongTag;
+    m.attr("TAG_Float") = FloatTag;
+    m.attr("TAG_Double") = DoubleTag;
+    m.attr("TAG_Byte_Array") = ByteArrayTag;
+    m.attr("TAG_String") = StringTag;
+    m.attr("TAG_List") = ListTag;
+    m.attr("TAG_Compound") = CompoundTag;
+    m.attr("TAG_Int_Array") = IntArrayTag;
+    m.attr("TAG_Long_Array") = LongArrayTag;
+
+    m.attr("SNBTType") = py::module::import("builtins").attr("str");
+
+    py::object IntType = ByteTag | ShortTag | IntTag | LongTag;
+    py::object FloatType = FloatTag | DoubleTag;
+    py::object NumberType = IntType | FloatType;
+    py::object ArrayType = ByteArrayTag | IntArrayTag | LongArrayTag;
+    py::object AnyNBT = NumberType | StringTag | ListTag | CompoundTag | ArrayType;
+
+    m.attr("IntType") = IntType;
+    m.attr("FloatType") = FloatType;
+    m.attr("NumberType") = NumberType;
+    m.attr("ArrayType") = ArrayType;
+    m.attr("AnyNBT") = AnyNBT;
 
     init_named_tag(m);
 

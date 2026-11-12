@@ -5,15 +5,17 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include <amulet/pybind11_extensions/builtins.hpp>
+
 #include <amulet/zlib/zlib.hpp>
 
 #include <amulet/nbt/nbt_encoding/binary.hpp>
 #include <amulet/nbt/nbt_encoding/string.hpp>
 #include <amulet/nbt/string_encoding/encoding.py.hpp>
-#include <amulet/nbt/tag/serialisation.py.hpp>
 #include <amulet/nbt/tag/abc.hpp>
 #include <amulet/nbt/tag/copy.hpp>
 #include <amulet/nbt/tag/int.hpp>
+#include <amulet/nbt/tag/serialisation.py.hpp>
 
 namespace py = pybind11;
 
@@ -24,19 +26,12 @@ namespace py = pybind11;
         "Can Store numbers between -(2^" #BITPOW ") and (2^" #BITPOW " - 1)");                                             \
     CLSNAME.def_property_readonly_static("tag_id", [](py::object) { return TAGID; });                                      \
     CLSNAME.def(                                                                                                           \
-        py::init([PyIntCls](py::object py_value) {                                                                         \
-            /* cast to a python int */                                                                                     \
-            py::object py_int = PyIntCls(py_value);                                                                        \
-            /* get the magnitude bits */                                                                                   \
-            NATIVE value = py_int.attr("__and__")(py::cast(MAGBITS)).cast<NATIVE>();                                       \
-            /* get the sign bits */                                                                                        \
-            if (py_int.attr("__and__")(py::cast(SIGNBIT)).cast<bool>()) {                                                  \
-                value -= SIGNBIT;                                                                                          \
-            }                                                                                                              \
-            return Amulet::NBT::CLSNAME(value);                                                                            \
+        py::init([](Amulet::pybind11_extensions::PyObjectCpp<NATIVE> py_value) {                                           \
+            py::int_ py_int(py_value);                                                                                     \
+            auto uint64_value = py_int.attr("__and__")(py::cast(UINT64_MAX)).cast<std::uint64_t>();                        \
+            return Amulet::NBT::CLSNAME(static_cast<NATIVE>(uint64_value));                                                \
         }),                                                                                                                \
-        py::arg("value") = 0,                                                                                              \
-        py::doc("__init__(self: amulet.nbt." #CLSNAME ", value: typing.SupportsInt) -> None"));                            \
+        py::arg("value") = 0);                                                                                             \
     CLSNAME.def_property_readonly(                                                                                         \
         "py_int",                                                                                                          \
         [](const Amulet::NBT::CLSNAME& self) -> NATIVE {                                                                   \
@@ -139,7 +134,6 @@ namespace py = pybind11;
 
 void init_int(py::module& m)
 {
-    py::object PyIntCls = py::module::import("builtins").attr("int");
     py::object mutf8_encoding = m.attr("mutf8_encoding");
     py::object java_encoding = m.attr("java_encoding");
     PyInt(std::int8_t, ByteTag, 1, 7, 0x80, 0x7F, 1);

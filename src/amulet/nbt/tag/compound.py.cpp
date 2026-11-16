@@ -155,26 +155,25 @@ void init_compound(py::module& m)
             "You would be better off using the py_{type} or np_array properties if you require a fixed type.\n"
             "This is here for convenience to get a python representation under the same property name.\n"));
     SerialiseTag(CompoundTag);
-        CompoundTag.def(
-            "__repr__",
-            [](const Amulet::NBT::CompoundTag& self) {
-                std::string out;
-                out += "CompoundTag({";
-                for (auto it = self.begin(); it != self.end(); it++) {
-                    if (it != self.begin()) {
-                        out += ", ";
-                    }
-                    try {
-                        out += py::repr(py::str(it->first));
-                    } catch (py::error_already_set&) {
-                        out += py::repr(py::bytes(it->first));
-                    }
-                    out += ": ";
-                    out += py::repr(py::cast(it->second));
+    CompoundTag.def(
+        "__repr__",
+        [](const Amulet::NBT::CompoundTag& self) {
+            std::string out = "amulet.nbt.CompoundTag({";
+            for (auto it = self.begin(); it != self.end(); it++) {
+                if (it != self.begin()) {
+                    out += ", ";
                 }
-                out += "})";
-                return out;
-            });
+                try {
+                    out += py::repr(py::str(it->first));
+                } catch (py::error_already_set&) {
+                    out += py::repr(py::bytes(it->first));
+                }
+                out += ": ";
+                out += py::repr(py::cast(it->second));
+            }
+            out += "})";
+            return out;
+        });
     CompoundTag.def(
         py::pickle(
             [](const Amulet::NBT::CompoundTag& self) {

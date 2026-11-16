@@ -225,32 +225,31 @@ void init_list(py::module& m)
             "You would be better off using the py_{type} or np_array properties if you require a fixed type.\n"
             "This is here for convenience to get a python representation under the same property name.\n"));
     SerialiseTag(ListTag);
-        ListTag.def(
-            "__repr__",
-            [](const Amulet::NBT::ListTag& self) {
-                std::string out;
-                out += "ListTag([";
+    ListTag.def(
+        "__repr__",
+        [](const Amulet::NBT::ListTag& self) {
+            std::string out = "amulet.nbt.ListTag([";
 
-                std::visit([&out](auto&& vec) {
-                    using T = std::decay_t<decltype(vec)>;
-                    if constexpr (std::is_same_v<T, std::monostate>) {
-                        // do nothing
-                    } else {
-                        for (size_t i = 0; i < vec.size(); i++) {
-                            if (i != 0) {
-                                out += ", ";
-                            }
-                            out += py::repr(py::cast(vec[i]));
+            std::visit([&out](auto&& vec) {
+                using T = std::decay_t<decltype(vec)>;
+                if constexpr (std::is_same_v<T, std::monostate>) {
+                    // do nothing
+                } else {
+                    for (size_t i = 0; i < vec.size(); i++) {
+                        if (i != 0) {
+                            out += ", ";
                         }
+                        out += py::repr(py::cast(vec[i]));
                     }
-                },
-                    self);
+                }
+            },
+                self);
 
-                out += "], ";
-                out += std::to_string(self.index());
-                out += ")";
-                return out;
-            });
+            out += "], ";
+            out += std::to_string(self.index());
+            out += ")";
+            return out;
+        });
     ListTag.def(
         "__str__",
         [](const Amulet::NBT::ListTag& self) {

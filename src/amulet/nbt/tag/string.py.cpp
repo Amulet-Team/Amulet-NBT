@@ -73,15 +73,15 @@ void init_string(py::module& m)
             "You would be better off using the py_{type} or np_array properties if you require a fixed type.\n"
             "This is here for convenience to get a python representation under the same property name.\n"));
     SerialiseTag(StringTag);
-        StringTag.def(
-            "__repr__",
-            [](const Amulet::NBT::StringTag& self) {
-                try {
-                    return "StringTag(" + py::repr(py::str(self)).cast<std::string>() + ")";
-                } catch (py::error_already_set&) {
-                    return "StringTag(" + py::repr(py::bytes(self)).cast<std::string>() + ")";
-                }
-            });
+    StringTag.def(
+        "__repr__",
+        [](const Amulet::NBT::StringTag& self) {
+            try {
+                return "amulet.nbt.StringTag(" + py::repr(py::str(self)).cast<std::string>() + ")";
+            } catch (py::error_already_set&) {
+                return "amulet.nbt.StringTag(" + py::repr(py::bytes(self)).cast<std::string>() + ")";
+            }
+        });
     StringTag.def(
         "__str__",
         [](const Amulet::NBT::StringTag& self) -> std::string {

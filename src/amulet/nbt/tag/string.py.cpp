@@ -63,7 +63,7 @@ void init_string(py::module& m)
         py::doc("If the payload is UTF-8 returns a string else returns bytes."));
     StringTag.def_property_readonly(
         "py_data",
-        [](const Amulet::NBT::StringTag& self) {
+        [](const Amulet::NBT::StringTag& self) -> py::object {
             return py::bytes(self);
         },
         py::doc(

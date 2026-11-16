@@ -148,7 +148,9 @@ void init_compound(py::module& m)
         py::doc("A shallow copy of the CompoundTag as a python dictionary."));
     CompoundTag.def_property_readonly(
         "py_data",
-        py_getter,
+        [py_getter](const Amulet::NBT::CompoundTag& self) -> py::object {
+            return py_getter(self);
+        },
         py::doc(
             "A python representation of the class. Note that the return type is undefined and may change in the future.\n"
             "\n"

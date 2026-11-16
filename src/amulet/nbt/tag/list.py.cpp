@@ -218,7 +218,9 @@ void init_list(py::module& m)
             "Use the public API to modify the internal data.\n"));
     ListTag.def_property_readonly(
         "py_data",
-        py_getter,
+        [py_getter](const Amulet::NBT::ListTag& self) -> py::object {
+            return py_getter(self);
+        },
         py::doc(
             "A python representation of the class. Note that the return type is undefined and may change in the future.\n"
             "\n"

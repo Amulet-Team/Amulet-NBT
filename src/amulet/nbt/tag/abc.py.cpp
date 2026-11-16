@@ -73,7 +73,7 @@ void init_abc(py::module& m)
     AbstractBaseTag.def(
         "save_to",
         abstract_method<const Amulet::NBT::AbstractBaseTag&, py::bytes, py::object, const Amulet::NBT::EncodingPreset&, std::optional<std::string>>,
-        py::arg("filepath_or_writable") = py::none(),
+        py::arg("filepath_or_writeable") = py::none(),
         py::pos_only(),
         py::kw_only(),
         py::arg("preset") = java_encoding,
@@ -81,18 +81,18 @@ void init_abc(py::module& m)
         py::doc(
             "Convert the data to the binary NBT format. Optionally write to a file.\n"
             "\n"
-            "If filepath_or_writable is a valid file path in string form the data will be written to that file.\n"
+            "If filepath_or_writeable is a valid file path in string form the data will be written to that file.\n"
             "\n"
-            "If filepath_or_writable is a file like object the bytes will be written to it using .write method.\n"
+            "If filepath_or_writeable is a file like object the bytes will be written to it using .write method.\n"
             "\n"
-            ":param filepath_or_writable: A path or writeable object to write the data to.\n"
+            ":param filepath_or_writeable: A path or writeable object to write the data to.\n"
             ":param preset: A class containing endianness and encoding presets.\n"
             ":param name: The root tag name, or `None` for unnamed tag.\n"
             ":return: The binary NBT representation of the class."));
     AbstractBaseTag.def(
         "save_to",
         abstract_method<const Amulet::NBT::AbstractBaseTag&, py::bytes, py::object, bool, bool, const Amulet::NBT::StringEncoding&, std::optional<std::string>>,
-        py::arg("filepath_or_writable") = py::none(),
+        py::arg("filepath_or_writeable") = py::none(),
         py::pos_only(),
         py::kw_only(),
         py::arg("compressed") = true,
@@ -102,11 +102,11 @@ void init_abc(py::module& m)
         py::doc(
             "Convert the data to the binary NBT format. Optionally write to a file.\n"
             "\n"
-            "If filepath_or_writable is a valid file path in string form the data will be written to that file.\n"
+            "If filepath_or_writeable is a valid file path in string form the data will be written to that file.\n"
             "\n"
-            "If filepath_or_writable is a file like object the bytes will be written to it using .write method.\n"
+            "If filepath_or_writeable is a file like object the bytes will be written to it using .write method.\n"
             "\n"
-            ":param filepath_or_writable: A path or writeable object to write the data to.\n"
+            ":param filepath_or_writeable: A path or writeable object to write the data to.\n"
             ":param compressed: Should the bytes be compressed with gzip.\n"
             ":param little_endian: Should the bytes be saved in little endian format. Ignored if preset is defined.\n"
             ":param string_encoding: The StringEncoding to use. Ignored if preset is defined.\n"

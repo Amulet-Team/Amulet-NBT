@@ -166,8 +166,6 @@ void init_list(py::module& m)
             return self;
         });
 
-    py::object mutf8_encoding = m.attr("mutf8_encoding");
-    py::object java_encoding = m.attr("java_encoding");
     py::object AbstractBaseMutableTag = m.attr("AbstractBaseMutableTag");
 
     py::classh<Amulet::NBT::ListTag> ListTag(m, "ListTag", AbstractBaseMutableTag,
@@ -226,7 +224,7 @@ void init_list(py::module& m)
             "\n"
             "You would be better off using the py_{type} or np_array properties if you require a fixed type.\n"
             "This is here for convenience to get a python representation under the same property name.\n"));
-    SerialiseTag(ListTag)
+    SerialiseTag(ListTag);
         ListTag.def(
             "__repr__",
             [](const Amulet::NBT::ListTag& self) {

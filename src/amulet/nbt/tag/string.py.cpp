@@ -21,9 +21,6 @@ namespace py = pybind11;
 
 void init_string(py::module& m)
 {
-    py::object mutf8_encoding = m.attr("mutf8_encoding");
-    py::object java_encoding = m.attr("java_encoding");
-
     py::classh<Amulet::NBT::StringTag, Amulet::NBT::AbstractBaseImmutableTag> StringTag(m, "StringTag",
         "A class that behaves like a string.");
     StringTag.def_property_readonly_static("tag_id", [](py::object) { return 8; });
@@ -75,7 +72,7 @@ void init_string(py::module& m)
             "\n"
             "You would be better off using the py_{type} or np_array properties if you require a fixed type.\n"
             "This is here for convenience to get a python representation under the same property name.\n"));
-    SerialiseTag(StringTag)
+    SerialiseTag(StringTag);
         StringTag.def(
             "__repr__",
             [](const Amulet::NBT::StringTag& self) {

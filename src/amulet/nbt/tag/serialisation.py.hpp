@@ -1,136 +1,191 @@
 #pragma once
 
-#define SerialiseTag(CLSNAME)                                                                                                     \
-    auto to_nbt_##CLSNAME = [](                                                                                                   \
-                                const Amulet::NBT::CLSNAME& self,                                                                 \
-                                std::optional<std::string> name,                                                                  \
-                                bool compressed,                                                                                  \
-                                std::endian endianness,                                                                           \
-                                Amulet::StringEncoder string_encoder) -> py::bytes {                                              \
-        std::string data;                                                                                                         \
-        {                                                                                                                         \
-            py::gil_scoped_release nogil;                                                                                         \
-            data = Amulet::NBT::encode_nbt(name, self, endianness, string_encoder);                                               \
-            if (compressed) {                                                                                                     \
-                std::string data2;                                                                                                \
-                Amulet::zlib::compress_gzip(data, data2);                                                                         \
-                data = std::move(data2);                                                                                          \
-            }                                                                                                                     \
-        }                                                                                                                         \
-        return data;                                                                                                              \
-    };                                                                                                                            \
-    CLSNAME.def(                                                                                                                  \
-        "to_nbt",                                                                                                                 \
-        [to_nbt_##CLSNAME](                                                                                                       \
-            const Amulet::NBT::CLSNAME& self,                                                                                     \
-            const Amulet::NBT::EncodingPreset& preset,                                                                                   \
-            std::optional<std::string> name) {                                                                                    \
-            return to_nbt_##CLSNAME(                                                                                              \
-                self,                                                                                                             \
-                name,                                                                                                             \
-                preset.compressed,                                                                                                \
-                preset.endianness,                                                                                                \
-                preset.string_encoding.encode);                                                                                   \
-        },                                                                                                                        \
-        py::kw_only(),                                                                                                            \
-        py::arg("preset") = java_encoding,                                                                                        \
-        py::arg("name") = "");                                                                                                    \
-    CLSNAME.def(                                                                                                                  \
-        "to_nbt",                                                                                                                 \
-        [to_nbt_##CLSNAME](                                                                                                       \
-            const Amulet::NBT::CLSNAME& self,                                                                                     \
-            bool compressed,                                                                                                      \
-            bool little_endian,                                                                                                   \
-            const Amulet::NBT::StringEncoding& string_encoding,                                                                          \
-            std::optional<std::string> name) {                                                                                    \
-            return to_nbt_##CLSNAME(                                                                                              \
-                self,                                                                                                             \
-                name,                                                                                                             \
-                compressed,                                                                                                       \
-                little_endian ? std::endian::little : std::endian::big,                                                           \
-                string_encoding.encode);                                                                                          \
-        },                                                                                                                        \
-        py::kw_only(),                                                                                                            \
-        py::arg("compressed") = true,                                                                                             \
-        py::arg("little_endian") = false,                                                                                         \
-        py::arg("string_encoding") = mutf8_encoding,                                                                              \
-        py::arg("name") = "");                                                                                                    \
-    auto save_to_##CLSNAME = [to_nbt_##CLSNAME](                                                                                  \
-                                 const Amulet::NBT::CLSNAME& self,                                                                \
-                                 py::object filepath_or_writable,                                                                 \
-                                 std::optional<std::string> name,                                                                 \
-                                 bool compressed,                                                                                 \
-                                 std::endian endianness,                                                                          \
-                                 Amulet::StringEncoder string_encoder) {                                                          \
-        py::bytes py_data = to_nbt_##CLSNAME(self, name, compressed, endianness, string_encoder);                                 \
-        if (!filepath_or_writable.is(py::none())) {                                                                               \
-            if (py::isinstance<py::str>(filepath_or_writable)) {                                                                  \
-                std::string data = py_data.cast<std::string>();                                                                   \
-                std::ofstream file(filepath_or_writable.cast<std::string>(), std::ios::out | std::ios::binary | std::ios::trunc); \
-                file.write(data.c_str(), data.size());                                                                            \
-            } else {                                                                                                              \
-                filepath_or_writable.attr("write")(py_data);                                                                      \
-            }                                                                                                                     \
-        }                                                                                                                         \
-        return py_data;                                                                                                           \
-    };                                                                                                                            \
-    CLSNAME.def(                                                                                                                  \
-        "save_to",                                                                                                                \
-        [save_to_##CLSNAME](                                                                                                      \
-            const Amulet::NBT::CLSNAME& self,                                                                                     \
-            py::object filepath_or_writable,                                                                                      \
-            const Amulet::NBT::EncodingPreset& preset,                                                                                   \
-            std::optional<std::string> name) {                                                                                    \
-            return save_to_##CLSNAME(                                                                                             \
-                self,                                                                                                             \
-                filepath_or_writable,                                                                                             \
-                name,                                                                                                             \
-                preset.compressed,                                                                                                \
-                preset.endianness,                                                                                                \
-                preset.string_encoding.encode);                                                                                   \
-        },                                                                                                                        \
-        py::arg("filepath_or_writable") = py::none(),                                                                             \
-        py::pos_only(),                                                                                                           \
-        py::kw_only(),                                                                                                            \
-        py::arg("preset") = java_encoding,                                                                                        \
-        py::arg("name") = "");                                                                                                    \
-    CLSNAME.def(                                                                                                                  \
-        "save_to",                                                                                                                \
-        [save_to_##CLSNAME](                                                                                                      \
-            const Amulet::NBT::CLSNAME& self,                                                                                     \
-            py::object filepath_or_writable,                                                                                      \
-            bool compressed,                                                                                                      \
-            bool little_endian,                                                                                                   \
-            const Amulet::NBT::StringEncoding& string_encoding,                                                                          \
-            std::optional<std::string> name) {                                                                                    \
-            return save_to_##CLSNAME(                                                                                             \
-                self,                                                                                                             \
-                filepath_or_writable,                                                                                             \
-                name,                                                                                                             \
-                compressed,                                                                                                       \
-                little_endian ? std::endian::little : std::endian::big,                                                           \
-                string_encoding.encode);                                                                                          \
-        },                                                                                                                        \
-        py::arg("filepath_or_writable") = py::none(),                                                                             \
-        py::pos_only(),                                                                                                           \
-        py::kw_only(),                                                                                                            \
-        py::arg("compressed") = true,                                                                                             \
-        py::arg("little_endian") = false,                                                                                         \
-        py::arg("string_encoding") = mutf8_encoding,                                                                              \
-        py::arg("name") = "");                                                                                                    \
-    CLSNAME.def(                                                                                                                  \
-        "to_snbt",                                                                                                                \
-        [](                                                                                                                       \
-            const Amulet::NBT::CLSNAME& self,                                                                                     \
-            py::object indent) {                                                                                                  \
-            if (indent.is(py::none())) {                                                                                          \
-                return Amulet::NBT::encode_snbt(self);                                                                            \
-            } else if (py::isinstance<py::int_>(indent)) {                                                                        \
-                return Amulet::NBT::encode_formatted_snbt(self, std::string(indent.cast<size_t>(), ' '));                         \
-            } else if (py::isinstance<py::str>(indent)) {                                                                         \
-                return Amulet::NBT::encode_formatted_snbt(self, indent.cast<std::string>());                                      \
-            } else {                                                                                                              \
-                throw std::invalid_argument("indent must be None, int or str");                                                   \
-            }                                                                                                                     \
-        },                                                                                                                        \
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
+
+#include <amulet/pybind11_extensions/builtins.hpp>
+
+#include <cerrno>
+#include <filesystem>
+#include <optional>
+#include <string>
+#include <string_view>
+#include <variant>
+
+template <typename Tag, typename... Args>
+void SerialiseTag(py::class_<Tag, Args...>& cls)
+{
+    py::object mutf8_encoding = py::module::import("amulet.nbt").attr("mutf8_encoding");
+    py::object java_encoding = py::module::import("amulet.nbt").attr("java_encoding");
+
+    auto to_nbt = [](
+                      const Tag& self,
+                      std::optional<std::string> name,
+                      bool compressed,
+                      std::endian endianness,
+                      Amulet::StringEncoder string_encoder) -> py::bytes {
+        std::string data;
+        {
+            py::gil_scoped_release nogil;
+            data = Amulet::NBT::encode_nbt(name, self, endianness, string_encoder);
+            if (compressed) {
+                std::string data2;
+                Amulet::zlib::compress_gzip(data, data2);
+                data = std::move(data2);
+            }
+        }
+        return data;
+    };
+    cls.def(
+        "to_nbt",
+        [to_nbt](
+            const Tag& self,
+            const Amulet::NBT::EncodingPreset& preset,
+            std::optional<std::string> name) {
+            return to_nbt(
+                self,
+                name,
+                preset.compressed,
+                preset.endianness,
+                preset.string_encoding.encode);
+        },
+        py::kw_only(),
+        py::arg("preset") = java_encoding,
+        py::arg("name") = "");
+    cls.def(
+        "to_nbt",
+        [to_nbt](
+            const Tag& self,
+            bool compressed,
+            bool little_endian,
+            const Amulet::NBT::StringEncoding& string_encoding,
+            std::optional<std::string> name) {
+            return to_nbt(
+                self,
+                name,
+                compressed,
+                little_endian ? std::endian::little : std::endian::big,
+                string_encoding.encode);
+        },
+        py::kw_only(),
+        py::arg("compressed") = true,
+        py::arg("little_endian") = false,
+        py::arg("string_encoding") = mutf8_encoding,
+        py::arg("name") = "");
+    auto save_to = [to_nbt](
+                       const Tag& self,
+                       std::variant<
+                           std::monostate,
+                           std::filesystem::path,
+                           Amulet::pybind11_extensions::PyObjectStr<"amulet.nbt.Writeable">>
+                           filepath_or_writeable,
+                       std::optional<std::string> name,
+                       bool compressed,
+                       std::endian endianness,
+                       const Amulet::StringEncoder& string_encoder) {
+        py::bytes py_data = to_nbt(self, name, compressed, endianness, string_encoder);
+        std::visit(
+            [&py_data](auto&& arg) {
+                using T = std::decay_t<decltype(arg)>;
+                if constexpr (std::is_same_v<T, std::monostate>) {
+                    // Do nothing
+                } else if constexpr (std::is_same_v<T, std::filesystem::path>) {
+                    const auto data = py_data.cast<std::string_view>();
+                    int err = 0;
+                    {
+                        py::gil_scoped_release nogil;
+                        errno = 0;
+                        std::ofstream file(arg, std::ios::out | std::ios::binary | std::ios::trunc);
+                        if (file) {
+                            file.write(data.data(), data.size());
+                            file.close();
+                            if (!file) {
+                                err = errno ? errno : EIO;
+                            }
+                        } else {
+                            err = errno ? errno : EIO;
+                        }
+                    }
+                    if (err) {
+                        py::object filename = py::cast(arg);
+                        errno = err;
+                        PyErr_SetFromErrnoWithFilenameObject(PyExc_OSError, filename.ptr());
+                        throw py::error_already_set();
+                    }
+                } else {
+                    arg.attr("write")(py_data);
+                }
+            },
+            filepath_or_writeable);
+        return py_data;
+    };
+    cls.def(
+        "save_to",
+        [save_to](
+            const Tag& self,
+            std::variant<
+                std::monostate,
+                std::filesystem::path,
+                Amulet::pybind11_extensions::PyObjectStr<"amulet.nbt.Writeable">>
+                filepath_or_writeable,
+            const Amulet::NBT::EncodingPreset& preset,
+            std::optional<std::string> name) {
+            return save_to(
+                self,
+                std::move(filepath_or_writeable),
+                name,
+                preset.compressed,
+                preset.endianness,
+                preset.string_encoding.encode);
+        },
+        py::arg("filepath_or_writeable") = py::none(),
+        py::pos_only(),
+        py::kw_only(),
+        py::arg("preset") = java_encoding,
+        py::arg("name") = "");
+    cls.def(
+        "save_to",
+        [save_to](
+            const Tag& self,
+            std::variant<
+                std::monostate,
+                std::filesystem::path,
+                Amulet::pybind11_extensions::PyObjectStr<"amulet.nbt.Writeable">>
+                filepath_or_writeable,
+            bool compressed,
+            bool little_endian,
+            const Amulet::NBT::StringEncoding& string_encoding,
+            std::optional<std::string> name) {
+            return save_to(
+                self,
+                std::move(filepath_or_writeable),
+                name,
+                compressed,
+                little_endian ? std::endian::little : std::endian::big,
+                string_encoding.encode);
+        },
+        py::arg("filepath_or_writeable") = py::none(),
+        py::pos_only(),
+        py::kw_only(),
+        py::arg("compressed") = true,
+        py::arg("little_endian") = false,
+        py::arg("string_encoding") = mutf8_encoding,
+        py::arg("name") = "");
+    cls.def(
+        "to_snbt",
+        [](
+            const Tag& self,
+            py::object indent) {
+            if (indent.is(py::none())) {
+                return Amulet::NBT::encode_snbt(self);
+            } else if (py::isinstance<py::int_>(indent)) {
+                return Amulet::NBT::encode_formatted_snbt(self, std::string(indent.cast<size_t>(), ' '));
+            } else if (py::isinstance<py::str>(indent)) {
+                return Amulet::NBT::encode_formatted_snbt(self, indent.cast<std::string>());
+            } else {
+                throw std::invalid_argument("indent must be None, int or str");
+            }
+        },
         py::arg("indent") = py::none());
+}

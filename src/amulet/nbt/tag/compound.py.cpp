@@ -114,8 +114,6 @@ void init_compound(py::module& m)
     py::object AbstractBaseTag = m.attr("AbstractBaseTag");
     py::object AbstractBaseMutableTag = m.attr("AbstractBaseMutableTag");
     py::object isinstance = py::module::import("builtins").attr("isinstance");
-    py::object mutf8_encoding = m.attr("mutf8_encoding");
-    py::object java_encoding = m.attr("java_encoding");
 
     py::classh<Amulet::NBT::CompoundTag> CompoundTag(m, "CompoundTag", AbstractBaseMutableTag,
         "A Python wrapper around a C++ unordered map.\n"
@@ -156,7 +154,7 @@ void init_compound(py::module& m)
             "\n"
             "You would be better off using the py_{type} or np_array properties if you require a fixed type.\n"
             "This is here for convenience to get a python representation under the same property name.\n"));
-    SerialiseTag(CompoundTag)
+    SerialiseTag(CompoundTag);
         CompoundTag.def(
             "__repr__",
             [](const Amulet::NBT::CompoundTag& self) {

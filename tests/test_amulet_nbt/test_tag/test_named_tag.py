@@ -70,11 +70,16 @@ class NamedTagTestCase(AbstractBaseTestCase, unittest.TestCase):
             self.assertNotEqual(NamedTag(cls1(), "name"), NamedTag(cls1(), "name2"))
 
     def test_repr(self) -> None:
-        self.assertEqual("amulet.nbt.NamedTag(amulet.nbt.CompoundTag({}), '')", repr(NamedTag()))
         self.assertEqual(
-            "amulet.nbt.NamedTag(amulet.nbt.CompoundTag({}), 'name')", repr(NamedTag(name="name"))
+            "amulet.nbt.NamedTag(amulet.nbt.CompoundTag({}), '')", repr(NamedTag())
         )
-        self.assertEqual("amulet.nbt.NamedTag(amulet.nbt.ByteTag(0), '')", repr(NamedTag(ByteTag())))
+        self.assertEqual(
+            "amulet.nbt.NamedTag(amulet.nbt.CompoundTag({}), 'name')",
+            repr(NamedTag(name="name")),
+        )
+        self.assertEqual(
+            "amulet.nbt.NamedTag(amulet.nbt.ByteTag(0), '')", repr(NamedTag(ByteTag()))
+        )
 
     def test_str(self) -> None:
         # undefined

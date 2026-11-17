@@ -51,8 +51,12 @@ class StringTagTestCase(AbstractBaseImmutableTagTestCase, unittest.TestCase):
     def test_repr(self) -> None:
         self.assertEqual("amulet.nbt.StringTag('')", repr(StringTag()))
         self.assertEqual("amulet.nbt.StringTag('value')", repr(StringTag("value")))
-        self.assertEqual("amulet.nbt.StringTag('quote\"value')", repr(StringTag('quote"value')))
-        self.assertEqual('amulet.nbt.StringTag("quote\'value")', repr(StringTag("quote'value")))
+        self.assertEqual(
+            "amulet.nbt.StringTag('quote\"value')", repr(StringTag('quote"value'))
+        )
+        self.assertEqual(
+            'amulet.nbt.StringTag("quote\'value")', repr(StringTag("quote'value"))
+        )
 
     def test_str(self) -> None:
         self.assertEqual("hello world", str(StringTag("hello world")))

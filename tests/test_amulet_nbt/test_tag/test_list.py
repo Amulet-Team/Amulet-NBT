@@ -107,8 +107,13 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         self.assertEqual("amulet.nbt.ListTag([], 1)", repr(ListTag()))
 
         # byte tag list
-        self.assertEqual("amulet.nbt.ListTag([amulet.nbt.ByteTag(0)], 1)", repr(ListTag([ByteTag()])))
-        self.assertEqual("amulet.nbt.ListTag([amulet.nbt.ByteTag(-5)], 1)", repr(ListTag([ByteTag(-5)])))
+        self.assertEqual(
+            "amulet.nbt.ListTag([amulet.nbt.ByteTag(0)], 1)", repr(ListTag([ByteTag()]))
+        )
+        self.assertEqual(
+            "amulet.nbt.ListTag([amulet.nbt.ByteTag(-5)], 1)",
+            repr(ListTag([ByteTag(-5)])),
+        )
         self.assertEqual(
             "amulet.nbt.ListTag([amulet.nbt.ByteTag(-5), amulet.nbt.ByteTag(-5)], 1)",
             repr(ListTag([ByteTag(-5), ByteTag(-5)])),
@@ -123,7 +128,10 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         )
 
         # short tag list
-        self.assertEqual("amulet.nbt.ListTag([amulet.nbt.ShortTag(0)], 2)", repr(ListTag([ShortTag()])))
+        self.assertEqual(
+            "amulet.nbt.ListTag([amulet.nbt.ShortTag(0)], 2)",
+            repr(ListTag([ShortTag()])),
+        )
         self.assertEqual(
             "amulet.nbt.ListTag([amulet.nbt.ShortTag(-5)], 2)",
             repr(ListTag([ShortTag(-5)])),
@@ -142,7 +150,9 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         )
 
         # int tag list
-        self.assertEqual("amulet.nbt.ListTag([amulet.nbt.IntTag(0)], 3)", repr(ListTag([IntTag()])))
+        self.assertEqual(
+            "amulet.nbt.ListTag([amulet.nbt.IntTag(0)], 3)", repr(ListTag([IntTag()]))
+        )
         self.assertEqual(
             "amulet.nbt.ListTag([amulet.nbt.IntTag(-5)], 3)",
             repr(ListTag([IntTag(-5)])),
@@ -161,7 +171,9 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         )
 
         # long tag list
-        self.assertEqual("amulet.nbt.ListTag([amulet.nbt.LongTag(0)], 4)", repr(ListTag([LongTag()])))
+        self.assertEqual(
+            "amulet.nbt.ListTag([amulet.nbt.LongTag(0)], 4)", repr(ListTag([LongTag()]))
+        )
         self.assertEqual(
             "amulet.nbt.ListTag([amulet.nbt.LongTag(-5)], 4)",
             repr(ListTag([LongTag(-5)])),
@@ -180,7 +192,10 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         )
 
         # float tag list
-        self.assertEqual("amulet.nbt.ListTag([amulet.nbt.FloatTag(0.0)], 5)", repr(ListTag([FloatTag()])))
+        self.assertEqual(
+            "amulet.nbt.ListTag([amulet.nbt.FloatTag(0.0)], 5)",
+            repr(ListTag([FloatTag()])),
+        )
         self.assertEqual(
             "amulet.nbt.ListTag([amulet.nbt.FloatTag(-5.0)], 5)",
             repr(ListTag([FloatTag(-5)])),
@@ -199,7 +214,10 @@ class ListTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
         )
 
         # double tag list
-        self.assertEqual("amulet.nbt.ListTag([amulet.nbt.DoubleTag(0.0)], 6)", repr(ListTag([DoubleTag()])))
+        self.assertEqual(
+            "amulet.nbt.ListTag([amulet.nbt.DoubleTag(0.0)], 6)",
+            repr(ListTag([DoubleTag()])),
+        )
         self.assertEqual(
             "amulet.nbt.ListTag([amulet.nbt.DoubleTag(-5.0)], 6)",
             repr(ListTag([DoubleTag(-5)])),

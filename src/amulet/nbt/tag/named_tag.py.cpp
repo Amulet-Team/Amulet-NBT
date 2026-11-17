@@ -172,6 +172,7 @@ void init_named_tag(py::module& m)
             const Amulet::NBT::EncodingPreset& preset) {
             return save_to(
                 self,
+                filepath_or_writeable,
                 preset.compressed,
                 preset.endianness,
                 preset.string_encoding.encode);

@@ -1,13 +1,17 @@
 #include <bit>
+#include <filesystem>
 #include <fstream>
 #include <ios>
 #include <stdexcept>
 #include <string>
+#include <variant>
 
+#include <pybind11/eval.h>
 #include <pybind11/numpy.h>
 #include <pybind11/operators.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
 
 #include <amulet/pybind11_extensions/builtins.hpp>
 
@@ -25,6 +29,30 @@ ReturnT abstract_method(SelfT self, Args... args)
 
 void init_abc(py::module& m)
 {
+    py::dict scope = m.attr("__dict__");
+    py::exec(R"(
+    import typing
+
+    class SupportsStr(typing.Protocol):
+        def __str__(self) -> str: ...
+
+    del SupportsStr.__init__
+
+    class Readable(typing.Protocol):
+        def read(self) -> bytes: ...
+
+    del Readable.__init__
+
+    class Writeable(typing.Protocol):
+        def write(self, s: bytes) -> typing.Any:
+            """write(self, s: bytes) -> typing.Any\n"""
+
+    del Writeable.__init__
+
+    del typing
+    )",
+        scope);
+
     py::object mutf8_encoding = m.attr("mutf8_encoding");
     py::object java_encoding = m.attr("java_encoding");
 
@@ -72,7 +100,7 @@ void init_abc(py::module& m)
             ":return: The binary NBT representation of the class."));
     AbstractBaseTag.def(
         "save_to",
-        abstract_method<const Amulet::NBT::AbstractBaseTag&, py::bytes, py::object, const Amulet::NBT::EncodingPreset&, std::optional<std::string>>,
+        abstract_method<const Amulet::NBT::AbstractBaseTag&, py::bytes, std::variant<std::monostate, std::filesystem::path, Amulet::pybind11_extensions::PyObjectStr<"amulet.nbt.Writeable">>, const Amulet::NBT::EncodingPreset&, std::optional<std::string>>,
         py::arg("filepath_or_writeable") = py::none(),
         py::pos_only(),
         py::kw_only(),
@@ -91,7 +119,7 @@ void init_abc(py::module& m)
             ":return: The binary NBT representation of the class."));
     AbstractBaseTag.def(
         "save_to",
-        abstract_method<const Amulet::NBT::AbstractBaseTag&, py::bytes, py::object, bool, bool, const Amulet::NBT::StringEncoding&, std::optional<std::string>>,
+        abstract_method<const Amulet::NBT::AbstractBaseTag&, py::bytes, std::variant<std::monostate, std::filesystem::path, Amulet::pybind11_extensions::PyObjectStr<"amulet.nbt.Writeable">>, bool, bool, const Amulet::NBT::StringEncoding&, std::optional<std::string>>,
         py::arg("filepath_or_writeable") = py::none(),
         py::pos_only(),
         py::kw_only(),
@@ -194,22 +222,22 @@ void init_abc(py::module& m)
         "Get a python bool representation of the class.");
     AbstractBaseNumericTag.def(
         "__ge__",
-        abstract_method<const Amulet::NBT::AbstractBaseNumericTag&, bool, py::object>,
+        abstract_method<const Amulet::NBT::AbstractBaseNumericTag&, bool, Amulet::pybind11_extensions::PyObjectStr<"typing.Self">>,
         py::arg("other"),
         "Check if the tag is greater than or equal to another tag.");
     AbstractBaseNumericTag.def(
         "__gt__",
-        abstract_method<const Amulet::NBT::AbstractBaseNumericTag&, bool, py::object>,
+        abstract_method<const Amulet::NBT::AbstractBaseNumericTag&, bool, Amulet::pybind11_extensions::PyObjectStr<"typing.Self">>,
         py::arg("other"),
         "Check if the tag is greater than another tag.");
     AbstractBaseNumericTag.def(
         "__le__",
-        abstract_method<const Amulet::NBT::AbstractBaseNumericTag&, bool, py::object>,
+        abstract_method<const Amulet::NBT::AbstractBaseNumericTag&, bool, Amulet::pybind11_extensions::PyObjectStr<"typing.Self">>,
         py::arg("other"),
         "Check if the tag is less than or equal to another tag.");
     AbstractBaseNumericTag.def(
         "__lt__",
-        abstract_method<const Amulet::NBT::AbstractBaseNumericTag&, bool, py::object>,
+        abstract_method<const Amulet::NBT::AbstractBaseNumericTag&, bool, Amulet::pybind11_extensions::PyObjectStr<"typing.Self">>,
         py::arg("other"),
         "Check if the tag is less than another tag.");
 
@@ -255,7 +283,7 @@ void init_abc(py::module& m)
             ">>> len(tag)  # 3"));
     AbstractBaseArrayTag.def(
         "__getitem__",
-        abstract_method<const Amulet::NBT::AbstractBaseArrayTag&, Amulet::pybind11_extensions::PyObjectStr<"numpy.int8 | numpy.int32 | numpy.int64">, py::int_>,
+        abstract_method<const Amulet::NBT::AbstractBaseArrayTag&, Amulet::pybind11_extensions::PyObjectStr<"numpy.signedinteger">, py::int_>,
         py::arg("item"),
         py::doc(
             "Get item(s) from the array.\n"
@@ -271,15 +299,41 @@ void init_abc(py::module& m)
             ">>> tag[numpy.array([1, 2])]  # numpy.array([2, 3], dtype=int8)"));
     AbstractBaseArrayTag.def(
         "__getitem__",
-        abstract_method<const Amulet::NBT::AbstractBaseArrayTag&, std::variant<py::array_t<std::int8_t>, py::array_t<std::int32_t>, py::array_t<std::int64_t>>, py::slice>,
+        abstract_method<const Amulet::NBT::AbstractBaseArrayTag&, Amulet::pybind11_extensions::PyObjectStr<"numpy.typing.NDArray[numpy.signedinteger]">, py::slice>,
         py::arg("item"));
     AbstractBaseArrayTag.def(
         "__getitem__",
-        abstract_method<const Amulet::NBT::AbstractBaseArrayTag&, std::variant<py::array_t<std::int8_t>, py::array_t<std::int32_t>, py::array_t<std::int64_t>>, Amulet::pybind11_extensions::PyObjectStr<"numpy.typing.NDArray[numpy.integer]">>,
+        abstract_method<const Amulet::NBT::AbstractBaseArrayTag&, Amulet::pybind11_extensions::PyObjectStr<"numpy.typing.NDArray[numpy.signedinteger]">, std::variant<py::typing::Iterable<std::int64_t>, py::typing::Iterable<bool>>>,
         py::arg("item"));
     AbstractBaseArrayTag.def(
+        "__setitem__",
+        abstract_method<Amulet::NBT::AbstractBaseArrayTag&, void, py::int_, std::int64_t>,
+        py::arg("item"),
+        py::arg("value"),
+        py::doc(
+            "Set item(s) in the array.\n"
+            "\n"
+            "This supports the full numpy protocol.\n"
+            "\n"
+            ">>> from amulet.nbt import ByteArrayTag\n"
+            ">>> import numpy\n"
+            ">>> tag = ByteArrayTag([1, 2, 3])\n"
+            ">>> tag[0] = 10  # [10, 2, 3]\n"
+            ">>> tag[:2] = [4, 5]  # [4, 5, 3]\n"
+            ">>> tag[numpy.array([1, 2])] = [6, 7]  # [4, 6, 7]"));
+    AbstractBaseArrayTag.def(
+        "__setitem__",
+        abstract_method<Amulet::NBT::AbstractBaseArrayTag&, void, py::slice, py::typing::Iterable<std::int64_t>>,
+        py::arg("item"),
+        py::arg("value"));
+    AbstractBaseArrayTag.def(
+        "__setitem__",
+        abstract_method<Amulet::NBT::AbstractBaseArrayTag&, void, std::variant<py::typing::Iterable<std::int64_t>, py::typing::Iterable<bool>>, py::typing::Iterable<std::int64_t>>,
+        py::arg("item"),
+        py::arg("value"));
+    AbstractBaseArrayTag.def(
         "__iter__",
-        abstract_method<const Amulet::NBT::AbstractBaseArrayTag&, std::variant<py::typing::Iterable<Amulet::pybind11_extensions::PyObjectStr<"numpy.int8">>, py::typing::Iterable<Amulet::pybind11_extensions::PyObjectStr<"numpy.int32">>, py::typing::Iterable<Amulet::pybind11_extensions::PyObjectStr<"numpy.int64">>>>,
+        abstract_method<const Amulet::NBT::AbstractBaseArrayTag&, py::typing::Iterator<std::int64_t>>,
         py::doc(
             "Iterate through the items in the array.\n"
             "\n"
@@ -290,7 +344,7 @@ void init_abc(py::module& m)
             ">>> iter(tag)"));
     AbstractBaseArrayTag.def(
         "__reversed__",
-        abstract_method<const Amulet::NBT::AbstractBaseArrayTag&, std::variant<py::typing::Iterable<Amulet::pybind11_extensions::PyObjectStr<"numpy.int8">>, py::typing::Iterable<Amulet::pybind11_extensions::PyObjectStr<"numpy.int32">>, py::typing::Iterable<Amulet::pybind11_extensions::PyObjectStr<"numpy.int64">>>>,
+        abstract_method<const Amulet::NBT::AbstractBaseArrayTag&, py::typing::Iterator<std::int64_t>>,
         py::doc(
             "Iterate through the items in the array in reverse order.\n"
             "\n"

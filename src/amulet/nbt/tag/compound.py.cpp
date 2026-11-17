@@ -17,11 +17,11 @@
 #include <amulet/nbt/nbt_encoding/binary.hpp>
 #include <amulet/nbt/nbt_encoding/string.hpp>
 #include <amulet/nbt/string_encoding/encoding.py.hpp>
-#include <amulet/nbt/tag/serialisation.py.hpp>
 #include <amulet/nbt/tag/abc.hpp>
 #include <amulet/nbt/tag/compound.hpp>
 #include <amulet/nbt/tag/copy.hpp>
 #include <amulet/nbt/tag/eq.hpp>
+#include <amulet/nbt/tag/serialisation.py.hpp>
 
 namespace py = pybind11;
 

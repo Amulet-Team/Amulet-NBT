@@ -128,7 +128,7 @@ void init_compound(py::module& m)
             return tag;
         }),
         py::arg("value") = py::tuple());
-    auto py_getter = [](const Amulet::NBT::CompoundTag& self) {
+    auto py_getter = [](const Amulet::NBT::CompoundTag& self) -> py::typing::Dict<std::variant<py::str, py::bytes>, Amulet::NBT::TagNode> {
         py::dict out;
         for (const auto& it : self) {
             py::object value = py::cast(it.second);

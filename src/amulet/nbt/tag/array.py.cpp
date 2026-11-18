@@ -24,15 +24,44 @@
 
 namespace py = pybind11;
 
-template <typename Tag, typename Native>
-void PyArray(py::module& m, std::string name)
+template <typename T>
+struct DType;
+
+template <>
+struct DType<std::int8_t> {
+    using cls = Amulet::NBT::ByteArrayTag;
+    static constexpr const char* class_name = "ByteArrayTag";
+    static constexpr const char* qual_name = "amulet.nbt.ByteArrayTag";
+    static constexpr const std::int8_t bit_width = 8;
+    using PyObjectDtype = Amulet::pybind11_extensions::PyObjectStr<"numpy.int8">;
+};
+
+template <>
+struct DType<std::int32_t> {
+    using cls = Amulet::NBT::IntArrayTag;
+    static constexpr const char* class_name = "IntArrayTag";
+    static constexpr const char* qual_name = "amulet.nbt.IntArrayTag";
+    static constexpr const std::int8_t bit_width = 32;
+    using PyObjectDtype = Amulet::pybind11_extensions::PyObjectStr<"numpy.int32">;
+};
+
+template <>
+struct DType<std::int64_t> {
+    using cls = Amulet::NBT::LongArrayTag;
+    static constexpr const char* class_name = "LongArrayTag";
+    static constexpr const char* qual_name = "amulet.nbt.LongArrayTag";
+    static constexpr const std::int8_t bit_width = 64;
+    using PyObjectDtype = Amulet::pybind11_extensions::PyObjectStr<"numpy.int64">;
+};
+
+template <typename Native>
+void PyArray(py::module& m)
 {
+    using Tag = typename DType<Native>::cls;
     py::object asarray = py::module::import("numpy").attr("asarray");
     py::object AbstractBaseArrayTag = m.attr("AbstractBaseArrayTag");
-    std::string qualname = "amulet.nbt." + name;
-    const std::uint8_t bit_width = sizeof(Native) * 8;
-    std::string docstring = "This class stores a fixed size signed " + std::to_string(bit_width) + " bit vector.";
-    py::classh<Tag> cls(m, name.c_str(), AbstractBaseArrayTag, py::buffer_protocol(), docstring.c_str());
+    std::string docstring = "This class stores a fixed size signed " + std::to_string(DType<Native>::bit_width) + " bit vector.";
+    py::classh<Tag> cls(m, DType<Native>::class_name, AbstractBaseArrayTag, py::buffer_protocol(), docstring.c_str());
     cls.def_property_readonly_static("tag_id", [](py::object) { return Amulet::NBT::tag_id<Tag>::value; });
     cls.def(
         py::init([](py::typing::Iterable<Native> value) {
@@ -84,8 +113,9 @@ void PyArray(py::module& m, std::string name)
     SerialiseTag(cls);
     cls.def(
         "__repr__",
-        [qualname](const Tag& self) {
-            std::string out = qualname + "([";
+        [](const Tag& self) {
+            std::string out(DType<Native>::qual_name);
+            out += "([";
             for (size_t i = 0; i < self.size(); i++) {
                 if (i) {
                     out += ", ";
@@ -149,14 +179,40 @@ void PyArray(py::module& m, std::string name)
         py::keep_alive<0, 1>() /* Essential: keep object alive while iterator exists */);
     cls.def(
         "__getitem__",
-        [asarray](const Tag& self, py::object item) {
+        [asarray](const Tag& self, Amulet::pybind11_extensions::PyObjectCpp<py::int_> item) -> DType<Native>::PyObjectDtype {
             return asarray(self).attr("__getitem__")(item);
-        });
+        },
+        py::arg("item"));
+    cls.def(
+        "__getitem__",
+        [asarray](const Tag& self, py::slice item) -> py::array_t<Native> {
+            throw std::runtime_error("This is not accessible");
+        },
+        py::arg("item"));
+    cls.def(
+        "__getitem__",
+        [asarray](const Tag& self, std::variant<py::typing::Iterable<Native>, py::typing::Iterable<bool>> item) -> py::array_t<Native> {
+            throw std::runtime_error("This is not accessible");
+        },
+        py::arg("item"));
     cls.def(
         "__setitem__",
-        [asarray](const Tag& self, py::object item, py::object value) {
+        [asarray](const Tag& self, Amulet::pybind11_extensions::PyObjectCpp<py::int_> item, Amulet::pybind11_extensions::PyObjectCpp<Native> value) {
             asarray(self)[item] = value;
-        });
+        },
+        py::arg("item"), py::arg("value"));
+    cls.def(
+        "__setitem__",
+        [asarray](const Tag& self, py::slice, py::typing::Iterable<Native>) {
+            throw std::runtime_error("This is not accessible");
+        },
+        py::arg("item"), py::arg("value"));
+    cls.def(
+        "__setitem__",
+        [asarray](const Tag& self, std::variant<py::typing::Iterable<std::int64_t>, py::typing::Iterable<bool>>, py::typing::Iterable<std::int64_t>) {
+            throw std::runtime_error("This is not accessible");
+        },
+        py::arg("item"), py::arg("value"));
     cls.def(
         "__contains__",
         [asarray](const Tag& self, py::object value) -> py::bool_ {
@@ -167,7 +223,7 @@ void PyArray(py::module& m, std::string name)
 
 void init_array(py::module& m)
 {
-    PyArray<Amulet::NBT::ByteArrayTag, std::int8_t>(m, "ByteArrayTag");
-    PyArray<Amulet::NBT::IntArrayTag, std::int32_t>(m, "IntArrayTag");
-    PyArray<Amulet::NBT::LongArrayTag, std::int64_t>(m, "LongArrayTag");
+    PyArray<std::int8_t>(m);
+    PyArray<std::int32_t>(m);
+    PyArray<std::int64_t>(m);
 };

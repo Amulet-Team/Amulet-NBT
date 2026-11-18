@@ -142,7 +142,7 @@ void init_abc(py::module& m)
             ":return: The binary NBT representation of the class."));
     AbstractBaseTag.def(
         "to_snbt",
-        abstract_method<const Amulet::NBT::AbstractBaseTag&, std::string, Amulet::pybind11_extensions::PyObjectCpp<std::variant<py::none, py::str, py::int_>>>,
+        abstract_method<const Amulet::NBT::AbstractBaseTag&, std::string, std::variant<std::monostate, std::string, size_t>>,
         py::arg("indent") = py::none(),
         py::doc(
             "Convert the data to the Stringified NBT format.\n"

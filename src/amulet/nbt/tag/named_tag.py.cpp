@@ -206,16 +206,20 @@ void init_named_tag(py::module& m)
         "to_snbt",
         [](
             const Amulet::NBT::NamedTag& self,
-            py::object indent) {
-            if (indent.is(py::none())) {
-                return Amulet::NBT::encode_snbt(self.tag_node);
-            } else if (py::isinstance<py::int_>(indent)) {
-                return Amulet::NBT::encode_formatted_snbt(self.tag_node, std::string(indent.cast<size_t>(), ' '));
-            } else if (py::isinstance<py::str>(indent)) {
-                return Amulet::NBT::encode_formatted_snbt(self.tag_node, indent.cast<std::string>());
-            } else {
-                throw std::invalid_argument("indent must be None, int or str");
-            }
+            std::variant<std::monostate, std::string, size_t> indent_variant) {
+            return std::visit(
+                [&self](auto&& indent) {
+                    using IndentT = std::decay_t<decltype(indent)>;
+                    if constexpr (std::is_same_v<IndentT, std::monostate>) {
+                        return Amulet::NBT::encode_snbt(self.tag_node);
+                    } else if constexpr (std::is_same_v<IndentT, std::string>) {
+                        return Amulet::NBT::encode_formatted_snbt(self.tag_node, indent);
+                    } else {
+                        static_assert(std::is_same_v<IndentT, size_t>);
+                        return Amulet::NBT::encode_formatted_snbt(self.tag_node, std::string(indent, ' '));
+                    }
+                },
+                indent_variant);
         },
         py::arg("indent") = py::none());
     NamedTag.def(

@@ -3,6 +3,8 @@
 #include <exception>
 
 #include <amulet/nbt/common.hpp>
+#include <amulet/nbt/tag/compound.hpp>
+#include <amulet/nbt/tag/list.hpp>
 
 namespace py = pybind11;
 
@@ -13,8 +15,8 @@ void init_int(py::module&);
 void init_float(py::module&);
 void init_string(py::module&);
 void init_array(py::module&);
-void init_list(py::module&);
-void init_compound(py::module&);
+void init_list(py::module&, py::classh<Amulet::NBT::ListTag>);
+void init_compound(py::module&, py::classh<Amulet::NBT::CompoundTag>);
 
 void init_named_tag(py::module&);
 
@@ -50,8 +52,19 @@ void init_amulet_nbt(py::module m)
     init_float(m);
     init_string(m);
     init_array(m);
-    init_compound(m);
-    init_list(m);
+
+    py::object AbstractBaseMutableTag = m.attr("AbstractBaseMutableTag");
+    py::classh<Amulet::NBT::CompoundTag> CompoundTag(m, "CompoundTag", AbstractBaseMutableTag,
+        "A Python wrapper around a C++ unordered map.\n"
+        "\n"
+        "Note that this class is not thread safe and inherits all the limitations of a C++ unordered_map.");
+    py::classh<Amulet::NBT::ListTag> ListTag(m, "ListTag", AbstractBaseMutableTag,
+        "A Python wrapper around a C++ vector.\n"
+        "\n"
+        "All contained data must be of the same NBT data type.");
+
+    init_compound(m, CompoundTag);
+    init_list(m, ListTag);
 
     py::object ByteTag = m.attr("ByteTag");
     py::object ShortTag = m.attr("ShortTag");
@@ -61,8 +74,6 @@ void init_amulet_nbt(py::module m)
     py::object DoubleTag = m.attr("DoubleTag");
     py::object ByteArrayTag = m.attr("ByteArrayTag");
     py::object StringTag = m.attr("StringTag");
-    py::object ListTag = m.attr("ListTag");
-    py::object CompoundTag = m.attr("CompoundTag");
     py::object IntArrayTag = m.attr("IntArrayTag");
     py::object LongArrayTag = m.attr("LongArrayTag");
 

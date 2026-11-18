@@ -149,7 +149,7 @@ void ListTag_del_slice(std::vector<tagT>& self, const py::slice& slice)
     }
 }
 
-void init_list(py::module& m)
+void init_list(py::module& m, py::classh<Amulet::NBT::ListTag> ListTag)
 {
     py::classh<Amulet::NBT::ListTagIterator> ListTagIterator(m, "ListTagIterator");
     ListTagIterator.def(
@@ -166,12 +166,6 @@ void init_list(py::module& m)
             return self;
         });
 
-    py::object AbstractBaseMutableTag = m.attr("AbstractBaseMutableTag");
-
-    py::classh<Amulet::NBT::ListTag> ListTag(m, "ListTag", AbstractBaseMutableTag,
-        "A Python wrapper around a C++ vector.\n"
-        "\n"
-        "All contained data must be of the same NBT data type.");
     ListTag.def_property_readonly_static("tag_id", [](py::object) { return 9; });
     ListTag.def(
         py::init([](py::object value, std::uint8_t element_tag_id) {

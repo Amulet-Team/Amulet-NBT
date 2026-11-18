@@ -89,7 +89,7 @@ T new_tag()
     return std::make_shared<typename T::element_type>();
 }
 
-void init_compound(py::module& m)
+void init_compound(py::module& m, py::classh<Amulet::NBT::CompoundTag> CompoundTag)
 {
     py::classh<Amulet::NBT::CompoundTagIterator> CompoundTagIterator(m, "CompoundTagIterator");
     CompoundTagIterator.def(
@@ -112,13 +112,8 @@ void init_compound(py::module& m)
         });
 
     py::object AbstractBaseTag = m.attr("AbstractBaseTag");
-    py::object AbstractBaseMutableTag = m.attr("AbstractBaseMutableTag");
     py::object isinstance = py::module::import("builtins").attr("isinstance");
 
-    py::classh<Amulet::NBT::CompoundTag> CompoundTag(m, "CompoundTag", AbstractBaseMutableTag,
-        "A Python wrapper around a C++ unordered map.\n"
-        "\n"
-        "Note that this class is not thread safe and inherits all the limitations of a C++ unordered_map.");
     CompoundTag.def_property_readonly_static("tag_id", [](py::object) { return 10; });
     CompoundTag.def(
         py::init([](py::object value, const py::kwargs& kwargs) {

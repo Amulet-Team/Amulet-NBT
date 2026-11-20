@@ -149,6 +149,54 @@ void ListTag_del_slice(std::vector<tagT>& self, const py::slice& slice)
     }
 }
 
+class TagNodeT : public Amulet::NBT::TagNode {
+public:
+    using Amulet::NBT::TagNode::TagNode;
+    using Amulet::NBT::TagNode::operator=;
+
+    TagNodeT(const Amulet::NBT::TagNode& v)
+        : Amulet::NBT::TagNode(v)
+    {
+    }
+    TagNodeT(Amulet::NBT::TagNode&& v)
+        : Amulet::NBT::TagNode(std::move(v))
+    {
+    }
+};
+
+namespace pybind11 {
+namespace detail {
+    template <>
+    struct type_caster<::TagNodeT> {
+        using Base = type_caster<Amulet::NBT::TagNode>;
+
+        PYBIND11_TYPE_CASTER(::TagNodeT, const_name("TagT"));
+
+        bool load(handle src, bool convert)
+        {
+            Base base;
+            if (base.load(src, convert)) {
+                value = std::move(*base);
+                return true;
+            }
+            return false;
+        }
+
+        static handle cast(const ::TagNodeT& src, return_value_policy policy, handle parent)
+        {
+            return Base::cast(static_cast<const Amulet::NBT::TagNode&>(src), policy, parent);
+        }
+
+        static handle cast(::TagNodeT&& src, return_value_policy policy, handle parent)
+        {
+            return Base::cast(static_cast<Amulet::NBT::TagNode&&>(std::move(src)), policy, parent);
+        }
+    };
+} // namespace detail
+} // namespace pybind11
+
+using Self = Amulet::pybind11_extensions::PyObjectStr<"typing.Self">;
+
 void init_list(py::module& m, py::classh<Amulet::NBT::ListTag> ListTag)
 {
     py::classh<Amulet::NBT::ListTagIterator> ListTagIterator(m, "ListTagIterator");
@@ -166,9 +214,40 @@ void init_list(py::module& m, py::classh<Amulet::NBT::ListTag> ListTag)
             return self;
         });
 
+    ListTag.attr("__type_params__") = py::make_tuple(
+        py::module::import("typing").attr("TypeVar")(
+            "TagT",
+            py::type::of<Amulet::NBT::ByteTag>(),
+            py::type::of<Amulet::NBT::ShortTag>(),
+            py::type::of<Amulet::NBT::IntTag>(),
+            py::type::of<Amulet::NBT::LongTag>(),
+            py::type::of<Amulet::NBT::FloatTag>(),
+            py::type::of<Amulet::NBT::DoubleTag>(),
+            py::type::of<Amulet::NBT::ByteArrayTag>(),
+            py::type::of<Amulet::NBT::StringTag>(),
+            py::type::of<Amulet::NBT::ListTag>(),
+            py::type::of<Amulet::NBT::CompoundTag>(),
+            py::type::of<Amulet::NBT::IntArrayTag>(),
+            py::type::of<Amulet::NBT::LongArrayTag>()));
     ListTag.def_property_readonly_static("tag_id", [](py::object) { return 9; });
     ListTag.def(
-        py::init([](py::object value, std::uint8_t element_tag_id) {
+        py::init([](
+                     Amulet::pybind11_extensions::PyObjectCpp<
+                         std::variant<
+                             py::typing::Iterable<Amulet::NBT::ByteTag>,
+                             py::typing::Iterable<Amulet::NBT::ShortTag>,
+                             py::typing::Iterable<Amulet::NBT::IntTag>,
+                             py::typing::Iterable<Amulet::NBT::LongTag>,
+                             py::typing::Iterable<Amulet::NBT::FloatTag>,
+                             py::typing::Iterable<Amulet::NBT::DoubleTag>,
+                             py::typing::Iterable<Amulet::NBT::StringTag>,
+                             py::typing::Iterable<Amulet::NBT::ListTag>,
+                             py::typing::Iterable<Amulet::NBT::CompoundTag>,
+                             py::typing::Iterable<Amulet::NBT::ByteArrayTag>,
+                             py::typing::Iterable<Amulet::NBT::IntArrayTag>,
+                             py::typing::Iterable<Amulet::NBT::LongArrayTag>>>
+                         value,
+                     std::uint8_t element_tag_id) {
             Amulet::NBT::ListTagPtr tag = std::make_shared<Amulet::NBT::ListTag>();
             switch (element_tag_id) {
 #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG) \
@@ -183,17 +262,14 @@ void init_list(py::module& m, py::classh<Amulet::NBT::ListTag> ListTag)
             ListTag_extend(*tag, value);
             return tag;
         }),
-        py::arg("value") = py::tuple(), py::arg("element_tag_id") = 1,
-        py::doc("__init__(self: amulet.nbt.ListTag, value: typing.Iterable[amulet.nbt.ByteTag] | typing.Iterable[amulet.nbt.ShortTag] | typing.Iterable[amulet.nbt.IntTag] | typing.Iterable[amulet.nbt.LongTag] | typing.Iterable[amulet.nbt.FloatTag] | typing.Iterable[amulet.nbt.DoubleTag] | typing.Iterable[amulet.nbt.ByteArrayTag] | typing.Iterable[amulet.nbt.StringTag] | typing.Iterable[amulet.nbt.ListTag] | typing.Iterable[amulet.nbt.CompoundTag] | typing.Iterable[amulet.nbt.IntArrayTag] | typing.Iterable[amulet.nbt.LongArrayTag] = (), element_tag_id = 1) -> None"));
+        py::arg("tags") = py::tuple(), py::arg("element_tag_id") = 1);
     ListTag.attr("__class_getitem__") = PyClassMethod_New(
         py::cpp_function([](const py::type& cls, const py::args& args) { return cls; }).ptr());
     auto py_getter = [](const Amulet::NBT::ListTag& self) {
-        py::list list;
+        py::typing::List<TagNodeT> list;
         std::visit([&list](auto&& vec) {
             using T = std::decay_t<decltype(vec)>;
-            if constexpr (std::is_same_v<T, std::monostate>) {
-                // do nothing
-            } else {
+            if constexpr (!std::is_same_v<T, std::monostate>) {
                 for (const auto& tag : vec) {
                     list.append(tag);
                 }
@@ -262,13 +338,13 @@ void init_list(py::module& m, py::classh<Amulet::NBT::ListTag> ListTag)
             }));
     ListTag.def(
         "__copy__",
-        [](const Amulet::NBT::ListTag& self) {
-            return shallow_copy(self);
+        [](const Amulet::NBT::ListTag& self) -> Self {
+            return py::cast(std::make_shared<Amulet::NBT::ListTag>(self));
         });
     ListTag.def(
         "__deepcopy__",
-        [](const Amulet::NBT::ListTag& self, py::dict) {
-            return deep_copy(self);
+        [](const Amulet::NBT::ListTag& self, py::dict) -> Self {
+            return py::cast(std::make_shared<Amulet::NBT::ListTag>(deep_copy(self)));
         },
         py::arg("memo"));
     ListTag.def(
@@ -291,7 +367,11 @@ void init_list(py::module& m, py::classh<Amulet::NBT::ListTag> ListTag)
         "element_tag_id",
         [](const Amulet::NBT::ListTag& self) {
             return self.index();
-        });
+        },
+        py::doc(
+            "The numerical id of the element type in this list.\n"
+            "\n"
+            "Will be an int in the range 0-12."));
     const std::array<py::object, 13> NBTClasses = {
         py::none(),
         m.attr("ByteTag"),
@@ -309,18 +389,20 @@ void init_list(py::module& m, py::classh<Amulet::NBT::ListTag> ListTag)
     };
     ListTag.def_property_readonly(
         "element_class",
-        [NBTClasses](const Amulet::NBT::ListTag& self) {
+        [NBTClasses](const Amulet::NBT::ListTag& self) -> Amulet::pybind11_extensions::PyObjectCpp<std::variant<py::typing::Type<TagNodeT>, std::monostate>> {
             return NBTClasses[self.index()];
-        });
+        },
+        py::doc("The python class for the tag type contained in this list or None if the list tag is in the 0 state."));
     ListTag.def(
         "__getitem__",
-        [](const Amulet::NBT::ListTag& self, Py_ssize_t item) {
+        [](const Amulet::NBT::ListTag& self, Py_ssize_t item) -> TagNodeT {
             return Amulet::NBT::ListTag_get_node<Py_ssize_t>(self, item);
-        });
+        },
+        py::arg("item"));
     ListTag.def(
         "__getitem__",
         [](const Amulet::NBT::ListTag& self, const py::slice& slice) {
-            py::list out;
+            py::typing::List<TagNodeT> out;
             Py_ssize_t start = 0, stop = 0, step = 0, slice_length = 0;
             if (!slice.compute(ListTag_size(self), &start, &stop, &step, &slice_length)) {
                 throw py::error_already_set();
@@ -330,7 +412,8 @@ void init_list(py::module& m, py::classh<Amulet::NBT::ListTag> ListTag)
                 start += step;
             }
             return out;
-        });
+        },
+        py::arg("item"));
     ListTag.def(
         "__iter__",
         [](const Amulet::NBT::ListTagPtr& self) {
@@ -357,10 +440,11 @@ void init_list(py::module& m, py::classh<Amulet::NBT::ListTag> ListTag)
                 return false;
             },
                 item);
-        });
+        },
+        py::arg("item"));
     ListTag.def(
         "index",
-        [](const Amulet::NBT::ListTag& self, Amulet::NBT::TagNode node, Py_ssize_t start, Py_ssize_t stop) -> size_t {
+        [](const Amulet::NBT::ListTag& self, TagNodeT node, Py_ssize_t start, Py_ssize_t stop) -> size_t {
             return std::visit([&self, &start, &stop](auto&& tag) {
                 using T = std::decay_t<decltype(tag)>;
                 return Amulet::NBT::ListTag_index<T, Py_ssize_t>(self, tag, start, stop);
@@ -370,22 +454,24 @@ void init_list(py::module& m, py::classh<Amulet::NBT::ListTag> ListTag)
         py::arg("tag"), py::arg("start") = 0, py::arg("stop") = std::numeric_limits<Py_ssize_t>::max());
     ListTag.def(
         "count",
-        [](const Amulet::NBT::ListTag& self, Amulet::NBT::TagNode node) -> size_t {
+        [](const Amulet::NBT::ListTag& self, TagNodeT node) -> size_t {
             return std::visit([&self](auto&& tag) {
                 using T = std::decay_t<decltype(tag)>;
                 return Amulet::NBT::ListTag_count<T>(self, tag);
             },
                 node);
-        });
+        },
+        py::arg("tag"));
     ListTag.def(
         "__setitem__",
-        [](Amulet::NBT::ListTag& self, Py_ssize_t index, Amulet::NBT::TagNode node) {
+        [](Amulet::NBT::ListTag& self, Py_ssize_t index, TagNodeT node) {
             std::visit([&self, &index](auto&& tag) {
                 using T = std::decay_t<decltype(tag)>;
                 Amulet::NBT::ListTag_set<T, Py_ssize_t>(self, index, tag);
             },
                 node);
-        });
+        },
+        py::arg("item"), py::arg("tag"));
     ListTag.def(
         "__setitem__",
         [](Amulet::NBT::ListTag& self, const py::slice& slice, py::object values) {
@@ -420,12 +506,14 @@ void init_list(py::module& m, py::classh<Amulet::NBT::ListTag> ListTag)
                 },
                     self);
             }
-        });
+        },
+        py::arg("item"), py::arg("tags"));
     ListTag.def(
         "__delitem__",
         [](Amulet::NBT::ListTag& self, Py_ssize_t item) {
             Amulet::NBT::ListTag_del<Py_ssize_t>(self, item);
-        });
+        },
+        py::arg("item"));
     ListTag.def(
         "__delitem__",
         [](Amulet::NBT::ListTag& self, const py::slice& slice) {
@@ -438,25 +526,28 @@ void init_list(py::module& m, py::classh<Amulet::NBT::ListTag> ListTag)
                 }
             },
                 self);
-        });
+        },
+        py::arg("item"));
     ListTag.def(
         "insert",
-        [](Amulet::NBT::ListTag& self, Py_ssize_t index, Amulet::NBT::TagNode node) {
+        [](Amulet::NBT::ListTag& self, Py_ssize_t index, TagNodeT node) {
             std::visit([&self, &index](auto&& tag) {
                 using T = std::decay_t<decltype(tag)>;
                 Amulet::NBT::ListTag_insert<T, Py_ssize_t>(self, index, tag);
             },
                 node);
-        });
+        },
+        py::arg("index"), py::arg("tag"));
     ListTag.def(
         "append",
-        [](Amulet::NBT::ListTag& self, Amulet::NBT::TagNode node) {
+        [](Amulet::NBT::ListTag& self, TagNodeT node) {
             std::visit([&self](auto&& tag) {
                 using T = std::decay_t<decltype(tag)>;
                 Amulet::NBT::ListTag_append<T>(self, tag);
             },
                 node);
-        });
+        },
+        py::arg("tag"));
     ListTag.def(
         "clear",
         [](Amulet::NBT::ListTag& self) {
@@ -485,18 +576,19 @@ void init_list(py::module& m, py::classh<Amulet::NBT::ListTag> ListTag)
         });
     ListTag.def(
         "extend",
-        [](Amulet::NBT::ListTag& self, py::object value) {
+        [](Amulet::NBT::ListTag& self, py::typing::Iterable<TagNodeT> value) {
             ListTag_extend(self, py::list(value));
-        });
+        },
+        py::arg("tags"));
     ListTag.def(
         "pop",
         [](Amulet::NBT::ListTag& self, Py_ssize_t item) {
             return ListTag_pop<Py_ssize_t>(self, item);
         },
-        py::arg("item") = -1);
+        py::arg("index") = -1);
     ListTag.def(
         "remove",
-        [](Amulet::NBT::ListTag& self, Amulet::NBT::TagNode node) {
+        [](Amulet::NBT::ListTag& self, TagNodeT node) {
             std::visit([&self](auto&& tag) {
                 using T = std::decay_t<decltype(tag)>;
                 size_t index = Amulet::NBT::ListTag_index<T, Py_ssize_t>(self, tag);
@@ -504,17 +596,18 @@ void init_list(py::module& m, py::classh<Amulet::NBT::ListTag> ListTag)
                 list_tag.erase(list_tag.begin() + index);
             },
                 node);
-        });
+        },
+        py::arg("tag"));
     ListTag.def(
         "__iadd__",
-        [](Amulet::NBT::ListTagPtr self, py::object value) {
+        [](Amulet::NBT::ListTagPtr self, py::typing::Iterable<TagNodeT> value) -> Self {
             ListTag_extend(*self, py::list(value));
-            return self;
+            return py::cast(self);
         });
     ListTag.def(
         "copy",
-        [](const Amulet::NBT::ListTag& self) {
-            return std::make_shared<Amulet::NBT::ListTag>(self);
+        [](const Amulet::NBT::ListTag& self) -> Self {
+            return py::cast(std::make_shared<Amulet::NBT::ListTag>(self));
         });
 #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)                             \
     ListTag.def(                                                                   \
@@ -525,6 +618,7 @@ void init_list(py::module& m, py::classh<Amulet::NBT::ListTag> ListTag)
             }                                                                      \
             return Amulet::NBT::ListTag_get<TAG_STORAGE, Py_ssize_t>(self, index); \
         },                                                                         \
+        py::arg("index"),                                                          \
         py::doc(                                                                   \
             "Get the tag at index if it is a " #TAG ".\n"                          \
             "\n"                                                                   \

@@ -154,7 +154,7 @@ void init_abc(py::module& m)
             ":return: The SNBT string."));
     AbstractBaseTag.def(
         "__eq__",
-        abstract_method<const Amulet::NBT::AbstractBaseTag&, bool, py::object>,
+        abstract_method<const Amulet::NBT::AbstractBaseTag&, bool, Amulet::pybind11_extensions::PyObjectStr<"typing.Self">>,
         "Check if the instance is equal to another instance.\n"
         "\n"
         "This will only return True if the tag type is the same and the data contained is the same.\n"

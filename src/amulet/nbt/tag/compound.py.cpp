@@ -11,6 +11,9 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include <amulet/pybind11_extensions/iterable.hpp>
+#include <amulet/pybind11_extensions/mapping.hpp>
+
 #include <amulet/zlib/zlib.hpp>
 
 #include <amulet/nbt/common.hpp>
@@ -116,12 +119,21 @@ void init_compound(py::module& m, py::classh<Amulet::NBT::CompoundTag> CompoundT
 
     CompoundTag.def_property_readonly_static("tag_id", [](py::object) { return 10; });
     CompoundTag.def(
-        py::init([](py::object value, const py::kwargs& kwargs) {
-            Amulet::NBT::CompoundTagPtr tag = std::make_shared<Amulet::NBT::CompoundTag>();
-            CompoundTag_update(*tag, py::dict(value));
-            CompoundTag_update(*tag, kwargs);
-            return tag;
-        }),
+        py::init(
+            [](
+                Amulet::pybind11_extensions::PyObjectCpp<
+                    std::variant<
+                        Amulet::pybind11_extensions::collections::Mapping<std::variant<py::str, py::bytes>, Amulet::NBT::TagNode>,
+                        Amulet::pybind11_extensions::collections::Mapping<py::str, Amulet::NBT::TagNode>,
+                        Amulet::pybind11_extensions::collections::Mapping<py::bytes, Amulet::NBT::TagNode>,
+                        Amulet::pybind11_extensions::collections::Iterable<std::pair<std::variant<py::str, py::bytes>, Amulet::NBT::TagNode>>>>
+                    value,
+                const py::KWArgs<Amulet::NBT::TagNode>& kwargs) {
+                Amulet::NBT::CompoundTagPtr tag = std::make_shared<Amulet::NBT::CompoundTag>();
+                CompoundTag_update(*tag, py::dict(value));
+                CompoundTag_update(*tag, kwargs);
+                return tag;
+            }),
         py::arg("value") = py::tuple());
     auto py_getter = [](const Amulet::NBT::CompoundTag& self) -> py::typing::Dict<std::variant<py::str, py::bytes>, Amulet::NBT::TagNode> {
         py::dict out;
@@ -225,10 +237,15 @@ void init_compound(py::module& m, py::classh<Amulet::NBT::CompoundTag> CompoundT
                 throw py::key_error(key);
             }
             return it->second;
-        });
+        },
+        py::arg("key"));
     CompoundTag.def(
         "get",
-        [isinstance](const Amulet::NBT::CompoundTag& self, std::string key, py::object default_, py::object cls) -> py::object {
+        [isinstance](
+            const Amulet::NBT::CompoundTag& self,
+            std::string key,
+            py::object default_,
+            py::typing::Type<Amulet::NBT::AbstractBaseTag> cls) -> py::object {
             auto it = self.find(key);
             if (it == self.end()) {
                 return default_;
@@ -240,7 +257,7 @@ void init_compound(py::module& m, py::classh<Amulet::NBT::CompoundTag> CompoundT
                 return default_;
             }
         },
-        py::arg("key"), py::arg("default") = py::none(), py::arg("cls") = AbstractBaseTag,
+        py::arg("key"), py::arg("default") = py::none(), py::arg_v("cls", AbstractBaseTag, "amulet.nbt.AbstractBaseTag"),
         py::doc(
             "Get an item from the CompoundTag.\n"
             "\n"
@@ -255,7 +272,8 @@ void init_compound(py::module& m, py::classh<Amulet::NBT::CompoundTag> CompoundT
         [](const Amulet::NBT::CompoundTag& self, std::string key) {
             auto it = self.find(key);
             return it != self.end();
-        });
+        },
+        py::arg("key"));
     py::object KeysView = py::module::import("collections.abc").attr("KeysView");
     CompoundTag.def(
         "keys",
@@ -278,7 +296,8 @@ void init_compound(py::module& m, py::classh<Amulet::NBT::CompoundTag> CompoundT
         "__setitem__",
         [](Amulet::NBT::CompoundTag& self, std::string key, Amulet::NBT::TagNode value) {
             self[key] = value;
-        });
+        },
+        py::arg("key"), py::arg("value"));
     CompoundTag.def(
         "__delitem__",
         [](Amulet::NBT::CompoundTag& self, std::string key) {
@@ -287,7 +306,8 @@ void init_compound(py::module& m, py::classh<Amulet::NBT::CompoundTag> CompoundT
                 throw py::key_error(key);
             }
             self.erase(it);
-        });
+        },
+        py::arg("key"));
     py::object marker = py::module::import("builtins").attr("object")();
     CompoundTag.def(
         "pop",
@@ -304,7 +324,7 @@ void init_compound(py::module& m, py::classh<Amulet::NBT::CompoundTag> CompoundT
             self.erase(it);
             return py::cast(tag);
         },
-        py::arg("key"), py::arg("default") = marker);
+        py::arg("key"), py::arg_v("default", marker, "..."));
     CompoundTag.def(
         "popitem",
         [](Amulet::NBT::CompoundTag& self) -> std::pair<std::variant<py::str, py::bytes>, Amulet::NBT::TagNode> {
@@ -337,7 +357,7 @@ void init_compound(py::module& m, py::classh<Amulet::NBT::CompoundTag> CompoundT
         py::arg("other") = py::tuple(), py::pos_only());
     CompoundTag.def(
         "setdefault",
-        [isinstance](Amulet::NBT::CompoundTag& self, std::string key, std::variant<std::monostate, Amulet::NBT::TagNode> tag, py::object cls) -> py::object {
+        [isinstance](Amulet::NBT::CompoundTag& self, std::string key, std::variant<std::monostate, Amulet::NBT::TagNode> tag, py::typing::Type<Amulet::NBT::AbstractBaseTag> cls) -> py::object {
             auto set_value = [&self, &key, &tag]() {
                 return std::visit([&self, &key](auto&& value) -> py::object {
                     using T = std::decay_t<decltype(value)>;
@@ -361,16 +381,18 @@ void init_compound(py::module& m, py::classh<Amulet::NBT::CompoundTag> CompoundT
             }
             return existing_tag;
         },
-        py::arg("key"), py::arg("tag") = py::none(), py::arg("cls") = AbstractBaseTag);
+        py::arg("key"), py::arg("tag") = py::none(), py::arg_v("cls", AbstractBaseTag, "amulet.nbt.AbstractBaseTag"));
     CompoundTag.def_static(
         "fromkeys",
-        [](py::object keys, Amulet::NBT::TagNode value) {
-            Amulet::NBT::CompoundTagPtr tag = std::make_shared<Amulet::NBT::CompoundTag>();
-            for (std::string& key : keys.cast<std::vector<std::string>>()) {
-                (*tag)[key] = value;
+        [](Amulet::pybind11_extensions::collections::Iterable<std::string> keys, Amulet::NBT::TagNode value) {
+            Amulet::NBT::CompoundTagPtr tag_ptr = std::make_shared<Amulet::NBT::CompoundTag>();
+            auto& tag = *tag_ptr;
+            for (std::string key : keys) {
+                tag[key] = std::move(value);
             }
             return tag;
-        });
+        },
+        py::arg("keys"), py::arg("value"));
 
 #define CASE(ID, TAG_NAME, TAG, TAG_STORAGE, LIST_TAG)                                                                           \
     CompoundTag.def(                                                                                                             \
@@ -412,37 +434,22 @@ void init_compound(py::module& m, py::classh<Amulet::NBT::CompoundTag> CompoundT
         [isinstance](                                                                                                            \
             Amulet::NBT::CompoundTag& self,                                                                                      \
             std::string key,                                                                                                     \
-            std::variant<std::monostate, TAG_STORAGE> default_) -> std::variant<std::monostate, TAG_STORAGE> {                   \
-            auto set_and_return = [&self, &key](TAG_STORAGE tag) {                                                               \
-                self[key] = tag;                                                                                                 \
-                return tag;                                                                                                      \
-            };                                                                                                                   \
-            auto create_set_return = [set_and_return, &default_]() {                                                             \
-                return std::visit([set_and_return](auto&& tag) {                                                                 \
-                    using T = std::decay_t<decltype(tag)>;                                                                       \
-                    if constexpr (std::is_same_v<T, std::monostate>) {                                                           \
-                        return set_and_return(new_tag<TAG_STORAGE>());                                                           \
-                    } else {                                                                                                     \
-                        return set_and_return(tag);                                                                              \
-                    }                                                                                                            \
-                },                                                                                                               \
-                    default_);                                                                                                   \
-            };                                                                                                                   \
+            std::optional<TAG_STORAGE> default_) -> TAG_STORAGE {                                                                \
             auto it = self.find(key);                                                                                            \
-            if (it == self.end()) {                                                                                              \
-                return create_set_return();                                                                                      \
+            if (it != self.end()) {                                                                                              \
+                py::object existing_tag = py::cast(it->second);                                                                  \
+                if (py::isinstance<Amulet::NBT::TAG>(existing_tag)) {                                                            \
+                    return existing_tag.cast<TAG_STORAGE>();                                                                     \
+                }                                                                                                                \
             }                                                                                                                    \
-            py::object existing_tag = py::cast(it->second);                                                                      \
-            if (py::isinstance<Amulet::NBT::TAG>(existing_tag)) {                                                                \
-                return existing_tag.cast<TAG_STORAGE>();                                                                         \
-            } else {                                                                                                             \
-                /* if the key exists but has the wrong type then set it */                                                       \
-                return create_set_return();                                                                                      \
-            }                                                                                                                    \
+            /* if the key does not exist or exists but has the wrong type then set it */                                         \
+            TAG_STORAGE tag = default_ ? std::move(*default_) : new_tag<TAG_STORAGE>();                                          \
+            self[key] = tag;                                                                                                     \
+            return tag;                                                                                                          \
         },                                                                                                                       \
         py::arg("key"), py::arg("default") = py::none(),                                                                         \
         py::doc(                                                                                                                 \
-            "Populate key if not defined or value is not " #TAG ". Return the value stored\n."                                   \
+            "Populate key if not defined or value is not " #TAG ". Return the value stored.\n"                                   \
             "\n"                                                                                                                 \
             "If default is a " #TAG " then it will be stored under key else a default instance will be created.\n"               \
             "\n"                                                                                                                 \

@@ -1,6 +1,8 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
+#include <utility>
 
 #include <amulet/nbt/common.hpp>
 #include <amulet/nbt/tag/abc.hpp>
@@ -10,12 +12,19 @@ namespace NBT {
     class StringTag : public std::string, public AbstractBaseImmutableTag {
     public:
         using std::string::string;
-        StringTag(const std::string& value)
-            : std::string(value.begin(), value.end()) { };
-    };
+        using std::string::operator=;
 
-    static_assert(std::is_copy_constructible_v<StringTag>, "StringTag is not copy constructible");
-    static_assert(std::is_copy_assignable_v<StringTag>, "StringTag is not copy assignable");
+        StringTag() = default;
+        StringTag(const std::string& value)
+            : std::string(value)
+        {
+        }
+
+        StringTag(std::string&& value) noexcept
+            : std::string(std::move(value))
+        {
+        }
+    };
 
     template <>
     struct tag_id<StringTag> {

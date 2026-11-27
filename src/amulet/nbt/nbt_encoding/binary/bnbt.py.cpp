@@ -54,7 +54,7 @@ std::pair<std::string, std::string_view> get_buffer(
                 }
                 data_view = std::string_view(static_cast<const char*>(info.ptr), static_cast<size_t>(info.size));
             } else if constexpr (std::is_same_v<T, Readable>) {
-                data = arg.attr("read")().cast<std::string>();
+                data = arg.attr("read")().template cast<std::string>();
                 data_view = data;
             }
 

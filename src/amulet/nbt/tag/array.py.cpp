@@ -55,7 +55,7 @@ struct DType<std::int64_t> {
 };
 
 template <typename Native>
-void PyArray(py::module& m)
+void init_array_tag(py::module& m)
 {
     using Tag = typename DType<Native>::cls;
     py::object asarray = py::module::import("numpy").attr("asarray");
@@ -102,7 +102,7 @@ void PyArray(py::module& m)
             "Changes to the array will also modify the internal state."));
     cls.def_property_readonly(
         "py_data",
-        [asarray](const Amulet::pybind11_extensions::PyObjectCpp<Tag>& self) -> py::object {
+        [](const Amulet::pybind11_extensions::PyObjectCpp<Tag>& self) -> py::object {
             return py::array_t<Native>(self);
         },
         py::doc(
@@ -223,7 +223,7 @@ void PyArray(py::module& m)
 
 void init_array(py::module& m)
 {
-    PyArray<std::int8_t>(m);
-    PyArray<std::int32_t>(m);
-    PyArray<std::int64_t>(m);
+    init_array_tag<std::int8_t>(m);
+    init_array_tag<std::int32_t>(m);
+    init_array_tag<std::int64_t>(m);
 };

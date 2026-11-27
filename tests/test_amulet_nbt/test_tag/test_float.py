@@ -125,13 +125,9 @@ class FloatTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
     def test_repr(self) -> None:
         for cls in self.float_types:
             with self.subTest(cls=cls):
-                self.assertEqual(f"{cls.__module__}.{cls.__name__}(0.0)", repr(cls()))
-                self.assertEqual(
-                    f"{cls.__module__}.{cls.__name__}(5.5)", repr(cls(5.5))
-                )
-                self.assertEqual(
-                    f"{cls.__module__}.{cls.__name__}(-5.5)", repr(cls(-5.5))
-                )
+                self.assertEqual(f"amulet.nbt.{cls.__name__}(0.0)", repr(cls()))
+                self.assertEqual(f"amulet.nbt.{cls.__name__}(5.5)", repr(cls(5.5)))
+                self.assertEqual(f"amulet.nbt.{cls.__name__}(-5.5)", repr(cls(-5.5)))
 
     def test_str(self) -> None:
         self.assertEqual("5.5", str(FloatTag(5.5)))

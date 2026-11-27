@@ -18,7 +18,7 @@
 namespace py = pybind11;
 
 template <typename Tag, typename Native>
-void PyFloat(py::module& m, std::string name)
+void init_float_tag(py::module& m, std::string name)
 {
     std::string qualname = "amulet.nbt." + name;
     const char* docstring = (std::is_same_v<Native, float> ? "A 32 bit float class." : "A 64 bit float class.");
@@ -50,7 +50,7 @@ void PyFloat(py::module& m, std::string name)
     cls.def(
         "__repr__",
         [qualname](const Tag& self) {
-            return qualname + "(" + py::repr(py::cast(static_cast<Native>(self))).cast<std::string>() + ")";
+            return qualname + "(" + py::repr(py::cast(static_cast<Native>(self))).template cast<std::string>() + ")";
         });
     cls.def(
         "__str__",
@@ -130,6 +130,6 @@ void PyFloat(py::module& m, std::string name)
 
 void init_float(py::module& m)
 {
-    PyFloat<Amulet::NBT::FloatTag, float>(m, "FloatTag");
-    PyFloat<Amulet::NBT::DoubleTag, double>(m, "DoubleTag");
+    init_float_tag<Amulet::NBT::FloatTag, float>(m, "FloatTag");
+    init_float_tag<Amulet::NBT::DoubleTag, double>(m, "DoubleTag");
 }

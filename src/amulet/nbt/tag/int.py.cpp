@@ -20,7 +20,7 @@
 namespace py = pybind11;
 
 template <typename Tag, typename Native>
-void PyInt(py::module& m, std::string name)
+void init_int_tag(py::module& m, std::string name)
 {
     std::string qualname = "amulet.nbt." + name;
     std::uint8_t byte_width = sizeof(Native);
@@ -142,8 +142,8 @@ void PyInt(py::module& m, std::string name)
 
 void init_int(py::module& m)
 {
-    PyInt<Amulet::NBT::ByteTag, std::int8_t>(m, "ByteTag");
-    PyInt<Amulet::NBT::ShortTag, std::int16_t>(m, "ShortTag");
-    PyInt<Amulet::NBT::IntTag, std::int32_t>(m, "IntTag");
-    PyInt<Amulet::NBT::LongTag, std::int64_t>(m, "LongTag");
+    init_int_tag<Amulet::NBT::ByteTag, std::int8_t>(m, "ByteTag");
+    init_int_tag<Amulet::NBT::ShortTag, std::int16_t>(m, "ShortTag");
+    init_int_tag<Amulet::NBT::IntTag, std::int32_t>(m, "IntTag");
+    init_int_tag<Amulet::NBT::LongTag, std::int64_t>(m, "LongTag");
 };

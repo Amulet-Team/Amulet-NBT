@@ -301,7 +301,6 @@ void init_list(py::module& m, py::classh<Amulet::NBT::ListTag> ListTag)
         "__repr__",
         [](const Amulet::NBT::ListTag& self) {
             std::string out = "amulet.nbt.ListTag([";
-
             std::visit([&out](auto&& vec) {
                 using T = std::decay_t<decltype(vec)>;
                 if constexpr (std::is_same_v<T, std::monostate>) {

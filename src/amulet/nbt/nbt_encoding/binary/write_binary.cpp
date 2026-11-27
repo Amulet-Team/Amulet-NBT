@@ -134,7 +134,7 @@ namespace NBT {
             std::is_same_v<T, ByteTag> || std::is_same_v<T, ShortTag> || std::is_same_v<T, IntTag> || std::is_same_v<T, LongTag> || std::is_same_v<T, FloatTag> || std::is_same_v<T, DoubleTag> || std::is_same_v<T, ByteArrayTag> || std::is_same_v<T, StringTag> || std::is_same_v<T, ListTag> || std::is_same_v<T, CompoundTag> || std::is_same_v<T, IntArrayTag> || std::is_same_v<T, LongArrayTag>,
             bool>
         = true>
-    inline void write_name_and_tag(BaseBinaryWriter& writer, const std::optional<std::string>& name, const T& tag)
+    inline void write_name_and_tag(BaseBinaryWriter& writer, std::optional<std::string> name, const T& tag)
     {
         writer.write_numeric<std::uint8_t>(tag_id_v<T>);
         if (name)
@@ -148,7 +148,7 @@ namespace NBT {
             std::is_same_v<T, ByteArrayTagPtr> || std::is_same_v<T, ListTagPtr> || std::is_same_v<T, CompoundTagPtr> || std::is_same_v<T, IntArrayTagPtr> || std::is_same_v<T, LongArrayTagPtr>,
             bool>
         = true>
-    inline void write_name_and_tag(BaseBinaryWriter& writer, const std::optional<std::string>& name, const T tag)
+    inline void write_name_and_tag(BaseBinaryWriter& writer, std::optional<std::string> name, const T tag)
     {
         write_name_and_tag<typename T::element_type>(writer, name, *tag);
     }
@@ -156,7 +156,7 @@ namespace NBT {
     template <
         typename T,
         std::enable_if_t<std::is_same_v<T, TagNode>, bool> = true>
-    inline void write_name_and_tag(BaseBinaryWriter& writer, const std::optional<std::string>& name, const TagNode& node)
+    inline void write_name_and_tag(BaseBinaryWriter& writer, std::optional<std::string> name, const TagNode& node)
     {
         std::visit([&writer, &name](auto&& tag) {
             using tagT = std::decay_t<decltype(tag)>;
@@ -175,7 +175,7 @@ namespace NBT {
     };
 
     template <typename T>
-    inline std::string _encode_nbt(const std::optional<std::string>& name, const T& tag, std::endian endianness, const Amulet::StringEncoder& string_encode)
+    inline std::string _encode_nbt(std::optional<std::string> name, const T& tag, std::endian endianness, const Amulet::StringEncoder& string_encode)
     {
         std::string buffer;
         BaseBinaryWriter writer(buffer, endianness, string_encode);
@@ -183,53 +183,53 @@ namespace NBT {
         return buffer;
     }
 
-    void encode_nbt(BaseBinaryWriter& writer, const std::optional<std::string>& name, const ByteTag& tag)
+    void encode_nbt(BaseBinaryWriter& writer, std::optional<std::string> name, const ByteTag& tag)
     {
-        write_name_and_tag<ByteTag>(writer, name, tag);
+        write_name_and_tag<ByteTag>(writer, std::move(name), tag);
     }
-    void encode_nbt(BaseBinaryWriter& writer, const std::optional<std::string>& name, const ShortTag& tag)
+    void encode_nbt(BaseBinaryWriter& writer, std::optional<std::string> name, const ShortTag& tag)
     {
-        write_name_and_tag<ShortTag>(writer, name, tag);
+        write_name_and_tag<ShortTag>(writer, std::move(name), tag);
     }
-    void encode_nbt(BaseBinaryWriter& writer, const std::optional<std::string>& name, const IntTag& tag)
+    void encode_nbt(BaseBinaryWriter& writer, std::optional<std::string> name, const IntTag& tag)
     {
-        write_name_and_tag<IntTag>(writer, name, tag);
+        write_name_and_tag<IntTag>(writer, std::move(name), tag);
     }
-    void encode_nbt(BaseBinaryWriter& writer, const std::optional<std::string>& name, const LongTag& tag)
+    void encode_nbt(BaseBinaryWriter& writer, std::optional<std::string> name, const LongTag& tag)
     {
-        write_name_and_tag<LongTag>(writer, name, tag);
+        write_name_and_tag<LongTag>(writer, std::move(name), tag);
     }
-    void encode_nbt(BaseBinaryWriter& writer, const std::optional<std::string>& name, const FloatTag& tag)
+    void encode_nbt(BaseBinaryWriter& writer, std::optional<std::string> name, const FloatTag& tag)
     {
-        write_name_and_tag<FloatTag>(writer, name, tag);
+        write_name_and_tag<FloatTag>(writer, std::move(name), tag);
     }
-    void encode_nbt(BaseBinaryWriter& writer, const std::optional<std::string>& name, const DoubleTag& tag)
+    void encode_nbt(BaseBinaryWriter& writer, std::optional<std::string> name, const DoubleTag& tag)
     {
-        write_name_and_tag<DoubleTag>(writer, name, tag);
+        write_name_and_tag<DoubleTag>(writer, std::move(name), tag);
     }
-    void encode_nbt(BaseBinaryWriter& writer, const std::optional<std::string>& name, const ByteArrayTag& tag)
+    void encode_nbt(BaseBinaryWriter& writer, std::optional<std::string> name, const ByteArrayTag& tag)
     {
-        write_name_and_tag<ByteArrayTag>(writer, name, tag);
+        write_name_and_tag<ByteArrayTag>(writer, std::move(name), tag);
     }
-    void encode_nbt(BaseBinaryWriter& writer, const std::optional<std::string>& name, const StringTag& tag)
+    void encode_nbt(BaseBinaryWriter& writer, std::optional<std::string> name, const StringTag& tag)
     {
-        write_name_and_tag<StringTag>(writer, name, tag);
+        write_name_and_tag<StringTag>(writer, std::move(name), tag);
     }
-    void encode_nbt(BaseBinaryWriter& writer, const std::optional<std::string>& name, const ListTag& tag)
+    void encode_nbt(BaseBinaryWriter& writer, std::optional<std::string> name, const ListTag& tag)
     {
-        write_name_and_tag<ListTag>(writer, name, tag);
+        write_name_and_tag<ListTag>(writer, std::move(name), tag);
     }
-    void encode_nbt(BaseBinaryWriter& writer, const std::optional<std::string>& name, const CompoundTag& tag)
+    void encode_nbt(BaseBinaryWriter& writer, std::optional<std::string> name, const CompoundTag& tag)
     {
-        write_name_and_tag<CompoundTag>(writer, name, tag);
+        write_name_and_tag<CompoundTag>(writer, std::move(name), tag);
     }
-    void encode_nbt(BaseBinaryWriter& writer, const std::optional<std::string>& name, const IntArrayTag& tag)
+    void encode_nbt(BaseBinaryWriter& writer, std::optional<std::string> name, const IntArrayTag& tag)
     {
-        write_name_and_tag<IntArrayTag>(writer, name, tag);
+        write_name_and_tag<IntArrayTag>(writer, std::move(name), tag);
     }
-    void encode_nbt(BaseBinaryWriter& writer, const std::optional<std::string>& name, const LongArrayTag& tag)
+    void encode_nbt(BaseBinaryWriter& writer, std::optional<std::string> name, const LongArrayTag& tag)
     {
-        write_name_and_tag<LongArrayTag>(writer, name, tag);
+        write_name_and_tag<LongArrayTag>(writer, std::move(name), tag);
     }
     void encode_nbt(BaseBinaryWriter& writer, const std::string& name, const TagNode& tag)
     {
@@ -240,57 +240,57 @@ namespace NBT {
         write_name_and_tag<TagNode>(writer, tag.name, tag.tag_node);
     }
 
-    std::string encode_nbt(const std::optional<std::string>& name, const ByteTag& tag, std::endian endianness, const Amulet::StringEncoder& string_encode)
+    std::string encode_nbt(std::optional<std::string> name, const ByteTag& tag, std::endian endianness, const Amulet::StringEncoder& string_encode)
     {
-        return _encode_nbt(name, tag, endianness, string_encode);
+        return _encode_nbt(std::move(name), tag, endianness, string_encode);
     };
-    std::string encode_nbt(const std::optional<std::string>& name, const ShortTag& tag, std::endian endianness, const Amulet::StringEncoder& string_encode)
+    std::string encode_nbt(std::optional<std::string> name, const ShortTag& tag, std::endian endianness, const Amulet::StringEncoder& string_encode)
     {
-        return _encode_nbt(name, tag, endianness, string_encode);
+        return _encode_nbt(std::move(name), tag, endianness, string_encode);
     };
-    std::string encode_nbt(const std::optional<std::string>& name, const IntTag& tag, std::endian endianness, const Amulet::StringEncoder& string_encode)
+    std::string encode_nbt(std::optional<std::string> name, const IntTag& tag, std::endian endianness, const Amulet::StringEncoder& string_encode)
     {
-        return _encode_nbt(name, tag, endianness, string_encode);
+        return _encode_nbt(std::move(name), tag, endianness, string_encode);
     };
-    std::string encode_nbt(const std::optional<std::string>& name, const LongTag& tag, std::endian endianness, const Amulet::StringEncoder& string_encode)
+    std::string encode_nbt(std::optional<std::string> name, const LongTag& tag, std::endian endianness, const Amulet::StringEncoder& string_encode)
     {
-        return _encode_nbt(name, tag, endianness, string_encode);
+        return _encode_nbt(std::move(name), tag, endianness, string_encode);
     };
-    std::string encode_nbt(const std::optional<std::string>& name, const FloatTag& tag, std::endian endianness, const Amulet::StringEncoder& string_encode)
+    std::string encode_nbt(std::optional<std::string> name, const FloatTag& tag, std::endian endianness, const Amulet::StringEncoder& string_encode)
     {
-        return _encode_nbt(name, tag, endianness, string_encode);
+        return _encode_nbt(std::move(name), tag, endianness, string_encode);
     };
-    std::string encode_nbt(const std::optional<std::string>& name, const DoubleTag& tag, std::endian endianness, const Amulet::StringEncoder& string_encode)
+    std::string encode_nbt(std::optional<std::string> name, const DoubleTag& tag, std::endian endianness, const Amulet::StringEncoder& string_encode)
     {
-        return _encode_nbt(name, tag, endianness, string_encode);
+        return _encode_nbt(std::move(name), tag, endianness, string_encode);
     };
-    std::string encode_nbt(const std::optional<std::string>& name, const ByteArrayTag& tag, std::endian endianness, const Amulet::StringEncoder& string_encode)
+    std::string encode_nbt(std::optional<std::string> name, const ByteArrayTag& tag, std::endian endianness, const Amulet::StringEncoder& string_encode)
     {
-        return _encode_nbt(name, tag, endianness, string_encode);
+        return _encode_nbt(std::move(name), tag, endianness, string_encode);
     };
-    std::string encode_nbt(const std::optional<std::string>& name, const StringTag& tag, std::endian endianness, const Amulet::StringEncoder& string_encode)
+    std::string encode_nbt(std::optional<std::string> name, const StringTag& tag, std::endian endianness, const Amulet::StringEncoder& string_encode)
     {
-        return _encode_nbt(name, tag, endianness, string_encode);
+        return _encode_nbt(std::move(name), tag, endianness, string_encode);
     };
-    std::string encode_nbt(const std::optional<std::string>& name, const ListTag& tag, std::endian endianness, const Amulet::StringEncoder& string_encode)
+    std::string encode_nbt(std::optional<std::string> name, const ListTag& tag, std::endian endianness, const Amulet::StringEncoder& string_encode)
     {
-        return _encode_nbt(name, tag, endianness, string_encode);
+        return _encode_nbt(std::move(name), tag, endianness, string_encode);
     };
-    std::string encode_nbt(const std::optional<std::string>& name, const CompoundTag& tag, std::endian endianness, const Amulet::StringEncoder& string_encode)
+    std::string encode_nbt(std::optional<std::string> name, const CompoundTag& tag, std::endian endianness, const Amulet::StringEncoder& string_encode)
     {
-        return _encode_nbt(name, tag, endianness, string_encode);
+        return _encode_nbt(std::move(name), tag, endianness, string_encode);
     };
-    std::string encode_nbt(const std::optional<std::string>& name, const IntArrayTag& tag, std::endian endianness, const Amulet::StringEncoder& string_encode)
+    std::string encode_nbt(std::optional<std::string> name, const IntArrayTag& tag, std::endian endianness, const Amulet::StringEncoder& string_encode)
     {
-        return _encode_nbt(name, tag, endianness, string_encode);
+        return _encode_nbt(std::move(name), tag, endianness, string_encode);
     };
-    std::string encode_nbt(const std::optional<std::string>& name, const LongArrayTag& tag, std::endian endianness, const Amulet::StringEncoder& string_encode)
+    std::string encode_nbt(std::optional<std::string> name, const LongArrayTag& tag, std::endian endianness, const Amulet::StringEncoder& string_encode)
     {
-        return _encode_nbt(name, tag, endianness, string_encode);
+        return _encode_nbt(std::move(name), tag, endianness, string_encode);
     };
-    AMULET_NBT_EXPORT std::string encode_nbt(const std::string& name, const TagNode& tag, std::endian endianness, const Amulet::StringEncoder& string_encode)
+    AMULET_NBT_EXPORT std::string encode_nbt(std::optional<std::string> name, const TagNode& tag, std::endian endianness, const Amulet::StringEncoder& string_encode)
     {
-        return _encode_nbt(name, tag, endianness, string_encode);
+        return _encode_nbt(std::move(name), tag, endianness, string_encode);
     };
     AMULET_NBT_EXPORT std::string encode_nbt(const NamedTag& named_tag, std::endian endianness, const Amulet::StringEncoder& string_encode)
     {

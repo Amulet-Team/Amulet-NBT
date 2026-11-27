@@ -50,7 +50,7 @@ void init_float_tag(py::module& m, std::string name)
     cls.def(
         "__repr__",
         [qualname](const Tag& self) {
-            return qualname + "(" + py::repr(py::cast(static_cast<Native>(self))).cast<std::string>() + ")";
+            return qualname + "(" + py::repr(py::cast(static_cast<Native>(self))).template cast<std::string>() + ")";
         });
     cls.def(
         "__str__",

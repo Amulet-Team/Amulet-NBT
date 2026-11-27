@@ -42,19 +42,19 @@ namespace NBT {
     AMULET_NBT_EXPORT void encode_nbt(BaseBinaryWriter&, const std::string& name, const TagNode&);
     AMULET_NBT_EXPORT void encode_nbt(BaseBinaryWriter&, const NamedTag& tag);
 
-    AMULET_NBT_EXPORT std::string encode_nbt(const std::optional<std::string>& name, const ByteTag&, std::endian, Amulet::StringEncoder);
-    AMULET_NBT_EXPORT std::string encode_nbt(const std::optional<std::string>& name, const ShortTag&, std::endian, Amulet::StringEncoder);
-    AMULET_NBT_EXPORT std::string encode_nbt(const std::optional<std::string>& name, const IntTag&, std::endian, Amulet::StringEncoder);
-    AMULET_NBT_EXPORT std::string encode_nbt(const std::optional<std::string>& name, const LongTag&, std::endian, Amulet::StringEncoder);
-    AMULET_NBT_EXPORT std::string encode_nbt(const std::optional<std::string>& name, const FloatTag&, std::endian, Amulet::StringEncoder);
-    AMULET_NBT_EXPORT std::string encode_nbt(const std::optional<std::string>& name, const DoubleTag&, std::endian, Amulet::StringEncoder);
-    AMULET_NBT_EXPORT std::string encode_nbt(const std::optional<std::string>& name, const ByteArrayTag&, std::endian, Amulet::StringEncoder);
-    AMULET_NBT_EXPORT std::string encode_nbt(const std::optional<std::string>& name, const StringTag&, std::endian, Amulet::StringEncoder);
-    AMULET_NBT_EXPORT std::string encode_nbt(const std::optional<std::string>& name, const ListTag&, std::endian, Amulet::StringEncoder);
-    AMULET_NBT_EXPORT std::string encode_nbt(const std::optional<std::string>& name, const CompoundTag&, std::endian, Amulet::StringEncoder);
-    AMULET_NBT_EXPORT std::string encode_nbt(const std::optional<std::string>& name, const IntArrayTag&, std::endian, Amulet::StringEncoder);
-    AMULET_NBT_EXPORT std::string encode_nbt(const std::optional<std::string>& name, const LongArrayTag&, std::endian, Amulet::StringEncoder);
-    AMULET_NBT_EXPORT std::string encode_nbt(const std::string& name, const TagNode&, std::endian, Amulet::StringEncoder);
-    AMULET_NBT_EXPORT std::string encode_nbt(const NamedTag& tag, std::endian, Amulet::StringEncoder);
+    AMULET_NBT_EXPORT std::string encode_nbt(const std::optional<std::string>& name, const ByteTag&, std::endian, const Amulet::StringEncoder&);
+    AMULET_NBT_EXPORT std::string encode_nbt(const std::optional<std::string>& name, const ShortTag&, std::endian, const Amulet::StringEncoder&);
+    AMULET_NBT_EXPORT std::string encode_nbt(const std::optional<std::string>& name, const IntTag&, std::endian, const Amulet::StringEncoder&);
+    AMULET_NBT_EXPORT std::string encode_nbt(const std::optional<std::string>& name, const LongTag&, std::endian, const Amulet::StringEncoder&);
+    AMULET_NBT_EXPORT std::string encode_nbt(const std::optional<std::string>& name, const FloatTag&, std::endian, const Amulet::StringEncoder&);
+    AMULET_NBT_EXPORT std::string encode_nbt(const std::optional<std::string>& name, const DoubleTag&, std::endian, const Amulet::StringEncoder&);
+    AMULET_NBT_EXPORT std::string encode_nbt(const std::optional<std::string>& name, const ByteArrayTag&, std::endian, const Amulet::StringEncoder&);
+    AMULET_NBT_EXPORT std::string encode_nbt(const std::optional<std::string>& name, const StringTag&, std::endian, const Amulet::StringEncoder&);
+    AMULET_NBT_EXPORT std::string encode_nbt(const std::optional<std::string>& name, const ListTag&, std::endian, const Amulet::StringEncoder&);
+    AMULET_NBT_EXPORT std::string encode_nbt(const std::optional<std::string>& name, const CompoundTag&, std::endian, const Amulet::StringEncoder&);
+    AMULET_NBT_EXPORT std::string encode_nbt(const std::optional<std::string>& name, const IntArrayTag&, std::endian, const Amulet::StringEncoder&);
+    AMULET_NBT_EXPORT std::string encode_nbt(const std::optional<std::string>& name, const LongArrayTag&, std::endian, const Amulet::StringEncoder&);
+    AMULET_NBT_EXPORT std::string encode_nbt(const std::string& name, const TagNode&, std::endian, const Amulet::StringEncoder&);
+    AMULET_NBT_EXPORT std::string encode_nbt(const NamedTag& tag, std::endian, const Amulet::StringEncoder&);
 } // namespace NBT
 } // namespace Amulet

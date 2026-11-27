@@ -55,7 +55,7 @@ void init_abc(py::module& m)
             const Amulet::NBT::AbstractBaseTag& self,
             bool compressed,
             bool little_endian,
-            Amulet::NBT::StringEncoding string_encoding,
+            const Amulet::NBT::StringEncoding& string_encoding,
             std::optional<std::string> name) {
             PyErr_SetString(PyExc_NotImplementedError, "");
             throw py::error_already_set();
@@ -87,7 +87,7 @@ void init_abc(py::module& m)
             py::object filepath_or_writeable,
             bool compressed,
             bool little_endian,
-            Amulet::NBT::StringEncoding string_encoding,
+            const Amulet::NBT::StringEncoding& string_encoding,
             std::optional<std::string> name) {
             PyErr_SetString(PyExc_NotImplementedError, "");
             throw py::error_already_set();

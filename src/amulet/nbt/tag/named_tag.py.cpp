@@ -120,7 +120,7 @@ void init_named_tag(py::module& m)
         "to_nbt",
         [to_nbt](
             const Amulet::NBT::NamedTag& self,
-            Amulet::NBT::EncodingPreset preset) {
+            const Amulet::NBT::EncodingPreset& preset) {
             return to_nbt(
                 self,
                 preset.compressed,
@@ -169,7 +169,7 @@ void init_named_tag(py::module& m)
         [save_to](
             const Amulet::NBT::NamedTag& self,
             py::object filepath_or_writeable,
-            Amulet::NBT::EncodingPreset preset) {
+            const Amulet::NBT::EncodingPreset& preset) {
             return save_to(
                 self,
                 filepath_or_writeable,

@@ -66,7 +66,7 @@ void SerialiseTag(py::class_<Tag, Args...>& cls)
         "to_nbt",
         [](
             const Tag& self,
-            Amulet::NBT::EncodingPreset preset,
+            const Amulet::NBT::EncodingPreset& preset,
             std::optional<std::string> name) {
             return to_nbt(
                 self,
@@ -103,7 +103,7 @@ void SerialiseTag(py::class_<Tag, Args...>& cls)
         [](
             const Tag& self,
             py::object filepath_or_writeable,
-            Amulet::NBT::EncodingPreset preset,
+            const Amulet::NBT::EncodingPreset& preset,
             std::optional<std::string> name) {
             return save_to(
                 self,

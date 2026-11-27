@@ -221,8 +221,7 @@ void init_named_tag(py::module& m)
     NamedTag.def(
         "__repr__",
         [](const Amulet::NBT::NamedTag& self) {
-            std::string out;
-            out += "NamedTag(";
+            std::string out = "amulet.nbt.NamedTag(";
             out += py::repr(py::cast(self.tag_node));
             out += ", ";
             try {

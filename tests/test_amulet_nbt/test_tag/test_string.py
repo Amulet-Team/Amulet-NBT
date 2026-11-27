@@ -49,10 +49,14 @@ class StringTagTestCase(AbstractBaseImmutableTagTestCase, unittest.TestCase):
         self.assertEqual(b"test\xff", StringTag(b"test\xff").py_str_or_bytes)
 
     def test_repr(self) -> None:
-        self.assertEqual("StringTag('')", repr(StringTag()))
-        self.assertEqual("StringTag('value')", repr(StringTag("value")))
-        self.assertEqual("StringTag('quote\"value')", repr(StringTag('quote"value')))
-        self.assertEqual('StringTag("quote\'value")', repr(StringTag("quote'value")))
+        self.assertEqual("amulet.nbt.StringTag('')", repr(StringTag()))
+        self.assertEqual("amulet.nbt.StringTag('value')", repr(StringTag("value")))
+        self.assertEqual(
+            "amulet.nbt.StringTag('quote\"value')", repr(StringTag('quote"value'))
+        )
+        self.assertEqual(
+            'amulet.nbt.StringTag("quote\'value")', repr(StringTag("quote'value"))
+        )
 
     def test_str(self) -> None:
         self.assertEqual("hello world", str(StringTag("hello world")))

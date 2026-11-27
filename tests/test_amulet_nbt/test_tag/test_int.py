@@ -287,7 +287,7 @@ class IntTagTestCase(AbstractBaseNumericTagTestCase, unittest.TestCase):
         for cls in self.int_types:
             for v in (-5, 0, 5):
                 with self.subTest(cls=cls, v=v):
-                    self.assertEqual(f"{cls.__name__}({v})", repr(cls(v)))
+                    self.assertEqual(f"amulet.nbt.{cls.__name__}({v})", repr(cls(v)))
 
     def test_str(self) -> None:
         self.assertEqual("5", str(ByteTag(5)))

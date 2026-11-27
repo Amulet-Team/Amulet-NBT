@@ -54,7 +54,7 @@ namespace py = pybind11;
         CLSNAME.def(                                                                                                       \
             "__repr__",                                                                                                    \
             [](const Amulet::NBT::CLSNAME& self) {                                                                         \
-                return #CLSNAME "(" + py::repr(py::cast(static_cast<NATIVE>(self))).cast<std::string>() + ")";             \
+                return "amulet.nbt." #CLSNAME "(" + py::repr(py::cast(static_cast<NATIVE>(self))).cast<std::string>() + ")";             \
             });                                                                                                            \
     CLSNAME.def(                                                                                                           \
         "__str__",                                                                                                         \

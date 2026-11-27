@@ -80,9 +80,9 @@ void init_string(py::module& m)
             "__repr__",
             [](const Amulet::NBT::StringTag& self) {
                 try {
-                    return "StringTag(" + py::repr(py::str(self)).cast<std::string>() + ")";
+                    return "amulet.nbt.StringTag(" + py::repr(py::str(self)).cast<std::string>() + ")";
                 } catch (py::error_already_set&) {
-                    return "StringTag(" + py::repr(py::bytes(self)).cast<std::string>() + ")";
+                    return "amulet.nbt.StringTag(" + py::repr(py::bytes(self)).cast<std::string>() + ")";
                 }
             });
     StringTag.def(

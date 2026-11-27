@@ -19,7 +19,7 @@ py::bytes to_nbt(
     std::optional<std::string> name,
     bool compressed,
     std::endian endianness,
-    Amulet::StringEncoder string_encoder)
+    const Amulet::StringEncoder& string_encoder)
 {
     std::string data;
     {
@@ -41,7 +41,7 @@ py::bytes save_to(
     std::optional<std::string> name,
     bool compressed,
     std::endian endianness,
-    Amulet::StringEncoder string_encoder)
+    const Amulet::StringEncoder& string_encoder)
 {
     py::bytes py_data = to_nbt(self, name, compressed, endianness, string_encoder);
     if (!filepath_or_writeable.is(py::none())) {
@@ -84,7 +84,7 @@ void SerialiseTag(py::class_<Tag, Args...>& cls)
             const Tag& self,
             bool compressed,
             bool little_endian,
-            Amulet::NBT::StringEncoding string_encoding,
+            const Amulet::NBT::StringEncoding& string_encoding,
             std::optional<std::string> name) {
             return to_nbt(
                 self,
@@ -125,7 +125,7 @@ void SerialiseTag(py::class_<Tag, Args...>& cls)
             py::object filepath_or_writeable,
             bool compressed,
             bool little_endian,
-            Amulet::NBT::StringEncoding string_encoding,
+            const Amulet::NBT::StringEncoding& string_encoding,
             std::optional<std::string> name) {
             return save_to(
                 self,

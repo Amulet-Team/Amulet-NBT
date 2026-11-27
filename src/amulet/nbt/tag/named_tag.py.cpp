@@ -103,7 +103,7 @@ void init_named_tag(py::module& m)
                       const Amulet::NBT::NamedTag& self,
                       bool compressed,
                       std::endian endianness,
-                      Amulet::StringEncoder string_encoder) -> py::bytes {
+                      const Amulet::StringEncoder& string_encoder) -> py::bytes {
         std::string data;
         {
             py::gil_scoped_release nogil;
@@ -135,7 +135,7 @@ void init_named_tag(py::module& m)
             const Amulet::NBT::NamedTag& self,
             bool compressed,
             bool little_endian,
-            Amulet::NBT::StringEncoding string_encoding) {
+            const Amulet::NBT::StringEncoding& string_encoding) {
             return to_nbt(
                 self,
                 compressed,
@@ -151,7 +151,7 @@ void init_named_tag(py::module& m)
                        py::object filepath_or_writeable,
                        bool compressed,
                        std::endian endianness,
-                       Amulet::StringEncoder string_encoder) {
+                       const Amulet::StringEncoder& string_encoder) {
         py::bytes py_data = to_nbt(self, compressed, endianness, string_encoder);
         if (!filepath_or_writeable.is(py::none())) {
             if (py::isinstance<py::str>(filepath_or_writeable)) {
@@ -188,7 +188,7 @@ void init_named_tag(py::module& m)
             py::object filepath_or_writeable,
             bool compressed,
             bool little_endian,
-            Amulet::NBT::StringEncoding string_encoding) {
+            const Amulet::NBT::StringEncoding& string_encoding) {
             return save_to(
                 self,
                 filepath_or_writeable,

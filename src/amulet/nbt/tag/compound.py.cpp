@@ -17,11 +17,11 @@
 #include <amulet/nbt/nbt_encoding/binary.hpp>
 #include <amulet/nbt/nbt_encoding/string.hpp>
 #include <amulet/nbt/string_encoding/encoding.py.hpp>
-#include <amulet/nbt/tag/serialisation.py.hpp>
 #include <amulet/nbt/tag/abc.hpp>
 #include <amulet/nbt/tag/compound.hpp>
 #include <amulet/nbt/tag/copy.hpp>
 #include <amulet/nbt/tag/eq.hpp>
+#include <amulet/nbt/tag/serialisation.py.hpp>
 
 namespace py = pybind11;
 
@@ -114,8 +114,6 @@ void init_compound(py::module& m)
     py::object AbstractBaseTag = m.attr("AbstractBaseTag");
     py::object AbstractBaseMutableTag = m.attr("AbstractBaseMutableTag");
     py::object isinstance = py::module::import("builtins").attr("isinstance");
-    py::object mutf8_encoding = m.attr("mutf8_encoding");
-    py::object java_encoding = m.attr("java_encoding");
 
     py::classh<Amulet::NBT::CompoundTag> CompoundTag(m, "CompoundTag", AbstractBaseMutableTag,
         "A Python wrapper around a C++ unordered map.\n"
@@ -156,27 +154,27 @@ void init_compound(py::module& m)
             "\n"
             "You would be better off using the py_{type} or np_array properties if you require a fixed type.\n"
             "This is here for convenience to get a python representation under the same property name.\n"));
-    SerialiseTag(CompoundTag)
-        CompoundTag.def(
-            "__repr__",
-            [](const Amulet::NBT::CompoundTag& self) {
-                std::string out;
-                out += "amulet.nbt.CompoundTag({";
-                for (auto it = self.begin(); it != self.end(); it++) {
-                    if (it != self.begin()) {
-                        out += ", ";
-                    }
-                    try {
-                        out += py::repr(py::str(it->first));
-                    } catch (py::error_already_set&) {
-                        out += py::repr(py::bytes(it->first));
-                    }
-                    out += ": ";
-                    out += py::repr(py::cast(it->second));
+    SerialiseTag(CompoundTag);
+    CompoundTag.def(
+        "__repr__",
+        [](const Amulet::NBT::CompoundTag& self) {
+            std::string out;
+            out += "amulet.nbt.CompoundTag({";
+            for (auto it = self.begin(); it != self.end(); it++) {
+                if (it != self.begin()) {
+                    out += ", ";
                 }
-                out += "})";
-                return out;
-            });
+                try {
+                    out += py::repr(py::str(it->first));
+                } catch (py::error_already_set&) {
+                    out += py::repr(py::bytes(it->first));
+                }
+                out += ": ";
+                out += py::repr(py::cast(it->second));
+            }
+            out += "})";
+            return out;
+        });
     CompoundTag.def(
         py::pickle(
             [](const Amulet::NBT::CompoundTag& self) {

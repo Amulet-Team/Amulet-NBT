@@ -12,18 +12,15 @@
 #include <amulet/nbt/nbt_encoding/binary.hpp>
 #include <amulet/nbt/nbt_encoding/string.hpp>
 #include <amulet/nbt/string_encoding/encoding.py.hpp>
-#include <amulet/nbt/tag/serialisation.py.hpp>
 #include <amulet/nbt/tag/abc.hpp>
 #include <amulet/nbt/tag/copy.hpp>
+#include <amulet/nbt/tag/serialisation.py.hpp>
 #include <amulet/nbt/tag/string.hpp>
 
 namespace py = pybind11;
 
 void init_string(py::module& m)
 {
-    py::object mutf8_encoding = m.attr("mutf8_encoding");
-    py::object java_encoding = m.attr("java_encoding");
-
     py::classh<Amulet::NBT::StringTag, Amulet::NBT::AbstractBaseImmutableTag> StringTag(m, "StringTag",
         "A class that behaves like a string.");
     StringTag.def_property_readonly_static("tag_id", [](py::object) { return 8; });
@@ -75,16 +72,16 @@ void init_string(py::module& m)
             "\n"
             "You would be better off using the py_{type} or np_array properties if you require a fixed type.\n"
             "This is here for convenience to get a python representation under the same property name.\n"));
-    SerialiseTag(StringTag)
-        StringTag.def(
-            "__repr__",
-            [](const Amulet::NBT::StringTag& self) {
-                try {
-                    return "amulet.nbt.StringTag(" + py::repr(py::str(self)).cast<std::string>() + ")";
-                } catch (py::error_already_set&) {
-                    return "amulet.nbt.StringTag(" + py::repr(py::bytes(self)).cast<std::string>() + ")";
-                }
-            });
+    SerialiseTag(StringTag);
+    StringTag.def(
+        "__repr__",
+        [](const Amulet::NBT::StringTag& self) {
+            try {
+                return "amulet.nbt.StringTag(" + py::repr(py::str(self)).cast<std::string>() + ")";
+            } catch (py::error_already_set&) {
+                return "amulet.nbt.StringTag(" + py::repr(py::bytes(self)).cast<std::string>() + ")";
+            }
+        });
     StringTag.def(
         "__str__",
         [](const Amulet::NBT::StringTag& self) -> std::string {

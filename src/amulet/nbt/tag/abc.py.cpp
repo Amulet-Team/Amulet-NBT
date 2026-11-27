@@ -69,13 +69,13 @@ void init_abc(py::module& m)
         "save_to",
         [](
             const Amulet::NBT::AbstractBaseTag& self,
-            py::object filepath_or_writable,
+            py::object filepath_or_writeable,
             Amulet::NBT::EncodingPreset preset,
             std::optional<std::string> name) {
             PyErr_SetString(PyExc_NotImplementedError, "");
             throw py::error_already_set();
         },
-        py::arg("filepath_or_writable") = py::none(),
+        py::arg("filepath_or_writeable") = py::none(),
         py::pos_only(),
         py::kw_only(),
         py::arg("preset") = java_encoding,
@@ -84,7 +84,7 @@ void init_abc(py::module& m)
         "save_to",
         [](
             const Amulet::NBT::AbstractBaseTag& self,
-            py::object filepath_or_writable,
+            py::object filepath_or_writeable,
             bool compressed,
             bool little_endian,
             Amulet::NBT::StringEncoding string_encoding,
@@ -92,7 +92,7 @@ void init_abc(py::module& m)
             PyErr_SetString(PyExc_NotImplementedError, "");
             throw py::error_already_set();
         },
-        py::arg("filepath_or_writable") = py::none(),
+        py::arg("filepath_or_writeable") = py::none(),
         py::pos_only(),
         py::kw_only(),
         py::arg("compressed") = true,

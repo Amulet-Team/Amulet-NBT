@@ -19,7 +19,7 @@ py::bytes to_nbt(
     std::optional<std::string> name,
     bool compressed,
     std::endian endianness,
-    Amulet::StringEncoder string_encoder)
+    const Amulet::StringEncoder& string_encoder)
 {
     std::string data;
     {

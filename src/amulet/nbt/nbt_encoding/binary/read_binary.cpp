@@ -187,7 +187,7 @@ namespace NBT {
     }
 
     // Read one (un)named tag from the string at position offset.
-    NamedTag decode_nbt(std::string_view raw, std::endian endianness, Amulet::StringDecoder string_decode, size_t& offset, bool named)
+    NamedTag decode_nbt(std::string_view raw, std::endian endianness, const Amulet::StringDecoder& string_decode, size_t& offset, bool named)
     {
         BinaryReader reader(raw, offset, endianness, string_decode);
         auto tag = decode_nbt(reader, named);
@@ -196,14 +196,14 @@ namespace NBT {
     }
 
     // Read one (un)named tag from the string.
-    NamedTag decode_nbt(std::string_view raw, std::endian endianness, Amulet::StringDecoder string_decode, bool named)
+    NamedTag decode_nbt(std::string_view raw, std::endian endianness, const Amulet::StringDecoder& string_decode, bool named)
     {
         size_t offset = 0;
         return decode_nbt(raw, endianness, string_decode, offset, named);
     }
 
     // Read count (un)named tags from the string at position offset.
-    std::vector<NamedTag> decode_nbt_array(std::string_view raw, std::endian endianness, Amulet::StringDecoder string_decode, size_t& offset, size_t count, bool named)
+    std::vector<NamedTag> decode_nbt_array(std::string_view raw, std::endian endianness, const Amulet::StringDecoder& string_decode, size_t& offset, size_t count, bool named)
     {
         BinaryReader reader(raw, offset, endianness, string_decode);
         std::vector<NamedTag> out;
@@ -215,7 +215,7 @@ namespace NBT {
     }
 
     // Read all (un)named tags from the string at position offset.
-    std::vector<NamedTag> decode_nbt_array(std::string_view raw, std::endian endianness, Amulet::StringDecoder string_decode, size_t& offset, bool named)
+    std::vector<NamedTag> decode_nbt_array(std::string_view raw, std::endian endianness, const Amulet::StringDecoder& string_decode, size_t& offset, bool named)
     {
         BinaryReader reader(raw, offset, endianness, string_decode);
         std::vector<NamedTag> out;

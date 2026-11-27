@@ -19,6 +19,7 @@
 #include <amulet/nbt/tag/copy.hpp>
 #include <amulet/nbt/tag/eq.hpp>
 #include <amulet/nbt/tag/named_tag.hpp>
+#include <amulet/nbt/tag/serialisation.py.hpp>
 
 namespace py = pybind11;
 
@@ -99,30 +100,14 @@ void init_named_tag(py::module& m)
         [](Amulet::NBT::NamedTag& self, Amulet::NBT::TagNode tag) {
             self.tag_node = tag;
         });
-    auto to_nbt = [](
-                      const Amulet::NBT::NamedTag& self,
-                      bool compressed,
-                      std::endian endianness,
-                      const Amulet::StringEncoder& string_encoder) -> py::bytes {
-        std::string data;
-        {
-            py::gil_scoped_release nogil;
-            data = Amulet::NBT::encode_nbt(self.name, self.tag_node, endianness, string_encoder);
-            if (compressed) {
-                std::string data2;
-                Amulet::zlib::compress_gzip(data, data2);
-                data = std::move(data2);
-            }
-        }
-        return data;
-    };
     NamedTag.def(
         "to_nbt",
-        [to_nbt](
+        [](
             const Amulet::NBT::NamedTag& self,
             const Amulet::NBT::EncodingPreset& preset) {
-            return to_nbt(
-                self,
+            return to_nbt_bytes(
+                self.tag_node,
+                self.name,
                 preset.compressed,
                 preset.endianness,
                 preset.string_encoding.encode);
@@ -131,13 +116,14 @@ void init_named_tag(py::module& m)
         py::arg("preset") = java_encoding);
     NamedTag.def(
         "to_nbt",
-        [to_nbt](
+        [](
             const Amulet::NBT::NamedTag& self,
             bool compressed,
             bool little_endian,
             const Amulet::NBT::StringEncoding& string_encoding) {
-            return to_nbt(
-                self,
+            return to_nbt_bytes(
+                self.tag_node,
+                self.name,
                 compressed,
                 little_endian ? std::endian::little : std::endian::big,
                 string_encoding.encode);
@@ -146,33 +132,16 @@ void init_named_tag(py::module& m)
         py::arg("compressed") = true,
         py::arg("little_endian") = false,
         py::arg("string_encoding") = mutf8_encoding);
-    auto save_to = [to_nbt](
-                       const Amulet::NBT::NamedTag& self,
-                       py::object filepath_or_writeable,
-                       bool compressed,
-                       std::endian endianness,
-                       const Amulet::StringEncoder& string_encoder) {
-        py::bytes py_data = to_nbt(self, compressed, endianness, string_encoder);
-        if (!filepath_or_writeable.is(py::none())) {
-            if (py::isinstance<py::str>(filepath_or_writeable)) {
-                std::string data = py_data.cast<std::string>();
-                std::ofstream file(filepath_or_writeable.cast<std::string>(), std::ios::out | std::ios::binary | std::ios::trunc);
-                file.write(data.c_str(), data.size());
-            } else {
-                filepath_or_writeable.attr("write")(py_data);
-            }
-        }
-        return py_data;
-    };
     NamedTag.def(
         "save_to",
-        [save_to](
+        [](
             const Amulet::NBT::NamedTag& self,
-            py::object filepath_or_writeable,
+            FilePathOrWriteable filepath_or_writeable,
             const Amulet::NBT::EncodingPreset& preset) {
             return save_to(
-                self,
-                filepath_or_writeable,
+                self.tag_node,
+                std::move(filepath_or_writeable),
+                self.name,
                 preset.compressed,
                 preset.endianness,
                 preset.string_encoding.encode);
@@ -183,15 +152,16 @@ void init_named_tag(py::module& m)
         py::arg("preset") = java_encoding);
     NamedTag.def(
         "save_to",
-        [save_to](
+        [](
             const Amulet::NBT::NamedTag& self,
-            py::object filepath_or_writeable,
+            FilePathOrWriteable filepath_or_writeable,
             bool compressed,
             bool little_endian,
             const Amulet::NBT::StringEncoding& string_encoding) {
             return save_to(
-                self,
-                filepath_or_writeable,
+                self.tag_node,
+                std::move(filepath_or_writeable),
+                self.name,
                 compressed,
                 little_endian ? std::endian::little : std::endian::big,
                 string_encoding.encode);
@@ -206,16 +176,8 @@ void init_named_tag(py::module& m)
         "to_snbt",
         [](
             const Amulet::NBT::NamedTag& self,
-            py::object indent) {
-            if (indent.is(py::none())) {
-                return Amulet::NBT::encode_snbt(self.tag_node);
-            } else if (py::isinstance<py::int_>(indent)) {
-                return Amulet::NBT::encode_formatted_snbt(self.tag_node, std::string(indent.cast<size_t>(), ' '));
-            } else if (py::isinstance<py::str>(indent)) {
-                return Amulet::NBT::encode_formatted_snbt(self.tag_node, indent.cast<std::string>());
-            } else {
-                throw std::invalid_argument("indent must be None, int or str");
-            }
+            Indent indent) {
+            return to_snbt(self.tag_node, std::move(indent));
         },
         py::arg("indent") = py::none());
     NamedTag.def(

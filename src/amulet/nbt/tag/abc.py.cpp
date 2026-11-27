@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <string>
 
+#include <pybind11/eval.h>
 #include <pybind11/operators.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -22,6 +23,30 @@ void abstract_method(T self, py::args, const py::kwargs&)
 
 void init_abc(py::module& m)
 {
+    py::dict scope = m.attr("__dict__");
+    py::exec(R"(
+    import typing
+
+    class SupportsStr(typing.Protocol):
+        def __str__(self) -> str: ...
+
+    del SupportsStr.__init__
+
+    class Readable(typing.Protocol):
+        def read(self) -> bytes: ...
+
+    del Readable.__init__
+
+    class Writeable(typing.Protocol):
+        def write(self, s: bytes) -> typing.Any:
+            """write(self, s: bytes) -> typing.Any\n"""
+
+    del Writeable.__init__
+
+    del typing
+    )",
+        scope);
+
     py::object mutf8_encoding = m.attr("mutf8_encoding");
     py::object java_encoding = m.attr("java_encoding");
 

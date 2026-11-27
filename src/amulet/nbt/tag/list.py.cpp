@@ -231,7 +231,7 @@ void init_list(py::module& m)
             "__repr__",
             [](const Amulet::NBT::ListTag& self) {
                 std::string out;
-                out += "ListTag([";
+                out += "amulet.nbt.ListTag([";
 
                 std::visit([&out](auto&& vec) {
                     using T = std::decay_t<decltype(vec)>;

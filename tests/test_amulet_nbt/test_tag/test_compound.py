@@ -9,6 +9,7 @@ faulthandler.enable()
 
 from .test_abc import AbstractBaseMutableTagTestCase, TagNameMap
 
+import amulet
 from amulet.nbt import (
     AbstractBaseTag,
     AbstractBaseMutableTag,
@@ -163,7 +164,7 @@ class CompoundTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
                 }
             ),
         ):
-            self.assertEqual(tag, eval(repr(tag)))
+            self.assertEqual(tag, eval(repr(tag), globals={"amulet": amulet}))
 
     def test_str(self) -> None:
         # undefined

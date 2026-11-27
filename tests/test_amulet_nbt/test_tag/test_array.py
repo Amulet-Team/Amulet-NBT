@@ -72,9 +72,9 @@ class ArrayTagTestCase(AbstractBaseMutableTagTestCase, unittest.TestCase):
     def test_repr(self) -> None:
         for cls in self.array_types:
             with self.subTest(cls=cls):
-                self.assertEqual(f"{cls.__name__}([])", repr(cls()))
+                self.assertEqual(f"amulet.nbt.{cls.__name__}([])", repr(cls()))
                 self.assertEqual(
-                    f"{cls.__name__}([-3, -2, -1, 0, 1, 2, 3])",
+                    f"amulet.nbt.{cls.__name__}([-3, -2, -1, 0, 1, 2, 3])",
                     repr(cls([-3, -2, -1, 0, 1, 2, 3])),
                 )
 

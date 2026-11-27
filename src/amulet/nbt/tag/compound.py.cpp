@@ -161,7 +161,7 @@ void init_compound(py::module& m)
             "__repr__",
             [](const Amulet::NBT::CompoundTag& self) {
                 std::string out;
-                out += "CompoundTag({";
+                out += "amulet.nbt.CompoundTag({";
                 for (auto it = self.begin(); it != self.end(); it++) {
                     if (it != self.begin()) {
                         out += ", ";

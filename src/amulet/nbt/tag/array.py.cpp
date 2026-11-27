@@ -79,7 +79,7 @@ namespace py = pybind11;
         CLSNAME.def(                                                                                                       \
             "__repr__",                                                                                                    \
             [](const Amulet::NBT::CLSNAME& self) {                                                                         \
-                std::string out = #CLSNAME "([";                                                                           \
+                std::string out = "amulet.nbt." #CLSNAME "([";                                                             \
                 for (size_t i = 0; i < self.size(); i++) {                                                                 \
                     if (i) {                                                                                               \
                         out += ", ";                                                                                       \

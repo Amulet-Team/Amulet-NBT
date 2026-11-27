@@ -41,7 +41,7 @@ void init_abc(py::module& m)
         "to_nbt",
         [](
             const Amulet::NBT::AbstractBaseTag& self,
-            Amulet::NBT::EncodingPreset preset,
+            const Amulet::NBT::EncodingPreset& preset,
             std::optional<std::string> name) {
             PyErr_SetString(PyExc_NotImplementedError, "");
             throw py::error_already_set();
@@ -70,7 +70,7 @@ void init_abc(py::module& m)
         [](
             const Amulet::NBT::AbstractBaseTag& self,
             py::object filepath_or_writeable,
-            Amulet::NBT::EncodingPreset preset,
+            const Amulet::NBT::EncodingPreset& preset,
             std::optional<std::string> name) {
             PyErr_SetString(PyExc_NotImplementedError, "");
             throw py::error_already_set();
